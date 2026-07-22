@@ -1,43 +1,37 @@
+<div align="center">
+
 # ClawPod Capabilities
 
-Canonical public registry of reusable AgentSkills and trusted CLI Harnesses for all ClawPod agents.
+**The canonical public registry for reusable AgentSkills and trusted CLI Harnesses.**
 
-## Start Here, Agents
+[![Registry validation](https://github.com/Wondermove-Inc/clawpod-capabilities/actions/workflows/validate.yml/badge.svg)](https://github.com/Wondermove-Inc/clawpod-capabilities/actions/workflows/validate.yml)
+![Public registry](https://img.shields.io/badge/registry-public-2ea44f)
+![Integrity](https://img.shields.io/badge/integrity-SHA--256-blue)
 
-If a user gives you only this repository URL, bootstrap capability management before doing anything else:
+[Quick start](#quick-start-for-agents) · [Bootstrap pair](#bootstrap-pair) · [Harness commands](#harness-commands) · [Contributing](#contributing) · [Security](#security)
 
-```text
-https://github.com/Wondermove-Inc/clawpod-capabilities
-```
+</div>
 
-### 1. Acquire only this repository
+---
+
+## Quick start for agents
+
+> [!IMPORTANT]
+> If a user gives you only this repository URL, bootstrap capability management from **this canonical repository** before doing anything else. Do not substitute a mirror.
+
+### 1. Acquire and verify
 
 ```bash
 git clone https://github.com/Wondermove-Inc/clawpod-capabilities.git
 cd clawpod-capabilities
-```
-
-Do not substitute another repository or mirror.
-
-### 2. Inspect the bootstrap pair
-
-- AgentSkill: [`skills/clawpod-capability-registry/SKILL.md`](skills/clawpod-capability-registry/SKILL.md)
-- CLI Harness: [`harnesses/clawpod-capability-registry/harness.json`](harnesses/clawpod-capability-registry/harness.json)
-- Registry: [`registry/index.json`](registry/index.json)
-
-The Skill decides when and how to manage capabilities. The Harness performs deterministic registry search, verified installation, validation, update, backup, and rollback.
-
-### 3. Verify the repository
-
-```bash
 python3 scripts/validate.py
 ```
 
 Continue only when validation succeeds.
 
-### 4. Preview bootstrap installation
+### 2. Choose managed installation roots
 
-Choose the current agent's managed Skill and CLI Harness roots. Do not guess shared or system-wide paths.
+Use the current agent's managed Skill and CLI Harness directories. Do not guess shared or system-wide paths.
 
 ```bash
 python3 scripts/bootstrap.py \
@@ -46,11 +40,9 @@ python3 scripts/bootstrap.py \
   --dry-run
 ```
 
-The bootstrap script is dependency-free, verifies every declared SHA-256 digest, rejects path traversal, and never uses credentials.
+Review the dry-run output and confirm both destinations.
 
-### 5. Install the bootstrap pair
-
-After confirming the destinations:
+### 3. Install the bootstrap pair
 
 ```bash
 python3 scripts/bootstrap.py \
@@ -58,32 +50,54 @@ python3 scripts/bootstrap.py \
   --harnesses-root <agent-workspace>/harnesses
 ```
 
-If a differing installation already exists, stop and inspect it. Use `--force` only with approval; the script backs up replaced content under `.clawpod-bootstrap-backups/`.
+The dependency-free bootstrap verifies every declared SHA-256 digest, rejects path traversal, and does not require credentials.
 
-### 6. Register and validate through the agent runtime
+> [!CAUTION]
+> If a different installation already exists, stop and inspect it. Use `--force` only with approval. Replaced content is backed up under `.clawpod-bootstrap-backups/`.
 
-- Reload or register the installed AgentSkill through the runtime's approved Skill lifecycle.
-- Validate and trust the CLI Harness through the runtime's approved Harness lifecycle.
-- Run a read-only `list` or `search` command as the smoke test.
-- Do not treat installation as authorization for credential use, production impact, external publication, or destructive actions.
+### 4. Register, trust, and smoke-test
 
-Once the pair is active, use `clawpod-capability-registry` for both Skill routing and Harness execution. The shared machine name is safe because Skills and CLI Harnesses are separate capability types and installation namespaces.
+1. Register or reload the AgentSkill through the runtime's approved Skill lifecycle.
+2. Validate and trust the CLI Harness through the runtime's approved Harness lifecycle.
+3. Run the read-only `list` or `search` command.
 
-## CLI Harness Commands
+Once active, use the shared machine name **`clawpod-capability-registry`** for both Skill routing and Harness execution. The identity is unambiguous because AgentSkills and CLI Harnesses use separate capability types and installation namespaces.
+
+---
+
+## Bootstrap pair
+
+| Capability | Responsibility | Source |
+|---|---|---|
+| **AgentSkill** | Decides when and how to discover, install, validate, update, or roll back capabilities | [`skills/clawpod-capability-registry/SKILL.md`](skills/clawpod-capability-registry/SKILL.md) |
+| **CLI Harness** | Performs deterministic registry operations with structured JSON output | [`harnesses/clawpod-capability-registry/harness.json`](harnesses/clawpod-capability-registry/harness.json) |
+| **Registry index** | Declares typed packages, compatibility, safety metadata, files, and digests | [`registry/index.json`](registry/index.json) |
 
 ```text
-list       List registered capabilities
-search     Search ids and descriptions
-inspect    Inspect compatibility and safety metadata
-install    Install verified files into an explicit target root
-validate   Check installed files against registry digests
-update     Replace an installation after creating a backup
-rollback   Restore a previous local backup
+User intent
+    ↓
+ClawPod Capability Registry Skill
+    ↓
+ClawPod Capability Registry CLI Harness
+    ↓
+Canonical registry + verified local installation
 ```
 
-All Harness commands emit machine-readable JSON. Network reads are restricted to the canonical public repository.
+## Harness commands
 
-## Repository Layout
+| Command | Purpose |
+|---|---|
+| `list` | List registered capabilities |
+| `search` | Search IDs and descriptions |
+| `inspect` | Inspect compatibility and safety metadata |
+| `install` | Install verified files into an explicit target root |
+| `validate` | Compare installed files with registry digests |
+| `update` | Back up and replace an installation |
+| `rollback` | Restore a previous local backup |
+
+All commands emit machine-readable JSON. Network reads are restricted to this canonical public repository.
+
+## Repository layout
 
 ```text
 skills/<name>/             AgentSkill packages
@@ -92,28 +106,45 @@ registry/index.json        Machine-readable capability index
 schemas/                   Registry contracts
 scripts/bootstrap.py       Dependency-free first-install path
 scripts/validate.py        Repository validation
+tests/                     Repository policy and bootstrap tests
 ```
 
-## Capability Selection
+## Choosing a capability type
 
-- Use an **AgentSkill** for reusable judgment, routing, domain knowledge, or a variable procedure.
-- Use a **CLI Harness** for deterministic execution with typed inputs, stable output, explicit safety classes, and machine-verifiable failure behavior.
-- Use both when a Skill should select an operation and a Harness should execute it.
+| Use | When |
+|---|---|
+| **AgentSkill** | The work needs judgment, routing, domain knowledge, or a reusable variable procedure |
+| **CLI Harness** | Execution must be deterministic, typed, structured, and machine-verifiable |
+| **Both** | A Skill should select the operation and a Harness should execute it |
 
 Always discover and improve an existing capability before creating a duplicate.
 
+## Safety boundary
+
+Installing or trusting a capability does **not** authorize:
+
+- credential or secret use,
+- production-impacting changes,
+- external publication,
+- destructive or irreversible actions,
+- privilege expansion.
+
+Those actions remain subject to their normal runtime controls and approval boundaries.
+
 ## Contributing
+
+This registry accepts pull requests only from authorized organization members and collaborators.
 
 1. Add or update one package under `skills/` or `harnesses/`.
 2. Update `registry/index.json`, including per-file SHA-256 digests.
 3. Run repository and package tests.
-4. Submit a pull request and wait for required CI and review.
+4. Submit a pull request and wait for required CI and repository policy checks.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete contract.
 
 ## Security
 
-Never publish credentials, internal endpoints, customer data, private configuration, or generated secret material. See [SECURITY.md](SECURITY.md).
+Never publish credentials, internal endpoints, customer data, private configuration, or generated secret material. Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
 
 ## License
 
