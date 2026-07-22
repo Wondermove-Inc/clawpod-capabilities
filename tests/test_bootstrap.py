@@ -22,26 +22,26 @@ class BootstrapTests(unittest.TestCase):
             harnesses = Path(directory) / "harnesses"
             entries = bootstrap.load_entries()
 
-            skill_result = bootstrap.install_one(entries["manage-capabilities"], skills, harnesses, dry_run=False, force=False)
+            skill_result = bootstrap.install_one(entries["clawpod-capability-registry"], skills, harnesses, dry_run=False, force=False)
             harness_result = bootstrap.install_one(entries["clawpod-capability"], skills, harnesses, dry_run=False, force=False)
 
             self.assertEqual(skill_result["status"], "installed")
             self.assertEqual(harness_result["status"], "installed")
-            self.assertTrue((skills / "manage-capabilities" / "SKILL.md").is_file())
+            self.assertTrue((skills / "clawpod-capability-registry" / "SKILL.md").is_file())
             self.assertTrue((harnesses / "clawpod-capability" / "harness.json").is_file())
             self.assertTrue((harnesses / "clawpod-capability" / "clawpod_capability.py").is_file())
 
-            again = bootstrap.install_one(entries["manage-capabilities"], skills, harnesses, dry_run=False, force=False)
+            again = bootstrap.install_one(entries["clawpod-capability-registry"], skills, harnesses, dry_run=False, force=False)
             self.assertEqual(again["status"], "already-installed")
 
     def test_force_backs_up_different_installation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             skills = Path(directory) / "skills"
             harnesses = Path(directory) / "harnesses"
-            destination = skills / "manage-capabilities"
+            destination = skills / "clawpod-capability-registry"
             destination.mkdir(parents=True)
             (destination / "SKILL.md").write_text("modified", encoding="utf-8")
-            entry = bootstrap.load_entries()["manage-capabilities"]
+            entry = bootstrap.load_entries()["clawpod-capability-registry"]
 
             with self.assertRaisesRegex(bootstrap.BootstrapError, "different content"):
                 bootstrap.install_one(entry, skills, harnesses, dry_run=False, force=False)

@@ -42,9 +42,9 @@ class ValidatorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
             shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
-            skill = copy / "skills" / "manage-capabilities" / "SKILL.md"
+            skill = copy / "skills" / "clawpod-capability-registry" / "SKILL.md"
             text = skill.read_text(encoding="utf-8")
-            skill.write_text(text.replace("name: manage-capabilities", "name: wrong-name", 1), encoding="utf-8")
+            skill.write_text(text.replace("name: clawpod-capability-registry", "name: wrong-name", 1), encoding="utf-8")
 
             result = self.run_validator(copy)
             self.assertNotEqual(result.returncode, 0)

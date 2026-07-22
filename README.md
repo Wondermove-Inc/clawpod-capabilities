@@ -21,7 +21,7 @@ Do not substitute another repository or mirror.
 
 ### 2. Inspect the bootstrap pair
 
-- AgentSkill: [`skills/manage-capabilities/SKILL.md`](skills/manage-capabilities/SKILL.md)
+- AgentSkill: [`skills/clawpod-capability-registry/SKILL.md`](skills/clawpod-capability-registry/SKILL.md)
 - CLI Harness: [`harnesses/clawpod-capability/harness.json`](harnesses/clawpod-capability/harness.json)
 - Registry: [`registry/index.json`](registry/index.json)
 
@@ -67,7 +67,7 @@ If a differing installation already exists, stop and inspect it. Use `--force` o
 - Run a read-only `list` or `search` command as the smoke test.
 - Do not treat installation as authorization for credential use, production impact, external publication, or destructive actions.
 
-Once the pair is active, use `manage-capabilities` for decisions and `clawpod-capability` for execution.
+Once the pair is active, use `clawpod-capability-registry` for decisions and `clawpod-capability` for execution. Both use the display title **ClawPod Capability Registry**.
 
 ## CLI Harness Commands
 

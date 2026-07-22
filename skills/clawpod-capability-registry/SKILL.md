@@ -1,9 +1,9 @@
 ---
-name: manage-capabilities
+name: clawpod-capability-registry
 description: Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the ClawPod capability registry. Use when an agent needs a missing capability, wants to avoid duplicating an existing one, must compare capability versions, or needs to verify, upgrade, or recover an installed capability.
 ---
 
-# Manage Capabilities
+# ClawPod Capability Registry
 
 Use `https://github.com/Wondermove-Inc/clawpod-capabilities` as the canonical registry. Do not search other GitHub repositories for ClawPod capabilities.
 

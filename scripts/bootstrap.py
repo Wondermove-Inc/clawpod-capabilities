@@ -14,7 +14,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "registry" / "index.json"
-BOOTSTRAP_IDS = ("manage-capabilities", "clawpod-capability")
+BOOTSTRAP_IDS = ("clawpod-capability-registry", "clawpod-capability")
 BACKUP_DIR = ".clawpod-bootstrap-backups"
 
 
