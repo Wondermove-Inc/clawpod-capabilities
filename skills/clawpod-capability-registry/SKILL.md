@@ -63,3 +63,5 @@ Use `https://github.com/Wondermove-Inc/clawpod-capabilities` as the canonical re
 ## Completion Criteria
 
 Complete only when the capability matches the intent, compatibility and safety were reviewed, installation used an approved lifecycle, a representative invocation succeeded, provenance and evidence were recorded, rollback is known, and remaining limitations were reported.
+
+<!-- registry-sync-proof -->
