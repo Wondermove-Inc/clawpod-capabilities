@@ -18,8 +18,23 @@ class RegistrySyncWorkflowTests(unittest.TestCase):
         self.assertIn("trusted/scripts/sync_registry.py --root candidate", self.workflow)
 
     def test_candidate_checkout_has_no_persisted_credentials(self) -> None:
-        self.assertGreaterEqual(self.workflow.count("persist-credentials: false"), 2)
+        self.assertGreaterEqual(self.workflow.count("persist-credentials: false"), 4)
         self.assertIn("ref: ${{ github.event.pull_request.head.sha }}", self.workflow)
+
+    def test_candidate_validation_is_isolated_from_write_permissions(self) -> None:
+        validation = self.workflow.split("  validate-candidate:", 1)[1].split("  registry-sync:", 1)[0]
+        self.assertIn("contents: read", validation)
+        self.assertNotIn("contents: write", validation)
+        self.assertNotIn("statuses: write", validation)
+        self.assertIn("Generate candidate Registry with trusted code", validation)
+        self.assertIn("Run repository tests", (ROOT / ".github" / "workflows" / "validate.yml").read_text())
+
+    def test_generated_commit_receives_required_actions_status(self) -> None:
+        synchronization = self.workflow.split("  registry-sync:", 1)[1]
+        self.assertIn("needs: validate-candidate", synchronization)
+        self.assertIn("statuses: write", synchronization)
+        self.assertIn('statuses/$generated_sha', synchronization)
+        self.assertIn("context=validate", synchronization)
 
     def test_only_generated_registry_is_committed(self) -> None:
         self.assertIn("git -C candidate add registry/index.json", self.workflow)
