@@ -46,6 +46,16 @@ def manifest_name(command):
  return '.'.join(re.sub(r'(?<!^)(?=[A-Z])','-',part).lower() for part in command.split('.'))
 
 commands={logical_name(key,c):c for key,c in doc['commands'].items()}
+# Rehydrate rich schemas when regenerating from an already projected manifest.
+# This keeps generation deterministic and prevents lifecycle projection from
+# becoming the next run's semantic source of truth.
+contracts_path=ROOT/'command_contracts.json'
+if contracts_path.exists():
+ existing_contracts=json.loads(contracts_path.read_text())
+ for cmd,c in commands.items():
+  if cmd in existing_contracts:
+   c['inputSchema']=json.loads(json.dumps(existing_contracts[cmd]['inputSchema']))
+   c['outputSchema']=json.loads(json.dumps(existing_contracts[cmd]['outputSchema']))
 for cmd,c in commands.items():
  mapped=[]
  for safety in c.get('safetyClasses',[]):
@@ -88,17 +98,41 @@ def close_objects(node):
   for value in node.values():close_objects(value)
  elif isinstance(node,list):
   for value in node:close_objects(value)
+
+# OpenClaw's run-intent bridge deliberately accepts only this small recursive
+# schema vocabulary. Rich validation remains authoritative in
+# command_contracts.json and the entrypoint; the lifecycle manifest is only the
+# typed/closed argv boundary.
+def lifecycle_schema(node):
+ out={}
+ if 'type' in node:
+  # The runtime enforces a type only when it is a single JSON type string.
+  # Omitting union types is clearer than retaining an accepted-but-ignored list.
+  if isinstance(node['type'],str):out['type']=node['type']
+ if isinstance(node.get('required'),list):out['required']=list(node['required'])
+ if isinstance(node.get('properties'),dict):
+  out['properties']={name:lifecycle_schema(value) for name,value in node['properties'].items()}
+ if isinstance(node.get('additionalProperties'),bool):
+  # A closed object with no declared properties means "empty object" to the
+  # bridge. Rich provider result envelopes intentionally carry command-specific
+  # payloads there, so leave those opaque while keeping every declared object
+  # boundary closed.
+  if node['additionalProperties'] or out.get('properties'):out['additionalProperties']=node['additionalProperties']
+ return out
+
 for command in commands.values():
  # Batch items are intentionally typed from the command's own accepted fields.
  schema=command['inputSchema'];item_props={k:v for k,v in schema.get('properties',{}).items() if k!='batch'}
  schema['properties']['batch']['items']={'type':'object','additionalProperties':False,'properties':item_props}
  close_objects(command['inputSchema']);close_objects(command['outputSchema'])
- # Convert structured values only after the rich schemas have been generated;
- # the entrypoint remains the authoritative recursive validator after decoding.
+ # Snapshot full recursive semantics before projecting the lifecycle schemas.
  command['_richInputSchema']=json.loads(json.dumps(schema))
+ command['_richOutputSchema']=json.loads(json.dumps(command['outputSchema']))
  for name in ('fields','params','body','batch'):
   if name in schema.get('properties',{}):schema['properties'][name]={'type':'string'}
-contracts={cmd:{'inputSchema':c.pop('_richInputSchema'),'outputSchema':c['outputSchema'],'requiredScopes':sorted(required_scopes(cmd,c.get('safetyClasses',[]))) if not cmd.startswith('auth.') else []} for cmd,c in commands.items()}
+ command['inputSchema']=lifecycle_schema(schema)
+ command['outputSchema']=lifecycle_schema(command['outputSchema'])
+contracts={cmd:{'inputSchema':c.pop('_richInputSchema'),'outputSchema':c.pop('_richOutputSchema'),'requiredScopes':sorted(required_scopes(cmd,c.get('safetyClasses',[]))) if not cmd.startswith('auth.') else []} for cmd,c in commands.items()}
 (ROOT/'command_contracts.json').write_text(json.dumps(contracts,indent=2,ensure_ascii=False)+'\n')
 doc['commands']={manifest_name(cmd):commands[cmd] for cmd in commands}
 p.write_text(json.dumps(doc,indent=2,ensure_ascii=False)+'\n')

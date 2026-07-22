@@ -162,11 +162,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "85433216c4dcc3d644eb73b9a35552f64ae4f612d31477d997d3a9e016330a87"
+          "sha256": "f0bcd62e54921d38320e6d15914139643cb81444f6ea31678cd16acdbde05648"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "be2f8d3db4fdb1f9b51bee4811f13b51e96cac91ec8512f859915077b7411b54"
+          "sha256": "211743477116d5b334ed7825ecaa8e7127106ee4b6eabd1ba3f84b0183d75c9e"
         }
       ]
     }
