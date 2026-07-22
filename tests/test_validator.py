@@ -20,10 +20,10 @@ class ValidatorTests(unittest.TestCase):
             check=False,
         )
 
-    def test_empty_registry_is_valid(self) -> None:
+    def test_repository_registry_is_valid(self) -> None:
         result = self.run_validator(ROOT)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("validated 0 capability entries", result.stdout)
+        self.assertIn("validated 1 capability entries", result.stdout)
 
     def test_invalid_entry_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -37,6 +37,18 @@ class ValidatorTests(unittest.TestCase):
             result = self.run_validator(copy)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("missing fields", result.stderr)
+
+    def test_skill_frontmatter_name_must_match_registry_id(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = Path(directory) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            skill = copy / "skills" / "manage-capabilities" / "SKILL.md"
+            text = skill.read_text(encoding="utf-8")
+            skill.write_text(text.replace("name: manage-capabilities", "name: wrong-name", 1), encoding="utf-8")
+
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("does not match SKILL.md name", result.stderr)
 
 
 if __name__ == "__main__":

@@ -31,6 +31,30 @@ def load_json(path: Path) -> object:
         fail(f"invalid JSON in {path.relative_to(ROOT)}: {exc}")
 
 
+def parse_skill_frontmatter(path: Path) -> dict[str, str]:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0] != "---":
+        fail(f"{path.relative_to(ROOT)} must start with YAML frontmatter")
+    try:
+        end = lines.index("---", 1)
+    except ValueError:
+        fail(f"{path.relative_to(ROOT)} has unclosed YAML frontmatter")
+
+    metadata: dict[str, str] = {}
+    for line in lines[1:end]:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if ":" not in line:
+            fail(f"{path.relative_to(ROOT)} has malformed frontmatter: {line}")
+        key, value = line.split(":", 1)
+        metadata[key.strip()] = value.strip().strip('"\'')
+    if set(metadata) != {"name", "description"}:
+        fail(f"{path.relative_to(ROOT)} frontmatter must contain only name and description")
+    if "TODO" in path.read_text(encoding="utf-8"):
+        fail(f"{path.relative_to(ROOT)} contains an unresolved TODO")
+    return metadata
+
+
 def validate_entry(entry: object, position: int, seen: set[tuple[str, str]]) -> None:
     label = f"capabilities[{position}]"
     if not isinstance(entry, dict):
@@ -68,6 +92,14 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str]]) -> 
     required_file = path / ("SKILL.md" if capability_type == "skill" else "harness.json")
     if not required_file.is_file():
         fail(f"{label} missing {required_file.name}")
+    if capability_type == "skill":
+        metadata = parse_skill_frontmatter(required_file)
+        if metadata["name"] != capability_id:
+            fail(f"{label} id does not match SKILL.md name")
+        if not 20 <= len(metadata["description"]) <= 500:
+            fail(f"{label} SKILL.md description must contain 20-500 characters")
+    else:
+        load_json(required_file)
 
     key = (capability_id, version)
     if key in seen:

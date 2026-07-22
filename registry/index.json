@@ -1,5 +1,21 @@
 {
   "$schema": "../schemas/registry.schema.json",
   "schemaVersion": 1,
-  "capabilities": []
+  "capabilities": [
+    {
+      "id": "manage-capabilities",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
+      "path": "skills/manage-capabilities",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": ["linux", "macos", "windows"]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      }
+    }
+  ]
 }
