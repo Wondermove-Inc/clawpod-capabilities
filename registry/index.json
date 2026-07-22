@@ -28,6 +28,39 @@
       ]
     },
     {
+      "id": "google-workspace",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route approved Gmail, Calendar, Drive, and OAuth work through the typed Google Workspace harness.",
+      "path": "skills/google-workspace",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9b4d077ac7f1d6952b23c30456b57f94d7c1116eebddef88ffd42f3c0f7bd431"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "bf1b996fcb2b9b972230cee94cbe22fb29e38ebe5b712a37f7ec5c4e5d8d258c"
+        },
+        {
+          "path": "references/scopes.md",
+          "sha256": "71fba0c139d605e376523c85db3ad49fb10f8afe50354995df52b5a273c14437"
+        }
+      ]
+    },
+    {
       "id": "clawpod-capability-registry",
       "type": "harness",
       "version": "0.1.0",
@@ -53,6 +86,91 @@
         {
           "path": "harness.json",
           "sha256": "f18d5dcfe93cc096df3607ce52298deb69acfe1573592752772355f4f8dd8248"
+        }
+      ]
+    },
+    {
+      "id": "google-workspace",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with stable JSON and safety controls.",
+      "path": "harnesses/google-workspace",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "command_contracts.json",
+          "sha256": "44a13b7e234a6dc459bfc40eb1d1ad7a9e935831a30cea7f2415a487fab4a019"
+        },
+        {
+          "path": "google_workspace.py",
+          "sha256": "238f99035270a1c1ddf35e56ac229baf5ddcf0b3d67e8d5e5d81835c2fb3293e"
+        },
+        {
+          "path": "google_workspace_core/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "google_workspace_core/auth.py",
+          "sha256": "9169798f2927b10b6d74d7485b85a44759fe67489c240ead3f65d2662b3bda91"
+        },
+        {
+          "path": "google_workspace_core/catalog.py",
+          "sha256": "6c0812a41bce3657312173445f9faa933e9016d8e2f2a53165e2b4808b7bac5d"
+        },
+        {
+          "path": "google_workspace_core/contracts.py",
+          "sha256": "85e1b32695fdbad962d869124995a89d164e31c90e0ab63b27c115a0bd7f79b3"
+        },
+        {
+          "path": "google_workspace_core/core.py",
+          "sha256": "5303257b725efd0edc5a33f6ad97edd5e733c02a1351aa9eaaab3101406d5558"
+        },
+        {
+          "path": "google_workspace_core/mime.py",
+          "sha256": "d979ffe035611570c8de6377da150087ac2ea8bae5639f59b2e848315bd251df"
+        },
+        {
+          "path": "google_workspace_core/oauth_desktop.py",
+          "sha256": "7ac19f60d693c3c883544dd99870201f2963dc53560ad9458d7ea527225ede6e"
+        },
+        {
+          "path": "google_workspace_core/scopes.py",
+          "sha256": "e731be368c6e2609dc5f45c7b504d3c0f9cbb02d85b04618f407154e37f997c6"
+        },
+        {
+          "path": "google_workspace_core/security.py",
+          "sha256": "f268006e196f16c13fecbbe64af0f5e841387ffcc6bae58cd4dd0036a1bbfe14"
+        },
+        {
+          "path": "google_workspace_core/state.py",
+          "sha256": "62bd6d90e41bb1c2fb3d80e1c988dff15a6d3482c245a538e9b6490b333faf5c"
+        },
+        {
+          "path": "google_workspace_core/transport.py",
+          "sha256": "3fd3bf0956c91159d269c45b6ca66cbe606dfdb68a09517abdf2d2cac6254c2d"
+        },
+        {
+          "path": "google_workspace_core/validation.py",
+          "sha256": "7ac23759bdef1d33633e6e2348057c5308f33afb13f7add869084225b7da8a67"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "c5af42889440327be57cae8dac32741f46654e0166016c3cc263f5516ac37411"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "df0b18c34bd52d4436cf59f5711b94b35b0b37de6abfb6714def31c6c42b2e9e"
         }
       ]
     }

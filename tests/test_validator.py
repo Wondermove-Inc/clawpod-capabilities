@@ -23,7 +23,7 @@ class ValidatorTests(unittest.TestCase):
     def test_repository_registry_is_valid(self) -> None:
         result = self.run_validator(ROOT)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("validated 2 capability entries", result.stdout)
+        self.assertIn("validated 4 capability entries", result.stdout)
 
     def test_invalid_entry_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
