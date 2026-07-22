@@ -122,7 +122,7 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "0a97987d29d7902a540f07e11313fac9f81a33b1f0e3d888ff684858f696d4c4"
+          "sha256": "496582a60cea5d352f99dfd09f19e9768fd6676c6b82c25f56102eb7b69645fb"
         },
         {
           "path": "google_workspace_core/contracts.py",
