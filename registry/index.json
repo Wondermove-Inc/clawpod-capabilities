@@ -110,7 +110,7 @@
       "files": [
         {
           "path": "command_contracts.json",
-          "sha256": "f833b41d1247386d7dbbd95d356f1681a340855a2c93f712b6b3348bf0179524"
+          "sha256": "b56da230cd3389b34f6b57a62bdd7170880431f4064f6c5bf8c6a403956b50e7"
         },
         {
           "path": "google_workspace.py",
@@ -170,7 +170,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "d8ff404c242fd7c3c36af3bd10b6d67084cf7982699f278fee6cef3dc8e6dd54"
+          "sha256": "667b633023aadd8b44f032bf72e7a83fe4b96475434ec8c0ca8a5d56b3036e6e"
         }
       ]
     }

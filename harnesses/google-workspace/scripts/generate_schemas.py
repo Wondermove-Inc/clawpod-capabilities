@@ -80,6 +80,9 @@ for cmd,c in commands.items():
   if cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
   elif cmd=='auth.login':
    props['body']=O({'clientPath':S(),'profiles':A(S(),maxItems=32)},required=['clientPath','profiles'])
+   # Interactive account selection and consent routinely need more than the
+   # provider-command timeout, while the receiver itself remains bounded.
+   props['timeoutMs']['maximum']=600000
    s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot','outputPath']))
   else: props['body']=O({})
   continue
