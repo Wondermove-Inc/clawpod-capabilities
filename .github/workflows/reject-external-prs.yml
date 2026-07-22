@@ -1,0 +1,23 @@
+name: Reject unauthorized pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  reject:
+    if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain and close unauthorized pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "This repository accepts pull requests only from authorized organization members and collaborators. This pull request has been closed automatically."
+          gh pr close "$PR_NUMBER" --repo "$REPOSITORY"
