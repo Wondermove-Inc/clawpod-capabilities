@@ -2,22 +2,32 @@ name: Reject unauthorized pull requests
 
 on:
   pull_request_target:
-    types: [opened, reopened, ready_for_review]
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  reject:
-    if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) }}
+  authorize-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Explain and close unauthorized pull request
+      - name: Verify author association
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "This repository accepts pull requests only from authorized organization members and collaborators. This pull request has been closed automatically."
-          gh pr close "$PR_NUMBER" --repo "$REPOSITORY"
+          association="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .author_association)"
+
+          case "$association" in
+            OWNER|MEMBER|COLLABORATOR)
+              echo "Authorized pull request author association: $association"
+              ;;
+            *)
+              gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "This repository accepts pull requests only from authorized organization members and collaborators. This pull request has been closed automatically."
+              gh pr close "$PR_NUMBER" --repo "$REPOSITORY"
+              echo "Unauthorized pull request author association: $association" >&2
+              exit 1
+              ;;
+          esac
