@@ -2,6 +2,8 @@
 
 All automated tests use `.invalid` identities, isolated temporary state, and scripted HTTP. They never load production credentials or call Google.
 
+Desktop OAuth coverage includes loopback success, denied consent, missing refresh token, state mismatch, duplicate callback rejection, timeout, bind failure, token/identity/scope errors, malformed or non-private client files, private atomic output, overwrite refusal, alias collision and merge, traversal/symlink rejection, secret redaction, URL encoding, PKCE S256 correctness, repeat invocation, and browser fallback. Release run: `PYTHONPATH=harnesses/google-workspace pytest -q`, 111 passed plus 151 command subtests.
+
 ## Inventory
 
 - `test_google_workspace.py`: 35 unit and subprocess contract tests.

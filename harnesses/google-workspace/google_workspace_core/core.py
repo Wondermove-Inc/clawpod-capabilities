@@ -38,7 +38,13 @@ def provider_error(e):
 def local_auth(command,payload,out):
  provider=CredentialProvider(); action=command.split(".",1)[1]
  if action=="scopes.list": out["data"]={"profiles":SCOPES}; return out,0
- if action=="login": return fail(command,payload,"UNSUPPORTED_BY_PROVIDER","OAuth callback requires a supervising PKCE receiver and protected token writer; configure those interfaces before login",account=payload.get("account"))
+ if action=="login":
+  from .oauth_desktop import desktop_login,LoginError
+  body=payload.get("body",{})
+  try:
+   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",180000)/1000,overwrite=payload.get("overwrite",False))
+  except LoginError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
+  out["data"]={"resource":result};return out,0
  if action=="accounts.list":
   if not provider.path: out["data"]={"items":[]};return out,0
   doc=json.loads(Path(provider.path).read_text()); items=doc.get("accounts",doc);out["data"]={"items":[{"alias":a,"email":v.get("email"),"subject":v.get("subject_hash"),"scopes":v.get("scopes",[])} for a,v in items.items()]};return out,0

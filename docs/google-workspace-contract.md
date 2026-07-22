@@ -173,7 +173,7 @@ The inventory is the final target scope. Phasing in section 18 schedules impleme
 | `auth.scopes.check` | `account`, `commands[]` or `scopeProfile`; missing grants only | C,R |
 | `auth.whoami` | profile identity from Gmail profile/Drive about and token subject consistency | C,R |
 
-Login returns a user-facing authorization URL and state identifier, never authorization codes or tokens. Browser interaction is performed by the supervising runtime. OAuth state and PKCE verifier are transient secret material. Device flow is not assumed; support only a Google-documented flow valid for the chosen OAuth client type. Service accounts/domain-wide delegation are out of initial account UX and require a later explicit admin profile, not silent fallback.
+`auth.login` is a one-shot Desktop-app flow intended to run on the account owner's PC. Invoke it with `--account <alias> --transfer-root <private-dir> --output-path <relative-credential-file> --body '{"clientPath":"relative-installed-client.json","profiles":["gmail-read"]}' --timeout-ms 180000 --json`; add `--overwrite` only when merging a new alias into an existing private bundle. The installed-client input and existing output must be regular, non-symlink mode-0600 files beneath the transfer root. The receiver binds only `127.0.0.1` on an OS-assigned port, uses state and PKCE S256, opens the browser, and prints the standard authorization URL only when browser opening fails. The result contains sanitized alias/identity/scope metadata, never authorization codes, tokens, client secrets, verifier, or credential contents. Device flow, web-client JSON, public callbacks, service accounts, and domain-wide delegation are not supported.
 
 ### 7.2 Gmail
 

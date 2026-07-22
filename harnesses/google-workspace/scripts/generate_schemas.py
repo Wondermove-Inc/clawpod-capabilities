@@ -73,7 +73,11 @@ for cmd,c in commands.items():
  s=c['inputSchema'];props=s['properties'];props['fields']={'type':'array','items':{'type':'string','minLength':1,'maxLength':512},'maxItems':100};props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
  if cmd.startswith('auth.'):
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
-  props['body']=O({'profiles':A(S(),maxItems=32)}) if cmd=='auth.scopes.check' else O({})
+  if cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
+  elif cmd=='auth.login':
+   props['body']=O({'clientPath':S(),'profiles':A(S(),maxItems=32)},required=['clientPath','profiles'])
+   s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot','outputPath']))
+  else: props['body']=O({})
   continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()

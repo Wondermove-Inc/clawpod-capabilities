@@ -75,7 +75,7 @@ class Tests(unittest.TestCase):
   m=self.mock([{'body':{'id':'f'}}]);r=self.cli('drive.files.get','--input-json','-','--json',input='{"account":"work","params":{"fileId":"f"}}',env={'GOOGLE_WORKSPACE_MOCK_HTTP':m});self.assertEqual(r.returncode,0);self.assertEqual(json.loads(r.stdout)['data']['resource']['id'],'f')
  def test_secret_redaction(self):self.assertEqual(redact({'access_token':'CANARY','nested':{'body':'private'}}),{'access_token':'[REDACTED]','nested':{'body':'[REDACTED]'}})
  def test_login_setup_requirement(self):
-  r=self.cli('auth.login','--account','work','--preview','--json');self.assertEqual(r.returncode,11);self.assertIn('PKCE receiver',json.loads(r.stdout)['error']['message'])
+  r=self.cli('auth.login','--account','work','--preview','--json');self.assertEqual(r.returncode,2);self.assertIn('required',json.loads(r.stdout)['error']['message'])
  def test_retry_transient(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d)/'m';p.write_text(json.dumps([{'status':503,'error':'x'},{'body':{'ok':1}}]));t=ScriptedTransport(p);status,headers,body,n=retry_request(t,'GET','https://example.invalid',sleep=lambda x:None,jitter=lambda:0);self.assertEqual(n,1)

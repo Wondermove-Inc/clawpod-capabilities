@@ -605,7 +605,12 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [],
+        "required": [
+          "account",
+          "body",
+          "transferRoot",
+          "outputPath"
+        ],
         "properties": {
           "account": {
             "type": "string"

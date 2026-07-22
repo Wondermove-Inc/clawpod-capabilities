@@ -48,7 +48,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0561f6e38d2142c68e8276e553b98bf5bc3447199b674b64de165244ccaeedff"
+          "sha256": "9b4d077ac7f1d6952b23c30456b57f94d7c1116eebddef88ffd42f3c0f7bd431"
         },
         {
           "path": "references/operations.md",
@@ -110,7 +110,7 @@
       "files": [
         {
           "path": "command_contracts.json",
-          "sha256": "a2c8a11b2dd20cdf796a256484ef3fcc4f4c20eda0839e7cbb3ee3ec72d69e10"
+          "sha256": "f833b41d1247386d7dbbd95d356f1681a340855a2c93f712b6b3348bf0179524"
         },
         {
           "path": "google_workspace.py",
@@ -134,11 +134,15 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "ab8a3f68bd9c442a0edf143096a6649fa8c6ff7dc324bb2841363aac4dc67c60"
+          "sha256": "549d284557cccf769ecea6e70b1cd846a1dbfe42f3ae1da698c17ec8e32f6fdf"
         },
         {
           "path": "google_workspace_core/mime.py",
           "sha256": "d979ffe035611570c8de6377da150087ac2ea8bae5639f59b2e848315bd251df"
+        },
+        {
+          "path": "google_workspace_core/oauth_desktop.py",
+          "sha256": "e038c4e58e5001a2bafd93d07385e8ec3cb695e478011b11d3d54399e3d0d646"
         },
         {
           "path": "google_workspace_core/scopes.py",
@@ -162,11 +166,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f0bcd62e54921d38320e6d15914139643cb81444f6ea31678cd16acdbde05648"
+          "sha256": "2d53499ef5bfe66ca5625ee9d721770ea12e5aad5d4d143f1d5abbebdbc9a05a"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "211743477116d5b334ed7825ecaa8e7127106ee4b6eabd1ba3f84b0183d75c9e"
+          "sha256": "3464f44b63f73bd66b1e00abdb89a9d96c7a107b3670f303511c77cee24c916c"
         }
       ]
     }

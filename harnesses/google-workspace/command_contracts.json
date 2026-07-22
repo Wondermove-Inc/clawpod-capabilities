@@ -535,7 +535,12 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [],
+      "required": [
+        "account",
+        "body",
+        "transferRoot",
+        "outputPath"
+      ],
       "properties": {
         "account": {
           "type": "string",
@@ -608,7 +613,26 @@
         "body": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "clientPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "profiles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "clientPath",
+            "profiles"
+          ]
         },
         "inputPath": {
           "type": "string",
@@ -711,7 +735,26 @@
               "body": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "clientPath": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "profiles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4096
+                    },
+                    "maxItems": 32
+                  }
+                },
+                "required": [
+                  "clientPath",
+                  "profiles"
+                ]
               },
               "inputPath": {
                 "type": "string",
