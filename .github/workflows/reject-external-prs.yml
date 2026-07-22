@@ -18,16 +18,17 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          association="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .author_association)"
+          author="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .user.login)"
+          permission="$(gh api "repos/$REPOSITORY/collaborators/$author/permission" --jq .permission 2>/dev/null || true)"
 
-          case "$association" in
-            OWNER|MEMBER|COLLABORATOR)
-              echo "Authorized pull request author association: $association"
+          case "$permission" in
+            admin|maintain|write)
+              echo "Authorized pull request author: $author ($permission)"
               ;;
             *)
-              gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "This repository accepts pull requests only from authorized organization members and collaborators. This pull request has been closed automatically."
+              gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "This repository accepts pull requests only from users with write, maintain, or admin permission. This pull request has been closed automatically."
               gh pr close "$PR_NUMBER" --repo "$REPOSITORY"
-              echo "Unauthorized pull request author association: $association" >&2
+              echo "Unauthorized pull request author: $author (${permission:-none})" >&2
               exit 1
               ;;
           esac

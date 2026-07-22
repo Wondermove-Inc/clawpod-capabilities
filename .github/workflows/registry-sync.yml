@@ -23,11 +23,12 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
-          association="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .author_association)"
-          case "$association" in
-            OWNER|MEMBER|COLLABORATOR) ;;
+          author="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .user.login)"
+          permission="$(gh api "repos/$REPOSITORY/collaborators/$author/permission" --jq .permission 2>/dev/null || true)"
+          case "$permission" in
+            admin|maintain|write) ;;
             *)
-              echo "Unauthorized pull request author association: $association" >&2
+              echo "Unauthorized pull request author: $author (${permission:-none})" >&2
               exit 1
               ;;
           esac

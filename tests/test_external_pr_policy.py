@@ -14,10 +14,11 @@ class ExternalPullRequestPolicyTests(unittest.TestCase):
         self.assertIn("pull_request_target:", self.workflow)
         self.assertNotIn("actions/checkout", self.workflow)
 
-    def test_author_association_is_read_from_github_api(self):
+    def test_repository_permission_is_read_from_github_api(self):
         self.assertIn('gh api "repos/$REPOSITORY/pulls/$PR_NUMBER"', self.workflow)
-        self.assertIn("--jq .author_association", self.workflow)
-        self.assertIn("OWNER|MEMBER|COLLABORATOR", self.workflow)
+        self.assertIn("--jq .user.login", self.workflow)
+        self.assertIn('collaborators/$author/permission', self.workflow)
+        self.assertIn("admin|maintain|write", self.workflow)
 
     def test_unauthorized_pull_requests_are_closed_and_fail(self):
         self.assertIn('gh pr close "$PR_NUMBER"', self.workflow)

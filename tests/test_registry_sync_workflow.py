@@ -26,8 +26,9 @@ class RegistrySyncWorkflowTests(unittest.TestCase):
         self.assertNotIn("git -C candidate add .", self.workflow)
 
     def test_rejects_unauthorized_or_fork_pull_requests(self) -> None:
-        self.assertIn("--jq .author_association", self.workflow)
-        self.assertIn("OWNER|MEMBER|COLLABORATOR", self.workflow)
+        self.assertIn("--jq .user.login", self.workflow)
+        self.assertIn('collaborators/$author/permission', self.workflow)
+        self.assertIn("admin|maintain|write", self.workflow)
         self.assertIn('HEAD_REPOSITORY" != "$REPOSITORY', self.workflow)
 
 
