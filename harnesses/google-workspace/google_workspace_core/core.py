@@ -8,6 +8,8 @@ from .mime import compose_message
 from .security import atomic_write,digest,redact,safe_path,append_audit,canonical
 from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
+from .scopes import enforce,required_scopes
+from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token
 
 EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"NOT_FOUND":5,"CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
 SCOPES={"identity":["openid","email"],"gmail-read":["https://www.googleapis.com/auth/gmail.readonly"],"gmail-compose":["https://www.googleapis.com/auth/gmail.compose"],"gmail-modify":["https://www.googleapis.com/auth/gmail.modify"],"calendar-read":["https://www.googleapis.com/auth/calendar.readonly"],"calendar-events":["https://www.googleapis.com/auth/calendar.events"],"drive-file":["https://www.googleapis.com/auth/drive.file"],"drive-read":["https://www.googleapis.com/auth/drive.readonly"],"drive-manage":["https://www.googleapis.com/auth/drive"]}
@@ -50,55 +52,124 @@ def local_auth(command,payload,out):
 def run(command,payload):
  account=payload.get("account") or os.environ.get("GOOGLE_WORKSPACE_ACCOUNT"); out=envelope(command,payload,account)
  if command not in catalog(): return fail(command,payload,"INVALID_ARGUMENT","unknown command",account=account)
- try: validate(payload)
+ try: validate(payload,catalog()[command]["inputSchema"],command)
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
+ if payload.get("batch") is not None:
+  if not isinstance(payload["batch"],list) or not payload["batch"]:return fail(command,payload,"INVALID_ARGUMENT","batch must be a non-empty array",account=account)
+  base={k:v for k,v in payload.items() if k!="batch"};results=[];failed=0
+  for i,item in enumerate(payload["batch"]):
+   if not isinstance(item,dict):child,code=fail(command,base,"INVALID_ARGUMENT","batch item must be an object",account=account)
+   else:child,code=run(command,{**base,**item})
+   results.append({"index":i,"ok":code==0,"result":child});failed+=code!=0
+  out["data"]={"items":results,"succeeded":len(results)-failed,"failed":failed}
+  if failed:out["ok"]=False;out["error"]={"code":"PARTIAL_FAILURE","message":f"{failed} of {len(results)} batch items failed","retryable":False,"details":{},"remediation":"Inspect each item result and retry only failed safe items"};return out,9
+  return out,0
  if command.startswith("auth."): return local_auth(command,payload,out)
- if payload.get("allPages"):
-  return fail(command,payload,"UNSUPPORTED_BY_CONTRACT","automatic pagination is not implemented; follow page.nextPageToken explicitly",account=account)
  try: op=operation(command,payload.get("params",{}))
  except OperationError as e:
   code="UNSUPPORTED_BY_CONTRACT" if "not implemented" in str(e) else "INVALID_ARGUMENT"
   return fail(command,payload,code,str(e),account=account)
- safety=catalog()[command]["safetyClasses"]; effect=digest(command,account,payload)
+ safety=catalog()[command]["safetyClasses"]
  mutating=any(x in safety for x in ("writeSafe","externallyVisible","destructive"))
- if mutating:
-  out["effects"]=[{"kind":"planned","targets":redact(payload.get("params",{})),"before":None,"after":redact(payload.get("body",{})),"recoverability":"permanent" if "destructive" in safety else "provider-dependent","effectDigest":effect}]
-  if payload.get("preview") or payload.get("dryRun"): out["data"]={"preview":True,"effectDigest":effect,"duplicateFingerprint":effect};return out,0
-  if any(x in safety for x in ("externallyVisible","destructive")) and payload.get("confirm")!=effect:return fail(command,payload,"APPROVAL_REQUIRED","fresh matching effect confirmation required",account=account,details={"effectDigest":effect})
  # MIME compose
  if command.startswith("gmail.") and command.split(".")[-1] in ("send","create","update","insert","import") and payload.get("body",{}).get("compose"):
   try: raw,atts=compose_message(payload["body"]["compose"],payload.get("transferRoot"));payload={**payload,"body":{"raw":raw,**{k:v for k,v in payload["body"].items() if k!="compose"}}};out["provenance"]["attachments"] = atts
   except Exception as e:return fail(command,payload,"INVALID_MIME",str(e),account=account)
  mock=os.environ.get("GOOGLE_WORKSPACE_MOCK_HTTP"); transport=ScriptedTransport(mock) if mock else Transport()
  try:
-  if mock: token="synthetic-test-token";meta={"email":"fake@example.invalid","subject_hash":"fake","scopes":[]}
+  if mock: token="synthetic-test-token";meta={"email":"fake@example.invalid","subject_hash":"fake","scopes":sum(SCOPES.values(),[])+["https://www.googleapis.com/auth/gmail.settings.basic","https://www.googleapis.com/auth/gmail.settings.sharing","https://www.googleapis.com/auth/calendar","https://www.googleapis.com/auth/calendar.acl"]}
   else: token,meta=CredentialProvider().token(account)
+  needed=enforce(command,meta.get("scopes",[]),safety)
  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=account)
+ except PermissionError as e:return fail(command,payload,"INSUFFICIENT_SCOPE",str(e),account=account)
  headers={"Authorization":"Bearer "+token}
+ effect=digest(command,account,payload);target=op["url"];observed_etag=payload.get("ifMatch")
+ if mutating:
+  out["effects"]=[{"kind":"planned","targets":redact(payload.get("params",{})),"before":None,"after":redact(payload.get("body",{})),"recoverability":"permanent" if "destructive" in safety else "provider-dependent","effectDigest":effect}]
+  if payload.get("preview") or payload.get("dryRun"):
+   if payload.get("dryRun") and op["method"] in ("PUT","PATCH","DELETE"):
+    try:
+     _,probe_headers,probe,_=retry_request(transport,"GET",target,headers=headers,query={"fields":"id,etag"},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
+     observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag") or observed_etag
+     if payload.get("ifMatch") and observed_etag and payload["ifMatch"]!=observed_etag:return fail(command,payload,"PRECONDITION_FAILED","dry-run observed a different target ETag",account=account)
+    except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
+   preview_token=issue_preview(command,account,payload,target,observed_etag)
+   out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":preview_token,"duplicateFingerprint":effect,"requiredScopes":needed,"target":target,"etag":observed_etag};return out,0
+  if any(x in safety for x in ("externallyVisible","destructive")):
+   if op["method"] in ("PUT","PATCH","DELETE") and payload.get("confirm"):
+    try:
+     _,probe_headers,probe,_=retry_request(transport,"GET",target,headers=headers,query={"fields":"id,etag"},timeout=payload.get("timeoutMs",30000)/1000,safe=True);observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag") or observed_etag
+    except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
+   ok,reason=consume_preview(payload.get("confirm",""),command,account,payload,target,observed_etag)
+   if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=account)
+ if payload.get("idempotencyKey"):
+  prior,fp=idempotency_lookup(payload["idempotencyKey"],command,account,payload)
+  if prior:
+   if prior["fingerprint"]!=fp:return fail(command,payload,"IDEMPOTENCY_CONFLICT","idempotency key was used with different input",account=account)
+   return prior["result"],0
  if payload.get("ifMatch"):headers["If-Match"]=payload["ifMatch"]
+ resume_prefix=b""
+ if command in ("drive.files.download","drive.files.export") and payload.get("resume") and payload.get("outputPath"):
+  try:
+   existing=safe_path(payload.get("transferRoot") or ".",payload["outputPath"],output=True)
+   if existing.exists():resume_prefix=existing.read_bytes();headers["Range"]=f"bytes={len(resume_prefix)}-"
+  except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
  params={k:v for k,v in payload.get("params",{}).items() if k not in op.get("pathParams",set()) and k not in ("userId","kind")}
  params.update(op.get("query",{}))
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
  if payload.get("pageSize"):params["pageSize"]=payload["pageSize"]
- if payload.get("pageToken"):params["pageToken"]=payload["pageToken"]
+ if payload.get("pageToken"):
+  try:params["pageToken"]=unbind_token(payload["pageToken"],command,account,{k:v for k,v in params.items() if k!="pageToken"})
+  except ValueError as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  safe_retry=not (command in ("gmail.messages.send","gmail.drafts.send") or "destructive" in safety)
  try:
-  status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=payload.get("body") or None,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
+  request_body=payload.get("body") or None
+  if command=="drive.files.upload":
+   source=safe_path(payload.get("transferRoot") or ".",payload["inputPath"]);content=source.read_bytes();upload_type=(payload.get("params") or {}).get("uploadType","resumable")
+   if upload_type=="multipart":
+    boundary="clawpod-"+uuid.uuid4().hex;meta=json.dumps(payload.get("body") or {"name":source.name},separators=(",",":")).encode();request_body=b"--"+boundary.encode()+b"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+meta+b"\r\n--"+boundary.encode()+b"\r\nContent-Type: application/octet-stream\r\n\r\n"+content+b"\r\n--"+boundary.encode()+b"--\r\n";headers["Content-Type"]="multipart/related; boundary="+boundary
+    status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=request_body,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
+   elif upload_type=="media":
+    status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=content,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
+   elif upload_type=="resumable":
+    init_headers={**headers,"X-Upload-Content-Length":str(len(content)),"X-Upload-Content-Type":"application/octet-stream"};status,rh,init,retries=retry_request(transport,"POST",op["url"],headers=init_headers,query=params,body=payload.get("body") or {"name":source.name},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
+    location=rh.get("Location") or rh.get("location")
+    if not location:raise HTTPError(502,"missingResumableLocation")
+    put_headers={**headers,"Content-Length":str(len(content)),"Content-Range":f"bytes 0-{len(content)-1}/{len(content)}"};status,rh,data,n=retry_request(transport,"PUT",location,headers=put_headers,body=content,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=n
+   else:return fail(command,payload,"INVALID_ARGUMENT","uploadType must be media, multipart, or resumable",account=account)
+  else:status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=request_body,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
+  pages=1
+  if payload.get("allPages"):
+   max_pages=payload.get("maxPages",100);max_items=payload.get("maxItems",10000)
+   while isinstance(data,dict) and data.get("nextPageToken") and pages<max_pages:
+    q={**params,"pageToken":data["nextPageToken"]};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
+    key=next((k for k,v in data.items() if isinstance(v,list)),None)
+    if key and isinstance(nxt.get(key),list):data[key].extend(nxt[key]);data["nextPageToken"]=nxt.get("nextPageToken");data[key]=data[key][:max_items]
+    else:break
  except HTTPError as e:
   code=provider_error(e)
   if command in ("gmail.messages.send","gmail.drafts.send") and e.status>=500:code="AMBIGUOUS_COMMIT"
   return fail(command,payload,code,str(e),status=e.status,reason=e.reason,account=account)
  out["account"].update({"email":meta.get("email"),"subject":meta.get("subject_hash")})
- out["provenance"].update({"providerStatus":status,"retryCount":retries,"etag":data.get("etag"),"effectiveFields":payload.get("fields",[])})
+ if isinstance(data,bytes):
+  try:
+   raw=resume_prefix+data;actual=hashlib.sha256(raw).hexdigest();expected=payload.get("expectedSha256")
+   if expected and actual != expected:return fail(command,payload,"CHECKSUM_MISMATCH","download checksum did not match expectedSha256",account=account,details={"expected":expected,"actual":actual})
+   target_path=safe_path(payload.get("transferRoot") or ".",payload["outputPath"],output=True);atomic_write(target_path,raw,payload.get("overwrite",False) or bool(resume_prefix));data={"transfer":{"path":str(target_path),"bytes":len(raw),"sha256":actual,"mimeType":rh.get("Content-Type"),"resumed":bool(resume_prefix),"remoteId":payload.get("params",{}).get("fileId")}}
+  except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
+ out["provenance"].update({"providerStatus":status,"retryCount":retries,"etag":data.get("etag"),"effectiveFields":payload.get("fields",[]),"requiredScopes":needed})
  items=next((data[k] for k in ("messages","threads","labels","drafts","history","items","files","permissions","comments","replies","revisions","drives","changes","events","calendars","rules") if isinstance(data.get(k),list)),None)
- if items is not None:out["data"]={"items":items};out["page"]={"nextPageToken":data.get("nextPageToken"),"itemsReturned":len(items),"pagesFetched":1,"truncated":bool(data.get("nextPageToken"))}
+ if items is not None:
+  raw_next=data.get("nextPageToken");bound=bind_token(raw_next,command,account,{k:v for k,v in params.items() if k!="pageToken"}) if raw_next else None
+  out["data"]={"items":items};out["page"]={"nextPageToken":bound,"itemsReturned":len(items),"pagesFetched":locals().get("pages",1),"truncated":bool(raw_next)}
  else:out["data"]={"resource":data};out.pop("page",None)
  if mutating:out["effects"]=[{"kind":"confirmed","resourceIds":[data.get("id")] if data.get("id") else [],"effectDigest":effect,"recoverability":"permanent" if "destructive" in safety else "provider-dependent"}]
  if payload.get("outputPath") and isinstance(data.get("data"),str):
   try:
    target=safe_path(payload.get("transferRoot") or ".",payload["outputPath"],output=True);raw=base64.urlsafe_b64decode(data["data"]+"="*(-len(data["data"])%4));atomic_write(target,raw,payload.get("overwrite",False));out["data"]={"transfer":{"path":str(target),"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"mimeType":data.get("mimeType"),"resumed":False,"remoteId":payload.get("params",{}).get("fileId")}}
   except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
+ if payload.get("idempotencyKey"):idempotency_store(payload["idempotencyKey"],command,account,payload,out)
  audit=os.environ.get("GOOGLE_WORKSPACE_AUDIT_FILE")
  if audit:append_audit(audit,{"timestamp":now(),"command":command,"requestId":out["requestId"],"account":account,"inputHash":hashlib.sha256(canonical(redact(payload)).encode()).hexdigest(),"safetyClasses":safety,"result":"ok","effects":out["effects"]})
  return out,0

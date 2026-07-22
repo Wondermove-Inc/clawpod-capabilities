@@ -94,12 +94,9 @@ def operation(command:str, params:dict) -> dict:
    if action in ("copy","watch"):path+="/"+action
    if action=="export":path+="/export"
    if action in ("emptyTrash","generateIds"):path="files/"+action
-   if action=="download":
-    query["alt"]="media"
-    raise OperationError("binary Drive download transport is not implemented; use metadata get")
+   if action=="download": query["alt"]="media"
    if action=="export":
     mime,=_need(p,"mimeType");used.add("mimeType");query["mimeType"]=p["mimeType"]
-    raise OperationError("binary Drive export transport is not implemented")
   elif resource in ("permissions","comments","revisions"):
    fid,=_need(p,"fileId");used.add("fileId");path=f"files/{fid}/{resource}"
    key={"permissions":"permissionId","comments":"commentId","revisions":"revisionId"}[resource]
@@ -120,8 +117,10 @@ def operation(command:str, params:dict) -> dict:
   methods={"list":"GET","search":"GET","get":"GET","startPageToken":"GET","generateIds":"GET","download":"GET","export":"GET","create":"POST","copy":"POST","watch":"POST","stop":"POST","hide":"POST","unhide":"POST","patch":"PATCH","update":"PATCH","move":"PATCH","trash":"PATCH","untrash":"PATCH","delete":"DELETE","emptyTrash":"DELETE","upload":"POST"};method=methods[action]
   if command=="drive.sharedDrives.create":
    if not p.get("requestId"): raise OperationError("params.requestId is required by Drive shared-drive creation")
-  if command in ("drive.files.upload",) or (command in ("drive.files.create","drive.files.update") and p.get("uploadType")):
-   raise OperationError("binary upload transport is not implemented; use metadata-only create/update")
+  if command=="drive.files.upload" or (command in ("drive.files.create","drive.files.update") and p.get("uploadType")):
+   upload_type=p.get("uploadType","resumable");query["uploadType"]=upload_type
+   base="https://www.googleapis.com/upload/drive/v3"
+   path="files"+("/"+_need(p,"fileId")[0] if command=="drive.files.update" else "")
  else: raise OperationError("unsupported service")
  url=base+"/"+path
  return {"service":service,"version":version,"action":action,"method":method,"url":url,"query":query,"pathParams":used}

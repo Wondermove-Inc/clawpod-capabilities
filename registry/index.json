@@ -110,7 +110,7 @@
       "files": [
         {
           "path": "google_workspace.py",
-          "sha256": "71b2b52035ab592431eb4618bcd3f26ddc9f7c9e1ccfd5fe319f23639aa99f73"
+          "sha256": "6a55cbad92fcce174c86212c12a08341d63dd4fd84b8f8ee4f67bcf7c87fb2ce"
         },
         {
           "path": "google_workspace_core/__init__.py",
@@ -122,31 +122,43 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "52c51a3edee5a552a5533ffaa46ccadca85d7700908b11563465d3d33638b9b1"
+          "sha256": "fb7db6ec44b84864244209cd3bb077f3b8f227d04cce66472910ed256e821088"
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "a3541cf922d8ecd34c1c5a4c08e204917b6b0969dea8ad75e010de478206da2e"
+          "sha256": "b2abbd88a220e83e8875ccf43ba7ce718132b802c2aa573cabd346f01f094321"
         },
         {
           "path": "google_workspace_core/mime.py",
           "sha256": "d979ffe035611570c8de6377da150087ac2ea8bae5639f59b2e848315bd251df"
         },
         {
+          "path": "google_workspace_core/scopes.py",
+          "sha256": "40e66d8d2531d2542432c070cef929ef6b31246305f239a36216dc05476ae755"
+        },
+        {
           "path": "google_workspace_core/security.py",
           "sha256": "f268006e196f16c13fecbbe64af0f5e841387ffcc6bae58cd4dd0036a1bbfe14"
         },
         {
+          "path": "google_workspace_core/state.py",
+          "sha256": "a49391cede3de30e6ac1e0842ea071217150d67ef20d018f10256e0968a5d403"
+        },
+        {
           "path": "google_workspace_core/transport.py",
-          "sha256": "b6902c41564ec30542eeb4bfbec11a653bcd60f87570ce7ea97a111ce4a93d8a"
+          "sha256": "3fd3bf0956c91159d269c45b6ca66cbe606dfdb68a09517abdf2d2cac6254c2d"
         },
         {
           "path": "google_workspace_core/validation.py",
-          "sha256": "29220dd4a4bfbab08a856d1c839f5a0fd7a2ff8fe3c63bc601a4cb9b394c67fb"
+          "sha256": "0a0b6828997d44103b242f845d9e11fea7026939e1d7c9e4381136ebf438c515"
         },
         {
           "path": "harness.json",
-          "sha256": "2c295e681307669298ac5cd03522ed2754fbbb16571eff31c559dc9e7f56d704"
+          "sha256": "5f959ed9d40d6dd5f534b9a4ba19654cbcfd62f50bd88c1fd52167be1c07640e"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "449622e07c9998199043dfd0ce5489cac789cff3548b538196803efa67f0895a"
         }
       ]
     }

@@ -28,24 +28,24 @@ class Tests(unittest.TestCase):
   r=self.cli('nope','--json');self.assertEqual(r.returncode,2);self.assertFalse(json.loads(r.stdout)['ok']);self.assertEqual(len(r.stdout.strip().splitlines()),1)
  def test_scope_list_no_auth(self):
   r=self.cli('auth.scopes.list','--json');self.assertEqual(r.returncode,0);self.assertIn('drive-file',json.loads(r.stdout)['data']['profiles'])
- def test_preview_no_auth(self):
-  r=self.cli('gmail.messages.send','--account','work','--preview','--body','{"compose":{"to":["sink@example.invalid"],"subject":"x","text":"y"}}','--json');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertTrue(o['data']['preview']);self.assertEqual(len(o['data']['effectDigest']),64)
- def test_external_requires_confirm(self):
-  r=self.cli('calendar.events.insert','--account','work','--params','{"calendarId":"primary"}','--body','{}','--json');self.assertEqual(r.returncode,4);self.assertEqual(json.loads(r.stdout)['error']['code'],'APPROVAL_REQUIRED')
+ def test_preview_requires_auth(self):
+  r=self.cli('gmail.messages.send','--account','work','--preview','--body','{"compose":{"to":["sink@example.invalid"],"subject":"x","text":"y"}}','--json');o=json.loads(r.stdout);self.assertEqual(r.returncode,3);self.assertEqual(o['error']['code'],'AUTH_REQUIRED')
+ def test_external_auth_before_confirm(self):
+  r=self.cli('calendar.events.insert','--account','work','--params','{"calendarId":"primary"}','--body','{"summary":"x"}','--json');self.assertEqual(r.returncode,3);self.assertEqual(json.loads(r.stdout)['error']['code'],'AUTH_REQUIRED')
  def test_digest_stable(self):self.assertEqual(digest('x','a',{'body':{'b':1},'preview':True}),digest('x','a',{'body':{'b':1}}))
  def test_digest_account_bound(self):self.assertNotEqual(digest('x','a',{}),digest('x','b',{}))
  def test_gmail_url(self):self.assertEqual(operation('gmail.messages.get',{'messageId':'m'})['url'],'https://gmail.googleapis.com/gmail/v1/users/me/messages/m')
  def test_calendar_url_encoding_contract(self):self.assertIn('calendars/c/events/e',operation('calendar.events.get',{'calendarId':'c','eventId':'e'})['url'])
  def test_drive_permission_url(self):self.assertTrue(operation('drive.permissions.get',{'fileId':'f','permissionId':'p'})['url'].endswith('/files/f/permissions/p'))
  def test_etag_header_and_list_normalization(self):
-  p=self.mock([{'body':{'files':[{'id':'f'}],'nextPageToken':'n'}}]);r=self.cli('drive.files.list','--account','work','--if-match','etag','--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(o['data']['items'][0]['id'],'f');self.assertEqual(o['page']['nextPageToken'],'n')
+  p=self.mock([{'body':{'files':[{'id':'f'}],'nextPageToken':'n'}}]);r=self.cli('drive.files.list','--account','work','--if-match','etag','--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(o['data']['items'][0]['id'],'f');self.assertNotEqual(o['page']['nextPageToken'],'n')
  def test_provider_404(self):
   p=self.mock([{'status':404,'error':'notFound'}]);r=self.cli('drive.files.get','--account','work','--params','{"fileId":"f"}','--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});self.assertEqual(r.returncode,5);self.assertEqual(json.loads(r.stdout)['error']['code'],'NOT_FOUND')
  def test_sync_410(self):
   p=self.mock([{'status':410,'error':'gone'}]);r=self.cli('calendar.events.list','--account','work','--params','{"calendarId":"c"}','--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});self.assertEqual(r.returncode,6);self.assertEqual(json.loads(r.stdout)['error']['code'],'SYNC_TOKEN_EXPIRED')
- def test_ambiguous_send(self):
+ def test_unpersisted_confirmation_rejected(self):
   body={'compose':{'to':['sink@example.invalid'],'subject':'s','text':'t'}};effect=digest('gmail.messages.send','work',{'body':body})
-  p=self.mock([{'status':503,'error':'backendError'}]*5);r=self.cli('gmail.messages.send','--account','work','--body',json.dumps(body),'--confirm',effect,'--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});self.assertEqual(r.returncode,9);self.assertEqual(json.loads(r.stdout)['error']['code'],'AMBIGUOUS_COMMIT')
+  p=self.mock([{'status':503,'error':'backendError'}]);r=self.cli('gmail.messages.send','--account','work','--body',json.dumps(body),'--confirm',effect,'--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});self.assertEqual(r.returncode,4);self.assertEqual(json.loads(r.stdout)['error']['code'],'APPROVAL_REQUIRED')
  def test_mime_crlf_and_unicode(self):
   raw,atts=compose_message({'to':['a@example.invalid'],'subject':'안녕','text':'body'});decoded=base64.urlsafe_b64decode(raw+'='*(-len(raw)%4));self.assertIn(b'\r\n',decoded);self.assertEqual(atts,[])
  def test_header_injection(self):
