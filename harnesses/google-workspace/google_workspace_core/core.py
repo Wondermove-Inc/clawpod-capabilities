@@ -125,6 +125,10 @@ def run(command,payload):
  safe_retry=not (command in ("gmail.messages.send","gmail.drafts.send") or "destructive" in safety)
  try:
   request_body=payload.get("body") or None
+  if command in ("drive.files.trash","drive.files.untrash"):
+   request_body={"trashed":command.endswith(".trash")}
+  if command=="drive.folders.create":
+   request_body={**(request_body or {}),"mimeType":"application/vnd.google-apps.folder"}
   if command=="drive.files.upload":
    source=safe_path(payload.get("transferRoot") or ".",payload["inputPath"]);content=source.read_bytes();upload_type=(payload.get("params") or {}).get("uploadType","resumable")
    if upload_type=="multipart":

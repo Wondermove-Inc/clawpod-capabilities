@@ -6,9 +6,9 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import operation
 from google_workspace_core.scopes import required_scopes
 p=ROOT/'harness.json'; doc=json.loads(p.read_text())
-SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request')
+SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
 READ={'list','get','search','instances','download','export','startPageToken'}
-NO_BODY=READ|{'delete','trash','untrash','emptyTrash','hide','unhide','stop','clear','setDefault','verify','generateIds','watch'}
+NO_BODY=READ|{'delete','trash','untrash','emptyTrash','hide','unhide','stop','clear','setDefault','verify','generateIds','watch','quickAdd','move'}
 for cmd,c in doc['commands'].items():
  s=c['inputSchema'];props=s['properties'];props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
  if cmd.startswith('auth.'):
@@ -22,11 +22,26 @@ for cmd,c in doc['commands'].items():
  for key in ('q','query','orderBy','timeMin','timeMax','syncToken','startHistoryId','pageToken','corpora','spaces','driveId','includeItemsFromAllDrives','supportsAllDrives','sendUpdates','maxResults','mimeType','requestId','uploadType'):
   if key not in ps['properties']:ps['properties'][key]={'type':['string','boolean','integer']}
  if req:ps['required']=req
+ # Required provider query values are part of each command's typed contract.
+ query_required={
+  'calendar.events.quickAdd':['text'],
+  'calendar.events.move':['destination'],
+  'drive.changes.list':['pageToken'],
+  'drive.changes.watch':['pageToken'],
+  'drive.sharedDrives.create':['requestId'],
+ }
+ for key in query_required.get(cmd,[]):
+  ps['properties'].setdefault(key,{'type':'string','minLength':1,'maxLength':4096})
+  ps.setdefault('required',[]).append(key)
  props['params']=ps
  action=cmd.rsplit('.',1)[1]
  body_required=op['method'] in ('POST','PUT','PATCH') and action not in NO_BODY and cmd not in ('gmail.messages.send','gmail.drafts.send')
  props['body']={'type':'object','additionalProperties':True,'minProperties':1}
  if body_required and 'body' not in s['required']:s['required'].append('body')
+ # Provider watch/stop methods require a channel request body.  Gmail's stop is
+ # the sole body-less stop operation.
+ if (action=='watch' or cmd.endswith('.channels.stop')) and cmd!='gmail.watch.stop':
+  if 'body' not in s['required']:s['required'].append('body')
  # transfers
  if cmd=='drive.files.upload':s['required']=list(dict.fromkeys(s['required']+['inputPath','transferRoot']))
  if cmd in ('drive.files.download','drive.files.export'):s['required']=list(dict.fromkeys(s['required']+['outputPath','transferRoot']))

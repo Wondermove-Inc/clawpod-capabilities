@@ -29,7 +29,7 @@ def operation(command:str, params:dict) -> dict:
   if resource=="profile": path="profile"
   elif resource in ("messages","threads","labels","drafts","history"):
    path=resource; ids={"messages":"messageId","threads":"threadId","labels":"labelId","drafts":"draftId"}
-   if action in ("get","modify","trash","untrash","delete","update") or (action=="send" and resource=="drafts"):
+   if action in ("get","modify","trash","untrash","delete","patch","update") or (action=="send" and resource=="drafts"):
     vals=_need(p,ids[resource]); used.add(ids[resource]); path+="/"+vals[0]
    suffix={"modify":"modify","trash":"trash","untrash":"untrash","send":"send"}.get(action)
    if suffix:path+="/"+suffix

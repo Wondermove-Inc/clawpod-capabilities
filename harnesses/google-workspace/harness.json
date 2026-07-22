@@ -12416,6 +12416,11 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+              "labelId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
               "q": {
                 "type": [
                   "string",
@@ -12542,7 +12547,10 @@
                   "integer"
                 ]
               }
-            }
+            },
+            "required": [
+              "labelId"
+            ]
           },
           "body": {
             "type": "object",
@@ -33407,7 +33415,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -39592,10 +39601,16 @@
                   "boolean",
                   "integer"
                 ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             },
             "required": [
-              "calendarId"
+              "calendarId",
+              "text"
             ]
           },
           "body": {
@@ -40992,11 +41007,17 @@
                   "boolean",
                   "integer"
                 ]
+              },
+              "destination": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             },
             "required": [
               "calendarId",
-              "eventId"
+              "eventId",
+              "destination"
             ]
           },
           "body": {
@@ -41720,7 +41741,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -45421,7 +45443,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -45881,7 +45904,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -64054,7 +64078,10 @@
                   "integer"
                 ]
               }
-            }
+            },
+            "required": [
+              "requestId"
+            ]
           },
           "body": {
             "type": "object",
@@ -66771,7 +66798,10 @@
                   "integer"
                 ]
               }
-            }
+            },
+            "required": [
+              "pageToken"
+            ]
           },
           "body": {
             "type": "object",
@@ -67027,7 +67057,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -67223,7 +67254,10 @@
                   "integer"
                 ]
               }
-            }
+            },
+            "required": [
+              "pageToken"
+            ]
           },
           "body": {
             "type": "object",
@@ -67479,7 +67513,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
@@ -67939,7 +67974,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "account"
+          "account",
+          "body"
         ],
         "properties": {
           "account": {
