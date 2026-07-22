@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import catalog,operation,preflight
 from google_workspace_core.core import run
-from google_workspace_core.scopes import required_scopes
+from google_workspace_core.scopes import required_scopes,enforce
 from google_workspace_core.state import issue_preview
 
 class ReleaseAuditV3(unittest.TestCase):
@@ -54,6 +54,7 @@ class ReleaseAuditV3(unittest.TestCase):
   self.assertEqual(required_scopes('gmail.labels.create'),{'https://www.googleapis.com/auth/gmail.labels'})
   self.assertEqual(required_scopes('gmail.settings.smime.insert'),{'https://www.googleapis.com/auth/gmail.settings.sharing'})
   self.assertEqual(required_scopes('drive.folders.create'),{'https://www.googleapis.com/auth/drive.file'})
+  self.assertEqual(enforce('drive.files.list',{'https://www.googleapis.com/auth/drive.file'}),['https://www.googleapis.com/auth/drive.metadata.readonly'])
  def test_strict_provider_semantics(self):
   bad=[('drive.files.move',{'account':'a','params':{'fileId':'f','addParents':'a,b','removeParents':'c'},'body':{'name':'x'}}),('drive.permissions.create',{'account':'a','params':{'fileId':'f'},'body':{'type':'user','role':'reader','emailAddress':'x@example.test'}}),('calendar.events.insert',{'account':'a','params':{'calendarId':'c'},'body':{'summary':'x'}})]
   for cmd,p in bad:

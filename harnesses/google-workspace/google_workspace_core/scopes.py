@@ -47,6 +47,9 @@ def enforce(command,granted,safety=()):
  if CAL_CAL in g:g.add(CAL_CAL_RO)
  if CAL_ACL in g:g.add(CAL_ACL_RO)
  if DRIVE in g:g|={DRIVE_META,DRIVE_READ,DRIVE_FILE}
+ # drive.file permits listing and reading the app-visible subset; Google still
+ # enforces per-file visibility, so it safely satisfies those command checks.
+ if DRIVE_FILE in g:g|={DRIVE_META,DRIVE_READ}
  if DRIVE_READ in g:g.add(DRIVE_META)
  missing=required-g
  if missing:raise PermissionError('missing required OAuth scope(s): '+', '.join(sorted(missing)))
