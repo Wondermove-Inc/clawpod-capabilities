@@ -12,6 +12,13 @@ def parser():
 def load_json(value):
  if value is None:return None
  return json.loads(value)
+def load_fields(value):
+ if value is None:return None
+ if len(value)==1 and value[0].lstrip().startswith('['):
+  decoded=json.loads(value[0])
+  if not isinstance(decoded,list) or not all(isinstance(x,str) for x in decoded):raise ValueError("fields must be a JSON array of strings")
+  return decoded
+ return value
 def main(argv=None):
  try:
   ns=parser().parse_args(argv)
@@ -22,7 +29,7 @@ def main(argv=None):
   if ns.input_json:
    text=sys.stdin.read() if ns.input_json=="-" else Path(ns.input_json).read_text(encoding="utf-8");payload=json.loads(text)
    if not isinstance(payload,dict):raise ValueError("input JSON must be an object")
-  mapping={"account":ns.account,"fields":ns.fields,"pageSize":ns.page_size,"pageToken":ns.page_token,"maxItems":ns.max_items,"maxPages":ns.max_pages,"timeoutMs":ns.timeout_ms,"confirm":ns.confirm,"requestId":ns.request_id,"ifMatch":ns.if_match,"idempotencyKey":ns.idempotency_key,"params":load_json(ns.params),"body":load_json(ns.body),"inputPath":ns.input_path,"outputPath":ns.output_path,"transferRoot":ns.transfer_root,"expectedSha256":ns.expected_sha256,"batch":load_json(ns.batch)}
+  mapping={"account":ns.account,"fields":load_fields(ns.fields),"pageSize":ns.page_size,"pageToken":ns.page_token,"maxItems":ns.max_items,"maxPages":ns.max_pages,"timeoutMs":ns.timeout_ms,"confirm":ns.confirm,"requestId":ns.request_id,"ifMatch":ns.if_match,"idempotencyKey":ns.idempotency_key,"params":load_json(ns.params),"body":load_json(ns.body),"inputPath":ns.input_path,"outputPath":ns.output_path,"transferRoot":ns.transfer_root,"expectedSha256":ns.expected_sha256,"batch":load_json(ns.batch)}
   for k,v in mapping.items():
    if v is not None:payload[k]=v
   for k,v in (("allPages",ns.all_pages),("dryRun",ns.dry_run),("preview",ns.preview),("overwrite",ns.overwrite),("resume",ns.resume)):

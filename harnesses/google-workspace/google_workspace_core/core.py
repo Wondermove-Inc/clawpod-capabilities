@@ -76,7 +76,7 @@ def run(command,payload):
   code="UNSUPPORTED_BY_CONTRACT" if "not implemented" in str(e) else "INVALID_ARGUMENT"
   return fail(command,payload,code,str(e),account=account)
  safety=catalog()[command]["safetyClasses"]
- mutating=any(x in safety for x in ("writeSafe","externallyVisible","destructive"))
+ mutating=any(x in safety for x in ("writeSafe","externalSideEffect","destructive"))
  # MIME compose
  if command.startswith("gmail.") and command.split(".")[-1] in ("send","create","update","insert","import") and payload.get("body",{}).get("compose"):
   try: raw,atts=compose_message(payload["body"]["compose"],payload.get("transferRoot"));payload={**payload,"body":{"raw":raw,**{k:v for k,v in payload["body"].items() if k!="compose"}}};out["provenance"]["attachments"] = atts

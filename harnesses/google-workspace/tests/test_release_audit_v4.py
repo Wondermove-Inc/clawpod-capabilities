@@ -30,7 +30,7 @@ class ReleaseAuditV4(unittest.TestCase):
   self.assertEqual(open_nodes,[])
  def test_every_mutation_preflight_is_nonmutating_and_never_uses_fake_etag_field(self):
   for name,meta in catalog().items():
-   if not any(x in meta['safetyClasses'] for x in ('writeSafe','externallyVisible','destructive')) or name.startswith('auth.'):continue
+   if not any(x in meta['safetyClasses'] for x in ('writeSafe','externalSideEffect','destructive')) or name.startswith('auth.'):continue
    op=operation(name,SAMPLES);check=preflight(name,SAMPLES)
    self.assertIn(check['method'],(None,'GET'),name)
    action_suffixes=('/modify','/trash','/untrash','/send','/verify','/setDefault','/clear','/transferOwnership','/move','/copy','/watch','/hide','/unhide','/stop')

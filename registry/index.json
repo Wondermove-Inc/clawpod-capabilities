@@ -109,8 +109,12 @@
       },
       "files": [
         {
+          "path": "command_contracts.json",
+          "sha256": "a2c8a11b2dd20cdf796a256484ef3fcc4f4c20eda0839e7cbb3ee3ec72d69e10"
+        },
+        {
           "path": "google_workspace.py",
-          "sha256": "6a55cbad92fcce174c86212c12a08341d63dd4fd84b8f8ee4f67bcf7c87fb2ce"
+          "sha256": "238f99035270a1c1ddf35e56ac229baf5ddcf0b3d67e8d5e5d81835c2fb3293e"
         },
         {
           "path": "google_workspace_core/__init__.py",
@@ -122,7 +126,7 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "496582a60cea5d352f99dfd09f19e9768fd6676c6b82c25f56102eb7b69645fb"
+          "sha256": "6c0812a41bce3657312173445f9faa933e9016d8e2f2a53165e2b4808b7bac5d"
         },
         {
           "path": "google_workspace_core/contracts.py",
@@ -130,7 +134,7 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "ececc22f15ee675423736c9633a79b886ed3f03e184b967e5b904b5a56ffd036"
+          "sha256": "ab8a3f68bd9c442a0edf143096a6649fa8c6ff7dc324bb2841363aac4dc67c60"
         },
         {
           "path": "google_workspace_core/mime.py",
@@ -158,11 +162,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "7e505489b1ab73f21783e632ca865ca047db551cc4fe8e10cb97845cf6a8f241"
+          "sha256": "85433216c4dcc3d644eb73b9a35552f64ae4f612d31477d997d3a9e016330a87"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "b1c4713203898feed2cac8eb8090638fdbc41280348c00a8eefde7aa2cc1cdf6"
+          "sha256": "be2f8d3db4fdb1f9b51bee4811f13b51e96cac91ec8512f859915077b7411b54"
         }
       ]
     }

@@ -5,9 +5,22 @@ from pathlib import Path
 from urllib.parse import quote
 
 MANIFEST = Path(__file__).resolve().parents[1] / "harness.json"
+CONTRACTS = Path(__file__).resolve().parents[1] / "command_contracts.json"
 class OperationError(ValueError): pass
 
-def catalog() -> dict: return json.loads(MANIFEST.read_text(encoding="utf-8"))["commands"]
+def catalog() -> dict:
+ """Return canonical provider command names, independent of manifest aliases."""
+ commands=json.loads(MANIFEST.read_text(encoding="utf-8"))["commands"]
+ contracts=json.loads(CONTRACTS.read_text(encoding="utf-8"))
+ out={}
+ for alias,meta in commands.items():
+  command=meta.get("baseArgv",[alias])[0]
+  item=dict(meta)
+  # Rich recursive contracts and exact scopes stay outside the lifecycle
+  # manifest, whose argv bridge supports scalar values only.
+  item.update(contracts[command])
+  out[command]=item
+ return out
 def service_for(command: str) -> tuple[str,str]:
  if command.startswith("gmail."): return "gmail","v1"
  if command.startswith("calendar."): return "calendar","v3"

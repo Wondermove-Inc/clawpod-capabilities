@@ -19,9 +19,9 @@ class Tests(unittest.TestCase):
  def test_inventory_services(self):self.assertTrue(all(any(k.startswith(x) for x in ('auth.','gmail.','calendar.','drive.')) for k in catalog()))
  def test_closed_schemas(self):self.assertTrue(all(not c['inputSchema']['additionalProperties'] for c in catalog().values()))
  def test_all_have_argmap(self):self.assertTrue(all(c['argMap'] for c in catalog().values()))
- def test_external_safety(self):self.assertIn('externallyVisible',catalog()['gmail.messages.send']['safetyClasses'])
+ def test_external_safety(self):self.assertIn('externalSideEffect',catalog()['gmail.messages.send']['safetyClasses'])
  def test_destructive_safety(self):self.assertIn('destructive',catalog()['drive.files.delete']['safetyClasses'])
- def test_auth_safety(self):self.assertIn('credentialRelated',catalog()['auth.accounts.status']['safetyClasses'])
+ def test_auth_safety(self):self.assertIn('secretUse',catalog()['auth.accounts.status']['safetyClasses'])
  def test_discovery_subprocess(self):
   r=self.cli('--list-commands');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(len(o['data']['commands']),151)
  def test_unknown_one_json(self):

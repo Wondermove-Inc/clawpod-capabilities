@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Deterministically specialize every command schema from checked provider contracts."""
-import json,sys
+import json,re,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import operation
@@ -33,12 +33,38 @@ def allowed_query(cmd,action):
  if cmd=='drive.sharedDrives.create':out|={'requestId'}
  if cmd.startswith('drive.changes.') and action!='startPageToken':out|={'pageToken'}
  return out
-for cmd,c in doc['commands'].items():
- s=c['inputSchema'];props=s['properties'];props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
+SAFETY_MAP={
+ 'credentialRelated':('secretUse','authReuse'),
+ 'externallyVisible':('externalSideEffect','humanAccountAction'),
+ 'externalWrite':('externalSideEffect','humanAccountAction'),
+}
+def logical_name(key,command):
+ return command.get('baseArgv',[key])[0]
+def manifest_name(command):
+ # Runtime command identifiers are lowercase. Preserve the provider spelling in
+ # baseArgv while exposing a lifecycle-safe kebab-case alias.
+ return '.'.join(re.sub(r'(?<!^)(?=[A-Z])','-',part).lower() for part in command.split('.'))
+
+commands={logical_name(key,c):c for key,c in doc['commands'].items()}
+for cmd,c in commands.items():
+ mapped=[]
+ for safety in c.get('safetyClasses',[]):
+  mapped.extend(SAFETY_MAP.get(safety,(safety,)))
+ c['safetyClasses']=list(dict.fromkeys(mapped))
+ for arg in c.get('argMap',[]):
+  if arg.get('valueType')=='json':arg['valueType']='string'
+  if arg.get('valueType')=='boolean':arg['type']='booleanFlag'
+ # Rich JSON values are serialized as strings by the lifecycle argv bridge,
+ # then decoded and checked against the command-specific schema by the CLI.
+ for name in ('fields','params','body','batch'):
+  if name in c['inputSchema'].get('properties',{}):
+   c['inputSchema']['properties'][name]={'type':'string'}
+ c.pop('requiredScopes',None)
+ s=c['inputSchema'];props=s['properties'];props['fields']={'type':'array','items':{'type':'string','minLength':1,'maxLength':512},'maxItems':100};props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
  if cmd.startswith('auth.'):
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
   props['body']=O({'profiles':A(S(),maxItems=32)}) if cmd=='auth.scopes.check' else O({})
-  c['requiredScopes']=[];continue
+  continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()
  for key in sorted(allowed_query(cmd,op['action'])):
@@ -55,7 +81,6 @@ for cmd,c in doc['commands'].items():
   if op['method'] in ('POST','PUT','PATCH') and op['action'] not in ('quickAdd','move','clear','setDefault','verify','hide','unhide') and 'body' not in s['required']:s['required'].append('body')
  if cmd=='drive.files.upload':s['required']=list(dict.fromkeys(s['required']+['inputPath','transferRoot']))
  if cmd in ('drive.files.download','drive.files.export'):s['required']=list(dict.fromkeys(s['required']+['outputPath','transferRoot']))
- c['requiredScopes']=sorted(required_scopes(cmd,c.get('safetyClasses',[])))
 
 def close_objects(node):
  if isinstance(node,dict):
@@ -63,9 +88,17 @@ def close_objects(node):
   for value in node.values():close_objects(value)
  elif isinstance(node,list):
   for value in node:close_objects(value)
-for command in doc['commands'].values():
+for command in commands.values():
  # Batch items are intentionally typed from the command's own accepted fields.
  schema=command['inputSchema'];item_props={k:v for k,v in schema.get('properties',{}).items() if k!='batch'}
  schema['properties']['batch']['items']={'type':'object','additionalProperties':False,'properties':item_props}
  close_objects(command['inputSchema']);close_objects(command['outputSchema'])
+ # Convert structured values only after the rich schemas have been generated;
+ # the entrypoint remains the authoritative recursive validator after decoding.
+ command['_richInputSchema']=json.loads(json.dumps(schema))
+ for name in ('fields','params','body','batch'):
+  if name in schema.get('properties',{}):schema['properties'][name]={'type':'string'}
+contracts={cmd:{'inputSchema':c.pop('_richInputSchema'),'outputSchema':c['outputSchema'],'requiredScopes':sorted(required_scopes(cmd,c.get('safetyClasses',[]))) if not cmd.startswith('auth.') else []} for cmd,c in commands.items()}
+(ROOT/'command_contracts.json').write_text(json.dumps(contracts,indent=2,ensure_ascii=False)+'\n')
+doc['commands']={manifest_name(cmd):commands[cmd] for cmd in commands}
 p.write_text(json.dumps(doc,indent=2,ensure_ascii=False)+'\n')

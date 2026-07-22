@@ -9,7 +9,8 @@ from google_workspace_core.catalog import operation
 class ReleaseAuditV2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.commands=json.loads((ROOT/'harness.json').read_text())['commands']
+        from google_workspace_core.catalog import catalog
+        cls.commands=catalog()
 
     def required(self, command):
         schema=self.commands[command]['inputSchema']
