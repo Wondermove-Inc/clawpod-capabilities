@@ -29,6 +29,14 @@ def test_gmail_settings_profile_is_available_for_filter_consent():
  assert SCOPES["gmail-settings"]==["https://www.googleapis.com/auth/gmail.settings.basic"]
 
 
+def test_workspace_max_profile_covers_full_service_scopes():
+ assert set(SCOPES["workspace-max"])=={
+  "https://mail.google.com/",
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/drive",
+ }
+
+
 def test_requested_scope_canonicalization_and_subsumption():
  assert _canonical_scopes(["email","https://www.googleapis.com/auth/userinfo.email"])==["https://www.googleapis.com/auth/userinfo.email"]
  assert _canonical_scopes(["https://www.googleapis.com/auth/gmail.readonly","https://www.googleapis.com/auth/gmail.modify"])==["https://www.googleapis.com/auth/gmail.modify"]

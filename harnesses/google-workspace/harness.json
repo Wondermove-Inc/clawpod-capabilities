@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with previews, confirmations, retries, and structured evidence.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
