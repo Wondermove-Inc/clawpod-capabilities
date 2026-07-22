@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wondermove-Inc/clawpod-capabilities/schemas/capability.schema.json",
+  "title": "ClawPod Capability Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "description", "path", "compatibility", "safety"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "type": {"enum": ["skill", "harness"]},
+    "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"},
+    "description": {"type": "string", "minLength": 10, "maxLength": 240},
+    "path": {"type": "string", "pattern": "^(skills|harnesses)/[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openclaw"],
+      "properties": {
+        "openclaw": {"type": "string", "minLength": 1},
+        "platforms": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk", "approvalRequired"],
+      "properties": {
+        "risk": {"enum": ["read-only", "write-safe", "externally-visible", "destructive", "credential-related"]},
+        "approvalRequired": {"type": "boolean"}
+      }
+    }
+  }
+}

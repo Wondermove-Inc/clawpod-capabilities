@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wondermove-Inc/clawpod-capabilities/schemas/registry.schema.json",
+  "title": "ClawPod Capability Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "capabilities"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schemaVersion": {"const": 1},
+    "capabilities": {
+      "type": "array",
+      "items": {"$ref": "capability.schema.json"}
+    }
+  }
+}
