@@ -3,6 +3,7 @@ import base64, hashlib, mimetypes
 from email.message import EmailMessage
 from email.policy import SMTP
 from pathlib import Path
+from .security import safe_path
 
 def compose_message(compose:dict, transfer_root:str|None=None)->tuple[str,list]:
     msg=EmailMessage(policy=SMTP)
@@ -24,8 +25,12 @@ def compose_message(compose:dict, transfer_root:str|None=None)->tuple[str,list]:
     if html is not None: msg.add_alternative(html,subtype="html")
     attachments=[]
     for att in compose.get("attachments",[]):
-        p=Path(att["path"]); data=p.read_bytes(); mime=att.get("mimeType") or mimetypes.guess_type(p.name)[0] or "application/octet-stream"; main,sub=mime.split("/",1)
-        msg.add_attachment(data,maintype=main,subtype=sub,filename=att.get("filename",p.name))
-        attachments.append({"filename":att.get("filename",p.name),"size":len(data),"sha256":hashlib.sha256(data).hexdigest(),"mimeType":mime})
+        if not transfer_root: raise ValueError("transferRoot is required for attachments")
+        p=safe_path(transfer_root,att["path"]); data=p.read_bytes(); mime=att.get("mimeType") or mimetypes.guess_type(p.name)[0] or "application/octet-stream"
+        if "/" not in mime or any(c in mime for c in "\r\n"): raise ValueError("invalid attachment MIME type")
+        main,sub=mime.split("/",1); filename=att.get("filename",p.name)
+        if any(c in filename for c in "\r\n"): raise ValueError("invalid attachment filename")
+        msg.add_attachment(data,maintype=main,subtype=sub,filename=filename)
+        attachments.append({"filename":filename,"size":len(data),"sha256":hashlib.sha256(data).hexdigest(),"mimeType":mime})
     raw=base64.urlsafe_b64encode(msg.as_bytes()).rstrip(b"=").decode("ascii")
     return raw,attachments

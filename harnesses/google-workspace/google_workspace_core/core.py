@@ -3,7 +3,7 @@ import base64, hashlib, json, os, time, uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from .auth import CredentialProvider,AuthError
-from .catalog import catalog,operation,service_for
+from .catalog import catalog,operation,service_for,OperationError
 from .mime import compose_message
 from .security import atomic_write,digest,redact,safe_path,append_audit,canonical
 from .transport import Transport,ScriptedTransport,HTTPError,retry_request
@@ -54,6 +54,12 @@ def run(command,payload):
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  if command.startswith("auth."): return local_auth(command,payload,out)
+ if payload.get("allPages"):
+  return fail(command,payload,"UNSUPPORTED_BY_CONTRACT","automatic pagination is not implemented; follow page.nextPageToken explicitly",account=account)
+ try: op=operation(command,payload.get("params",{}))
+ except OperationError as e:
+  code="UNSUPPORTED_BY_CONTRACT" if "not implemented" in str(e) else "INVALID_ARGUMENT"
+  return fail(command,payload,code,str(e),account=account)
  safety=catalog()[command]["safetyClasses"]; effect=digest(command,account,payload)
  mutating=any(x in safety for x in ("writeSafe","externallyVisible","destructive"))
  if mutating:
@@ -64,14 +70,15 @@ def run(command,payload):
  if command.startswith("gmail.") and command.split(".")[-1] in ("send","create","update","insert","import") and payload.get("body",{}).get("compose"):
   try: raw,atts=compose_message(payload["body"]["compose"],payload.get("transferRoot"));payload={**payload,"body":{"raw":raw,**{k:v for k,v in payload["body"].items() if k!="compose"}}};out["provenance"]["attachments"] = atts
   except Exception as e:return fail(command,payload,"INVALID_MIME",str(e),account=account)
- op=operation(command,payload.get("params",{})); mock=os.environ.get("GOOGLE_WORKSPACE_MOCK_HTTP"); transport=ScriptedTransport(mock) if mock else Transport()
+ mock=os.environ.get("GOOGLE_WORKSPACE_MOCK_HTTP"); transport=ScriptedTransport(mock) if mock else Transport()
  try:
   if mock: token="synthetic-test-token";meta={"email":"fake@example.invalid","subject_hash":"fake","scopes":[]}
   else: token,meta=CredentialProvider().token(account)
  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=account)
  headers={"Authorization":"Bearer "+token}
  if payload.get("ifMatch"):headers["If-Match"]=payload["ifMatch"]
- params=dict(payload.get("params",{})); params.pop("userId",None)
+ params={k:v for k,v in payload.get("params",{}).items() if k not in op.get("pathParams",set()) and k not in ("userId","kind")}
+ params.update(op.get("query",{}))
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
  if payload.get("pageSize"):params["pageSize"]=payload["pageSize"]
  if payload.get("pageToken"):params["pageToken"]=payload["pageToken"]

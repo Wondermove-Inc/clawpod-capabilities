@@ -31,7 +31,7 @@ class Tests(unittest.TestCase):
  def test_preview_no_auth(self):
   r=self.cli('gmail.messages.send','--account','work','--preview','--body','{"compose":{"to":["sink@example.invalid"],"subject":"x","text":"y"}}','--json');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertTrue(o['data']['preview']);self.assertEqual(len(o['data']['effectDigest']),64)
  def test_external_requires_confirm(self):
-  r=self.cli('calendar.events.insert','--account','work','--body','{}','--json');self.assertEqual(r.returncode,4);self.assertEqual(json.loads(r.stdout)['error']['code'],'APPROVAL_REQUIRED')
+  r=self.cli('calendar.events.insert','--account','work','--params','{"calendarId":"primary"}','--body','{}','--json');self.assertEqual(r.returncode,4);self.assertEqual(json.loads(r.stdout)['error']['code'],'APPROVAL_REQUIRED')
  def test_digest_stable(self):self.assertEqual(digest('x','a',{'body':{'b':1},'preview':True}),digest('x','a',{'body':{'b':1}}))
  def test_digest_account_bound(self):self.assertNotEqual(digest('x','a',{}),digest('x','b',{}))
  def test_gmail_url(self):self.assertEqual(operation('gmail.messages.get',{'messageId':'m'})['url'],'https://gmail.googleapis.com/gmail/v1/users/me/messages/m')
