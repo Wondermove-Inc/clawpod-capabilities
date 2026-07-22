@@ -95,6 +95,22 @@ def _receiver(state, timeout, server_factory=HTTPServer):
 
 def _print_url(message): print(message,file=sys.stderr)
 
+def _missing_scopes(requested, granted):
+    """Compare provider grants after Google's documented scope canonicalization."""
+    equivalents={
+        "email":{"email","https://www.googleapis.com/auth/userinfo.email"},
+        "profile":{"profile","https://www.googleapis.com/auth/userinfo.profile"},
+    }
+    broader={
+        "https://www.googleapis.com/auth/gmail.compose":{"https://www.googleapis.com/auth/gmail.modify","https://mail.google.com/"},
+        "https://www.googleapis.com/auth/gmail.readonly":{"https://www.googleapis.com/auth/gmail.modify","https://mail.google.com/"},
+        "https://www.googleapis.com/auth/calendar.events":{"https://www.googleapis.com/auth/calendar"},
+        "https://www.googleapis.com/auth/calendar.readonly":{"https://www.googleapis.com/auth/calendar"},
+        "https://www.googleapis.com/auth/drive.file":{"https://www.googleapis.com/auth/drive"},
+        "https://www.googleapis.com/auth/drive.readonly":{"https://www.googleapis.com/auth/drive"},
+    }
+    return {scope for scope in requested if not (equivalents.get(scope,{scope})|broader.get(scope,set())) & granted}
+
 def desktop_login(*, transfer_root, client_path, output_path, alias, profiles, timeout=180, overwrite=False,
                   open_browser=webbrowser.open, print_url=_print_url, post_json=_post_json, get_identity=_get_identity,
                   server_factory=HTTPServer):
@@ -120,7 +136,7 @@ def desktop_login(*, transfer_root, client_path, output_path, alias, profiles, t
     token=post_json(c["token_uri"],{"code":code,"client_id":c["client_id"],"client_secret":c["client_secret"],"redirect_uri":redirect,"grant_type":"authorization_code","code_verifier":verifier},min(timeout,30))
     if not isinstance(token,dict) or not all(isinstance(token.get(k),str) and token[k] for k in ("access_token","refresh_token")): raise LoginError("token response did not include reusable credentials")
     granted=set((token.get("scope") or "").split())
-    if not set(requested)<=granted: raise LoginError("token response omitted requested scopes")
+    if _missing_scopes(requested,granted): raise LoginError("token response omitted requested scopes")
     ident=get_identity(token["access_token"],min(timeout,30));email=ident.get("email") if isinstance(ident,dict) else None;sub=ident.get("sub") if isinstance(ident,dict) else None
     if not isinstance(email,str) or not _EMAIL.fullmatch(email) or not isinstance(sub,str) or not 1<=len(sub)<=255: raise LoginError("identity response was invalid")
     existing={"accounts":{}}

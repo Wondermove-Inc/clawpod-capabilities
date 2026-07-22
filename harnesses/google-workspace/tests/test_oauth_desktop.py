@@ -1,7 +1,7 @@
 import hashlib,json,os,stat,threading,time,urllib.error,urllib.parse,urllib.request
 from pathlib import Path
 import pytest
-from google_workspace_core.oauth_desktop import desktop_login,LoginError,_client,_private_file
+from google_workspace_core.oauth_desktop import desktop_login,LoginError,_client,_private_file,_missing_scopes
 
 SCOPES={"openid","email","https://www.googleapis.com/auth/gmail.readonly"}
 def setup_files(tmp_path):
@@ -70,6 +70,10 @@ def test_existing_output_permissions(tmp_path):
 
 def test_scope_and_identity_validation(tmp_path):
  with pytest.raises(LoginError,match="omitted requested"):invoke(tmp_path,token_update={"scope":"openid email"})
+ assert not _missing_scopes(
+  {"email","https://www.googleapis.com/auth/gmail.compose"},
+  {"https://www.googleapis.com/auth/userinfo.email","https://www.googleapis.com/auth/gmail.modify"},
+ )
  with pytest.raises(LoginError,match="identity response"):
   invoke(tmp_path,identity={"email":"bad","sub":"x"})
 
