@@ -32,22 +32,27 @@ Required:
 - Tests for success, invalid input, backend failure, timeout, and approval behavior where applicable.
 - No embedded credentials.
 
-## Registry Entry
+## Package Metadata and Registry Generation
 
-Add one entry to `registry/index.json` with:
+Every package must include `capability.json` beside `SKILL.md` or `harness.json` with:
 
-- `id`
-- `type`: `skill` or `harness`
+- `schemaVersion`
 - semantic `version`
-- concise `description`
-- repository-relative package `path`
+- concise Registry `description`
 - `compatibility`
 - `safety`
 
-Run:
+Do not edit `registry/index.json` by hand. The package folders and their metadata are the source of truth. Generate the Registry locally with:
 
 ```bash
+python3 scripts/sync_registry.py
+```
+
+Check that the committed Registry is current with:
+
+```bash
+python3 scripts/sync_registry.py --check
 python3 scripts/validate.py
 ```
 
-The pull request must pass repository validation before merge.
+For authorized same-repository pull requests, GitHub automatically regenerates and commits `registry/index.json` when package files change. Required CI blocks merge until the generated Registry, package metadata, files, and SHA-256 digests agree.

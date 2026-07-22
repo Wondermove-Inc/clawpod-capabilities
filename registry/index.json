@@ -10,7 +10,11 @@
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
-        "platforms": ["linux", "macos", "windows"]
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
       },
       "safety": {
         "risk": "write-safe",
@@ -31,7 +35,11 @@
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
-        "platforms": ["linux", "macos", "windows"]
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
       },
       "safety": {
         "risk": "write-safe",
@@ -39,12 +47,12 @@
       },
       "files": [
         {
-          "path": "harness.json",
-          "sha256": "f18d5dcfe93cc096df3607ce52298deb69acfe1573592752772355f4f8dd8248"
-        },
-        {
           "path": "clawpod_capability_registry.py",
           "sha256": "15a6de4cca87b122d242282f221caa0d734b9586cb3dee617948105b3c9f5059"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "f18d5dcfe93cc096df3607ce52298deb69acfe1573592752772355f4f8dd8248"
         }
       ]
     }

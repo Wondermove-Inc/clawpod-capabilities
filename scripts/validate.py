@@ -163,7 +163,7 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
 
 
 def main() -> None:
-    for schema in ("registry.schema.json", "capability.schema.json"):
+    for schema in ("registry.schema.json", "capability.schema.json", "package-metadata.schema.json"):
         load_json(ROOT / "schemas" / schema)
 
     registry = load_json(INDEX)

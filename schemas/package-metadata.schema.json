@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wondermove-Inc/clawpod-capabilities/schemas/package-metadata.schema.json",
+  "title": "ClawPod Capability Package Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "version", "description", "compatibility", "safety"],
+  "properties": {
+    "$schema": {"type": "string", "minLength": 1},
+    "schemaVersion": {"const": 1},
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "description": {"type": "string", "minLength": 10, "maxLength": 240},
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openclaw"],
+      "properties": {
+        "openclaw": {"type": "string", "minLength": 1},
+        "platforms": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk", "approvalRequired"],
+      "properties": {
+        "risk": {
+          "enum": ["read-only", "write-safe", "externally-visible", "destructive", "credential-related"]
+        },
+        "approvalRequired": {"type": "boolean"}
+      }
+    }
+  }
+}
