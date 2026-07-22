@@ -4,17 +4,16 @@ on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
 
-permissions:
-  contents: write
-  pull-requests: write
-
 concurrency:
   group: registry-sync-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  registry-sync:
+  authorize:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Verify authorized same-repository pull request
         env:
@@ -34,11 +33,54 @@ jobs:
           esac
 
           if [ "$HEAD_REPOSITORY" != "$REPOSITORY" ]; then
-            gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "Registry synchronization requires an authorized branch in this repository."
-            echo "Registry synchronization cannot write to a fork." >&2
+            echo "Registry synchronization requires an authorized branch in this repository." >&2
             exit 1
           fi
 
+  validate-candidate:
+    needs: authorize
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out trusted generator from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: trusted
+          persist-credentials: false
+
+      - name: Check out pull request candidate without credentials
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate candidate Registry with trusted code
+        run: python3 trusted/scripts/sync_registry.py --root candidate
+
+      - name: Validate generated candidate
+        working-directory: candidate
+        run: |
+          python3 scripts/sync_registry.py --check
+          python3 scripts/validate.py
+          python3 -m unittest discover -s tests -v
+          python3 harnesses/clawpod-capability-registry/tests/test_core.py
+          python3 harnesses/clawpod-capability-registry/tests/test_full_e2e.py
+
+  registry-sync:
+    needs: validate-candidate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    steps:
       - name: Check out trusted generator from main
         uses: actions/checkout@v4
         with:
@@ -62,6 +104,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if git -C candidate diff --quiet -- registry/index.json; then
             echo "Registry is already synchronized."
@@ -72,5 +115,12 @@ jobs:
           git -C candidate config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C candidate add registry/index.json
           git -C candidate commit -m "chore: synchronize capability registry"
+          generated_sha="$(git -C candidate rev-parse HEAD)"
           git -C candidate remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${HEAD_REPOSITORY}.git"
           git -C candidate push origin "HEAD:${HEAD_REF}"
+
+          gh api --method POST "repos/$HEAD_REPOSITORY/statuses/$generated_sha" \
+            -f state=success \
+            -f context=validate \
+            -f description="Generated Registry and candidate validation passed" \
+            -f target_url="$RUN_URL"
