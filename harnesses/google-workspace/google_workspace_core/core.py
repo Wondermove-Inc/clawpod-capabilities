@@ -42,7 +42,7 @@ def local_auth(command,payload,out):
   from .oauth_desktop import desktop_login,LoginError
   body=payload.get("body",{})
   try:
-   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",180000)/1000,overwrite=payload.get("overwrite",False))
+   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False),managed_browser_devtools_url=body.get("managedBrowserDevtoolsUrl"),smoke_tests=body.get("smokeTests",[]))
   except LoginError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
   out["data"]={"resource":result};return out,0
  if action=="accounts.list":

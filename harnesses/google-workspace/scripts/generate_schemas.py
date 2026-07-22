@@ -79,10 +79,15 @@ for cmd,c in commands.items():
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
   if cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
   elif cmd=='auth.login':
-   props['body']=O({'clientPath':S(),'profiles':A(S(),maxItems=32)},required=['clientPath','profiles'])
-   # Interactive account selection and consent routinely need more than the
-   # provider-command timeout, while the receiver itself remains bounded.
-   props['timeoutMs']['maximum']=600000
+   props['body']=O({
+    'clientPath':S(),
+    'profiles':A(S(),maxItems=32),
+    'managedBrowserDevtoolsUrl':S(),
+    'smokeTests':A(S(enum=['gmail','calendar','drive']),maxItems=3),
+   },required=['clientPath','profiles'])
+   # Human consent is bounded at ten minutes. The process timeout below must
+   # outlive that receiver window and the final token/identity exchanges.
+   props['timeoutMs']['minimum']=5000;props['timeoutMs']['maximum']=600000;props['timeoutMs']['default']=600000
    s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot','outputPath']))
   else: props['body']=O({})
   continue

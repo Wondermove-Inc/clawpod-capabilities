@@ -1,7 +1,7 @@
 import hashlib,json,os,stat,threading,time,urllib.error,urllib.parse,urllib.request
 from pathlib import Path
 import pytest
-from google_workspace_core.oauth_desktop import desktop_login,LoginError,_client,_private_file,_missing_scopes
+from google_workspace_core.oauth_desktop import desktop_login,LoginError,_client,_private_file,_missing_scopes,_canonical_scopes,_devtools_endpoint,_open_devtools
 
 SCOPES={"openid","email","https://www.googleapis.com/auth/gmail.readonly"}
 def setup_files(tmp_path):
@@ -9,7 +9,7 @@ def setup_files(tmp_path):
 
 def invoke(tmp_path, callback="ok", **kw):
  setup_files(tmp_path); box={};urls=[]
- browser_result=kw.pop("browser_result",True);duplicate=kw.pop("duplicate",False);token_error=kw.pop("token_error",False);token_update=kw.pop("token_update",{});identity=kw.pop("identity",{"email":"User@Example.invalid","sub":"subject"})
+ browser_result=kw.pop("browser_result",True);devtools_result=kw.pop("devtools_result",None);duplicate=kw.pop("duplicate",False);token_error=kw.pop("token_error",False);token_update=kw.pop("token_update",{});identity=kw.pop("identity",{"email":"User@Example.invalid","sub":"subject"})
  def browser(url,**_):
   urls.append(url)
   def hit():
@@ -26,12 +26,17 @@ def invoke(tmp_path, callback="ok", **kw):
     except urllib.error.HTTPError as e: box["duplicate_status"]=e.code
     except Exception: pass
   threading.Thread(target=hit,daemon=True).start();return browser_result
+ def devtools(endpoint,url,timeout):
+  box["devtools"]={"endpoint":endpoint,"timeout":timeout}
+  if devtools_result: browser(url)
+  return bool(devtools_result)
  def post(url, fields, timeout):
   box["fields"]=dict(fields)
   if token_error:raise LoginError("token endpoint rejected the request")
   d={"access_token":"ACCESS_SECRET","refresh_token":"REFRESH_SECRET","scope":" ".join(SCOPES),"expires_in":3600};d.update(token_update);return d
  def ident(token,timeout):return identity
- result=desktop_login(transfer_root=str(tmp_path),client_path="client.json",output_path="creds.json",alias=kw.pop("alias","work"),profiles=["gmail-read"],timeout=kw.pop("timeout",5),overwrite=kw.pop("overwrite",False),open_browser=browser,print_url=lambda x:box.setdefault("printed",x),post_json=post,get_identity=ident,**kw)
+ if devtools_result is not None:kw.setdefault("open_devtools",devtools)
+ result=desktop_login(transfer_root=str(tmp_path),client_path="client.json",output_path="creds.json",alias=kw.pop("alias","work"),profiles=["gmail-read"],timeout=kw.pop("timeout",5),overwrite=kw.pop("overwrite",False),open_browser=browser,post_json=post,get_identity=ident,**kw)
  return result,box,urls
 
 def test_success_pkce_url_encoding_and_private_output(tmp_path):
@@ -77,15 +82,37 @@ def test_scope_and_identity_validation(tmp_path):
  with pytest.raises(LoginError,match="identity response"):
   invoke(tmp_path,identity={"email":"bad","sub":"x"})
 
-def test_secret_redaction_browser_fallback(tmp_path):
- result,box,urls=invoke(tmp_path,browser_result=False)
- visible=json.dumps(result)+box["printed"]
- for secret in ("AUTH_CODE_SECRET","ACCESS_SECRET","REFRESH_SECRET","SECRET"):
-  assert secret not in visible
- assert "code_challenge=" in box["printed"]
+def test_browser_failure_does_not_print_oauth_url(tmp_path, capsys):
+ with pytest.raises(LoginError,match="could not open"):
+  invoke(tmp_path,browser_result=False)
+ captured=capsys.readouterr();assert "accounts.google.com" not in captured.out+captured.err
 
 def test_duplicate_callback_is_rejected(tmp_path):
  _,box,_=invoke(tmp_path,duplicate=True);time.sleep(.2);assert box.get("duplicate_status")==409
+
+def test_managed_browser_success_and_safe_system_fallback(tmp_path):
+ result,box,_=invoke(tmp_path,managed_browser_devtools_url="http://127.0.0.1:9222",devtools_result=True,browser_result=False)
+ assert result["alias"]=="work" and box["devtools"]["endpoint"]=="http://127.0.0.1:9222"
+ other=tmp_path/"fallback";other.mkdir()
+ result,box,urls=invoke(other,managed_browser_devtools_url="http://127.0.0.1:9222",devtools_result=False,browser_result=True)
+ assert result["alias"]=="work" and len(urls)==1
+
+def test_timeout_bounds_are_rejected_before_browser(tmp_path):
+ setup_files(tmp_path)
+ for timeout in (4,601):
+  with pytest.raises(LoginError,match="between 5 and 600"):
+   desktop_login(transfer_root=str(tmp_path),client_path="client.json",output_path="x",alias="a",profiles=[],timeout=timeout)
+
+def test_smoke_success_is_sanitized_and_failure_keeps_credentials(tmp_path):
+ def smoke(url,token,timeout):
+  key="messages" if "gmail" in url else "items" if "calendar" in url else "files"
+  return {key:[{"id":"REMOTE_SECRET"}]}
+ result,_,_=invoke(tmp_path,smoke_tests=["gmail","calendar","drive"],smoke_request=smoke)
+ assert result["smokeTests"]=={x:{"ok":True,"count":1} for x in ("gmail","calendar","drive")}
+ other=tmp_path/"failed";other.mkdir()
+ result,_,_=invoke(other,smoke_tests=["gmail"],smoke_request=lambda *a:(_ for _ in ()).throw(LoginError("provider detail")))
+ assert result["smokeTests"]=={"gmail":{"ok":False,"error":"REQUEST_FAILED"}}
+ assert (other/"creds.json").is_file() and stat.S_IMODE((other/"creds.json").stat().st_mode)==0o600
 
 def test_bind_failure(tmp_path):
  setup_files(tmp_path)

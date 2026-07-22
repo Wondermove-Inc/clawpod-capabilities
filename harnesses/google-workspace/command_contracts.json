@@ -579,8 +579,9 @@
         },
         "timeoutMs": {
           "type": "integer",
-          "minimum": 1000,
-          "maximum": 600000
+          "minimum": 5000,
+          "maximum": 600000,
+          "default": 600000
         },
         "dryRun": {
           "type": "boolean"
@@ -627,6 +628,25 @@
                 "maxLength": 4096
               },
               "maxItems": 32
+            },
+            "managedBrowserDevtoolsUrl": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "smokeTests": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "enum": [
+                  "gmail",
+                  "calendar",
+                  "drive"
+                ]
+              },
+              "maxItems": 3
             }
           },
           "required": [
@@ -701,8 +721,9 @@
               },
               "timeoutMs": {
                 "type": "integer",
-                "minimum": 1000,
-                "maximum": 600000
+                "minimum": 5000,
+                "maximum": 600000,
+                "default": 600000
               },
               "dryRun": {
                 "type": "boolean"
@@ -749,6 +770,25 @@
                       "maxLength": 4096
                     },
                     "maxItems": 32
+                  },
+                  "managedBrowserDevtoolsUrl": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "smokeTests": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4096,
+                      "enum": [
+                        "gmail",
+                        "calendar",
+                        "drive"
+                      ]
+                    },
+                    "maxItems": 3
                   }
                 },
                 "required": [
