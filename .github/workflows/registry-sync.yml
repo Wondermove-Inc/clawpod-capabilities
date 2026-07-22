@@ -1,0 +1,76 @@
+name: Synchronize capability registry
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: registry-sync-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  registry-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify authorized same-repository pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          author="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .user.login)"
+          permission="$(gh api "repos/$REPOSITORY/collaborators/$author/permission" --jq .permission 2>/dev/null || true)"
+          case "$permission" in
+            admin|maintain|write) ;;
+            *)
+              echo "Unauthorized pull request author: $author (${permission:-none})" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ "$HEAD_REPOSITORY" != "$REPOSITORY" ]; then
+            gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" --body "Registry synchronization requires an authorized branch in this repository."
+            echo "Registry synchronization cannot write to a fork." >&2
+            exit 1
+          fi
+
+      - name: Check out trusted generator from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: trusted
+          persist-credentials: false
+
+      - name: Check out pull request candidate without credentials
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+
+      - name: Generate registry from package folders
+        run: python3 trusted/scripts/sync_registry.py --root candidate
+
+      - name: Commit generated registry to pull request branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if git -C candidate diff --quiet -- registry/index.json; then
+            echo "Registry is already synchronized."
+            exit 0
+          fi
+
+          git -C candidate config user.name "clawpod-registry-bot"
+          git -C candidate config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C candidate add registry/index.json
+          git -C candidate commit -m "chore: synchronize capability registry"
+          git -C candidate remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${HEAD_REPOSITORY}.git"
+          git -C candidate push origin "HEAD:${HEAD_REF}"

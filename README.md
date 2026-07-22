@@ -102,11 +102,12 @@ All commands emit machine-readable JSON. Network reads are restricted to this ca
 ```text
 skills/<name>/             AgentSkill packages
 harnesses/<name>/          CLI Harness packages
-registry/index.json        Machine-readable capability index
-schemas/                   Registry contracts
+registry/index.json        Generated machine-readable capability index
+schemas/                   Registry and package metadata contracts
+scripts/sync_registry.py    Deterministic Registry generator
 scripts/bootstrap.py       Dependency-free first-install path
 scripts/validate.py        Repository validation
-tests/                     Repository policy and bootstrap tests
+tests/                     Registry, policy, and bootstrap tests
 ```
 
 ## Choosing a capability type
@@ -136,9 +137,12 @@ Those actions remain subject to their normal runtime controls and approval bound
 This registry accepts pull requests only from authorized organization members and collaborators.
 
 1. Add or update one package under `skills/` or `harnesses/`.
-2. Update `registry/index.json`, including per-file SHA-256 digests.
-3. Run repository and package tests.
-4. Submit a pull request and wait for required CI and repository policy checks.
+2. Add or update its package-local `capability.json` metadata.
+3. Run `python3 scripts/sync_registry.py` locally if you want to preview the generated Registry.
+4. Run repository and package tests.
+5. Submit a pull request. GitHub automatically regenerates `registry/index.json`, and required CI blocks merge until it matches the package folders.
+
+Do not edit `registry/index.json` by hand. Package folders and their `capability.json` files are the source of truth.
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete contract.
 
