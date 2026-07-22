@@ -16,7 +16,7 @@ def locked():
   fcntl.flock(l,fcntl.LOCK_EX)
   try:d=json.loads(p.read_text())
   except (FileNotFoundError,json.JSONDecodeError):d={}
-  d.setdefault("previews",{});d.setdefault("idempotency",{});d.setdefault("secret",os.urandom(32).hex())
+  d.setdefault("previews",{});d.setdefault("idempotency",{});d.setdefault("transfers",{});d.setdefault("secret",os.urandom(32).hex())
   yield d
   fd,tmp=tempfile.mkstemp(dir=p.parent,prefix=".state-")
   try:
@@ -31,8 +31,9 @@ def fingerprint(command,account,payload):
 def issue_preview(command,account,payload,target=None,etag=None):
  fp=fingerprint(command,account,payload);now=time.time()
  with locked() as d:
-  token=hmac.new(bytes.fromhex(d["secret"]),f"{fp}:{now}:{os.urandom(8).hex()}".encode(),hashlib.sha256).hexdigest()
-  d["previews"][token]={"fingerprint":fp,"command":command,"account":account,"target":target,"etag":etag,"issuedAt":now,"expiresAt":now+TTL,"used":False}
+  # This is the one canonical confirmation/effect digest. It is persisted verbatim.
+  token=hmac.new(bytes.fromhex(d["secret"]),canonical({"fingerprint":fp,"target":target,"etag":etag,"issuedAt":now}).encode(),hashlib.sha256).hexdigest()
+  d["previews"][token]={"effectDigest":token,"fingerprint":fp,"command":command,"account":account,"target":target,"etag":etag,"issuedAt":now,"expiresAt":now+TTL,"used":False,"dryRun":bool(payload.get("dryRun",not payload.get("preview")))}
  return token
 
 def consume_preview(token,command,account,payload,target=None,etag=None):
@@ -40,6 +41,7 @@ def consume_preview(token,command,account,payload,target=None,etag=None):
   r=d["previews"].get(token)
   if not r:return False,"preview confirmation not found"
   if r["used"]:return False,"preview confirmation was already used"
+  if not r.get("dryRun"):return False,"confirmation requires a successful dry-run preview"
   if time.time()>r["expiresAt"]:return False,"preview confirmation expired"
   if (r["command"],r["account"],r["fingerprint"])!=(command,account,fingerprint(command,account,payload)):return False,"preview confirmation does not match account, command, or input"
   if r.get("target")!=target or r.get("etag")!=etag:return False,"preview target or ETag is stale"
@@ -54,6 +56,11 @@ def idempotency_lookup(key,command,account,payload):
 def idempotency_store(key,command,account,payload,result):
  fp=fingerprint(command,account,payload)
  with locked() as d:d["idempotency"][f"{account}:{key}"]={"fingerprint":fp,"command":command,"result":result,"createdAt":time.time()}
+
+def transfer_load(key):
+ with locked() as d:return d["transfers"].get(key)
+def transfer_store(key,value):
+ with locked() as d:d["transfers"][key]=value
 
 def bind_token(raw,command,account,query):
  with locked() as d:

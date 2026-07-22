@@ -9,7 +9,7 @@ from .security import atomic_write,digest,redact,safe_path,append_audit,canonica
 from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
 from .scopes import enforce,required_scopes
-from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token
+from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,transfer_load,transfer_store
 
 EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"NOT_FOUND":5,"CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
 SCOPES={"identity":["openid","email"],"gmail-read":["https://www.googleapis.com/auth/gmail.readonly"],"gmail-compose":["https://www.googleapis.com/auth/gmail.compose"],"gmail-modify":["https://www.googleapis.com/auth/gmail.modify"],"calendar-read":["https://www.googleapis.com/auth/calendar.readonly"],"calendar-events":["https://www.googleapis.com/auth/calendar.events"],"drive-file":["https://www.googleapis.com/auth/drive.file"],"drive-read":["https://www.googleapis.com/auth/drive.readonly"],"drive-manage":["https://www.googleapis.com/auth/drive"]}
@@ -52,17 +52,20 @@ def local_auth(command,payload,out):
 def run(command,payload):
  account=payload.get("account") or os.environ.get("GOOGLE_WORKSPACE_ACCOUNT"); out=envelope(command,payload,account)
  if command not in catalog(): return fail(command,payload,"INVALID_ARGUMENT","unknown command",account=account)
- try: validate(payload,catalog()[command]["inputSchema"],command)
+ try: validate(payload,catalog()[command]["inputSchema"],command,semantic=False)
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  if payload.get("batch") is not None:
   if not isinstance(payload["batch"],list) or not payload["batch"]:return fail(command,payload,"INVALID_ARGUMENT","batch must be a non-empty array",account=account)
-  base={k:v for k,v in payload.items() if k!="batch"};results=[];failed=0
+  base={k:v for k,v in payload.items() if k!="batch"};results=[];failed=0;halted=None
   for i,item in enumerate(payload["batch"]):
-   if not isinstance(item,dict):child,code=fail(command,base,"INVALID_ARGUMENT","batch item must be an object",account=account)
+   if halted:
+    child,code=fail(command,base,"PARTIAL_FAILURE",f"not launched after systemic {halted}",account=account,details={"halted":True,"systemicCode":halted})
+   elif not isinstance(item,dict):child,code=fail(command,base,"INVALID_ARGUMENT","batch item must be an object",account=account)
    else:child,code=run(command,{**base,**item})
-   results.append({"index":i,"ok":code==0,"result":child});failed+=code!=0
-  out["data"]={"items":results,"succeeded":len(results)-failed,"failed":failed}
+   results.append({"index":i,"ok":code==0,"launched":halted is None,"result":child});failed+=code!=0
+   if code and child.get("error",{}).get("code") in ("AUTH_REQUIRED","AUTH_EXPIRED","INSUFFICIENT_SCOPE","QUOTA_EXCEEDED","RATE_LIMITED"):halted=child["error"]["code"]
+  out["data"]={"items":results,"succeeded":len(results)-failed,"failed":failed,"haltedOn":halted}
   if failed:out["ok"]=False;out["error"]={"code":"PARTIAL_FAILURE","message":f"{failed} of {len(results)} batch items failed","retryable":False,"details":{},"remediation":"Inspect each item result and retry only failed safe items"};return out,9
   return out,0
  if command.startswith("auth."): return local_auth(command,payload,out)
@@ -83,31 +86,44 @@ def run(command,payload):
   needed=enforce(command,meta.get("scopes",[]),safety)
  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=account)
  except PermissionError as e:return fail(command,payload,"INSUFFICIENT_SCOPE",str(e),account=account)
+ try:validate(payload,None,command,semantic=True)
+ except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  headers={"Authorization":"Bearer "+token}
- effect=digest(command,account,payload);target=op["url"];observed_etag=payload.get("ifMatch")
+ target=op["url"];observed_etag=payload.get("ifMatch")
+ # Receiver configuration is an explicit capability boundary, never inferred.
+ if command=='gmail.watch.start':
+  configured=os.environ.get('GOOGLE_WORKSPACE_PUBSUB_TOPIC')
+  if not configured:return fail(command,payload,'UNSUPPORTED_BY_CONTRACT','Pub/Sub receiver is not configured (GOOGLE_WORKSPACE_PUBSUB_TOPIC)',account=account)
+  if payload.get('body',{}).get('topicName')!=configured:return fail(command,payload,'INVALID_ARGUMENT','watch topicName does not match configured Pub/Sub receiver',account=account)
+ if command.endswith('.watch') and command.startswith(('calendar.','drive.')):
+  configured=os.environ.get('GOOGLE_WORKSPACE_HTTPS_RECEIVER');address=payload.get('body',{}).get('address')
+  if not configured:return fail(command,payload,'UNSUPPORTED_BY_CONTRACT','HTTPS watch receiver is not configured (GOOGLE_WORKSPACE_HTTPS_RECEIVER)',account=account)
+  if not configured.startswith('https://') or address!=configured:return fail(command,payload,'INVALID_ARGUMENT','watch address must exactly match the configured HTTPS receiver',account=account)
+ # Idempotent replay must happen before consuming a one-use confirmation.
+ if payload.get("idempotencyKey"):
+  prior,fp=idempotency_lookup(payload["idempotencyKey"],command,account,payload)
+
+  if prior:
+   if prior["fingerprint"]!=fp:return fail(command,payload,"IDEMPOTENCY_CONFLICT","idempotency key was used with different input",account=account)
+   return prior["result"],0
+ effect=digest(command,account,payload)
  if mutating:
-  out["effects"]=[{"kind":"planned","targets":redact(payload.get("params",{})),"before":None,"after":redact(payload.get("body",{})),"recoverability":"permanent" if "destructive" in safety else "provider-dependent","effectDigest":effect}]
   if payload.get("preview") or payload.get("dryRun"):
-   if payload.get("dryRun") and op["method"] in ("PUT","PATCH","DELETE"):
+   if payload.get("dryRun"):
     try:
      _,probe_headers,probe,_=retry_request(transport,"GET",target,headers=headers,query={"fields":"id,etag"},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
      observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag") or observed_etag
      if payload.get("ifMatch") and observed_etag and payload["ifMatch"]!=observed_etag:return fail(command,payload,"PRECONDITION_FAILED","dry-run observed a different target ETag",account=account)
     except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
    preview_token=issue_preview(command,account,payload,target,observed_etag)
+   out["effects"]=[{"kind":"planned","targets":redact(payload.get("params",{})),"before":None,"after":redact(payload.get("body",{})),"recoverability":"permanent" if "destructive" in safety else "provider-dependent","effectDigest":preview_token}]
    out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":preview_token,"duplicateFingerprint":effect,"requiredScopes":needed,"target":target,"etag":observed_etag};return out,0
-  if any(x in safety for x in ("externallyVisible","destructive")):
-   if op["method"] in ("PUT","PATCH","DELETE") and payload.get("confirm"):
-    try:
-     _,probe_headers,probe,_=retry_request(transport,"GET",target,headers=headers,query={"fields":"id,etag"},timeout=payload.get("timeoutMs",30000)/1000,safe=True);observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag") or observed_etag
-    except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
-   ok,reason=consume_preview(payload.get("confirm",""),command,account,payload,target,observed_etag)
-   if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=account)
+  if not payload.get('confirm'):return fail(command,payload,'APPROVAL_REQUIRED','all mutations require a successful dry-run preview and --confirm',account=account)
+  ok,reason=consume_preview(payload.get("confirm",""),command,account,payload,target,observed_etag)
+  if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=account)
+  effect=payload['confirm']
  if payload.get("idempotencyKey"):
   prior,fp=idempotency_lookup(payload["idempotencyKey"],command,account,payload)
-  if prior:
-   if prior["fingerprint"]!=fp:return fail(command,payload,"IDEMPOTENCY_CONFLICT","idempotency key was used with different input",account=account)
-   return prior["result"],0
  if payload.get("ifMatch"):headers["If-Match"]=payload["ifMatch"]
  resume_prefix=b""
  if command in ("drive.files.download","drive.files.export") and payload.get("resume") and payload.get("outputPath"):
@@ -129,33 +145,51 @@ def run(command,payload):
    request_body={"trashed":command.endswith(".trash")}
   if command=="drive.folders.create":
    request_body={**(request_body or {}),"mimeType":"application/vnd.google-apps.folder"}
-  if command=="drive.files.upload":
+  if command in ("drive.files.upload","drive.files.create","drive.files.update") and payload.get("inputPath"):
    source=safe_path(payload.get("transferRoot") or ".",payload["inputPath"]);content=source.read_bytes();upload_type=(payload.get("params") or {}).get("uploadType","resumable")
    if upload_type=="multipart":
     boundary="clawpod-"+uuid.uuid4().hex;meta=json.dumps(payload.get("body") or {"name":source.name},separators=(",",":")).encode();request_body=b"--"+boundary.encode()+b"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+meta+b"\r\n--"+boundary.encode()+b"\r\nContent-Type: application/octet-stream\r\n\r\n"+content+b"\r\n--"+boundary.encode()+b"--\r\n";headers["Content-Type"]="multipart/related; boundary="+boundary
     status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=request_body,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
-   elif upload_type=="media":
+   elif upload_type in ("simple","media"):
+    params['uploadType']='media'
     status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=content,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
    elif upload_type=="resumable":
-    init_headers={**headers,"X-Upload-Content-Length":str(len(content)),"X-Upload-Content-Type":"application/octet-stream"};status,rh,init,retries=retry_request(transport,"POST",op["url"],headers=init_headers,query=params,body=payload.get("body") or {"name":source.name},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
-    location=rh.get("Location") or rh.get("location")
-    if not location:raise HTTPError(502,"missingResumableLocation")
-    put_headers={**headers,"Content-Length":str(len(content)),"Content-Range":f"bytes 0-{len(content)-1}/{len(content)}"};status,rh,data,n=retry_request(transport,"PUT",location,headers=put_headers,body=content,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=n
-   else:return fail(command,payload,"INVALID_ARGUMENT","uploadType must be media, multipart, or resumable",account=account)
+    stat=source.stat();source_fp=hashlib.sha256(content).hexdigest();transfer_key=hashlib.sha256(canonical({"account":account,"command":command,"path":str(source),"size":len(content),"mtime":stat.st_mtime_ns,"sha256":source_fp,"target":op['url'],"metadata":payload.get('body') or {}}).encode()).hexdigest();saved=transfer_load(transfer_key);location=saved.get('location') if saved else None;offset=int(saved.get('offset',0)) if saved else 0;retries=0
+    if not location:
+     init_headers={**headers,"X-Upload-Content-Length":str(len(content)),"X-Upload-Content-Type":"application/octet-stream"};status,rh,init,retries=retry_request(transport,"POST",op["url"],headers=init_headers,query=params,body=payload.get("body") or {"name":source.name},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
+     location=rh.get("Location") or rh.get("location")
+     if not location:raise HTTPError(502,"missingResumableLocation")
+     transfer_store(transfer_key,{"location":location,"offset":0,"size":len(content),"sha256":source_fp,"createdAt":time.time()})
+    if offset<0 or offset>len(content):raise HTTPError(409,"invalidResumableOffset")
+    chunk_size=8*1024*1024 # multiple of Google's required 256 KiB
+    data={};status=308;rh={}
+    while offset<len(content):
+     end=min(offset+chunk_size,len(content));chunk=content[offset:end];put_headers={**headers,"Content-Length":str(len(chunk)),"Content-Range":f"bytes {offset}-{end-1}/{len(content)}"};status,rh,data,n=retry_request(transport,"PUT",location,headers=put_headers,body=chunk,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=n
+     if status==308:
+      reported=rh.get('Range') or rh.get('range');confirmed=(int(reported.rsplit('-',1)[1])+1) if reported and '-' in reported else end
+      if confirmed<offset or confirmed>end:raise HTTPError(409,"invalidResumableOffset")
+      offset=confirmed;transfer_store(transfer_key,{"location":location,"offset":offset,"size":len(content),"sha256":source_fp,"updatedAt":time.time()});continue
+     if status not in (200,201):raise HTTPError(status,"unexpectedResumableStatus")
+     offset=end;transfer_store(transfer_key,{"location":location,"offset":offset,"size":len(content),"sha256":source_fp,"completed":True,"updatedAt":time.time()})
+   else:return fail(command,payload,"INVALID_ARGUMENT","uploadType must be simple, media, multipart, or resumable",account=account)
   else:status,rh,data,retries=retry_request(transport,op["method"],op["url"],headers=headers,query=params,body=request_body,timeout=payload.get("timeoutMs",30000)/1000,safe=safe_retry)
   pages=1
   if payload.get("allPages"):
-   max_pages=payload.get("maxPages",100);max_items=payload.get("maxItems",10000)
-   while isinstance(data,dict) and data.get("nextPageToken") and pages<max_pages:
-    q={**params,"pageToken":data["nextPageToken"]};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
-    key=next((k for k,v in data.items() if isinstance(v,list)),None)
-    if key and isinstance(nxt.get(key),list):data[key].extend(nxt[key]);data["nextPageToken"]=nxt.get("nextPageToken");data[key]=data[key][:max_items]
+   max_pages=payload.get("maxPages",100);max_items=payload.get("maxItems",10000);key=next((k for k,v in data.items() if isinstance(v,list)),None)
+   if key:data[key]=data[key][:max_items]
+   while key and isinstance(data,dict) and data.get("nextPageToken") and pages<max_pages and len(data[key])<max_items:
+    remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],"pageSize":min(remaining,payload.get('pageSize') or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
+    if isinstance(nxt.get(key),list):data[key].extend(nxt[key][:remaining]);data["nextPageToken"]=nxt.get("nextPageToken")
     else:break
  except HTTPError as e:
   code=provider_error(e)
   if command in ("gmail.messages.send","gmail.drafts.send") and e.status>=500:code="AMBIGUOUS_COMMIT"
   return fail(command,payload,code,str(e),status=e.status,reason=e.reason,account=account)
  out["account"].update({"email":meta.get("email"),"subject":meta.get("subject_hash")})
+ if resume_prefix:
+  content_range=rh.get('Content-Range') or rh.get('content-range');expected_prefix=f'bytes {len(resume_prefix)}-'
+  if status!=206 or not content_range or not content_range.startswith(expected_prefix):
+   return fail(command,payload,'PRECONDITION_FAILED','resumed download requires 206 with matching Content-Range',status=status,account=account,details={'expectedStart':len(resume_prefix),'contentRange':content_range})
  if isinstance(data,bytes):
   try:
    raw=resume_prefix+data;actual=hashlib.sha256(raw).hexdigest();expected=payload.get("expectedSha256")

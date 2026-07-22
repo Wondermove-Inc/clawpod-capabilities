@@ -125,8 +125,12 @@
           "sha256": "0dbd4ecbe8820947e9697041549b0b7cf0dd01ad848a0a2a21a499e14e1fa361"
         },
         {
+          "path": "google_workspace_core/contracts.py",
+          "sha256": "b775ac21958a9574ec7067dd87eae30d0893d1c3a7f898bbbfb1ddfb42bb7107"
+        },
+        {
           "path": "google_workspace_core/core.py",
-          "sha256": "b88c01bda5c6db0539c3cf3b4d5cabdee41c8ed333b989c736fcdfb5a8e94d8f"
+          "sha256": "f8827b95052348895eef6970cc1992bd680b5b5aba0ddaf413d1638ddb17d583"
         },
         {
           "path": "google_workspace_core/mime.py",
@@ -134,7 +138,7 @@
         },
         {
           "path": "google_workspace_core/scopes.py",
-          "sha256": "40e66d8d2531d2542432c070cef929ef6b31246305f239a36216dc05476ae755"
+          "sha256": "9280051bf9434ab198762c4473dcbbcaca7286e6c7620d083fc1e0c5eb107c5c"
         },
         {
           "path": "google_workspace_core/security.py",
@@ -142,7 +146,7 @@
         },
         {
           "path": "google_workspace_core/state.py",
-          "sha256": "a49391cede3de30e6ac1e0842ea071217150d67ef20d018f10256e0968a5d403"
+          "sha256": "62bd6d90e41bb1c2fb3d80e1c988dff15a6d3482c245a538e9b6490b333faf5c"
         },
         {
           "path": "google_workspace_core/transport.py",
@@ -150,15 +154,15 @@
         },
         {
           "path": "google_workspace_core/validation.py",
-          "sha256": "0a0b6828997d44103b242f845d9e11fea7026939e1d7c9e4381136ebf438c515"
+          "sha256": "7ac23759bdef1d33633e6e2348057c5308f33afb13f7add869084225b7da8a67"
         },
         {
           "path": "harness.json",
-          "sha256": "58bd9eaadb436bec0e3fdc2406516d72b5c7152a0ccda54bb159a8088ba20a21"
+          "sha256": "d3455e5c3784e893c6a476d3e4ac2602f19952275c4ad7cd588361bd7a317f3d"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "bb950bb7883b0d3779ce8c08e5167413eba5b7141a99a0b0d97ba33932d0d7e8"
+          "sha256": "96d0de2471fabe97335cf66063d63875b823521b0549830b5e3f3a77b2e7ccfb"
         }
       ]
     }
