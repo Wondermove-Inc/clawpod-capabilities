@@ -56,7 +56,7 @@ def parse_skill_frontmatter(path: Path) -> dict[str, str]:
     return metadata
 
 
-def validate_entry(entry: object, position: int, seen: set[tuple[str, str]]) -> None:
+def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]) -> None:
     label = f"capabilities[{position}]"
     if not isinstance(entry, dict):
         fail(f"{label} must be an object")
@@ -133,9 +133,9 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str]]) -> 
     if required_file.name not in listed_paths:
         fail(f"{label}.files must include {required_file.name}")
 
-    key = (capability_id, version)
+    key = (capability_type, capability_id, version)
     if key in seen:
-        fail(f"duplicate capability version: {capability_id}@{version}")
+        fail(f"duplicate capability version: {capability_type}:{capability_id}@{version}")
     seen.add(key)
 
     digest = entry.get("sha256")
@@ -177,7 +177,7 @@ def main() -> None:
     if not isinstance(capabilities, list):
         fail("registry capabilities must be an array")
 
-    seen: set[tuple[str, str]] = set()
+    seen: set[tuple[str, str, str]] = set()
     for position, entry in enumerate(capabilities):
         validate_entry(entry, position, seen)
 

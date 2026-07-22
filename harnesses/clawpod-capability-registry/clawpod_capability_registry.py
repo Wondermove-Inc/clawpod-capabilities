@@ -47,7 +47,7 @@ def emit_error(command: str, error: CapabilityError) -> None:
 def fetch_bytes(url: str, *, timeout: int = 20) -> bytes:
     if not url.startswith(RAW_BASE + "/"):
         raise CapabilityError("untrusted_source", "refusing to access a non-canonical registry URL")
-    request = urllib.request.Request(url, headers={"User-Agent": "clawpod-capability/0.1.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "clawpod-capability-registry/0.1.0"})
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             return response.read()
@@ -231,7 +231,7 @@ def rollback_installation(capability_id: str, target_root: str, backup_value: st
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="clawpod-capability")
+    parser = argparse.ArgumentParser(prog="clawpod-capability-registry")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("list", help="List registered capabilities")

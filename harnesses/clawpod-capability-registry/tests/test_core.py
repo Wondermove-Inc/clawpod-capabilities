@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "clawpod_capability.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "clawpod_capability_registry.py"
 SPEC = importlib.util.spec_from_file_location("clawpod_capability", MODULE_PATH)
 assert SPEC and SPEC.loader
 cap = importlib.util.module_from_spec(SPEC)

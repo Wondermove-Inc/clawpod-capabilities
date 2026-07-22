@@ -22,7 +22,7 @@ Do not substitute another repository or mirror.
 ### 2. Inspect the bootstrap pair
 
 - AgentSkill: [`skills/clawpod-capability-registry/SKILL.md`](skills/clawpod-capability-registry/SKILL.md)
-- CLI Harness: [`harnesses/clawpod-capability/harness.json`](harnesses/clawpod-capability/harness.json)
+- CLI Harness: [`harnesses/clawpod-capability-registry/harness.json`](harnesses/clawpod-capability-registry/harness.json)
 - Registry: [`registry/index.json`](registry/index.json)
 
 The Skill decides when and how to manage capabilities. The Harness performs deterministic registry search, verified installation, validation, update, backup, and rollback.
@@ -67,7 +67,7 @@ If a differing installation already exists, stop and inspect it. Use `--force` o
 - Run a read-only `list` or `search` command as the smoke test.
 - Do not treat installation as authorization for credential use, production impact, external publication, or destructive actions.
 
-Once the pair is active, use `clawpod-capability-registry` for decisions and `clawpod-capability` for execution. Both use the display title **ClawPod Capability Registry**.
+Once the pair is active, use `clawpod-capability-registry` for both Skill routing and Harness execution. The shared machine name is safe because Skills and CLI Harnesses are separate capability types and installation namespaces.
 
 ## CLI Harness Commands
 

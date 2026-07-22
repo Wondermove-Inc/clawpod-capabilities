@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "kind": "openclaw.harness.v1",
-  "name": "clawpod-capability",
+  "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, inspect, install, validate, update, and roll back AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
   "version": "0.1.0",
-  "entrypoint": "./clawpod_capability.py",
+  "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
     "An agent needs to discover reusable capabilities",

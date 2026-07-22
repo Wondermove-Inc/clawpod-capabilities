@@ -21,6 +21,6 @@ jobs:
       - name: Run repository tests
         run: python3 -m unittest discover -s tests -v
       - name: Run CLI Harness unit tests
-        run: python3 harnesses/clawpod-capability/tests/test_core.py
+        run: python3 harnesses/clawpod-capability-registry/tests/test_core.py
       - name: Run CLI Harness end-to-end tests
-        run: python3 harnesses/clawpod-capability/tests/test_full_e2e.py
+        run: python3 harnesses/clawpod-capability-registry/tests/test_full_e2e.py

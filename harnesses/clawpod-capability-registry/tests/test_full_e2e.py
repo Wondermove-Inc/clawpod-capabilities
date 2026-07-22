@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CLI = ROOT / "clawpod_capability.py"
+CLI = ROOT / "clawpod_capability_registry.py"
 
 
 class EndToEndTests(unittest.TestCase):

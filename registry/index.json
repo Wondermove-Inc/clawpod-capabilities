@@ -24,11 +24,11 @@
       ]
     },
     {
-      "id": "clawpod-capability",
+      "id": "clawpod-capability-registry",
       "type": "harness",
       "version": "0.1.0",
       "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
-      "path": "harnesses/clawpod-capability",
+      "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
         "platforms": ["linux", "macos", "windows"]
@@ -40,11 +40,11 @@
       "files": [
         {
           "path": "harness.json",
-          "sha256": "afc0e5ff3b9ae74f3b44fcb611927902039207c4ce3163b4ac4fb20325bf427d"
+          "sha256": "f18d5dcfe93cc096df3607ce52298deb69acfe1573592752772355f4f8dd8248"
         },
         {
-          "path": "clawpod_capability.py",
-          "sha256": "684c4c3930a2be836115d35cd66e242481599a66f4ec9a7f86e3778b935858ac"
+          "path": "clawpod_capability_registry.py",
+          "sha256": "15a6de4cca87b122d242282f221caa0d734b9586cb3dee617948105b3c9f5059"
         }
       ]
     }
