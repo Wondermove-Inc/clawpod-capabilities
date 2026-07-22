@@ -852,9 +852,8 @@
           "arg": "outputPath",
           "type": "option",
           "flag": "--output-path",
-          "valueType": "path",
-          "optional": true,
-          "pathRole": "output"
+          "valueType": "string",
+          "optional": true
         },
         {
           "arg": "transferRoot",

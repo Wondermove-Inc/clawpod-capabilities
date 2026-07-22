@@ -64,6 +64,10 @@ for cmd,c in commands.items():
  for arg in c.get('argMap',[]):
   if arg.get('valueType')=='json':arg['valueType']='string'
   if arg.get('valueType')=='boolean':arg['type']='booleanFlag'
+  # auth.login interprets outputPath relative to transferRoot itself so the
+  # OAuth bundle never falls back to the package cwd chosen by the argv bridge.
+  if cmd=='auth.login' and arg.get('arg')=='outputPath':
+   arg['valueType']='string';arg.pop('pathRole',None)
  # Rich JSON values are serialized as strings by the lifecycle argv bridge,
  # then decoded and checked against the command-specific schema by the CLI.
  for name in ('fields','params','body','batch'):

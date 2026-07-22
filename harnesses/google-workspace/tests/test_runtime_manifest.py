@@ -25,6 +25,9 @@ class RuntimeManifest(unittest.TestCase):
     if name in command['inputSchema']['properties']:
      self.assertEqual(command['inputSchema']['properties'][name],{'type':'string'})
   self.assertEqual(canonical,set(CONTRACTS))
+  login={arg['arg']:arg for arg in MAN['commands']['auth.login']['argMap']}
+  self.assertEqual(login['outputPath']['valueType'],'string')
+  self.assertNotIn('pathRole',login['outputPath'])
  def test_generator_is_idempotent(self):
   before={(ROOT/name).read_bytes() for name in ('harness.json','command_contracts.json')}
   subprocess.run([sys.executable,str(ROOT/'scripts/generate_schemas.py')],check=True)

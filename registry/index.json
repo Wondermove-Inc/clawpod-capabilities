@@ -166,11 +166,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "2d53499ef5bfe66ca5625ee9d721770ea12e5aad5d4d143f1d5abbebdbc9a05a"
+          "sha256": "419d5962e7380b9e778c495d65ce1528e5b6ec61f1e8177258b3cda9a44d12d4"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "3464f44b63f73bd66b1e00abdb89a9d96c7a107b3670f303511c77cee24c916c"
+          "sha256": "d8ff404c242fd7c3c36af3bd10b6d67084cf7982699f278fee6cef3dc8e6dd54"
         }
       ]
     }
