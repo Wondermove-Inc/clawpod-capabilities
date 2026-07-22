@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Route approved Gmail, Calendar, Drive, and OAuth work through the typed Google Workspace harness.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  }
+}

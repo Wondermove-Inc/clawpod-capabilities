@@ -28,6 +28,39 @@
       ]
     },
     {
+      "id": "google-workspace",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route approved Gmail, Calendar, Drive, and OAuth work through the typed Google Workspace harness.",
+      "path": "skills/google-workspace",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "0561f6e38d2142c68e8276e553b98bf5bc3447199b674b64de165244ccaeedff"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "bf1b996fcb2b9b972230cee94cbe22fb29e38ebe5b712a37f7ec5c4e5d8d258c"
+        },
+        {
+          "path": "references/scopes.md",
+          "sha256": "71fba0c139d605e376523c85db3ad49fb10f8afe50354995df52b5a273c14437"
+        }
+      ]
+    },
+    {
       "id": "clawpod-capability-registry",
       "type": "harness",
       "version": "0.1.0",
@@ -53,6 +86,67 @@
         {
           "path": "harness.json",
           "sha256": "f18d5dcfe93cc096df3607ce52298deb69acfe1573592752772355f4f8dd8248"
+        }
+      ]
+    },
+    {
+      "id": "google-workspace",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with stable JSON and safety controls.",
+      "path": "harnesses/google-workspace",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "google_workspace.py",
+          "sha256": "71b2b52035ab592431eb4618bcd3f26ddc9f7c9e1ccfd5fe319f23639aa99f73"
+        },
+        {
+          "path": "google_workspace_core/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "google_workspace_core/auth.py",
+          "sha256": "9169798f2927b10b6d74d7485b85a44759fe67489c240ead3f65d2662b3bda91"
+        },
+        {
+          "path": "google_workspace_core/catalog.py",
+          "sha256": "6e836d85d3525b3bc8d329ea44f2c5c0104903d893595f0009218fd654085ebf"
+        },
+        {
+          "path": "google_workspace_core/core.py",
+          "sha256": "f11851134b6761a04f8df63ada057d7ea790ac755fed3de625f0394bb2ea7e23"
+        },
+        {
+          "path": "google_workspace_core/mime.py",
+          "sha256": "536d6f62eb330243bb8e98b08276ccd7257bf996c668a28e3835e561a3a138c6"
+        },
+        {
+          "path": "google_workspace_core/security.py",
+          "sha256": "f268006e196f16c13fecbbe64af0f5e841387ffcc6bae58cd4dd0036a1bbfe14"
+        },
+        {
+          "path": "google_workspace_core/transport.py",
+          "sha256": "b6902c41564ec30542eeb4bfbec11a653bcd60f87570ce7ea97a111ce4a93d8a"
+        },
+        {
+          "path": "google_workspace_core/validation.py",
+          "sha256": "29220dd4a4bfbab08a856d1c839f5a0fd7a2ff8fe3c63bc601a4cb9b394c67fb"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "2c295e681307669298ac5cd03522ed2754fbbb16571eff31c559dc9e7f56d704"
         }
       ]
     }
