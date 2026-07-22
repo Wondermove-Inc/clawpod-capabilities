@@ -35,6 +35,7 @@ class RegistrySyncWorkflowTests(unittest.TestCase):
         self.assertIn("statuses: write", synchronization)
         self.assertIn('statuses/$generated_sha', synchronization)
         self.assertIn("context=validate", synchronization)
+        self.assertIn("[skip ci]", synchronization)
 
     def test_only_generated_registry_is_committed(self) -> None:
         self.assertIn("git -C candidate add registry/index.json", self.workflow)

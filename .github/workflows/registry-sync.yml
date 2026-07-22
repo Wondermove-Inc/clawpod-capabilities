@@ -114,7 +114,7 @@ jobs:
           git -C candidate config user.name "clawpod-registry-bot"
           git -C candidate config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C candidate add registry/index.json
-          git -C candidate commit -m "chore: synchronize capability registry"
+          git -C candidate commit -m "chore: synchronize capability registry [skip ci]"
           generated_sha="$(git -C candidate rev-parse HEAD)"
           git -C candidate remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${HEAD_REPOSITORY}.git"
           git -C candidate push origin "HEAD:${HEAD_REF}"
