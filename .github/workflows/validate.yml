@@ -20,3 +20,7 @@ jobs:
         run: python3 scripts/validate.py
       - name: Run validator tests
         run: python3 -m unittest discover -s tests -v
+      - name: Run CLI Harness unit tests
+        run: python3 harnesses/clawpod-capability/tests/test_core.py
+      - name: Run CLI Harness end-to-end tests
+        run: python3 harnesses/clawpod-capability/tests/test_full_e2e.py

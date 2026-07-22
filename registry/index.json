@@ -15,7 +15,38 @@
       "safety": {
         "risk": "write-safe",
         "approvalRequired": true
-      }
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "234b9df5f6f2765ecd19e1bef810b3e433a03f9da6a960e306278587eef16801"
+        }
+      ]
+    },
+    {
+      "id": "clawpod-capability",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
+      "path": "harnesses/clawpod-capability",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": ["linux", "macos", "windows"]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "harness.json",
+          "sha256": "afc0e5ff3b9ae74f3b44fcb611927902039207c4ce3163b4ac4fb20325bf427d"
+        },
+        {
+          "path": "clawpod_capability.py",
+          "sha256": "684c4c3930a2be836115d35cd66e242481599a66f4ec9a7f86e3778b935858ac"
+        }
+      ]
     }
   ]
 }

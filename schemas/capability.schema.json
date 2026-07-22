@@ -4,7 +4,7 @@
   "title": "ClawPod Capability Entry",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "type", "version", "description", "path", "compatibility", "safety"],
+  "required": ["id", "type", "version", "description", "path", "compatibility", "safety", "files"],
   "properties": {
     "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
     "type": {"enum": ["skill", "harness"]},
@@ -12,6 +12,19 @@
     "description": {"type": "string", "minLength": 10, "maxLength": 240},
     "path": {"type": "string", "pattern": "^(skills|harnesses)/[a-z0-9]+(?:-[a-z0-9]+)*$"},
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
     "compatibility": {
       "type": "object",
       "additionalProperties": false,
