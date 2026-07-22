@@ -10,6 +10,12 @@ def O(props=None,required=(),**kw):
  if required:d["required"]=list(required)
  d.update(kw);return d
 EMAIL=S(format="email",maxLength=320)
+COMPOSE=O({"from":EMAIL,"to":A(EMAIL,maxItems=2000),"cc":A(EMAIL,maxItems=2000),"bcc":A(EMAIL,maxItems=2000),"replyTo":EMAIL,"subject":S(maxLength=998),"text":S(maxLength=10000000),"html":S(maxLength=10000000),"headers":O({},additionalProperties=S(maxLength=10000)),"attachments":A(O({"path":S(maxLength=4096),"filename":S(maxLength=255),"mimeType":S(maxLength=255),"contentId":S(maxLength=998),"disposition":S(enum=["attachment","inline"])},("path",)),maxItems=100)},minProperties=1)
+FILTER_CRITERIA=O({"from":S(),"to":S(),"subject":S(),"query":S(maxLength=20000),"negatedQuery":S(maxLength=20000),"hasAttachment":B(),"excludeChats":B(),"size":I(minimum=0),"sizeComparison":S(enum=["larger","smaller"])},minProperties=1)
+FILTER_ACTION=O({"addLabelIds":A(maxItems=100),"removeLabelIds":A(maxItems=100),"forward":EMAIL},minProperties=1)
+SMTP_MSA=O({"host":S(maxLength=253),"port":I(minimum=1,maximum=65535),"username":S(maxLength=320),"password":S(maxLength=4096),"securityMode":S(enum=["none","ssl","starttls"])},("host","port","securityMode"))
+CONFERENCE=O({"createRequest":O({"requestId":S(maxLength=256),"conferenceSolutionKey":O({"type":S(enum=["eventHangout","eventNamedHangout","hangoutsMeet","addOn"])},("type",))},("requestId",)),"conferenceId":S(),"signature":S(),"notes":S(),"entryPoints":A(O({"entryPointType":S(enum=["video","phone","sip","more"]),"uri":S(format="uri"),"label":S(),"pin":S(),"accessCode":S(),"meetingCode":S(),"passcode":S(),"password":S()},("entryPointType","uri")),maxItems=20)},minProperties=1)
+DRIVE_RESTRICTIONS=O({"adminManagedRestrictions":B(),"copyRequiresWriterPermission":B(),"domainUsersOnly":B(),"downloadRestriction":O({"itemDownloadRestriction":S(enum=["restrictedForReaders","restrictedForWriters"])}),"driveMembersOnly":B(),"sharingFoldersRequiresOrganizerPermission":B()})
 CHANNEL=O({"id":S(maxLength=256),"type":S(enum=["web_hook"]),"address":S(format="uri",maxLength=2048),"token":S(maxLength=256),"params":O({"ttl":S(pattern="^[0-9]+$")}),"expiration":S(pattern="^[0-9]+$")},("id","type","address"))
 STOP_CHANNEL=O({"id":S(maxLength=256),"resourceId":S(maxLength=512)},("id","resourceId"))
 
@@ -44,24 +50,25 @@ def body_schema(command,method):
  if action in ("trash","untrash"):return O({"trashed":B()},("trashed",))
  if command.startswith("gmail.messages.") or command.startswith("gmail.drafts."):
   if action in ("send","create","update","insert","import"):
-   return O({"raw":S(),"compose":O({},**{"additionalProperties":True}),"threadId":S(),"labelIds":A(maxItems=100),"internalDateSource":S(enum=["receivedTime","dateHeader"]),"neverMarkSpam":B(),"processForCalendar":B()},minProperties=1)
+   return O({"raw":S(),"compose":COMPOSE,"threadId":S(),"labelIds":A(maxItems=100),"internalDateSource":S(enum=["receivedTime","dateHeader"]),"neverMarkSpam":B(),"processForCalendar":B()},minProperties=1)
  if command.startswith("gmail.threads.") and action=="modify":return O({"addLabelIds":A(maxItems=100),"removeLabelIds":A(maxItems=100)},minProperties=1)
  if command.startswith("gmail.settings."):
-  if ".filters.create" in command:return O({"criteria":O({},**{"additionalProperties":True}),"action":O({},**{"additionalProperties":True})},("criteria","action"))
+  if ".filters.create" in command:return O({"criteria":FILTER_CRITERIA,"action":FILTER_ACTION},("criteria","action"))
   if any(x in command for x in ("forwardingAddresses.create","delegates.create")):return O({"forwardingEmail":EMAIL,"delegateEmail":EMAIL},minProperties=1)
-  if ".sendAs." in command:return O({"sendAsEmail":EMAIL,"displayName":S(),"replyToAddress":EMAIL,"signature":S(maxLength=10000),"isDefault":B(),"treatAsAlias":B(),"smtpMsa":O({},**{"additionalProperties":True})},minProperties=1)
+  if ".sendAs." in command:return O({"sendAsEmail":EMAIL,"displayName":S(),"replyToAddress":EMAIL,"signature":S(maxLength=10000),"isDefault":B(),"treatAsAlias":B(),"smtpMsa":SMTP_MSA,"verificationStatus":S(enum=["accepted","pending"])},minProperties=1)
   if ".smime.insert" in command:return O({"pkcs12":S(),"encryptedKeyPassword":S()},("pkcs12","encryptedKeyPassword"))
-  return O({},**{"additionalProperties":True,"minProperties":1})
+  if ".smime.setDefault" in command:return O({})
+  return O({"enabled":B(),"emailAddress":EMAIL,"disposition":S(enum=["archive","leaveInInbox","markRead","trash"]),"accessWindow":S(enum=["allMail","fromNowOn"]),"expungeBehavior":S(enum=["archive","deleteForever","trash"]),"language":S(),"responseSubject":S(),"responseBodyPlainText":S(maxLength=10000),"responseBodyHtml":S(maxLength=20000),"restrictToContacts":B(),"startTime":S(pattern="^[0-9]+$"),"endTime":S(pattern="^[0-9]+$")},minProperties=1)
  if command.startswith("calendar.events."):
-  return O({"id":S(),"summary":S(),"description":S(),"location":S(),"start":O({"date":S(format="date"),"dateTime":S(format="date-time"),"timeZone":S()}),"end":O({"date":S(format="date"),"dateTime":S(format="date-time"),"timeZone":S()}),"attendees":A(O({"email":EMAIL,"optional":B(),"resource":B()}),maxItems=2000),"recurrence":A(maxItems=100),"status":S(),"visibility":S(),"transparency":S(),"conferenceData":O({},**{"additionalProperties":True})},minProperties=1)
+  return O({"id":S(),"summary":S(),"description":S(),"location":S(),"start":O({"date":S(format="date"),"dateTime":S(format="date-time"),"timeZone":S()}),"end":O({"date":S(format="date"),"dateTime":S(format="date-time"),"timeZone":S()}),"attendees":A(O({"email":EMAIL,"optional":B(),"resource":B(),"displayName":S(),"comment":S(),"additionalGuests":I(minimum=0)}),maxItems=2000),"recurrence":A(maxItems=100),"status":S(),"visibility":S(),"transparency":S(),"conferenceData":CONFERENCE,"extendedProperties":O({"private":O({},additionalProperties=S()),"shared":O({},additionalProperties=S())})},minProperties=1)
  if command.startswith("calendar.acl."):return O({"scope":O({"type":S(enum=["default","user","group","domain"]),"value":S()},("type",)),"role":S(enum=["none","freeBusyReader","reader","writer","owner"])},("scope","role") if action=="insert" else (),minProperties=1)
  if command.startswith("calendar.calendars."):return O({"summary":S(),"description":S(),"location":S(),"timeZone":S()},("summary",) if action=="insert" else (),minProperties=1)
  if command.startswith("calendar.calendarList."):return O({"id":S(),"colorRgbFormat":B(),"backgroundColor":S(),"foregroundColor":S(),"hidden":B(),"selected":B(),"summaryOverride":S()},("id",) if action=="insert" else (),minProperties=1)
  if command.startswith(("drive.files.","drive.folders.")):
   return O({"name":S(maxLength=32768),"mimeType":S(),"description":S(),"parents":A(maxItems=1),"trashed":B(),"starred":B(),"appProperties":O({},**{"additionalProperties":{"type":"string"}}),"properties":O({},**{"additionalProperties":{"type":"string"}})},minProperties=1)
  if command.startswith("drive.revisions."):return O({"keepForever":B(),"published":B(),"publishAuto":B(),"publishedOutsideDomain":B()},minProperties=1)
- if command.startswith("drive.sharedDrives."):return O({"name":S(maxLength=128),"hidden":B(),"restrictions":O({},**{"additionalProperties":True})},minProperties=1)
- return O({},**{"additionalProperties":True,"minProperties":1})
+ if command.startswith("drive.sharedDrives."):return O({"name":S(maxLength=128),"hidden":B(),"restrictions":DRIVE_RESTRICTIONS},minProperties=1)
+ return O({},minProperties=1)
 
 QUERY_TYPES={
  "q":S(maxLength=20000),"query":S(maxLength=20000),"orderBy":S(maxLength=1024),"timeMin":S(format="date-time"),"timeMax":S(format="date-time"),"syncToken":S(maxLength=4096),"startHistoryId":S(pattern="^[0-9]+$"),"pageToken":S(maxLength=4096),"corpora":S(enum=["user","domain","drive","allDrives"]),"spaces":S(pattern="^(drive|appDataFolder|photos)(,(drive|appDataFolder|photos))*$"),"driveId":S(),"includeItemsFromAllDrives":B(),"supportsAllDrives":B(),"sendUpdates":S(enum=["all","externalOnly","none"]),"sendNotificationEmail":B(),"transferOwnership":B(),"useDomainAdminAccess":B(),"moveToNewOwnersRoot":B(),"enforceSingleParent":B(),"removeParents":S(),"addParents":S(),"destination":S(),"text":S(),"showDeleted":B(),"singleEvents":B(),"showHiddenInvitations":B(),"maxAttendees":I(minimum=1),"eventTypes":A(maxItems=20),"iCalUID":S(),"privateExtendedProperty":A(maxItems=100),"sharedExtendedProperty":A(maxItems=100),"conferenceDataVersion":I(enum=[0,1]),"maxResults":I(minimum=1,maximum=2500),"mimeType":S(),"requestId":S(),"uploadType":S(enum=["simple","media","multipart","resumable"]),"acknowledgeAbuse":B(),"includePermissionsForView":S(enum=["published"]),"includeLabels":S(),"keepRevisionForever":B(),"ocrLanguage":S(),"ignoreDefaultVisibility":B(),"sendNotifications":B(),"prettyPrint":B()

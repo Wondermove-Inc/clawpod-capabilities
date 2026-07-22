@@ -2,7 +2,7 @@
 import json,os,sys,tempfile,time,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
-from google_workspace_core.catalog import catalog,operation
+from google_workspace_core.catalog import catalog,operation,preflight
 from google_workspace_core.core import run
 from google_workspace_core.scopes import required_scopes
 from google_workspace_core.state import issue_preview
@@ -23,13 +23,28 @@ class ReleaseAuditV3(unittest.TestCase):
   payload={'account':'a','params':{'fileId':'f'},'body':{'name':'n'}};self.mock([]);out,code=run('drive.files.update',payload);self.assertEqual((code,out['error']['code']),(4,'APPROVAL_REQUIRED'))
   self.mock([{'body':{'id':'f','etag':'e'}}]);out,code=run('drive.files.update',{**payload,'dryRun':True});self.assertEqual(code,0,out);self.assertEqual(out['data']['effectDigest'],out['effects'][0]['effectDigest'])
  def test_idempotency_replay_precedes_confirmation_consumption(self):
-  p={'account':'a','params':{'fileId':'f'},'body':{'name':'n'},'idempotencyKey':'k'};target=operation('drive.files.update',p['params'])['url'];token=issue_preview('drive.files.update','a',{**p,'dryRun':True},target,None);self.mock([{'body':{'id':'f'}}]);first,code=run('drive.files.update',{**p,'confirm':token});self.assertEqual(code,0,first)
+  p={'account':'a','params':{'fileId':'f'},'body':{'name':'n'},'idempotencyKey':'k'};target=operation('drive.files.update',p['params'])['url'];token=issue_preview('drive.files.update','a',{**p,'dryRun':True},target,None);self.mock([{'body':{'id':'f'}},{'body':{'id':'f'}}]);first,code=run('drive.files.update',{**p,'confirm':token});self.assertEqual(code,0,first)
   self.mock([]);second,code=run('drive.files.update',{**p,'confirm':token});self.assertEqual(code,0,second);self.assertEqual(second,first)
  def test_upload_modes_and_strict_range_resume(self):
   Path(self.t.name,'in').write_bytes(b'abc');p={'account':'a','transferRoot':self.t.name,'inputPath':'in','params':{'uploadType':'simple'},'body':{'name':'x'}};token=issue_preview('drive.files.upload','a',{**p,'dryRun':True},operation('drive.files.upload',p['params'])['url'],None);self.mock([{'body':{'id':'f'}}]);out,code=run('drive.files.upload',{**p,'confirm':token});self.assertEqual(code,0,out)
   Path(self.t.name,'out').write_bytes(b'a');self.mock([{'status':200,'bodyBase64':'YmM='}]);out,code=run('drive.files.download',{'account':'a','transferRoot':self.t.name,'outputPath':'out','overwrite':True,'resume':True,'params':{'fileId':'f'}});self.assertEqual(out['error']['code'],'PRECONDITION_FAILED')
  def test_pagination_does_not_fetch_past_max_items(self):
   self.mock([{'body':{'files':[{'id':'1'}],'nextPageToken':'more'}}]);out,code=run('drive.files.list',{'account':'a','allPages':True,'maxItems':1});self.assertEqual(code,0,out);self.assertEqual(out['page']['pagesFetched'],1)
+ def test_etag_preview_is_revalidated_without_fingerprint_change(self):
+  p={'account':'a','params':{'fileId':'f'},'body':{'name':'n'}};self.mock([{'body':{'id':'f','etag':'E1'}}]);preview,code=run('drive.files.update',{**p,'dryRun':True});self.assertEqual(code,0,preview)
+  self.mock([{'body':{'id':'f','etag':'E1'}},{'body':{'id':'f','etag':'E2'}}]);out,code=run('drive.files.update',{**p,'confirm':preview['data']['effectDigest']});self.assertEqual(code,0,out)
+ def test_action_preflights_never_get_mutation_url(self):
+  samples=[('gmail.messages.send',{}),('gmail.messages.import',{}),('calendar.events.move',{'calendarId':'c','eventId':'e','destination':'d'}),('calendar.calendars.clear',{'calendarId':'c'}),('drive.files.watch',{'fileId':'f'}),('drive.channels.stop',{})]
+  for command,params in samples:
+   mutation=operation(command,params)['url'];check=preflight(command,params)
+   self.assertFalse(check['method']=='GET' and check['url']==mutation,(command,check))
+ def test_first_page_size_is_capped_by_max_items(self):
+  import google_workspace_core.core as core
+  seen=[];original=core.ScriptedTransport
+  class Capture(original):
+   def request(self,*args,**kwargs):seen.append(kwargs.get('query',{}));return super().request(*args,**kwargs)
+  core.ScriptedTransport=Capture;self.addCleanup(setattr,core,'ScriptedTransport',original)
+  self.mock([{'body':{'files':[{'id':'1'}]}}]);out,code=run('drive.files.list',{'account':'a','allPages':True,'pageSize':100,'maxItems':1});self.assertEqual(code,0,out);self.assertEqual(seen[0]['pageSize'],1)
  def test_batch_halts_after_systemic_auth(self):
   self.mock([{'status':401,'error':'invalidCredentials'}]);out,code=run('drive.files.get',{'account':'a','batch':[{'params':{'fileId':'1'}},{'params':{'fileId':'2'}}]});self.assertEqual(code,9);self.assertEqual(out['data']['haltedOn'],'AUTH_EXPIRED');self.assertFalse(out['data']['items'][1]['launched'])
  def test_watch_requires_exact_configured_receiver(self):

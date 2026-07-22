@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import operation
 from google_workspace_core.scopes import required_scopes
-from google_workspace_core.contracts import body_schema,QUERY_TYPES,S
+from google_workspace_core.contracts import body_schema,QUERY_TYPES,S,O,A
 p=ROOT/'harness.json';doc=json.loads(p.read_text())
 SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
 PAGED={'list','search','instances'}
@@ -36,7 +36,9 @@ def allowed_query(cmd,action):
 for cmd,c in doc['commands'].items():
  s=c['inputSchema'];props=s['properties'];props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
  if cmd.startswith('auth.'):
-  props['params']={'type':'object','additionalProperties':False,'properties':{}};c['requiredScopes']=[];continue
+  props['params']={'type':'object','additionalProperties':False,'properties':{}}
+  props['body']=O({'profiles':A(S(),maxItems=32)}) if cmd=='auth.scopes.check' else O({})
+  c['requiredScopes']=[];continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()
  for key in sorted(allowed_query(cmd,op['action'])):
@@ -54,4 +56,16 @@ for cmd,c in doc['commands'].items():
  if cmd=='drive.files.upload':s['required']=list(dict.fromkeys(s['required']+['inputPath','transferRoot']))
  if cmd in ('drive.files.download','drive.files.export'):s['required']=list(dict.fromkeys(s['required']+['outputPath','transferRoot']))
  c['requiredScopes']=sorted(required_scopes(cmd,c.get('safetyClasses',[])))
+
+def close_objects(node):
+ if isinstance(node,dict):
+  if node.get('type')=='object':node.setdefault('additionalProperties',False)
+  for value in node.values():close_objects(value)
+ elif isinstance(node,list):
+  for value in node:close_objects(value)
+for command in doc['commands'].values():
+ # Batch items are intentionally typed from the command's own accepted fields.
+ schema=command['inputSchema'];item_props={k:v for k,v in schema.get('properties',{}).items() if k!='batch'}
+ schema['properties']['batch']['items']={'type':'object','additionalProperties':False,'properties':item_props}
+ close_objects(command['inputSchema']);close_objects(command['outputSchema'])
 p.write_text(json.dumps(doc,indent=2,ensure_ascii=False)+'\n')

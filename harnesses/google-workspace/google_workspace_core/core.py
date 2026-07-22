@@ -3,7 +3,7 @@ import base64, hashlib, json, os, time, uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from .auth import CredentialProvider,AuthError
-from .catalog import catalog,operation,service_for,OperationError
+from .catalog import catalog,operation,preflight,service_for,OperationError
 from .mime import compose_message
 from .security import atomic_write,digest,redact,safe_path,append_audit,canonical
 from .transport import Transport,ScriptedTransport,HTTPError,retry_request
@@ -52,9 +52,8 @@ def local_auth(command,payload,out):
 def run(command,payload):
  account=payload.get("account") or os.environ.get("GOOGLE_WORKSPACE_ACCOUNT"); out=envelope(command,payload,account)
  if command not in catalog(): return fail(command,payload,"INVALID_ARGUMENT","unknown command",account=account)
- try: validate(payload,catalog()[command]["inputSchema"],command,semantic=False)
- except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
- except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
+ # Validate batch items independently so one malformed item produces a per-item
+ # PARTIAL_FAILURE instead of rejecting the entire batch before any work starts.
  if payload.get("batch") is not None:
   if not isinstance(payload["batch"],list) or not payload["batch"]:return fail(command,payload,"INVALID_ARGUMENT","batch must be a non-empty array",account=account)
   base={k:v for k,v in payload.items() if k!="batch"};results=[];failed=0;halted=None
@@ -68,6 +67,9 @@ def run(command,payload):
   out["data"]={"items":results,"succeeded":len(results)-failed,"failed":failed,"haltedOn":halted}
   if failed:out["ok"]=False;out["error"]={"code":"PARTIAL_FAILURE","message":f"{failed} of {len(results)} batch items failed","retryable":False,"details":{},"remediation":"Inspect each item result and retry only failed safe items"};return out,9
   return out,0
+ try: validate(payload,catalog()[command]["inputSchema"],command,semantic=False)
+ except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
+ except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  if command.startswith("auth."): return local_auth(command,payload,out)
  try: op=operation(command,payload.get("params",{}))
  except OperationError as e:
@@ -89,7 +91,7 @@ def run(command,payload):
  try:validate(payload,None,command,semantic=True)
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  headers={"Authorization":"Bearer "+token}
- target=op["url"];observed_etag=payload.get("ifMatch")
+ target=op["url"];observed_etag=None
  # Receiver configuration is an explicit capability boundary, never inferred.
  if command=='gmail.watch.start':
   configured=os.environ.get('GOOGLE_WORKSPACE_PUBSUB_TOPIC')
@@ -108,17 +110,24 @@ def run(command,payload):
    return prior["result"],0
  effect=digest(command,account,payload)
  if mutating:
+  check=preflight(command,payload.get("params",{}))
   if payload.get("preview") or payload.get("dryRun"):
    if payload.get("dryRun"):
     try:
-     _,probe_headers,probe,_=retry_request(transport,"GET",target,headers=headers,query={"fields":"id,etag"},timeout=payload.get("timeoutMs",30000)/1000,safe=True)
-     observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag") or observed_etag
+     if check["method"]:
+      _,probe_headers,probe,_=retry_request(transport,check["method"],check["url"],headers=headers,query=check["query"],timeout=payload.get("timeoutMs",30000)/1000,safe=True)
+      if check["etag"]:observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag")
      if payload.get("ifMatch") and observed_etag and payload["ifMatch"]!=observed_etag:return fail(command,payload,"PRECONDITION_FAILED","dry-run observed a different target ETag",account=account)
     except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
    preview_token=issue_preview(command,account,payload,target,observed_etag)
    out["effects"]=[{"kind":"planned","targets":redact(payload.get("params",{})),"before":None,"after":redact(payload.get("body",{})),"recoverability":"permanent" if "destructive" in safety else "provider-dependent","effectDigest":preview_token}]
    out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":preview_token,"duplicateFingerprint":effect,"requiredScopes":needed,"target":target,"etag":observed_etag};return out,0
   if not payload.get('confirm'):return fail(command,payload,'APPROVAL_REQUIRED','all mutations require a successful dry-run preview and --confirm',account=account)
+  try:
+   if check["method"] and check["etag"]:
+    _,probe_headers,probe,_=retry_request(transport,check["method"],check["url"],headers=headers,query=check["query"],timeout=payload.get("timeoutMs",30000)/1000,safe=True)
+    observed_etag=(probe.get("etag") if isinstance(probe,dict) else None) or probe_headers.get("ETag")
+  except HTTPError as e:return fail(command,payload,provider_error(e),str(e),status=e.status,reason=e.reason,account=account)
   ok,reason=consume_preview(payload.get("confirm",""),command,account,payload,target,observed_etag)
   if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=account)
   effect=payload['confirm']
@@ -135,6 +144,8 @@ def run(command,payload):
  params.update(op.get("query",{}))
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
  if payload.get("pageSize"):params["pageSize"]=payload["pageSize"]
+ if payload.get("allPages") and payload.get("maxItems") is not None:
+  params["pageSize"]=min(params.get("pageSize",500),payload["maxItems"])
  if payload.get("pageToken"):
   try:params["pageToken"]=unbind_token(payload["pageToken"],command,account,{k:v for k,v in params.items() if k!="pageToken"})
   except ValueError as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)

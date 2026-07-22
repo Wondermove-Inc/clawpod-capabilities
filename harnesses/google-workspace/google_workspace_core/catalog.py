@@ -124,3 +124,78 @@ def operation(command:str, params:dict) -> dict:
  else: raise OperationError("unsupported service")
  url=base+"/"+path
  return {"service":service,"version":version,"action":action,"method":method,"url":url,"query":query,"pathParams":used}
+
+def preflight(command:str, params:dict) -> dict:
+ """Return a provider-valid non-mutating check for a mutation."""
+ op=operation(command,params);url=op["url"];action=command.rsplit(".",1)[-1]
+ suffixes=("/modify","/trash","/untrash","/send","/verify","/setDefault","/clear","/transferOwnership","/move","/copy","/watch","/hide","/unhide")
+ if action in ("patch","update","delete","move","trash","untrash","hide","unhide","setDefault"):
+  read=url
+  for suffix in suffixes:
+   if read.endswith(suffix):read=read[:-len(suffix)]
+  return {"method":"GET","url":read,"query":{"fields":"id,etag"},"etag":True,"strategy":"resource"}
+ if action in ("create","insert","import","send","quickAdd","start","watch","batchModify","batchDelete","stop","clear","transferOwnership","copy") or command.endswith(".emptyTrash"):
+  if command.startswith("gmail."):return {"method":"GET","url":"https://gmail.googleapis.com/gmail/v1/users/me/profile","query":{},"etag":False,"strategy":"identity"}
+  if command.startswith("calendar."):
+   if command=="calendar.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   cal=params.get("calendarId");check=("https://www.googleapis.com/calendar/v3/calendars/"+_q(cal)) if cal else "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+   return {"method":"GET","url":check,"query":{},"etag":False,"strategy":"parent"}
+  if command.startswith("drive."):
+   if command=="drive.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   fid=params.get("fileId");check=("https://www.googleapis.com/drive/v3/files/"+_q(fid)) if fid else "https://www.googleapis.com/drive/v3/about"
+   return {"method":"GET","url":check,"query":{"fields":"id"} if fid else {"fields":"user"},"etag":False,"strategy":"parent-or-identity"}
+ return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-input"}
+
+def preflight(command:str, params:dict) -> dict:
+ """Return a provider-valid non-mutating check for a mutation."""
+ op=operation(command,params);url=op["url"];action=command.rsplit(".",1)[-1]
+ suffixes=("/modify","/trash","/untrash","/send","/verify","/setDefault","/clear","/transferOwnership","/move","/copy","/watch","/hide","/unhide")
+ if action in ("patch","update","delete","move","trash","untrash","hide","unhide","setDefault"):
+  read=url
+  for suffix in suffixes:
+   if read.endswith(suffix):read=read[:-len(suffix)]
+  return {"method":"GET","url":read,"query":{"fields":"id,etag"},"etag":True,"strategy":"resource"}
+ if action in ("create","insert","import","send","quickAdd","start","watch","batchModify","batchDelete","stop","clear","transferOwnership","copy") or command.endswith(".emptyTrash"):
+  if command.startswith("gmail."):return {"method":"GET","url":"https://gmail.googleapis.com/gmail/v1/users/me/profile","query":{},"etag":False,"strategy":"identity"}
+  if command.startswith("calendar."):
+   if command=="calendar.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   cal=params.get("calendarId");check=("https://www.googleapis.com/calendar/v3/calendars/"+_q(cal)) if cal else "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+   return {"method":"GET","url":check,"query":{},"etag":False,"strategy":"parent"}
+  if command.startswith("drive."):
+   if command=="drive.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   fid=params.get("fileId");check=("https://www.googleapis.com/drive/v3/files/"+_q(fid)) if fid else "https://www.googleapis.com/drive/v3/about"
+   return {"method":"GET","url":check,"query":{"fields":"id"} if fid else {"fields":"user"},"etag":False,"strategy":"parent-or-identity"}
+ return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-input"}
+
+def preflight(command:str, params:dict) -> dict:
+ """Return a provider-valid, non-mutating check for a mutation.
+
+ The mapping is deliberately independent of the mutation URL.  ``etag`` says
+ whether the returned resource is the object whose version guards execution.
+ A null URL is an explicit local-only precondition for operations for which the
+ provider exposes no useful read (notably channel stop and mailbox actions).
+ """
+ op=operation(command,params); url=op["url"]
+ action=command.rsplit(".",1)[-1]
+ # Existing-resource mutations can be checked through the canonical resource.
+ suffixes=("/modify","/trash","/untrash","/send","/verify","/setDefault","/clear","/transferOwnership","/move","/copy","/watch","/hide","/unhide")
+ if action in ("patch","update","delete","move","trash","untrash","hide","unhide","setDefault"):
+  read=url
+  for suffix in suffixes:
+   if read.endswith(suffix):read=read[:-len(suffix)]
+  return {"method":"GET","url":read,"query":{"fields":"id,etag"},"etag":True,"strategy":"resource"}
+ # Creates validate a readable parent/identity, without pretending it has an ETag.
+ if action in ("create","insert","import","send","quickAdd","start","watch","batchModify","batchDelete","stop","clear","transferOwnership","copy") or command.endswith(".emptyTrash"):
+  if command.startswith("gmail."):
+   return {"method":"GET","url":"https://gmail.googleapis.com/gmail/v1/users/me/profile","query":{},"etag":False,"strategy":"identity"}
+  if command.startswith("calendar."):
+   if command=="calendar.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   cal=params.get("calendarId")
+   check=("https://www.googleapis.com/calendar/v3/calendars/"+_q(cal)) if cal else "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+   return {"method":"GET","url":check,"query":{},"etag":False,"strategy":"parent"}
+  if command.startswith("drive."):
+   if command=="drive.channels.stop":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+   fid=params.get("fileId")
+   check=("https://www.googleapis.com/drive/v3/files/"+_q(fid)) if fid else "https://www.googleapis.com/drive/v3/about"
+   return {"method":"GET","url":check,"query":{"fields":"id"} if fid else {"fields":"user"},"etag":False,"strategy":"parent-or-identity"}
+ return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-input"}

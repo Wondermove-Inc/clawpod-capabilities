@@ -122,15 +122,15 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "0dbd4ecbe8820947e9697041549b0b7cf0dd01ad848a0a2a21a499e14e1fa361"
+          "sha256": "0a97987d29d7902a540f07e11313fac9f81a33b1f0e3d888ff684858f696d4c4"
         },
         {
           "path": "google_workspace_core/contracts.py",
-          "sha256": "b775ac21958a9574ec7067dd87eae30d0893d1c3a7f898bbbfb1ddfb42bb7107"
+          "sha256": "85e1b32695fdbad962d869124995a89d164e31c90e0ab63b27c115a0bd7f79b3"
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "f8827b95052348895eef6970cc1992bd680b5b5aba0ddaf413d1638ddb17d583"
+          "sha256": "ececc22f15ee675423736c9633a79b886ed3f03e184b967e5b904b5a56ffd036"
         },
         {
           "path": "google_workspace_core/mime.py",
@@ -158,11 +158,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "d3455e5c3784e893c6a476d3e4ac2602f19952275c4ad7cd588361bd7a317f3d"
+          "sha256": "7e505489b1ab73f21783e632ca865ca047db551cc4fe8e10cb97845cf6a8f241"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "96d0de2471fabe97335cf66063d63875b823521b0549830b5e3f3a77b2e7ccfb"
+          "sha256": "b1c4713203898feed2cac8eb8090638fdbc41280348c00a8eefde7aa2cc1cdf6"
         }
       ]
     }
