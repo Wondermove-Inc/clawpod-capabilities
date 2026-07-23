@@ -30,16 +30,18 @@ Use `https://github.com/Wondermove-Inc/clawpod-capabilities` as the canonical re
    - Reject plaintext secrets, private endpoints, undeclared side effects, and untracked generated files.
 
 5. **Install through the approved lifecycle**
-   - Use the environment's first-class Skill or CLI Harness lifecycle surface. Do not invent commands or manually mutate managed lifecycle state.
-   - Verify the declared digest when present.
+   - Select every capability with explicit `type` (`skill` or `harness`); same-id entries are intentionally type-disambiguated.
+   - A Skill may declare an exact linked Harness `{id, version}` independently of the Skill version. Treat that pair as one installation unit.
+   - For linked Skills, provide explicit Skill and Harness roots. Install, update, and validate both packages transactionally with declared digest verification; roll back both destinations on partial failure.
+   - Standalone packages retain their normal single-root lifecycle behavior.
    - Keep installation separate from risky invocation. Installation never authorizes credential use, production impact, external publication, or destructive action.
    - Obtain explicit approval for shared-state, elevated, credentialed, externally visible, destructive, or production-impacting actions.
 
 6. **Validate before use**
-   - Confirm required files and referenced paths exist.
+   - Confirm required files and referenced paths exist and match registry digests.
    - For a Skill, verify frontmatter, positive triggers, nearby negative triggers, instructions, and fresh-agent discoverability.
-   - For a Harness, verify its manifest, entrypoint, command discovery, structured output, and representative success and failure paths.
-   - Run the documented smoke test through the real invocation path. File presence alone is not successful installation.
+   - For every installed or linked Harness, validate the runtime manifest against current Gateway schemas, establish trust through the approved lifecycle, confirm prepare/run eligibility, and execute a representative bounded `prepare → run` path.
+   - Do not report a linked Skill installation complete until both artifacts pass these checks. File presence alone is not successful installation.
 
 7. **Deliver the post-install onboarding handoff**
    - Immediately after validation, determine whether the capability requires login, OAuth consent, account linking, scopes, credentials, browser/device interaction, or tenant configuration.

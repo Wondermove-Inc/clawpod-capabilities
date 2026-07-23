@@ -16,7 +16,7 @@ SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9
 SHA256 = re.compile(r"^[a-f0-9]{64}$")
 RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "credential-related"}
 HARNESS_SAFETY_CLASSES = {"readOnly", "writeSafe", "modifiesSource", "destructive", "secretUse", "externalSideEffect", "authReuse", "humanAccountAction"}
-ALLOWED_KEYS = {"id", "type", "version", "description", "path", "sha256", "compatibility", "safety", "files"}
+ALLOWED_KEYS = {"id", "type", "version", "description", "path", "sha256", "compatibility", "safety", "files", "linkedHarness"}
 
 
 def fail(message: str) -> None:
@@ -156,6 +156,14 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         fail(f"duplicate capability version: {capability_type}:{capability_id}@{version}")
     seen.add(key)
 
+    linked = entry.get("linkedHarness")
+    if linked is not None and (
+        capability_type != "skill" or not isinstance(linked, dict) or set(linked) != {"id", "version"}
+        or not isinstance(linked.get("id"), str) or not NAME.fullmatch(linked["id"])
+        or not isinstance(linked.get("version"), str) or not SEMVER.fullmatch(linked["version"])
+    ):
+        fail(f"{label}.linkedHarness must contain a valid Harness id and version")
+
     digest = entry.get("sha256")
     if digest is not None and (not isinstance(digest, str) or not SHA256.fullmatch(digest)):
         fail(f"{label}.sha256 must be a lowercase SHA-256 digest")
@@ -198,6 +206,11 @@ def main() -> None:
     seen: set[tuple[str, str, str]] = set()
     for position, entry in enumerate(capabilities):
         validate_entry(entry, position, seen)
+    available={(entry["type"],entry["id"],entry["version"]) for entry in capabilities}
+    for entry in capabilities:
+        linked=entry.get("linkedHarness")
+        if linked and ("harness",linked["id"],linked["version"]) not in available:
+            fail(f"linked harness missing for {entry['id']}@{entry['version']}")
 
     print(f"OK: validated {len(capabilities)} capability entries")
 

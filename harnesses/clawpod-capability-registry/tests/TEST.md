@@ -1,48 +1,27 @@
-# Test Plan
+# ClawPod Capability Registry phase 1 test evidence
 
-## Inventory
+Phase 1 is additive infrastructure only. No package in the checked-in registry declares `linkedHarness`; existing packages retain legacy standalone semantics. Tests use temporary roots and deterministic payloads without network or live installation.
 
-- `test_core.py`: registry selection, path safety, digest validation, installation, update, and rollback unit tests.
-- `test_full_e2e.py`: subprocess JSON behavior and real canonical-registry read test.
+## Coverage
 
-## Unit Coverage
+- Optional typed exact `linkedHarness: {id, version}` metadata.
+- Skill and Harness versions may differ; the exact declared Harness version is selected.
+- Explicit type selection and same-id ambiguity rejection.
+- Transactional linked Skill plus Harness install, update, and validation with explicit roots.
+- Digest verification, blocked missing-root installation, and partial-failure rollback.
+- Existing standalone Skill/Harness install, validation, update, rollback, and entrypoint behavior.
+- Backward-compatible registry generation when no package declares a link.
+- Deterministic local list and not-found behavior without canonical-registry network access.
 
-- Reject non-canonical network URLs.
-- Select latest compatible registry entry and exact versions.
-- Reject unsafe relative paths and malformed file manifests.
-- Install declared files only after SHA-256 verification.
-- Reject duplicate installation.
-- Detect modified installed files.
-- Update with a local backup.
-- Roll back to the previous local version.
+## Commands and results
 
-## End-to-End Coverage
+- `pytest -q harnesses/clawpod-capability-registry/tests tests/test_registry_sync.py tests/test_validator.py` → `21 passed in 0.35s`
+- `pytest -q` → `182 passed, 151 subtests passed in 8.91s`
+- `python3 scripts/sync_registry.py --check` → synchronized
+- `python3 scripts/validate.py` → `OK: validated 6 capability entries`
+- trusted-base compatibility: `origin/main:scripts/sync_registry.py --root <candidate> --stdout` byte-compared equal to checked-in `registry/index.json`
+- `py_compile`, secret-pattern scan, Registry Harness unsupported-`minLength` scan, and `git diff --check` → passed
 
-- Invoke the entrypoint through subprocess and verify JSON success and error envelopes.
-- Fetch the real public canonical registry and verify its repository identity and schema.
-- Confirm the installed CLI Harness lifecycle can discover and run read-only commands.
+## Release state
 
-## Safety Checks
-
-- No credentials are required or stored.
-- Network access is restricted to the canonical raw GitHub path.
-- Package paths cannot escape the explicit target root.
-- Updates preserve a rollback backup before replacement.
-
-## Test Results
-
-```text
-test_core.py: 6 tests passed
-- canonical source restriction
-- version selection
-- path traversal rejection
-- install/validate/update/rollback workflow
-- modified-file detection
-- provenance secret-field check
-
-test_full_e2e.py: 2 tests passed
-- real canonical registry list through subprocess
-- structured JSON not-found failure through subprocess
-```
-
-Total: 8 tests, 100% passed. The end-to-end read test uses the real public GitHub backend. Write-path tests use temporary local directories and deterministic mocked package payloads.
+The Registry Skill and Harness are version `0.2.0`. Their documentation describes the optional pair lifecycle, Gateway validation/trust requirement, and representative bounded `prepare → run` verification. Phase 2 package declarations and the GitHub capability pair are intentionally excluded until phase 1 is merged and trusted validation recognizes the additive metadata.
