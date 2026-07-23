@@ -38,7 +38,7 @@ def provider_error(e):
 def managed_browser_url(body):
  return body.get("managedBrowserDevtoolsUrl") or os.environ.get("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL") or os.environ.get("OPENCLAW_BROWSER_CDP_URL")
 def local_auth(command,payload,out):
- provider=CredentialProvider(); action=command.split(".",1)[1]
+ provider=CredentialProvider(payload.get("credentialPath")); action=command.split(".",1)[1]
  if action=="scopes.list": out["data"]={"profiles":SCOPES}; return out,0
  if action=="login":
   from .oauth_desktop import desktop_login,LoginError
@@ -51,7 +51,9 @@ def local_auth(command,payload,out):
   out["data"]={"resource":result};return out,0
  if action=="accounts.list":
   if not provider.path: out["data"]={"items":[]};return out,0
-  doc=json.loads(Path(provider.path).read_text()); items=doc.get("accounts",doc);out["data"]={"items":[{"alias":a,"email":v.get("email"),"subject":v.get("subject_hash"),"scopes":v.get("scopes",[])} for a,v in items.items()]};return out,0
+  try:doc=provider.read_document()
+  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
+  items=doc.get("accounts",doc);out["data"]={"items":[{"alias":a,"email":v.get("email"),"subject":v.get("subject_hash"),"scopes":v.get("scopes",[])} for a,v in items.items()]};return out,0
  try:item=provider.load(payload.get("account"))
  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
  safe={k:item.get(k) for k in ("email","subject_hash","scopes","expires_at")}
@@ -94,7 +96,7 @@ def run(command,payload):
  mock=os.environ.get("GOOGLE_WORKSPACE_MOCK_HTTP"); transport=ScriptedTransport(mock) if mock else Transport()
  try:
   if mock: token="synthetic-test-token";meta={"email":"fake@example.invalid","subject_hash":"fake","scopes":sum(SCOPES.values(),[])+["https://www.googleapis.com/auth/gmail.settings.basic","https://www.googleapis.com/auth/gmail.settings.sharing","https://www.googleapis.com/auth/calendar","https://www.googleapis.com/auth/calendar.acl"]}
-  else: token,meta=CredentialProvider().token(account)
+  else: token,meta=CredentialProvider(payload.get("credentialPath")).token(account)
   needed=enforce(command,meta.get("scopes",[]),safety)
  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=account)
  except PermissionError as e:return fail(command,payload,"INSUFFICIENT_SCOPE",str(e),account=account)

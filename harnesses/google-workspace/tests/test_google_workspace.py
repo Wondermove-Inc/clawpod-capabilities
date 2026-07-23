@@ -1,10 +1,13 @@
 from __future__ import annotations
 import base64,json,os,stat,subprocess,tempfile,unittest
+from unittest.mock import patch
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; CLI=ROOT/'google_workspace.py'; MAN=json.loads((ROOT/'harness.json').read_text())
 import sys
 sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import catalog,operation
+from google_workspace_core.contracts import GMAIL_RAW_MAX_CHARS
+from google_workspace_core.core import run
 from google_workspace_core.mime import compose_message
 from google_workspace_core.security import digest,safe_path,atomic_write,redact
 from google_workspace_core.transport import ScriptedTransport,retry_request,HTTPError
@@ -48,6 +51,22 @@ class Tests(unittest.TestCase):
   p=self.mock([{'status':503,'error':'backendError'}]);r=self.cli('gmail.messages.send','--account','work','--body',json.dumps(body),'--confirm',effect,'--json',env={'GOOGLE_WORKSPACE_MOCK_HTTP':p});self.assertEqual(r.returncode,4);self.assertEqual(json.loads(r.stdout)['error']['code'],'APPROVAL_REQUIRED')
  def test_mime_crlf_and_unicode(self):
   raw,atts=compose_message({'to':['a@example.invalid'],'subject':'안녕','text':'body'});decoded=base64.urlsafe_b64decode(raw+'='*(-len(raw)%4));self.assertIn(b'\r\n',decoded);self.assertEqual(atts,[])
+ def test_multipart_mime_is_deterministic(self):
+  compose={'to':['a@example.invalid'],'subject':'rich','text':'plain','html':'<p>rich</p>'}
+  self.assertEqual(compose_message(compose)[0],compose_message(compose)[0])
+ def test_compose_preview_confirm_and_changed_content(self):
+  with tempfile.TemporaryDirectory() as d:
+   state=str(Path(d)/'state.json');mock=self.mock([{'body':{'id':'sent'}}]);env={'GOOGLE_WORKSPACE_MOCK_HTTP':mock,'GOOGLE_WORKSPACE_STATE_FILE':state}
+   body={'compose':{'to':['sink@example.invalid'],'subject':'s','text':'plain','html':'<p>rich</p>'}}
+   preview=self.cli('gmail.messages.send','--account','work','--dry-run','--body',json.dumps(body),'--json',env=env);self.assertEqual(preview.returncode,0,preview.stdout)
+   token=json.loads(preview.stdout)['data']['effectDigest']
+   changed={'compose':{**body['compose'],'html':'<p>changed</p>'}}
+   rejected=self.cli('gmail.messages.send','--account','work','--body',json.dumps(changed),'--confirm',token,'--json',env=env);self.assertEqual(rejected.returncode,4);self.assertEqual(json.loads(rejected.stdout)['error']['code'],'APPROVAL_REQUIRED')
+   confirmed=self.cli('gmail.messages.send','--account','work','--body',json.dumps(body),'--confirm',token,'--json',env=env);self.assertEqual(confirmed.returncode,0,confirmed.stdout);self.assertEqual(json.loads(confirmed.stdout)['data']['resource']['id'],'sent')
+ def test_realistic_long_html_and_excessive_raw_limit(self):
+  schema=catalog()['gmail.messages.send']['inputSchema']
+  validate({'account':'work','body':{'compose':{'to':['sink@example.invalid'],'subject':'rich','html':'<p>'+('x'*100000)+'</p>'}}},schema,'gmail.messages.send',semantic=False)
+  with self.assertRaises(ValidationError):validate({'account':'work','body':{'raw':'x'*(GMAIL_RAW_MAX_CHARS+1)}},schema,'gmail.messages.send',semantic=False)
  def test_header_injection(self):
   with self.assertRaises(ValueError):compose_message({'to':['a@example.invalid\r\nBcc:x'],'subject':'x','text':'y'})
  def test_invalid_timezone(self):
@@ -74,6 +93,14 @@ class Tests(unittest.TestCase):
  def test_input_json_stdin(self):
   m=self.mock([{'body':{'id':'f'}}]);r=self.cli('drive.files.get','--input-json','-','--json',input='{"account":"work","params":{"fileId":"f"}}',env={'GOOGLE_WORKSPACE_MOCK_HTTP':m});self.assertEqual(r.returncode,0);self.assertEqual(json.loads(r.stdout)['data']['resource']['id'],'f')
  def test_secret_redaction(self):self.assertEqual(redact({'access_token':'CANARY','nested':{'body':'private'}}),{'access_token':'[REDACTED]','nested':{'body':'[REDACTED]'}})
+ def test_explicit_credential_path_without_environment_and_alias_selection(self):
+  with tempfile.TemporaryDirectory() as d:
+   credential=Path(d)/'credentials.json';credential.write_text(json.dumps({'accounts':{'work':{'access_token':'CANARY','expires_at':4102444800,'email':'work@example.invalid','subject_hash':'subject','scopes':['https://www.googleapis.com/auth/drive.readonly']},'other':{'access_token':'OTHER','expires_at':4102444800,'email':'other@example.invalid','subject_hash':'other','scopes':[]}}}));credential.chmod(0o600)
+   payload={'account':'work','credentialPath':str(credential),'params':{'fileId':'f'}}
+   with patch.dict(os.environ,{},clear=True),patch('google_workspace_core.core.retry_request',return_value=(200,{}, {'id':'f'},0)):
+    out,code=run('drive.files.get',payload)
+   self.assertEqual(code,0,out);self.assertEqual(out['account']['email'],'work@example.invalid');self.assertNotIn(str(credential),json.dumps(out))
+   cli=self.cli('auth.accounts.status','--account','other','--credential-path',str(credential),'--json',env={'GOOGLE_WORKSPACE_CREDENTIAL_FILE':''});self.assertEqual(cli.returncode,0,cli.stdout);self.assertEqual(json.loads(cli.stdout)['data']['resource']['email'],'other@example.invalid')
  def test_login_setup_requirement(self):
   r=self.cli('auth.login','--account','work','--preview','--json');self.assertEqual(r.returncode,2);self.assertIn('required',json.loads(r.stdout)['error']['message'])
  def test_retry_transient(self):

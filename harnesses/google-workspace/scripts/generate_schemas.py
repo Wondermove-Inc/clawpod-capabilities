@@ -75,6 +75,10 @@ for cmd,c in commands.items():
    c['inputSchema']['properties'][name]={'type':'string'}
  c.pop('requiredScopes',None)
  s=c['inputSchema'];props=s['properties'];props['fields']={'type':'array','items':{'type':'string','minLength':1,'maxLength':512},'maxItems':100};props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
+ if cmd not in ('auth.login','auth.scopes.list'):
+  props['credentialPath']=S(maxLength=4096)
+  if not any(arg.get('arg')=='credentialPath' for arg in c.get('argMap',[])):
+   c.setdefault('argMap',[]).insert(1,{'arg':'credentialPath','type':'option','flag':'--credential-path','valueType':'path','pathRole':'input','optional':True})
  if cmd.startswith('auth.'):
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
   if cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})

@@ -24,6 +24,8 @@ Ask, "Start Google Workspace authorization now?" Continue only after an explicit
 5. The Harness opens consent in that agent's desktop browser, receives the callback on that same agent's `127.0.0.1`, validates PKCE/state/identity/scopes, and writes the credential bundle atomically at mode 0600.
 6. Verify `auth.accounts.status`, identity, granted scopes, and sanitized smoke-test counts before provider work.
 
+After onboarding, select that protected bundle for authenticated Harness calls with the typed `credentialPath` input (or `--credential-path` at the direct CLI boundary). This is required when Gateway safe execution removes credential environment variables. Keep the path in the typed invocation only, never echo it in chat, logs, previews, or artifacts. The Harness still requires a private mode-0600 regular non-symlink file, and `account` continues to select an alias inside the bundle.
+
 The Harness also accepts the local browser endpoint from `GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL` or `OPENCLAW_BROWSER_CDP_URL`. Explicit command input wins. Only literal loopback HTTP endpoints are accepted.
 
 Never ask the owner to copy an authorization URL, code, token, client secret, or credential file between agents. If no managed browser is available, stop with a browser-open error instead of moving consent to another machine.

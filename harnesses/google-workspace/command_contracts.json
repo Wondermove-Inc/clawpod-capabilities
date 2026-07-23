@@ -202,9 +202,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -469,9 +479,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -1084,9 +1104,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -1636,9 +1666,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -1903,9 +1943,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -2170,9 +2220,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -2513,9 +2573,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -2800,9 +2870,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -3126,9 +3206,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -3458,9 +3548,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -3760,9 +3860,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -4062,9 +4172,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -4349,9 +4469,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -4645,9 +4775,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -4793,7 +4933,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -5047,7 +5187,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -5217,9 +5357,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -5365,7 +5515,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -5619,7 +5769,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -5789,9 +5939,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -5937,7 +6097,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -6191,7 +6351,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -6361,9 +6521,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -6704,9 +6874,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -6991,9 +7171,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -7319,9 +7509,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -7621,9 +7821,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -7923,9 +8133,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -8210,9 +8430,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -8509,9 +8739,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -8820,9 +9060,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -9107,9 +9357,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -9465,9 +9725,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -9837,9 +10107,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -10213,9 +10493,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -10500,9 +10790,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -10811,9 +11111,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -11098,9 +11408,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -11246,7 +11566,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -11500,7 +11820,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -11670,9 +11990,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -11827,7 +12157,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -12090,7 +12420,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -12260,9 +12590,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -12547,9 +12887,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -12704,7 +13054,7 @@
             "raw": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 50000000
             },
             "compose": {
               "type": "object",
@@ -12967,7 +13317,7 @@
                   "raw": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 4096
+                    "maxLength": 50000000
                   },
                   "compose": {
                     "type": "object",
@@ -13137,9 +13487,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -13492,9 +13852,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -13818,9 +14188,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -14088,9 +14468,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -14375,9 +14765,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -14815,9 +15215,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -15126,9 +15536,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -15413,9 +15833,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -15857,9 +16287,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -16144,9 +16584,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -16455,9 +16905,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -16742,9 +17202,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -17040,9 +17510,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -17327,9 +17807,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -17638,9 +18128,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -17925,9 +18425,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -18355,9 +18865,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -18803,9 +19323,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -19251,9 +19781,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -19698,9 +20238,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -20009,9 +20559,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -20296,9 +20856,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -20594,9 +21164,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -20881,9 +21461,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -21208,9 +21798,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -21507,9 +22107,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -21825,9 +22435,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -22124,9 +22744,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -22423,9 +23053,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -22692,9 +23332,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -23003,9 +23653,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -23290,9 +23950,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -23623,9 +24293,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -23932,9 +24612,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -24294,9 +24984,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -24666,9 +25366,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -25038,9 +25748,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -25347,9 +26067,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -25737,9 +26467,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -26024,9 +26764,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -26344,9 +27094,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -26676,9 +27436,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -27008,9 +27778,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -27295,9 +28075,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -27626,9 +28416,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -27958,9 +28758,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -28459,9 +29269,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -28840,9 +29660,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -29353,9 +30183,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -30261,9 +31101,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -31169,9 +32019,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -32089,9 +32949,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -33009,9 +33879,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -33929,9 +34809,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -34861,9 +35751,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -35242,9 +36142,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -35800,9 +36710,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -36172,9 +37092,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -36521,9 +37451,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -36842,9 +37782,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -37238,9 +38188,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -37638,9 +38598,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -38038,9 +39008,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -38359,9 +39339,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -38765,9 +39755,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -39065,9 +40065,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -39374,9 +40384,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -39741,9 +40761,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -40108,9 +41138,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -40433,9 +41473,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -40867,9 +41917,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -41237,9 +42297,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -41673,9 +42743,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -42000,9 +43080,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -42339,9 +43429,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -42725,9 +43825,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -43175,9 +44285,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -43581,9 +44701,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -43889,9 +45019,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -44197,9 +45337,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -44490,9 +45640,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -44767,9 +45927,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -45044,9 +46214,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -45407,9 +46587,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -45774,9 +46964,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -46202,9 +47402,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -46592,9 +47802,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -46927,9 +48147,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -47260,9 +48490,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -47597,9 +48837,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -47941,9 +49191,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -48265,9 +49525,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -48570,9 +49840,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -48915,9 +50195,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -49264,9 +50554,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -49602,9 +50902,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -49938,9 +51248,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -50255,9 +51575,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -50588,9 +51918,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -50925,9 +52265,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -51259,9 +52609,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -51564,9 +52924,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -51903,9 +53273,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -52228,9 +53608,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -52540,9 +53930,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -52926,9 +54326,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -53311,9 +54721,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -53696,9 +55116,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -53989,9 +55419,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -54288,9 +55728,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -54643,9 +56093,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -55055,9 +56515,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -55445,9 +56915,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },
@@ -55753,9 +57233,19 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "credentialPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
               }
             }
           }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
         }
       }
     },

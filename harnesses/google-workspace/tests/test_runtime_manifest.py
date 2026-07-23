@@ -29,6 +29,12 @@ class RuntimeManifest(unittest.TestCase):
   self.assertEqual(login['outputPath']['valueType'],'string')
   self.assertNotIn('pathRole',login['outputPath'])
   self.assertEqual(CONTRACTS['auth.login']['inputSchema']['properties']['timeoutMs']['maximum'],600000)
+  for name in ('auth.accounts.status','gmail.messages.send','calendar.events.list','drive.files.get'):
+   args={arg['arg']:arg for arg in MAN['commands'][name]['argMap']}
+   self.assertEqual(args['credentialPath']['flag'],'--credential-path')
+   self.assertEqual(args['credentialPath']['valueType'],'path')
+   self.assertEqual(args['credentialPath']['pathRole'],'input')
+   self.assertEqual(MAN['commands'][name]['inputSchema']['properties']['credentialPath'],{'type':'string'})
  def test_generator_is_idempotent(self):
   before={(ROOT/name).read_bytes() for name in ('harness.json','command_contracts.json')}
   subprocess.run([sys.executable,str(ROOT/'scripts/generate_schemas.py')],check=True)
