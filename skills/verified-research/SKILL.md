@@ -7,7 +7,7 @@ description: "Research factual questions with traceable sources, explicit confid
 
 Use this Skill for factual research, source verification, evidence-backed briefs, fact checking, or claims that need citations. Do not use it for casual brainstorming, pure editing, fiction, or tasks where the user explicitly wants no research.
 
-Use available OpenClaw `web_fetch`, `browser`, and user-provided URLs to discover sources. The linked `verified-research` Harness (version 0.1.0) captures and validates evidence; it does **not** decide whether claims are true.
+Use available OpenClaw `web_fetch`, `browser`, and user-provided URLs to discover sources. The linked `verified-research` Harness (version 0.1.1) captures and validates evidence; it does **not** decide whether claims are true.
 
 ## Method
 

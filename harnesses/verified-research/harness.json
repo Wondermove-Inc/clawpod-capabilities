@@ -4,7 +4,7 @@
   "name": "verified-research",
   "title": "Verified Research",
   "description": "Deterministic bounded capture, hashing, bundling, inspection, and validation of research evidence.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./verified_research.py",
   "packageRoot": ".",
   "execution": {
@@ -141,11 +141,7 @@
           "valueType": "boolean",
           "optional": true
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     },
     "source.batch": {
       "description": "source batch deterministic evidence operation.",
@@ -274,11 +270,7 @@
           "valueType": "boolean",
           "optional": true
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     },
     "source.import": {
       "description": "source import deterministic evidence operation.",
@@ -417,11 +409,7 @@
           "valueType": "boolean",
           "optional": true
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     },
     "bundle.build": {
       "description": "bundle build deterministic evidence operation.",
@@ -543,11 +531,7 @@
           "valueType": "boolean",
           "optional": true
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     },
     "bundle.validate": {
       "description": "bundle validate deterministic evidence operation.",
@@ -635,11 +619,7 @@
           "valueType": "string",
           "optional": true
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     },
     "bundle.inspect": {
       "description": "bundle inspect deterministic evidence operation.",
@@ -717,11 +697,7 @@
           "valueType": "string",
           "optional": false
         }
-      ],
-      "retryPolicy": {
-        "mode": "none",
-        "maxAttempts": 1
-      }
+      ]
     }
   }
 }

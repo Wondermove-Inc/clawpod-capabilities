@@ -16,6 +16,7 @@ SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9
 SHA256 = re.compile(r"^[a-f0-9]{64}$")
 RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "credential-related"}
 HARNESS_SAFETY_CLASSES = {"readOnly", "writeSafe", "modifiesSource", "destructive", "secretUse", "externalSideEffect", "authReuse", "humanAccountAction"}
+HARNESS_COMMAND_FIELDS = {"description", "baseArgv", "safetyClasses", "inputSchema", "outputSchema", "argMap"}
 ALLOWED_KEYS = {"id", "type", "version", "description", "path", "sha256", "compatibility", "safety", "files", "linkedHarness"}
 
 
@@ -121,6 +122,14 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         if not isinstance(commands, dict) or not commands:
             fail(f"{label} harness commands must be a non-empty object")
         for command_name, command in commands.items():
+            if not isinstance(command, dict):
+                fail(f"{label} harness command {command_name} must be an object")
+            extra_command_fields = set(command) - HARNESS_COMMAND_FIELDS
+            if extra_command_fields:
+                fail(
+                    f"{label} harness command {command_name} has unsupported fields: "
+                    f"{', '.join(sorted(extra_command_fields))}"
+                )
             classes = command.get("safetyClasses") if isinstance(command, dict) else None
             if not isinstance(classes, list) or not classes or any(item not in HARNESS_SAFETY_CLASSES for item in classes):
                 fail(f"{label} harness command {command_name} contains an unsupported safety class")
