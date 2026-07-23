@@ -68,3 +68,18 @@ def test_smoke_failure_and_invalid_shape_are_sanitized():
  assert _smoke("token",["drive"],5,failed)=={"drive":{"ok":False,"error":"REQUEST_FAILED"}}
  assert _smoke("token",["calendar"],5,lambda *a:{"items":"secret"})=={"calendar":{"ok":False,"error":"INVALID_RESPONSE"}}
  with pytest.raises(LoginError,match="unknown smoke"):_smoke("token",["contacts"],5,lambda *a:{})
+
+
+def test_google_skill_requires_user_facing_authorization_preflight():
+ skill=Path('skills/google-workspace/SKILL.md').read_text()
+ onboarding=Path('skills/google-workspace/references/onboarding.md').read_text()
+ for phrase in ('First-use authorization gate','workspace-max','managed browser will open','explicitly agrees','Do not invoke `auth.login`'):
+  assert phrase in skill
+ for phrase in ('User-facing preflight','Start Google Workspace authorization now?','Continue only after an explicit affirmative response'):
+  assert phrase in onboarding
+
+
+def test_registry_requires_immediate_post_install_onboarding_handoff():
+ registry_skill=Path('skills/clawpod-capability-registry/SKILL.md').read_text()
+ for phrase in ('Deliver the post-install onboarding handoff','Immediately after validation','installed but not yet connected','what the user must do','what the agent will do','Ask whether to start onboarding now'):
+  assert phrase in registry_skill

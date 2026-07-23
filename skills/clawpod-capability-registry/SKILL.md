@@ -41,9 +41,16 @@ Use `https://github.com/Wondermove-Inc/clawpod-capabilities` as the canonical re
    - For a Harness, verify its manifest, entrypoint, command discovery, structured output, and representative success and failure paths.
    - Run the documented smoke test through the real invocation path. File presence alone is not successful installation.
 
-7. **Record provenance**
-   - Record id, type, version, source path, digest when available, installation location, validation result, and approval decision.
-   - Report installation, verification, side effects, residual limits, and rollback instructions.
+7. **Deliver the post-install onboarding handoff**
+   - Immediately after validation, determine whether the capability requires login, OAuth consent, account linking, scopes, credentials, browser/device interaction, or tenant configuration.
+   - If it does, do not report the capability as ready for use. Tell the user it is installed but not yet connected; explain the onboarding sequence, the account or tenant, permission categories, protected credential location, revocation path, and any app/client prerequisite.
+   - Separate what the user must do (for example sign in, select an account, approve scopes, or confirm a device) from what the agent will do (open the managed browser, receive the callback, store credentials, and run verification).
+   - Ask whether to start onboarding now. Do not begin credentialed onboarding until the user explicitly agrees in the current conversation.
+   - If the user defers, record authorization as pending and provide the exact resume action.
+
+8. **Record provenance**
+   - Record id, type, version, source path, digest when available, installation location, validation result, approval decision, and onboarding readiness.
+   - Report installation, verification, side effects, residual limits, rollback instructions, and the onboarding handoff when required.
 
 ## Update and Rollback
 
@@ -62,4 +69,4 @@ Use `https://github.com/Wondermove-Inc/clawpod-capabilities` as the canonical re
 
 ## Completion Criteria
 
-Complete only when the capability matches the intent, compatibility and safety were reviewed, installation used an approved lifecycle, a representative invocation succeeded, provenance and evidence were recorded, rollback is known, and remaining limitations were reported.
+Complete only when the capability matches the intent, compatibility and safety were reviewed, installation used an approved lifecycle, a representative invocation succeeded, provenance and evidence were recorded, rollback is known, and remaining limitations were reported. For credentialed capabilities, completion of installation also requires a user-visible onboarding handoff; installation must not be presented as operational readiness while authorization is still pending.
