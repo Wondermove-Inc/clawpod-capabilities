@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
   "compatibility": {
     "openclaw": ">=2026.4.0",

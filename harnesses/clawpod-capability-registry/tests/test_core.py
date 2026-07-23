@@ -75,6 +75,33 @@ class CoreTests(unittest.TestCase):
             result = cap.rollback_installation("example-skill", directory, None)
             self.assertEqual(Path(result["destination"]).joinpath("SKILL.md").read_bytes(), old)
 
+    def test_harness_install_makes_entrypoint_executable(self) -> None:
+        manifest = json.dumps({"entrypoint": "run.py"}).encode()
+        entrypoint = b"#!/usr/bin/env python3\n"
+        entry = {
+            "id": "example-harness",
+            "type": "harness",
+            "version": "0.1.0",
+            "description": "Example harness used by tests.",
+            "path": "harnesses/example-harness",
+            "compatibility": {"openclaw": ">=2026.4.0"},
+            "safety": {"risk": "write-safe", "approvalRequired": True},
+            "files": [
+                {"path": "harness.json", "sha256": hashlib.sha256(manifest).hexdigest()},
+                {"path": "run.py", "sha256": hashlib.sha256(entrypoint).hexdigest()},
+            ],
+        }
+        payloads = {"harness.json": manifest, "run.py": entrypoint}
+
+        def fetch(url: str, **_: object) -> bytes:
+            return payloads[url.rsplit("/", 1)[-1]]
+
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(cap, "fetch_bytes", side_effect=fetch):
+                cap.install_entry(entry, directory, replace=False, backup=False)
+            mode = (Path(directory) / "example-harness" / "run.py").stat().st_mode
+            self.assertTrue(mode & 0o111)
+
     def test_validation_detects_modified_file(self) -> None:
         payload = b"original"
         entry = fixture_entry("0.1.0", payload)
