@@ -104,7 +104,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -130,7 +130,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "9dea3b52133c87435069ab47aecd5c438d6947065f4d0ac107cced2acf195845"
+          "sha256": "72b3fc53a397fafbc5ddf3783650460b919d49dd369732fbfc64bc5fb2e10c23"
         },
         {
           "path": "oauth3lo.py",
@@ -138,7 +138,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "27a8a626f3d887bcb5660e68ab59cae67072116da2f00fce9715aa29a6fc1df3"
+          "sha256": "607e15b7d64ad20cb22663e469fb7d7f6ed6efe9341ac6c294c80676471fdb76"
         }
       ]
     },
