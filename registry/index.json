@@ -37,11 +37,7 @@
           "path": "references/oauth-onboarding.md",
           "sha256": "37baf06ed4bb27b40b762cb84f31512376e408abe23403e231b8551439585dd7"
         }
-      ],
-      "linkedHarness": {
-        "id": "atlassian",
-        "version": "0.3.0"
-      }
+      ]
     },
     {
       "id": "clawpod-capability-registry",
@@ -66,47 +62,7 @@
           "path": "SKILL.md",
           "sha256": "00f8acae3dfd9377e330812a9e6e52460527e5991594e7007dc87726e0de4442"
         }
-      ],
-      "linkedHarness": {
-        "id": "clawpod-capability-registry",
-        "version": "0.2.0"
-      }
-    },
-    {
-      "id": "github",
-      "type": "skill",
-      "version": "0.1.0",
-      "description": "Route GitHub work through the canonical guarded GitHub CLI Harness and onboarding contract.",
-      "path": "skills/github",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "credential-related",
-        "approvalRequired": true
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "ae57aa639b0bc991c1563f3ff182a69dcb8481ad878c068588f79a9f03f30272"
-        },
-        {
-          "path": "references/onboarding.md",
-          "sha256": "b2b2326ea64fbb232860da3f0d59b60ba5694efa65260a0268ad5372b59df8b5"
-        },
-        {
-          "path": "references/operations.md",
-          "sha256": "1c7798a68f80dd2b8487fcf4b01516d44c985fc01aaac427419881d79d9c3991"
-        }
-      ],
-      "linkedHarness": {
-        "id": "github",
-        "version": "0.1.0"
-      }
+      ]
     },
     {
       "id": "google-workspace",
@@ -143,11 +99,7 @@
           "path": "references/scopes.md",
           "sha256": "670481eeff9b712eff89befbac118f937dc61808e77a6037cceea59fe29139ed"
         }
-      ],
-      "linkedHarness": {
-        "id": "google-workspace",
-        "version": "0.2.2"
-      }
+      ]
     },
     {
       "id": "atlassian",
@@ -232,50 +184,6 @@
         {
           "path": "harness.json",
           "sha256": "67969fd74274b1491abb26f63b8668163d52cec052f0501f531bd161c0ecd559"
-        }
-      ]
-    },
-    {
-      "id": "github",
-      "type": "harness",
-      "version": "0.1.0",
-      "description": "Execute guarded GitHub operations through the real gh CLI with stable JSON and bounded retries.",
-      "path": "harnesses/github",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "credential-related",
-        "approvalRequired": true
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "c9ca3471dd0bd03022e2f53dfb38dd4b135f60283f62f7f105759876582b5bcd"
-        },
-        {
-          "path": "TEST.md",
-          "sha256": "78499c11e310bea9ede95697a641129e144099682e06719eb14ad9e47b9b240b"
-        },
-        {
-          "path": "command_contracts.json",
-          "sha256": "ad32c1327bac2a9a28cb6093baf19ce6eefc7aa1313ee91ab5d70812491c6913"
-        },
-        {
-          "path": "github.py",
-          "sha256": "fd521fdf1567bc2fc22cb2f4b453df544242add63243bf9459c6e81059988146"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "96ef2e7b4b4567c22247f34bc2e4a0bd80f5dda639cd5d9a3b058fce56012faf"
-        },
-        {
-          "path": "scripts/generate_schemas.py",
-          "sha256": "964deb8b53740eba357b04392c3fecda4a717ad00b171d564b94b30561bb55ca"
         }
       ]
     },

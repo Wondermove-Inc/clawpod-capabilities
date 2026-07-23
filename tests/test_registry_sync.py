@@ -29,20 +29,21 @@ class RegistrySyncTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("is synchronized", result.stdout)
 
-    def test_all_skill_packages_declare_exact_linked_harness_versions(self) -> None:
-        registry=json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
-        entries={(e["type"],e["id"],e["version"]) for e in registry["capabilities"]}
-        skills=[e for e in registry["capabilities"] if e["type"]=="skill"]
-        self.assertTrue(skills)
-        for skill in skills:
-            linked=skill.get("linkedHarness")
-            self.assertEqual(set(linked or {}),{"id","version"})
-            self.assertIn(("harness",linked["id"],linked["version"]),entries)
-        registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
-        self.assertEqual(registry_skill["version"],"0.2.0")
-        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.2.0")
-        atlassian=next(e for e in skills if e["id"]=="atlassian")
-        self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
+    def test_typed_link_accepts_independent_exact_harness_version(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy=self.copy_repository(directory)
+            skill=copy/"skills"/"linked-example";skill.mkdir()
+            (skill/"SKILL.md").write_text("---\nname: linked-example\ndescription: Test exact linked Harness metadata.\n---\n",encoding="utf-8")
+            (skill/"capability.json").write_text(json.dumps({"schemaVersion":1,"version":"1.0.0","description":"Synthetic linked Skill package used by registry tests.","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"read-only","approvalRequired":False},"linkedHarness":{"id":"linked-example","version":"2.1.0"}}),encoding="utf-8")
+            harness=copy/"harnesses"/"linked-example";harness.mkdir()
+            (harness/"run.py").write_text("#!/usr/bin/env python3\n",encoding="utf-8")
+            (harness/"harness.json").write_text(json.dumps({"name":"linked-example","version":"2.1.0","entrypoint":"run.py"}),encoding="utf-8")
+            (harness/"capability.json").write_text(json.dumps({"schemaVersion":1,"version":"2.1.0","description":"Synthetic linked Harness package used by registry tests.","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"read-only","approvalRequired":False}}),encoding="utf-8")
+            result=self.run_sync(copy)
+            self.assertEqual(result.returncode,0,result.stderr)
+            registry=json.loads((copy/"registry"/"index.json").read_text(encoding="utf-8"))
+            entry=next(e for e in registry["capabilities"] if e["type"]=="skill" and e["id"]=="linked-example")
+            self.assertEqual(entry["linkedHarness"],{"id":"linked-example","version":"2.1.0"})
 
     def test_changed_package_file_makes_registry_stale(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

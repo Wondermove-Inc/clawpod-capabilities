@@ -14,9 +14,5 @@
   "safety": {
     "risk": "credential-related",
     "approvalRequired": true
-  },
-  "linkedHarness": {
-    "id": "google-workspace",
-    "version": "0.2.2"
   }
 }

@@ -1,1 +1,0 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.0","description":"Execute guarded GitHub operations through the real gh CLI with stable JSON and bounded retries.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"credential-related","approvalRequired":true}}
