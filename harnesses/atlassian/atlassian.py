@@ -124,6 +124,11 @@ def request(method,url,headers,body,timeout,retries=3,opener=urlopen,sleep=time.
     b=r.read(); return json.loads(b) if b else {}
   except HTTPError as e:
    code={400:'invalid_request',401:'auth_rejected',403:'forbidden',404:'not_found',409:'conflict',429:'rate_limited'}.get(e.code,'provider_error'); safe=f'Atlassian HTTP {e.code}'
+   try:
+    detail=json.loads(e.read(4096).decode('utf-8','replace'))
+    message=detail.get('message') if isinstance(detail,dict) else None
+    if isinstance(message,str) and message: safe += ': ' + redact(message)
+   except Exception: pass
    if e.code in (429,502,503,504) and attempt<retries: sleep(min(float(e.headers.get('Retry-After','0.25')),2)); continue
    raise Failure(code,safe,e.code in (429,502,503,504),False,e.code in (401,403))
   except TimeoutError: raise Failure('timeout','request timed out',True,method not in ('GET','HEAD'))
@@ -147,7 +152,18 @@ def execute(ns,opener=urlopen):
  try:
   if ns.command=='auth.oauth.login':
    tests=tuple(x for x in (ns.smoke_tests or 'jira,confluence').split(',') if x)
-   return oauth3lo.login(transfer_root=ns.transfer_root,client_path=ns.client_path,output_path=ns.output_path,sites_output_path=ns.sites_output_path,site_alias=ns.site_alias,resource_url=ns.resource_url,managed_browser_devtools_url=ns.managed_browser_devtools_url,timeout=ns.timeout_ms/1000,overwrite=ns.overwrite,smoke_tests=tests)
+   return oauth3lo.login(transfer_root=ns.transfer_root,client_path=ns.client_path,output_path=ns.output_path,sites_output_path=ns.sites_output_path,site_alias=ns.site_alias,resource_url=ns.resource_url,resource_id=ns.resource_id,managed_browser_devtools_url=ns.managed_browser_devtools_url,timeout=ns.timeout_ms/1000,overwrite=ns.overwrite,smoke_tests=tests)
+  if ns.command=='auth.oauth.start':
+   tests=tuple(x for x in (ns.smoke_tests or 'jira,confluence').split(',') if x)
+   # The detached worker has its own bounded lifetime. This command returns
+   # immediately and never forwards client material in argv or environment.
+   extra={}
+   # Test-only loopback seam. The environment contains only a file path, never
+   # OAuth material, and non-loopback providers are rejected by the worker.
+   if os.getenv('ATLASSIAN_INTERNAL_TEST_MODE')=='1' and os.getenv('ATLASSIAN_OAUTH_TEST_CONFIG'):
+    tp=oauth3lo._private_path(ns.transfer_root,os.environ['ATLASSIAN_OAUTH_TEST_CONFIG'],existing=True); extra['_test']=json.loads(tp.read_text())
+   return oauth3lo.start(transfer_root=ns.transfer_root,client_path=ns.client_path,output_path=ns.output_path,sites_output_path=ns.sites_output_path,site_alias=ns.site_alias,resource_url=ns.resource_url,resource_id=ns.resource_id,managed_browser_devtools_url=ns.managed_browser_devtools_url,timeout=ns.worker_timeout,overwrite=ns.overwrite,smoke_tests=tests,**extra)
+  if ns.command=='auth.oauth.job.status': return oauth3lo.job_status(transfer_root=ns.transfer_root,job_id=ns.job_id)
   if ns.command=='auth.oauth.status': return oauth3lo.status(transfer_root=ns.transfer_root,output_path=ns.output_path)
   if ns.command=='auth.oauth.refresh':
    marker={'output':hashlib.sha256((str(ns.transfer_root)+'\0'+str(ns.output_path)).encode()).hexdigest()}
@@ -183,7 +199,7 @@ def run_batch(ns):
  try: items=json.loads(Path(ns.batch).read_text() if Path(ns.batch).is_file() else ns.batch)
  except Exception: raise Failure('batch_invalid','batch must be a JSON array or readable JSON file')
  if not isinstance(items,list) or not 1<=len(items)<=100 or not all(isinstance(x,dict) for x in items): raise Failure('batch_invalid','batch must contain 1..100 command objects')
- allowed={a.dest for a in parser()._actions}; aliases={'sites_file':'sites_file','issue_id_or_key':'issueIdOrKey','project_id_or_key':'projectIdOrKey','comment_id':'commentId','page_id':'pageId','space_id':'spaceId','sitesFile':'sites_file','dryRun':'dry_run','idempotencyKey':'idempotency_key','inputPath':'input_path','transferRoot':'transfer_root','maxUploadBytes':'max_upload_bytes','timeoutMs':'timeout_ms','allPages':'all_pages','maxPages':'max_pages','maxItems':'max_items','issueIdOrKey':'issueIdOrKey','projectIdOrKey':'projectIdOrKey','commentId':'commentId','pageId':'pageId','spaceId':'spaceId','clientPath':'client_path','outputPath':'output_path','sitesOutputPath':'sites_output_path','siteAlias':'site_alias','resourceUrl':'resource_url','managedBrowserDevtoolsUrl':'managed_browser_devtools_url','smokeTests':'smoke_tests','overwrite':'overwrite'}; out=[]
+ allowed={a.dest for a in parser()._actions}; aliases={'sites_file':'sites_file','issue_id_or_key':'issueIdOrKey','project_id_or_key':'projectIdOrKey','comment_id':'commentId','page_id':'pageId','space_id':'spaceId','sitesFile':'sites_file','dryRun':'dry_run','idempotencyKey':'idempotency_key','inputPath':'input_path','transferRoot':'transfer_root','maxUploadBytes':'max_upload_bytes','timeoutMs':'timeout_ms','allPages':'all_pages','maxPages':'max_pages','maxItems':'max_items','issueIdOrKey':'issueIdOrKey','projectIdOrKey':'projectIdOrKey','commentId':'commentId','pageId':'pageId','spaceId':'spaceId','clientPath':'client_path','outputPath':'output_path','sitesOutputPath':'sites_output_path','siteAlias':'site_alias','resourceUrl':'resource_url','resourceId':'resource_id','jobId':'job_id','workerTimeout':'worker_timeout','managedBrowserDevtoolsUrl':'managed_browser_devtools_url','smokeTests':'smoke_tests','overwrite':'overwrite'}; out=[]
  for index,original in enumerate(items):
   item=dict(original); command=item.pop('command',None)
   if not isinstance(command,str) or command not in CONTRACTS or item.keys()-set(aliases)-allowed: out.append({'index':index,'ok':False,'error':{'code':'batch_item_invalid','message':'invalid command or arguments','retryable':False,'ambiguousCommit':False}}); continue
@@ -195,7 +211,7 @@ def run_batch(ns):
    if e.systemic: break
  failed=sum(not x['ok'] for x in out); return {'items':out,'summary':{'requested':len(items),'processed':len(out),'succeeded':len(out)-failed,'failed':failed,'stopped':len(out)<len(items)},'stopped':len(out)<len(items)}
 def parser():
- p=argparse.ArgumentParser(); p.add_argument('command',nargs='?'); p.add_argument('--site'); p.add_argument('--sites-file'); p.add_argument('--params'); p.add_argument('--body'); p.add_argument('--batch'); p.add_argument('--dry-run',action='store_true'); p.add_argument('--confirm'); p.add_argument('--idempotency-key'); p.add_argument('--input-path'); p.add_argument('--transfer-root'); p.add_argument('--client-path'); p.add_argument('--output-path'); p.add_argument('--sites-output-path'); p.add_argument('--site-alias'); p.add_argument('--resource-url'); p.add_argument('--managed-browser-devtools-url'); p.add_argument('--smoke-tests'); p.add_argument('--overwrite',action='store_true'); p.add_argument('--max-upload-bytes',type=int,default=25*1024*1024); p.add_argument('--timeout-ms',type=int,default=30000); p.add_argument('--retries',type=int,default=3); p.add_argument('--all-pages',action='store_true'); p.add_argument('--max-pages',type=int,default=10); p.add_argument('--max-items',type=int,default=1000)
+ p=argparse.ArgumentParser(); p.add_argument('command',nargs='?'); p.add_argument('--site'); p.add_argument('--sites-file'); p.add_argument('--params'); p.add_argument('--body'); p.add_argument('--batch'); p.add_argument('--dry-run',action='store_true'); p.add_argument('--confirm'); p.add_argument('--idempotency-key'); p.add_argument('--input-path'); p.add_argument('--transfer-root'); p.add_argument('--client-path'); p.add_argument('--output-path'); p.add_argument('--sites-output-path'); p.add_argument('--site-alias'); p.add_argument('--resource-url'); p.add_argument('--resource-id'); p.add_argument('--job-id'); p.add_argument('--worker-timeout',type=int,default=300); p.add_argument('--managed-browser-devtools-url'); p.add_argument('--smoke-tests'); p.add_argument('--overwrite',action='store_true'); p.add_argument('--max-upload-bytes',type=int,default=25*1024*1024); p.add_argument('--timeout-ms',type=int,default=30000); p.add_argument('--retries',type=int,default=3); p.add_argument('--all-pages',action='store_true'); p.add_argument('--max-pages',type=int,default=10); p.add_argument('--max-items',type=int,default=1000)
  for d in ('issueIdOrKey','commentId','projectIdOrKey','pageId','spaceId'):p.add_argument('--'+re.sub(r'([A-Z])',lambda m:'-'+m.group(1).lower(),d),dest=d)
  return p
 def main(argv=None):

@@ -1,37 +1,54 @@
 # Agent-local Atlassian OAuth 2.0 (3LO)
 
-Use one organization-managed, distributable Atlassian 3LO app. Atlassian explicitly advises integrations not to tell each customer or agent to create a separate 3LO app or API token.
+## Handoff and approval
 
-## App prerequisite
+If no usable credential exists, say the capability is installed but not connected. Explain what the user controls: account sign-in and any password or MFA entry. Explain what the agent controls after that login: exact-site selection, displayed-scope verification, the final consent click, callback validation, protected storage, resource selection, and read-only verification. State that access is scoped, revocable, and does not authorize later mutations.
 
-In the Atlassian Developer Console, configure one OAuth 2.0 integration with Jira, Confluence, User Identity, and `offline_access` scopes needed by the Harness. Register one exact fixed callback URL:
+Ask, "Start Atlassian authorization now?" Continue only after an explicit affirmative response in the current conversation. Never expose authorization URLs, codes, client secrets, tokens, or credential-file contents.
 
-`http://127.0.0.1:<fixed-port>/oauth/atlassian/callback`
+## Keep Gateway responsive
 
-The Developer Console must accept this exact callback. Atlassian requires `redirect_uri` to match the registered callback exactly and documents confidential authorization-code exchange with a client secret. Atlassian does not document PKCE for this flow, so the Harness does not invent PKCE parameters.
+Long-running Gateway executions are prohibited. Never increase Gateway or Harness execution timeouts to wait for OAuth consent, browser interaction, human input, or external work. Keep Gateway lifecycle calls short and bounded. Run the consent wait in an approved background executor that does not occupy Gateway, record a wake-guard, and resume on completion.
 
-Distribute the shared app client configuration only through protected agent provisioning. Store it as a regular mode-0600 JSON file under a private transfer root. Its `oauth2` object contains the app client identifier, protected client secret, exact redirect URI, and an array of the configured Jira, Confluence, User Identity, and offline scopes. Never place real or credential-shaped example values in docs, prompts, chat, tests, logs, or ordinary config.
+## Preflight
 
-## User-facing preflight
+1. Confirm the OAuth app callback exactly matches the Harness loopback callback.
+2. Verify required scopes by their saved scope codes, not by clicks or an unsaved editor state.
+3. For the Confluence v2 spaces endpoint, include granular `read:space:confluence`; classic `read:confluence-space.summary` alone can return `401 Unauthorized; scope does not match`.
+4. Use relative OAuth file names beneath `transferRoot`. Do not pass absolute credential paths when the Harness enforces private relative paths.
+5. Immediately before authorization, verify `transferRoot` is owner-controlled with no group/other permission bits and OAuth input files are mode `0600`. Shared-volume defaults can reintroduce group permissions.
+6. Keep client, token, site, and temporary diagnostic files distinct. Reject symlinks and path escapes.
 
-Immediately after installation and validation, if no usable credential exists, do not call the capability ready, do not begin silently, and do not expose an authorization URL. Give this same notice again before first credentialed use if onboarding was deferred. First tell the user:
+## Consent and resource selection
 
-- Atlassian authorization is required before the requested Jira or Confluence work can continue.
-- The exact tenant and requested service categories or scopes.
-- What the user must do: sign in, choose the Atlassian account if prompted, and approve the displayed permissions.
-- What the agent will do: open the managed browser, receive and validate the callback, store the credential securely, discover the cloud resource, and run read-only verification.
-- The agent's managed browser will open for Atlassian sign-in and consent.
-- The resulting credential is scoped, revocable, and stored only in that agent's protected local files.
-- API access remains limited by the user's Atlassian permissions, and later mutations still require their own preview and approval.
+Open the managed browser and request only configured scopes. The user handles sign-in, passwords, and MFA only. The initial explicit authorization approval covers the agent selecting the exact intended site, verifying the displayed permission categories against the requested scope codes, and pressing the final consent button. Do not ask the user to press Allow again. Never type credentials or complete MFA. If the site or displayed scope state is missing, mismatched, or ambiguous, fail closed before consent.
 
-Ask, "Start Atlassian authorization now?" Continue only after an explicit affirmative response in the current conversation. If the organization 3LO app or exact callback is not configured, explain that prerequisite instead of asking the user to attempt login.
+After token exchange, Atlassian may return separate Jira and Confluence accessible-resource records with the same cloud ID. Coalesce records by cloud ID and union their scopes before matching. Prefer an exact cloud ID or site URL, then an exact normalized site alias/name. A sole coalesced resource is safe. If multiple coalesced resources remain ambiguous, fail closed and inspect only sanitized candidate metadata stored in an owner-only temporary file; never guess. Remove temporary diagnostics after selection.
 
-## Per-agent login
+Require the granted token scopes to contain every requested scope. If scopes are added after a failed verification, save them in the developer console, update the protected client configuration, and re-consent.
 
-1. After user approval, start or inspect that agent's managed browser and obtain its literal loopback CDP/DevTools URL.
-2. Run `auth.oauth.login` with a private transfer root, relative client/credential/site-config paths, a site alias, the expected `https://<tenant>.atlassian.net` resource URL, and the managed-browser endpoint.
-3. The Harness binds only the exact registered `127.0.0.1` port and callback path, creates an unguessable state value, opens consent in that agent's browser, validates the callback, and exchanges the code without returning either value.
-4. It retrieves `/me` and `accessible-resources`, selects the exact resource URL, writes the rotating credential bundle and site alias atomically at mode 0600, and runs bounded Jira/Confluence read-only smoke checks.
-5. Verify `auth.oauth.status`. Refresh consumes a provider rotating token and changes local secret state, so preview `auth.oauth.refresh` and run it only with the matching fresh confirmation; it serializes concurrent refreshes and atomically replaces both tokens.
+## Protected persistence
 
-Never copy another agent's credential bundle, authorization URL, callback URL with code, or refresh token. OAuth scopes never replace the user's Jira/Confluence permissions and do not bypass mutation preview and confirmation.
+Persist the reusable token bundle and site alias atomically with mode `0600`. Keep parent directories owner-controlled. Never print, log, attach, or message credential values. Verify the stored site alias and non-expired OAuth status without exposing account details.
+
+## Read-only completion checks
+
+Run all of the following with strict bounds and no mutations:
+
+1. `auth.oauth.status`
+2. `auth.sites.list`
+3. `auth.whoami`
+4. `jira.projects.list` with `maxResults=1`
+5. `confluence.spaces.list` with `limit=1`
+
+Also verify Jira and Confluence smoke tests, if provided, both report success. Record command names, success status, file modes, and limitations as evidence. Do not report onboarding complete until every check succeeds.
+
+## Failure handling
+
+- Relative-path rejection: fix the Harness contract or pass relative names under `transferRoot`; do not weaken private-path validation.
+- Permission rejection: restore owner-only directory and mode-`0600` file permissions, then retry safely.
+- `scope does not match`: add the endpoint's documented granular scope and re-consent.
+- Duplicate resources: coalesce identical cloud IDs before ambiguity checks.
+- Multiple distinct resources: stop and require an exact cloud ID or sanitized owner selection.
+- Consent timeout: stop the background wait and restart a fresh authorization; never extend Gateway timeout.
+- Partial storage failure: roll back both token and site files before retrying.

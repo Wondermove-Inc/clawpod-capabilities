@@ -15,11 +15,13 @@ import os
 import re
 import secrets
 import stat
+import subprocess
+import sys
 import threading
 import time
 import urllib.parse
 import urllib.request
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -29,6 +31,8 @@ RESOURCES_URL = "https://api.atlassian.com/oauth/token/accessible-resources"
 ME_URL = "https://api.atlassian.com/me"
 CALLBACK_PATH = "/oauth/atlassian/callback"
 ALIAS = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+JOB = re.compile(r"^[a-f0-9]{32}$")
+REQUIRED_CONFLUENCE_SCOPE = "read:space:confluence"
 
 
 class OAuthFailure(Exception):
@@ -106,6 +110,8 @@ def _client(path):
     scopes = list(dict.fromkeys(c["scopes"]))
     if not {"offline_access", "read:me"}.issubset(scopes):
         raise OAuthFailure("oauth_scope_invalid", "OAuth app scopes must include offline_access and read:me")
+    if REQUIRED_CONFLUENCE_SCOPE not in scopes:
+        raise OAuthFailure("oauth_scope_invalid", "Confluence v2 access requires read:space:confluence")
     redirect, port = _loopback_redirect(c["redirect_uri"])
     return {"client_id": c["client_id"], "client_secret": c["client_secret"], "redirect_uri": redirect, "scopes": scopes}, port
 
@@ -215,12 +221,28 @@ def _json_request(method, url, *, token=None, body=None, timeout=30, opener=urll
         raise OAuthFailure("oauth_provider_rejected", "Atlassian OAuth endpoint rejected the request", True) from None
 
 
-def _select_resource(resources, resource_url):
+def _select_resource(resources, resource_url, resource_id=None, required_scopes=(), resource_alias=None):
     wanted = resource_url.rstrip("/")
-    found = [r for r in resources if isinstance(r, dict) and str(r.get("url", "")).rstrip("/") == wanted]
-    if len(found) != 1 or not isinstance(found[0].get("id"), str):
-        raise OAuthFailure("oauth_resource_unavailable", "requested Atlassian site was not granted")
-    return found[0]
+    merged = {}
+    for raw in resources:
+        if not isinstance(raw, dict) or not isinstance(raw.get("id"), str) or not raw["id"]:
+            continue
+        current = merged.setdefault(raw["id"], dict(raw))
+        current["scopes"] = sorted(set(current.get("scopes", [])) | set(raw.get("scopes", [])))
+    valid = list(merged.values())
+    if resource_id:
+        found = [r for r in valid if r["id"] == resource_id]
+        if len(found) == 1:
+            return found[0]
+        if len(found) > 1:
+            raise OAuthFailure("oauth_resource_ambiguous", "requested Atlassian cloud ID is ambiguous")
+        raise OAuthFailure("oauth_resource_unavailable", "requested Atlassian cloud ID was not granted")
+    found = [r for r in valid if str(r.get("url", "")).rstrip("/") == wanted]
+    if len(found) == 1:
+        return found[0]
+    if len(found) > 1:
+        raise OAuthFailure("oauth_resource_ambiguous", "requested Atlassian site is ambiguous")
+    raise OAuthFailure("oauth_resource_unavailable", "requested Atlassian site was not granted or the grant is ambiguous")
 
 
 def _load_site_document(path, alias, overwrite):
@@ -249,7 +271,7 @@ def _site_document(current, alias, resource, credential_path):
 
 def _smoke(access_token, cloud_id, services, timeout, opener):
     specs = {
-        "jira": f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3/myself",
+        "jira": f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3/project/search?maxResults=1",
         "confluence": f"https://api.atlassian.com/ex/confluence/{cloud_id}/wiki/api/v2/spaces?limit=1",
     }
     out = {}
@@ -264,13 +286,16 @@ def _smoke(access_token, cloud_id, services, timeout, opener):
 
 
 def login(*, transfer_root, client_path, output_path, sites_output_path, site_alias, resource_url,
-          managed_browser_devtools_url, timeout=300, overwrite=False, smoke_tests=("jira", "confluence"),
-          opener=urllib.request.urlopen, open_devtools=_open_devtools, server_factory=HTTPServer):
+          managed_browser_devtools_url, resource_id=None, timeout=300, overwrite=False, smoke_tests=("jira", "confluence"),
+          opener=urllib.request.urlopen, open_devtools=_open_devtools, server_factory=HTTPServer,
+          consent_driver=None, status_cb=None, deadline_check=None, commit_guard=None):
     if not ALIAS.fullmatch(site_alias or ""): raise OAuthFailure("site_alias_invalid", "invalid site alias")
     if not 5 <= timeout <= 600: raise OAuthFailure("oauth_timeout_invalid", "OAuth timeout must be 5..600 seconds")
     ru = urllib.parse.urlsplit(resource_url or "")
     if ru.scheme != "https" or not ru.netloc or ru.username or ru.query or ru.fragment:
         raise OAuthFailure("oauth_resource_invalid", "resourceUrl must be an HTTPS Atlassian site origin")
+    if resource_id is not None and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,127}", resource_id):
+        raise OAuthFailure("oauth_resource_invalid", "resourceId must be a valid Atlassian cloud ID")
     cp = _private_path(transfer_root, client_path, existing=True)
     op = _private_path(transfer_root, output_path, existing=False)
     sp = _private_path(transfer_root, sites_output_path, existing=False)
@@ -287,9 +312,13 @@ def login(*, transfer_root, client_path, output_path, sites_output_path, site_al
     query = {"audience": "api.atlassian.com", "client_id": client["client_id"], "scope": " ".join(client["scopes"]),
              "redirect_uri": client["redirect_uri"], "state": state, "response_type": "code", "prompt": "consent"}
     authorize = AUTHORIZE_URL + "?" + urllib.parse.urlencode(query, quote_via=urllib.parse.quote)
-    if not open_devtools(endpoint, authorize, min(timeout, 5)):
-        done.set()
-        raise OAuthFailure("browser_open_failed", "could not open the agent-managed browser")
+    if status_cb: status_cb("pending-login")
+    if consent_driver:
+        consent_driver(endpoint=endpoint, authorize_url=authorize, resource_url=resource_url,
+                       scopes=client["scopes"], redirect_uri=client["redirect_uri"], state=state,
+                       timeout=timeout, status_cb=status_cb)
+    elif not open_devtools(endpoint, authorize, min(timeout, 5)):
+        done.set(); raise OAuthFailure("browser_open_failed", "could not open the agent-managed browser")
     if not done.wait(timeout + .5): raise OAuthFailure("oauth_timeout", "authorization timed out", True)
     if result.get("error"): raise OAuthFailure(result["error"], "authorization failed")
     code = result.pop("code", None)
@@ -302,7 +331,16 @@ def login(*, transfer_root, client_path, output_path, sites_output_path, site_al
     if set(client["scopes"]) - granted: raise OAuthFailure("oauth_scope_missing", "token response omitted requested scopes")
     resources = _json_request("GET", RESOURCES_URL, token=token["access_token"], timeout=min(timeout, 30), opener=opener)
     if not isinstance(resources, list): raise OAuthFailure("oauth_resources_invalid", "accessible resources response was invalid")
-    resource = _select_resource(resources, resource_url)
+    diagnostics = _private_path(transfer_root, ".oauth-resource-candidates.json", existing=False)
+    try:
+        resource = _select_resource(resources, resource_url, resource_id, client["scopes"], site_alias)
+    except OAuthFailure as exc:
+        if exc.code in ("oauth_resource_unavailable", "oauth_resource_ambiguous"):
+            safe_candidates = [{"id": r.get("id"), "url": r.get("url"), "name": r.get("name"),
+                                "scopes": r.get("scopes", [])} for r in resources if isinstance(r, dict)]
+            _atomic_json(diagnostics, {"candidates": safe_candidates}, overwrite=True)
+        raise
+    diagnostics.unlink(missing_ok=True)
     ident = _json_request("GET", ME_URL, token=token["access_token"], timeout=min(timeout, 30), opener=opener)
     account_id = ident.get("account_id") if isinstance(ident, dict) else None
     if not isinstance(account_id, str) or not account_id: raise OAuthFailure("oauth_identity_invalid", "identity response was invalid")
@@ -312,25 +350,171 @@ def login(*, transfer_root, client_path, output_path, sites_output_path, site_al
         "scopes": sorted(granted), "account_id_hash": hashlib.sha256(account_id.encode()).hexdigest(), "site_alias": site_alias,
         "cloud_id": resource["id"], "resource_url": resource.get("url")}
     site_doc = _site_document(site_template, site_alias, resource, op)
-    old_op = op.read_bytes() if op.exists() else None
-    old_sp = sp.read_bytes() if sp.exists() else None
-    try:
-        _atomic_json(op, bundle, overwrite=overwrite)
-        _atomic_json(sp, site_doc, overwrite=overwrite)
-    except Exception:
-        for path, previous in ((op, old_op), (sp, old_sp)):
-            if previous is None:
-                path.unlink(missing_ok=True)
-            else:
-                tmp = path.parent / ("." + path.name + ".rollback." + secrets.token_hex(8))
-                fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-                with os.fdopen(fd, "wb") as f: f.write(previous); f.flush(); os.fsync(f.fileno())
-                os.replace(tmp, path); os.chmod(path, 0o600)
-        raise OAuthFailure("oauth_storage_failed", "OAuth credential and site configuration were not committed") from None
-    smoke = _smoke(token["access_token"], resource["id"], tuple(dict.fromkeys(smoke_tests)), timeout, opener)
+    with (commit_guard() if commit_guard else nullcontext()):
+        if deadline_check: deadline_check()
+        smoke = _smoke(token["access_token"], resource["id"], tuple(dict.fromkeys(smoke_tests)), timeout, opener)
+        if not all(x.get("ok") for x in smoke.values()):
+            raise OAuthFailure("oauth_smoke_failed", "bounded Jira or Confluence verification failed")
+        if deadline_check: deadline_check()
+        old_op = op.read_bytes() if op.exists() else None
+        old_sp = sp.read_bytes() if sp.exists() else None
+        try:
+            _atomic_json(op, bundle, overwrite=overwrite)
+            _atomic_json(sp, site_doc, overwrite=overwrite)
+        except Exception:
+            for path, previous in ((op, old_op), (sp, old_sp)):
+                if previous is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    tmp = path.parent / ("." + path.name + ".rollback." + secrets.token_hex(8))
+                    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    with os.fdopen(fd, "wb") as f: f.write(previous); f.flush(); os.fsync(f.fileno())
+                    os.replace(tmp, path); os.chmod(path, 0o600)
+            raise OAuthFailure("oauth_storage_failed", "OAuth credential and site configuration were not committed") from None
     return {"siteAlias": site_alias, "accountIdHash": bundle["account_id_hash"], "resourceName": resource.get("name"),
             "resourceUrl": resource.get("url"), "scopes": sorted(granted), "expiresAt": bundle["expires_at"],
             "smokeTests": smoke, "desktopLocal": True, "browserMode": "managed-devtools"}
+
+
+def _job_path(transfer_root, job_id, *, existing=True):
+    if not JOB.fullmatch(job_id or ""):
+        raise OAuthFailure("oauth_job_invalid", "invalid OAuth job id")
+    return _private_path(transfer_root, f".oauth-jobs/{job_id}.json", existing=existing)
+
+
+def _job_write(path, state, **fields):
+    if path.exists() and "deadline" not in fields:
+        try: fields["deadline"] = json.loads(path.read_text(encoding="utf-8")).get("deadline")
+        except Exception: pass
+    safe = {"schemaVersion": 1, "jobId": path.stem, "status": state,
+            "updatedAt": int(time.time())}
+    for key in ("errorCode", "message", "result", "deadline"):
+        if key in fields and fields[key] is not None: safe[key] = fields[key]
+    _atomic_json(path, safe, overwrite=path.exists())
+
+
+def start(**kwargs):
+    """Launch a detached worker. Only a random id and relative status path escape."""
+    root = Path(kwargs["transfer_root"]).expanduser().resolve()
+    if not 5 <= int(kwargs.get("timeout", 0)) <= 600:
+        raise OAuthFailure("oauth_timeout_invalid", "OAuth worker timeout must be 5..600 seconds")
+    # Validate all inputs before detaching, including the secret file's shape,
+    # but do not return or copy any client material.
+    cp = _private_path(root, kwargs["client_path"], existing=True)
+    _client(cp)
+    _devtools_endpoint(kwargs["managed_browser_devtools_url"])
+    job_id = secrets.token_hex(16)
+    job = _job_path(root, job_id, existing=False)
+    config = _private_path(root, f".oauth-jobs/{job_id}.config.json", existing=False)
+    claim_id = hashlib.sha256((str(kwargs["output_path"]) + "\0" + str(kwargs["sites_output_path"])).encode()).hexdigest()
+    claim = _private_path(root, f".oauth-jobs/active-{claim_id}.json", existing=False)
+    if claim.exists():
+        try: active = json.loads(claim.read_text(encoding="utf-8"))
+        except Exception: active = {}
+        if int(active.get("deadline", 0)) >= int(time.time()):
+            raise OAuthFailure("oauth_job_active", "an OAuth job already owns these output paths")
+        claim.unlink(missing_ok=True)
+    deadline = int(time.time()) + int(kwargs["timeout"]) + 10
+    _atomic_json(claim, {"jobId": job_id, "deadline": deadline}, overwrite=False)
+    kwargs["_claim_path"] = str(claim.relative_to(root))
+    _atomic_json(config, kwargs, overwrite=False)
+    _job_write(job, "pending-login", deadline=deadline)
+    argv = [sys.executable, str(Path(__file__).resolve()), "--worker", str(root), job_id]
+    try:
+        subprocess.Popen(argv, cwd=str(Path(__file__).parent), stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True, close_fds=True)
+    except Exception:
+        config.unlink(missing_ok=True); job.unlink(missing_ok=True); claim.unlink(missing_ok=True)
+        raise OAuthFailure("oauth_worker_start_failed", "could not start OAuth worker") from None
+    return {"jobId": job_id, "statusPath": f".oauth-jobs/{job_id}.json", "status": "pending-login"}
+
+
+def job_status(*, transfer_root, job_id):
+    p = _job_path(transfer_root, job_id)
+    try: doc = json.loads(p.read_text(encoding="utf-8"))
+    except Exception: raise OAuthFailure("oauth_job_invalid", "OAuth job status is invalid") from None
+    allowed = {k: doc[k] for k in ("schemaVersion", "jobId", "status", "updatedAt", "errorCode", "message", "result", "deadline") if k in doc}
+    if allowed.get("status") not in ("pending-login", "pending-consent", "completed", "failed"):
+        raise OAuthFailure("oauth_job_invalid", "OAuth job status is invalid")
+    if allowed["status"].startswith("pending-") and int(allowed.get("deadline", 0)) < int(time.time()):
+        with _bundle_lock(p):
+            current = json.loads(p.read_text(encoding="utf-8"))
+            if str(current.get("status", "")).startswith("pending-"):
+                _job_write(p, "failed", errorCode="oauth_job_stale", message="OAuth job exceeded its bounded lifetime")
+        return job_status(transfer_root=transfer_root, job_id=job_id)
+    return allowed
+
+
+def _cdp_consent(**values):
+    helper = Path(__file__).with_name("oauth_cdp.js")
+    env = None
+    if values.get("test_snapshots") is not None:
+        env = dict(os.environ); env["OAUTH_CDP_TEST_MODE"] = "1"
+    proc = subprocess.Popen(["node", str(helper)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.DEVNULL, text=True, env=env)
+    payload = {k: values[k] for k in ("endpoint", "authorize_url", "resource_url", "scopes", "redirect_uri", "state", "timeout")}
+    if values.get("test_snapshots") is not None: payload["testSnapshots"] = values["test_snapshots"]
+    out, _ = proc.communicate(json.dumps(payload), timeout=min(values["timeout"] + 5, 605))
+    try: result = json.loads(out)
+    except Exception: raise OAuthFailure("browser_automation_failed", "managed browser automation failed") from None
+    if result.get("phase") == "pending-consent" and values.get("status_cb"): values["status_cb"]("pending-consent")
+    if not result.get("ok"): raise OAuthFailure(result.get("code", "browser_automation_failed"), result.get("message", "managed browser automation failed"))
+
+
+def worker(transfer_root, job_id):
+    job = _job_path(transfer_root, job_id)
+    config = _private_path(transfer_root, f".oauth-jobs/{job_id}.config.json", existing=True)
+    diagnostics = Path(transfer_root) / ".oauth-resource-candidates.json"
+    claim_relative = None
+    def deadline_check():
+        current = json.loads(job.read_text(encoding="utf-8"))
+        if current.get("status") == "failed" or int(current.get("deadline", 0)) < int(time.time()):
+            raise OAuthFailure("oauth_job_stale", "OAuth job exceeded its bounded lifetime")
+    def set_phase(phase):
+        with _bundle_lock(job):
+            deadline_check()
+            _job_write(job, phase)
+    try:
+        args = json.loads(config.read_text(encoding="utf-8"))
+        claim_relative = args.pop("_claim_path", None)
+        test = args.pop("_test", None)
+        consent = _cdp_consent
+        opener = urllib.request.urlopen
+        if test:
+            base = test["providerBase"].rstrip("/")
+            tu = urllib.parse.urlsplit(base)
+            try: tip = ipaddress.ip_address(tu.hostname or "")
+            except ValueError: raise OAuthFailure("oauth_test_invalid", "test provider must be loopback-only") from None
+            if tu.scheme != "http" or not tip.is_loopback or not tu.port:
+                raise OAuthFailure("oauth_test_invalid", "test provider must be loopback-only")
+            def opener(req, timeout=30):
+                url = req.full_url
+                mapping = {TOKEN_URL: "/oauth/token", RESOURCES_URL: "/accessible-resources", ME_URL: "/me"}
+                for service in ("jira", "confluence"):
+                    if f"/ex/{service}/" in url: url = base + "/smoke/" + service; break
+                else: url = base + mapping.get(url, "/unexpected")
+                return urllib.request.urlopen(urllib.request.Request(url, data=req.data, headers=dict(req.headers), method=req.method), timeout=timeout)
+            consent = lambda **kw: _cdp_consent(**kw, test_snapshots=test["snapshots"])
+        result = login(**args, opener=opener, consent_driver=consent,
+                       deadline_check=deadline_check, commit_guard=lambda: _bundle_lock(job),
+                       status_cb=set_phase)
+        with _bundle_lock(job):
+            deadline_check()
+            _job_write(job, "completed", result=result)
+    except OAuthFailure as exc:
+        _job_write(job, "failed", errorCode=exc.code, message=exc.message)
+    except Exception:
+        _job_write(job, "failed", errorCode="oauth_worker_failed", message="OAuth worker failed")
+    finally:
+        config.unlink(missing_ok=True); diagnostics.unlink(missing_ok=True)
+        if claim_relative:
+            try: _private_path(transfer_root, claim_relative, existing=True).unlink(missing_ok=True)
+            except OAuthFailure: pass
+
+
+if __name__ == "__main__" and len(sys.argv) == 4 and sys.argv[1] == "--worker":
+    worker(sys.argv[2], sys.argv[3])
 
 
 def _bundle(transfer_root, output_path):

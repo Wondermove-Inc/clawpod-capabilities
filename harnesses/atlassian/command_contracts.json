@@ -67,6 +67,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -222,6 +231,333 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "auth.oauth.start": {
+      "method": "LOCAL",
+      "path": "",
+      "mutation": false,
+      "required": [
+        "transferRoot",
+        "clientPath",
+        "outputPath",
+        "sitesOutputPath",
+        "siteAlias",
+        "resourceUrl",
+        "managedBrowserDevtoolsUrl"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "transferRoot",
+          "clientPath",
+          "outputPath",
+          "sitesOutputPath",
+          "siteAlias",
+          "resourceUrl",
+          "managedBrowserDevtoolsUrl"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "auth.oauth.job.status": {
+      "method": "LOCAL",
+      "path": "",
+      "mutation": false,
+      "required": [
+        "transferRoot",
+        "jobId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "transferRoot",
+          "jobId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -366,6 +702,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -512,6 +857,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -655,6 +1009,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -797,6 +1160,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -943,6 +1315,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -1085,6 +1466,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -1231,6 +1621,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -1375,6 +1774,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -1521,6 +1929,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -1665,6 +2082,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -1811,6 +2237,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -1955,6 +2390,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -2103,6 +2547,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -2250,6 +2703,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -2395,6 +2857,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -2537,6 +3008,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -2683,6 +3163,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -2825,6 +3314,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -2971,6 +3469,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -3113,6 +3620,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -3259,6 +3775,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -3404,6 +3929,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -3546,6 +4080,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -3692,6 +4235,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -3834,6 +4386,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
@@ -3980,6 +4541,15 @@
           "resourceUrl": {
             "type": "string"
           },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
+          },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
           },
@@ -4124,6 +4694,15 @@
           },
           "resourceUrl": {
             "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "workerTimeout": {
+            "type": "integer"
           },
           "managedBrowserDevtoolsUrl": {
             "type": "string"
