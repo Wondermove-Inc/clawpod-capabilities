@@ -174,8 +174,9 @@ def test_connected_skill_and_harness_identity_is_aligned():
 
 def test_oauth_manifest_contracts_are_typed():
  manifest=json.loads((Path(__file__).parents[1]/'harness.json').read_text())
- login=manifest['commands']['auth.oauth.login']; assert {'credentialRelated','humanAccountAction','externalSideEffect'}<=set(login['safetyClasses'])
- refresh=manifest['commands']['auth.oauth.refresh']; assert {'credentialRelated','humanAccountAction','externalSideEffect'}<=set(refresh['safetyClasses']) and manifest['authModel']['storesSecrets'] is True
+ login=manifest['commands']['auth.oauth.login']; assert {'secretUse','humanAccountAction','externalSideEffect'}<=set(login['safetyClasses'])
+ refresh=manifest['commands']['auth.oauth.refresh']; assert {'secretUse','authReuse','humanAccountAction','externalSideEffect'}<=set(refresh['safetyClasses']) and manifest['authModel']['storesSecrets'] is True
+ assert set(manifest['commands']['auth.oauth.status']['safetyClasses'])=={'secretUse','readOnly'}
  assert {'transferRoot','clientPath','outputPath','sitesOutputPath','siteAlias','resourceUrl','managedBrowserDevtoolsUrl'}<=set(login['inputSchema']['required'])
 
 

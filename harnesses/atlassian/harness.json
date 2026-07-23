@@ -4,7 +4,7 @@
   "name": "atlassian",
   "title": "Atlassian",
   "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
   "execution": {
@@ -387,7 +387,7 @@
         "auth.oauth.login"
       ],
       "safetyClasses": [
-        "credentialRelated",
+        "secretUse",
         "humanAccountAction",
         "externalSideEffect"
       ],
@@ -750,7 +750,7 @@
         "auth.oauth.status"
       ],
       "safetyClasses": [
-        "credentialRelated",
+        "secretUse",
         "readOnly"
       ],
       "inputSchema": {
@@ -1107,7 +1107,8 @@
         "auth.oauth.refresh"
       ],
       "safetyClasses": [
-        "credentialRelated",
+        "secretUse",
+        "authReuse",
         "humanAccountAction",
         "externalSideEffect"
       ],
