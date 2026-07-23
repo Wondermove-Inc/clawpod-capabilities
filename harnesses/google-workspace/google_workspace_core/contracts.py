@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 S=lambda **kw:{"type":"string","minLength":1,"maxLength":4096,**kw}
+GMAIL_RAW_MAX_CHARS=50_000_000
 B=lambda **kw:{"type":"boolean",**kw}
 I=lambda **kw:{"type":"integer",**kw}
 A=lambda item=S(),**kw:{"type":"array","items":item,**kw}
@@ -50,7 +51,7 @@ def body_schema(command,method):
  if action in ("trash","untrash"):return O({"trashed":B()},("trashed",))
  if command.startswith("gmail.messages.") or command.startswith("gmail.drafts."):
   if action in ("send","create","update","insert","import"):
-   return O({"raw":S(),"compose":COMPOSE,"threadId":S(),"labelIds":A(maxItems=100),"internalDateSource":S(enum=["receivedTime","dateHeader"]),"neverMarkSpam":B(),"processForCalendar":B()},minProperties=1)
+   return O({"raw":S(maxLength=GMAIL_RAW_MAX_CHARS),"compose":COMPOSE,"threadId":S(),"labelIds":A(maxItems=100),"internalDateSource":S(enum=["receivedTime","dateHeader"]),"neverMarkSpam":B(),"processForCalendar":B()},minProperties=1)
  if command.startswith("gmail.threads.") and action=="modify":return O({"addLabelIds":A(maxItems=100),"removeLabelIds":A(maxItems=100)},minProperties=1)
  if command.startswith("gmail.settings."):
   if ".filters.create" in command:return O({"criteria":FILTER_CRITERIA,"action":FILTER_ACTION},("criteria","action"))

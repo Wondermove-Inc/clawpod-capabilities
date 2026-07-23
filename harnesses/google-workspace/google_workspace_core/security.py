@@ -2,7 +2,7 @@ from __future__ import annotations
 import hashlib, json, os, re, tempfile, time
 from pathlib import Path
 
-SECRET_KEYS=re.compile(r"token|secret|authorization|code|verifier|raw|content|body|description",re.I)
+SECRET_KEYS=re.compile(r"token|secret|authorization|code|verifier|raw|content|body|description|credentialPath",re.I)
 def redact(value):
     if isinstance(value,dict): return {k:("[REDACTED]" if SECRET_KEYS.search(k) else redact(v)) for k,v in value.items()}
     if isinstance(value,list): return [redact(v) for v in value]

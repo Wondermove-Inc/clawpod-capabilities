@@ -1,9 +1,22 @@
 from __future__ import annotations
-import base64, hashlib, mimetypes
+import base64, hashlib, json, mimetypes
 from email.message import EmailMessage
 from email.policy import SMTP
 from pathlib import Path
 from .security import safe_path
+
+def _set_deterministic_boundaries(msg:EmailMessage, seed:bytes)->None:
+    """Assign stable, distinct multipart boundaries without exposing message data."""
+    for index,part in enumerate(p for p in msg.walk() if p.is_multipart()):
+        counter=0
+        while True:
+            material=seed+b"\0"+str(index).encode()+b"\0"+str(counter).encode()
+            boundary="=_clawpod_"+hashlib.sha256(material).hexdigest()
+            # Avoid the already encoded leaf content even though a SHA-256 collision
+            # with user data is vanishingly unlikely.
+            if all(boundary not in str(leaf.get_payload()) for leaf in part.walk() if not leaf.is_multipart()):
+                part.set_boundary(boundary);break
+            counter+=1
 
 def compose_message(compose:dict, transfer_root:str|None=None)->tuple[str,list]:
     msg=EmailMessage(policy=SMTP)
@@ -24,6 +37,7 @@ def compose_message(compose:dict, transfer_root:str|None=None)->tuple[str,list]:
     msg.set_content(text)
     if html is not None: msg.add_alternative(html,subtype="html")
     attachments=[]
+    attachment_digests=[]
     for att in compose.get("attachments",[]):
         if not transfer_root: raise ValueError("transferRoot is required for attachments")
         p=safe_path(transfer_root,att["path"]); data=p.read_bytes(); mime=att.get("mimeType") or mimetypes.guess_type(p.name)[0] or "application/octet-stream"
@@ -31,6 +45,9 @@ def compose_message(compose:dict, transfer_root:str|None=None)->tuple[str,list]:
         main,sub=mime.split("/",1); filename=att.get("filename",p.name)
         if any(c in filename for c in "\r\n"): raise ValueError("invalid attachment filename")
         msg.add_attachment(data,maintype=main,subtype=sub,filename=filename)
-        attachments.append({"filename":filename,"size":len(data),"sha256":hashlib.sha256(data).hexdigest(),"mimeType":mime})
+        content_digest=hashlib.sha256(data).hexdigest();attachment_digests.append(content_digest)
+        attachments.append({"filename":filename,"size":len(data),"sha256":content_digest,"mimeType":mime})
+    seed=hashlib.sha256(json.dumps({"compose":compose,"attachmentSha256":attachment_digests},sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).digest()
+    _set_deterministic_boundaries(msg,seed)
     raw=base64.urlsafe_b64encode(msg.as_bytes()).rstrip(b"=").decode("ascii")
     return raw,attachments

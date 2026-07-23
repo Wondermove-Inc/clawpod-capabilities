@@ -6,11 +6,18 @@ class AuthError(Exception): pass
 class CredentialProvider:
     """Injected credential-file provider. Files must be private and are never copied."""
     def __init__(self,path=None): self.path=path or os.environ.get("GOOGLE_WORKSPACE_CREDENTIAL_FILE")
-    def load(self,alias):
+    def read_document(self):
         if not self.path: raise AuthError("credential provider is required")
         p=Path(self.path)
-        if os.name!="nt" and stat.S_IMODE(p.stat().st_mode)&0o077: raise AuthError("credential file must be mode 0600")
-        doc=json.loads(p.read_text(encoding="utf-8")); accounts=doc.get("accounts",doc); item=accounts.get(alias)
+        try:
+            info=p.lstat()
+        except OSError: raise AuthError("credential file is unavailable") from None
+        if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode): raise AuthError("credential file must be a regular non-symlink file")
+        if os.name!="nt" and stat.S_IMODE(info.st_mode)&0o077: raise AuthError("credential file must be mode 0600")
+        try:return json.loads(p.read_text(encoding="utf-8"))
+        except (OSError,ValueError):raise AuthError("credential file is malformed or unreadable") from None
+    def load(self,alias):
+        doc=self.read_document(); accounts=doc.get("accounts",doc); item=accounts.get(alias)
         if not item: raise AuthError("account alias not found")
         return dict(item)
     def token(self,alias,transport=None):
