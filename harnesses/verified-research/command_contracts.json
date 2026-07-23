@@ -1,0 +1,472 @@
+{
+  "schemaVersion": 1,
+  "commands": {
+    "source.fetch": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "url"
+      ],
+      "rootPathArgs": [
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "snapshot"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "snapshot": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source.batch": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "inputRoot",
+        "manifest"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "manifest",
+        "output"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "manifest"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "manifest": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source.import": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "inputRoot",
+        "capture"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "capture",
+        "output"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "capture"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "capture": {
+            "type": "string"
+          },
+          "sourceUrl": {
+            "type": "string"
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "bundle.build": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "inputRoot",
+        "sources",
+        "claims",
+        "outputRoot",
+        "output"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "claims",
+        "output",
+        "sources"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "sources",
+          "claims",
+          "outputRoot",
+          "output"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "string"
+          },
+          "claims": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "bundle.validate": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "inputRoot",
+        "bundle"
+      ],
+      "rootPathArgs": [
+        "inputRoot"
+      ],
+      "relativeChildArgs": [
+        "bundle"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "bundle"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "bundle": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "bundle.inspect": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "inputRoot",
+        "bundle"
+      ],
+      "rootPathArgs": [
+        "inputRoot"
+      ],
+      "relativeChildArgs": [
+        "bundle"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "bundle"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "bundle": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

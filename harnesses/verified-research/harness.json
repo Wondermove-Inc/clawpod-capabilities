@@ -1,0 +1,727 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "verified-research",
+  "title": "Verified Research",
+  "description": "Deterministic bounded capture, hashing, bundling, inspection, and validation of research evidence.",
+  "version": "0.1.0",
+  "entrypoint": "./verified_research.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 45000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Capture and validate deterministic evidence records for source-backed research"
+  ],
+  "capabilities": [
+    "public-http-capture",
+    "evidence-bundles",
+    "integrity-validation"
+  ],
+  "authModel": {
+    "type": "none",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "source.fetch": {
+      "description": "source fetch deterministic evidence operation.",
+      "baseArgv": [
+        "source.fetch"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "snapshot": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "snapshot",
+          "type": "option",
+          "flag": "--snapshot",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "maxBytes",
+          "type": "option",
+          "flag": "--max-bytes",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    },
+    "source.batch": {
+      "description": "source batch deterministic evidence operation.",
+      "baseArgv": [
+        "source.batch"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "manifest"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "manifest": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "manifest",
+          "type": "option",
+          "flag": "--manifest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "maxBytes",
+          "type": "option",
+          "flag": "--max-bytes",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    },
+    "source.import": {
+      "description": "source import deterministic evidence operation.",
+      "baseArgv": [
+        "source.import"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "capture"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "capture": {
+            "type": "string"
+          },
+          "sourceUrl": {
+            "type": "string"
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "capture",
+          "type": "option",
+          "flag": "--capture",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sourceUrl",
+          "type": "option",
+          "flag": "--source-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mediaType",
+          "type": "option",
+          "flag": "--media-type",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxBytes",
+          "type": "option",
+          "flag": "--max-bytes",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    },
+    "bundle.build": {
+      "description": "bundle build deterministic evidence operation.",
+      "baseArgv": [
+        "bundle.build"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "sources",
+          "claims",
+          "outputRoot",
+          "output"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "string"
+          },
+          "claims": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sources",
+          "type": "option",
+          "flag": "--sources",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "claims",
+          "type": "option",
+          "flag": "--claims",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    },
+    "bundle.validate": {
+      "description": "bundle validate deterministic evidence operation.",
+      "baseArgv": [
+        "bundle.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "bundle"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "bundle": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "bundle",
+          "type": "option",
+          "flag": "--bundle",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "asOf",
+          "type": "option",
+          "flag": "--as-of",
+          "valueType": "string",
+          "optional": true
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    },
+    "bundle.inspect": {
+      "description": "bundle inspect deterministic evidence operation.",
+      "baseArgv": [
+        "bundle.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "bundle"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "bundle": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "bundle",
+          "type": "option",
+          "flag": "--bundle",
+          "valueType": "string",
+          "optional": false
+        }
+      ],
+      "retryPolicy": {
+        "mode": "none",
+        "maxAttempts": 1
+      }
+    }
+  }
+}

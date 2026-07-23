@@ -1,0 +1,14 @@
+# Harness operations
+
+The Harness consumes bounded JSON through explicit input roots and writes only beneath explicit, already-existing private output roots. In the Gateway contract only `inputRoot` and `outputRoot` are path arguments. `snapshot`, `manifest`, `output`, `capture`, `sources`, `claims`, and `bundle` are bounded relative-name strings, preventing Gateway path normalization from turning them into rejected absolute paths. Root/name pairs must be complete, child names must remain beneath their root and symlink-free, and existing outputs fail closed unless `overwrite` is explicitly true.
+
+- `source.fetch`: public `url`, optionally `outputRoot` plus `snapshot`; the latter stores an exact `<snapshot>.bytes` file and a JSON source record.
+- `source.batch`: `inputRoot` plus a nonempty bounded URL `manifest`; when output is requested, every successful item receives a deterministic exact-byte snapshot path. Any failed item returns `PARTIAL_FAILURE` while retaining successes and listing exactly which snapshots were written.
+- `source.import`: `inputRoot` plus local `capture`; optional public `sourceUrl` is syntax-checked without live DNS for offline use. Output stores exact bytes and the source record.
+- `bundle.build`: source and claim JSON inputs plus explicit output. It validates structures before writing JSON and bounded escaped Markdown containing claims, evidence, exact quotes and lines, contradictions, warnings, source metadata, URLs, hashes, and snapshot inventory.
+- `bundle.validate`: `inputRoot` plus `bundle`, optionally `asOf` for future-date checks. It performs no network requests and rechecks referenced snapshots.
+- `bundle.inspect`: bounded read-only summary.
+
+A URL manifest is `{ "urls": ["https://…"] }`. Claims use closed statuses `supported`, `verified`, `unsupported`, `unresolved`, or `conflicted`; supported/verified claims require evidence. Evidence quote text must exactly equal the normalized `startLine` through `endLine` span.
+
+No search provider is included. For JavaScript-only pages, use OpenClaw browser capture without sending cookies or credentials to the Harness; save only needed readable text under a private declared input root, then import it. Do not bypass paywalls or access controls. The Harness validates deterministic evidence integrity, not semantic truth.
