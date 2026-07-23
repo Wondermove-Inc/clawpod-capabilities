@@ -147,6 +147,21 @@ def provenance(entry: dict[str, Any], verified: list[dict[str, str]]) -> dict[st
     }
 
 
+def ensure_harness_entrypoint_executable(entry: dict[str, Any], staging: Path) -> None:
+    if entry.get("type") != "harness":
+        return
+    manifest_path = staging / "harness.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        entrypoint = validate_relative_path(manifest["entrypoint"])
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise CapabilityError("invalid_package", "harness entrypoint metadata is invalid") from exc
+    entrypoint_path = staging.joinpath(*entrypoint.parts)
+    if not entrypoint_path.is_file():
+        raise CapabilityError("invalid_package", "harness entrypoint file is missing")
+    entrypoint_path.chmod(entrypoint_path.stat().st_mode | 0o111)
+
+
 def install_entry(entry: dict[str, Any], target_root: str, *, replace: bool, backup: bool) -> dict[str, Any]:
     root, destination = package_destination(target_root, entry["id"])
     root.mkdir(parents=True, exist_ok=True)
@@ -157,6 +172,7 @@ def install_entry(entry: dict[str, Any], target_root: str, *, replace: bool, bac
     backup_path: Path | None = None
     try:
         verified = download_package(entry, staging)
+        ensure_harness_entrypoint_executable(entry, staging)
         (staging / PROVENANCE_FILE).write_text(
             json.dumps(provenance(entry, verified), indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )

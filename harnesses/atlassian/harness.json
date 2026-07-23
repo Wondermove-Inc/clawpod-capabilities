@@ -4,9 +4,14 @@
   "name": "atlassian",
   "title": "Atlassian Cloud",
   "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 120000,
+    "requiresJson": true
+  },
   "whenToUse": [
     "Operate Jira Cloud or Confluence Cloud through approved credentials"
   ],

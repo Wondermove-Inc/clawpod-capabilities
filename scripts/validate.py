@@ -106,6 +106,16 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         entrypoint = manifest.get("entrypoint")
         if not isinstance(entrypoint, str) or not (path / entrypoint).is_file():
             fail(f"{label} harness entrypoint is missing")
+        execution = manifest.get("execution")
+        if not isinstance(execution, dict):
+            fail(f"{label} harness execution must be an object")
+        if not isinstance(execution.get("cwd"), str) or not execution["cwd"]:
+            fail(f"{label} harness execution.cwd must be non-empty text")
+        timeout_ms = execution.get("timeoutMs")
+        if not isinstance(timeout_ms, int) or isinstance(timeout_ms, bool) or timeout_ms <= 0:
+            fail(f"{label} harness execution.timeoutMs must be a positive integer")
+        if execution.get("requiresJson") is not True:
+            fail(f"{label} harness execution.requiresJson must be true")
 
     files = entry["files"]
     if not isinstance(files, list) or not files:
