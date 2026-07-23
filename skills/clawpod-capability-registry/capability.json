@@ -14,5 +14,9 @@
   "safety": {
     "risk": "write-safe",
     "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "clawpod-capability-registry",
+    "version": "0.2.0"
   }
 }
