@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Dependency-free Atlassian Cloud REST harness with durable mutation guards."""
 from __future__ import annotations
-import argparse,base64,hashlib,json,os,re,secrets,tempfile,time,uuid
+import argparse,base64,hashlib,hmac,json,os,re,secrets,time,uuid
+from contextlib import contextmanager
 from pathlib import Path
 from urllib.error import HTTPError,URLError
 from urllib.parse import urlencode,urljoin,urlparse,parse_qs
@@ -33,12 +34,22 @@ def load_sites(path=None):
  sites=data.get('sites',data)
  if any(isinstance(s,dict) and s.get('auth') for s in sites.values()): secure_file(p,'site_config')
  return sites
+def valid_origin(value,label):
+ url=str(value or '').rstrip('/'); u=urlparse(url)
+ if u.scheme!='https' or not u.netloc or u.username or u.query or u.fragment: raise Failure('site_invalid',f'{label} must be an HTTPS origin/base URL')
+ return url
 def get_site(alias,path=None):
  s=load_sites(path).get(alias)
  if not isinstance(s,dict): raise Failure('site_unknown','unknown site alias')
- url=str(s.get('baseUrl','')).rstrip('/'); u=urlparse(url)
- if u.scheme!='https' or not u.netloc or u.username or u.query or u.fragment: raise Failure('site_invalid','baseUrl must be an HTTPS origin')
- return dict(s,baseUrl=url)
+ out=dict(s); basic=s.get('auth',{}).get('type')=='basic'; origin=s.get('baseUrl')
+ if basic and origin: out['jiraBaseUrl']=out.get('jiraBaseUrl',origin); out['confluenceBaseUrl']=out.get('confluenceBaseUrl',origin)
+ out['jiraBaseUrl']=valid_origin(out.get('jiraBaseUrl'),'jiraBaseUrl'); out['confluenceBaseUrl']=valid_origin(out.get('confluenceBaseUrl'),'confluenceBaseUrl')
+ return out
+def service_for(command):
+ if command=='auth.sites.list': return 'control','local'
+ if command.startswith('jira.') or command=='auth.whoami': return 'jira','v3'
+ if command=='confluence.search' or command=='confluence.attachments.add': return 'confluence','v1'
+ return 'confluence','v2'
 def secret(ref):
  if not isinstance(ref,str) or ':' not in ref: raise Failure('auth_invalid','credential must use env:NAME or file:/path reference')
  kind,val=ref.split(':',1)
@@ -65,22 +76,39 @@ def installation_key():
   fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); os.write(fd,secrets.token_bytes(32)); os.close(fd)
  secure_file(p,'state'); return p.read_bytes()
 def fingerprint(command,site,path,params,body): return hashlib.sha256(json.dumps([command,site,path,params,body],sort_keys=True,separators=(',',':')).encode()).hexdigest()
+@contextmanager
+def file_lock(name,timeout=5):
+ lock=state_dir()/(name+'.lock'); deadline=time.time()+timeout; fd=None
+ while fd is None:
+  try: fd=os.open(lock,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+  except FileExistsError:
+   if time.time()>deadline: raise Failure('state_lock_timeout','state lock timed out',True)
+   time.sleep(.01)
+ try: yield
+ finally: os.close(fd); lock.unlink(missing_ok=True)
+def atomic_json(p,value):
+ tmp=p.with_name(p.name+'.'+uuid.uuid4().hex+'.tmp'); tmp.write_text(json.dumps(value)); os.chmod(tmp,0o600); os.replace(tmp,p)
 def preview(command,site,path,params,body):
- ident=uuid.uuid4().hex; issued=int(time.time()); fp=fingerprint(command,site,path,params,body); mac=hashlib.sha256(installation_key()+f'{ident}:{issued}:{fp}'.encode()).hexdigest(); token=f'{ident}.{issued}.{mac}'; rec={'fingerprint':fp,'expires':issued+300,'used':False}; (state_dir()/('preview-'+ident+'.json')).write_text(json.dumps(rec)); os.chmod(state_dir()/('preview-'+ident+'.json'),0o600); return token
+ ident=uuid.uuid4().hex; issued=int(time.time()); fp=fingerprint(command,site,path,params,body); mac=hmac.new(installation_key(),f'{ident}:{issued}:{fp}'.encode(),hashlib.sha256).hexdigest(); token=f'{ident}.{issued}.{mac}'
+ with file_lock('preview-'+ident): atomic_json(state_dir()/('preview-'+ident+'.json'),{'fingerprint':fp,'expires':issued+300,'used':False})
+ return token
 def consume(token,command,site,path,params,body):
- try: ident,issued,mac=token.split('.'); p=state_dir()/('preview-'+ident+'.json'); rec=json.loads(p.read_text()); expected=hashlib.sha256(installation_key()+f'{ident}:{issued}:{rec["fingerprint"]}'.encode()).hexdigest()
+ try: ident,issued,mac=token.split('.'); p=state_dir()/('preview-'+ident+'.json')
  except Exception: raise Failure('confirm_invalid','invalid confirmation state')
- if not secrets.compare_digest(mac,expected) or rec['used'] or time.time()>rec['expires'] or rec['fingerprint']!=fingerprint(command,site,path,params,body): raise Failure('confirm_stale','confirmation expired, used, or request mismatch')
- rec['used']=True; tmp=p.with_suffix('.tmp'); tmp.write_text(json.dumps(rec)); os.chmod(tmp,0o600); os.replace(tmp,p)
+ with file_lock('preview-'+ident):
+  try: rec=json.loads(p.read_text()); expected=hmac.new(installation_key(),f'{ident}:{issued}:{rec["fingerprint"]}'.encode(),hashlib.sha256).hexdigest()
+  except Exception: raise Failure('confirm_invalid','invalid confirmation state')
+  if not hmac.compare_digest(mac,expected) or rec['used'] or time.time()>rec['expires'] or rec['fingerprint']!=fingerprint(command,site,path,params,body): raise Failure('confirm_stale','confirmation expired, used, or request mismatch')
+  rec['used']=True; atomic_json(p,rec)
 def idem(ns,fp,result=None):
  if not ns.idempotency_key:return None
  key=hashlib.sha256((ns.site+':'+ns.command+':'+ns.idempotency_key).encode()).hexdigest(); p=state_dir()/('idem-'+key+'.json')
- if result is None and p.exists():
-  rec=json.loads(p.read_text());
-  if rec['fingerprint']!=fp: raise Failure('idempotency_conflict','idempotency key reused with different input')
-  return rec['result']
- if result is not None:
-  p.write_text(json.dumps({'fingerprint':fp,'result':result})); os.chmod(p,0o600)
+ with file_lock('idem-'+key):
+  if result is None and p.exists():
+   rec=json.loads(p.read_text())
+   if rec['fingerprint']!=fp: raise Failure('idempotency_conflict','idempotency key reused with different input')
+   return rec['result']
+  if result is not None: atomic_json(p,{'fingerprint':fp,'result':result})
 def multipart(path):
  boundary='----clawpod'+secrets.token_hex(12); data=path.read_bytes(); head=(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{path.name}"\r\nContent-Type: application/octet-stream\r\n\r\n').encode(); return head+data+f'\r\n--{boundary}--\r\n'.encode(),f'multipart/form-data; boundary={boundary}'
 def request(method,url,headers,body,timeout,retries=3,opener=urlopen,sleep=time.sleep,raw=False):
@@ -125,7 +153,7 @@ def execute(ns,opener=urlopen):
   if ns.dry_run:return {'dryRun':True,'confirm':preview(ns.command,ns.site,path,params,body if not upload else {'sha256':hashlib.sha256(upload.read_bytes()).hexdigest()}),'expiresInSeconds':300,'request':{'method':c['method'],'path':path,'body':redact(body),'uploadBytes':upload.stat().st_size if upload else None}}
   if not ns.confirm:raise Failure('confirm_required','successful dry-run confirmation required')
   consume(ns.confirm,ns.command,ns.site,path,params,body if not upload else {'sha256':hashlib.sha256(upload.read_bytes()).hexdigest()})
- url=s['baseUrl']+path+('?' + urlencode(params,doseq=True) if params else ''); headers={'Accept':'application/json','Authorization':authorization(s),'User-Agent':'clawpod-atlassian/0.1.0'}
+ service,api_version=service_for(ns.command); url=s[service+'BaseUrl']+path+('?' + urlencode(params,doseq=True) if params else ''); headers={'Accept':'application/json','Authorization':authorization(s),'User-Agent':'clawpod-atlassian/0.1.0'}
  raw=False
  if upload: body,headers['Content-Type']=multipart(upload); headers['X-Atlassian-Token']='no-check'; raw=True
  elif body is not None:headers['Content-Type']='application/json'
@@ -135,21 +163,30 @@ def execute(ns,opener=urlopen):
  return result
 def item_error(e): return {'ok':False,'error':{'code':e.code,'message':redact(e.message),'retryable':e.retryable,'ambiguousCommit':e.ambiguous}}
 def run_batch(ns):
- items=json.loads(Path(ns.batch).read_text() if Path(ns.batch).exists() else ns.batch); out=[]
- for item in items:
-  child=parser().parse_args([item.pop('command'),*sum(([f'--{k.replace("_","-")}',str(v)] if not isinstance(v,bool) else ([f'--{k.replace("_","-")}'] if v else []) for k,v in item.items()),[])])
-  try:out.append({'ok':True,'data':execute(child)})
+ try: items=json.loads(Path(ns.batch).read_text() if Path(ns.batch).is_file() else ns.batch)
+ except Exception: raise Failure('batch_invalid','batch must be a JSON array or readable JSON file')
+ if not isinstance(items,list) or not 1<=len(items)<=100 or not all(isinstance(x,dict) for x in items): raise Failure('batch_invalid','batch must contain 1..100 command objects')
+ allowed={a.dest for a in parser()._actions}; aliases={'sites_file':'sites_file','issue_id_or_key':'issueIdOrKey','project_id_or_key':'projectIdOrKey','comment_id':'commentId','page_id':'pageId','space_id':'spaceId','sitesFile':'sites_file','dryRun':'dry_run','idempotencyKey':'idempotency_key','inputPath':'input_path','transferRoot':'transfer_root','maxUploadBytes':'max_upload_bytes','timeoutMs':'timeout_ms','allPages':'all_pages','maxPages':'max_pages','maxItems':'max_items','issueIdOrKey':'issueIdOrKey','projectIdOrKey':'projectIdOrKey','commentId':'commentId','pageId':'pageId','spaceId':'spaceId'}; out=[]
+ for index,original in enumerate(items):
+  item=dict(original); command=item.pop('command',None)
+  if not isinstance(command,str) or command not in CONTRACTS or item.keys()-set(aliases)-allowed: out.append({'index':index,'ok':False,'error':{'code':'batch_item_invalid','message':'invalid command or arguments','retryable':False,'ambiguousCommit':False}}); continue
+  child=parser().parse_args([command])
+  for k,v in item.items(): setattr(child,aliases.get(k,k),v)
+  try: out.append({'index':index,'ok':True,'data':execute(child)})
   except Failure as e:
-   out.append(item_error(e))
-   if e.systemic:break
- return {'items':out,'stopped':len(out)<len(items)}
+   out.append(dict(index=index,**item_error(e)))
+   if e.systemic: break
+ failed=sum(not x['ok'] for x in out); return {'items':out,'summary':{'requested':len(items),'processed':len(out),'succeeded':len(out)-failed,'failed':failed,'stopped':len(out)<len(items)},'stopped':len(out)<len(items)}
 def parser():
  p=argparse.ArgumentParser(); p.add_argument('command',nargs='?'); p.add_argument('--site'); p.add_argument('--sites-file'); p.add_argument('--params'); p.add_argument('--body'); p.add_argument('--batch'); p.add_argument('--dry-run',action='store_true'); p.add_argument('--confirm'); p.add_argument('--idempotency-key'); p.add_argument('--input-path'); p.add_argument('--transfer-root'); p.add_argument('--max-upload-bytes',type=int,default=25*1024*1024); p.add_argument('--timeout-ms',type=int,default=30000); p.add_argument('--retries',type=int,default=3); p.add_argument('--all-pages',action='store_true'); p.add_argument('--max-pages',type=int,default=10); p.add_argument('--max-items',type=int,default=1000)
  for d in ('issueIdOrKey','commentId','projectIdOrKey','pageId','spaceId'):p.add_argument('--'+re.sub(r'([A-Z])',lambda m:'-'+m.group(1).lower(),d),dest=d)
  return p
 def main(argv=None):
- ns=parser().parse_args(argv); out={'ok':True,'schemaVersion':1,'command':ns.command or 'batch','requestId':str(uuid.uuid4()),'effects':[],'provenance':{'provider':'atlassian-cloud','live':False}}
- try:out['data']=run_batch(ns) if ns.batch else execute(ns); out['provenance']['live']=not out['data'].get('dryRun',False)
+ ns=parser().parse_args(argv); command=ns.command or 'batch'; service,version=('mixed','mixed') if ns.batch else service_for(command); out={'ok':True,'schemaVersion':1,'command':command,'requestId':str(uuid.uuid4()),'effects':[],'page':{},'provenance':{'provider':'atlassian-cloud','service':service,'apiVersion':version,'live':False}}
+ try:
+  out['data']=run_batch(ns) if ns.batch else execute(ns); dry=isinstance(out['data'],dict) and out['data'].get('dryRun',False); mutation=bool(CONTRACTS.get(command,{}).get('mutation')); out['provenance']['live']=not dry and command!='auth.sites.list'
+  if mutation: out['effects']=[{'status':'planned' if dry else 'confirmed','command':command,'site':ns.site}]
+  if isinstance(out['data'],dict) and 'pages' in out['data']: out['page']={'pages':out['data']['pages'],'itemCount':len(out['data'].get('items',[])),'truncated':out['data'].get('truncated',False)}
  except Failure as e:out.update(item_error(e))
  except Exception:out.update(ok=False,error={'code':'internal_error','message':'internal failure','retryable':False,'ambiguousCommit':False})
  print(json.dumps(out,separators=(',',':'))); return 0 if out['ok'] else 2

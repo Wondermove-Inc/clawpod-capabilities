@@ -5,7 +5,7 @@ import pytest
 sys.path.insert(0,str(Path(__file__).parents[1])); import atlassian as a
 
 def sites(tmp_path,auth=None):
- p=tmp_path/'sites.json'; p.write_text(json.dumps({'sites':{'one':{'baseUrl':'https://one.atlassian.net','auth':auth or {'type':'oauth','tokenRef':'env:TEST_TOKEN'}},'two':{'baseUrl':'https://two.atlassian.net','auth':{'type':'oauth','tokenRef':'env:OTHER_TOKEN'}}}})); p.chmod(0o600); return p
+ p=tmp_path/'sites.json'; p.write_text(json.dumps({'sites':{'one':{'jiraBaseUrl':'https://api.atlassian.com/ex/jira/cloud-one','confluenceBaseUrl':'https://api.atlassian.com/ex/confluence/cloud-one','auth':auth or {'type':'oauth','tokenRef':'env:TEST_TOKEN'}},'two':{'jiraBaseUrl':'https://api.atlassian.com/ex/jira/cloud-two','confluenceBaseUrl':'https://api.atlassian.com/ex/confluence/cloud-two','auth':{'type':'oauth','tokenRef':'env:OTHER_TOKEN'}}}})); p.chmod(0o600); return p
 class Response:
  def __init__(self,data): self.data=json.dumps(data).encode()
  def __enter__(self): return self
@@ -29,7 +29,7 @@ def test_one_time_request_bound_confirm(tmp_path,monkeypatch):
 def test_mutation_preview_without_auth(tmp_path):
  n=ns(command='jira.issues.create',issueIdOrKey=None,sites_file=str(sites(tmp_path)),body='{"fields":{}}',dry_run=True); out=a.execute(n); assert out['dryRun'] and out['confirm']
 def test_tenant_isolation(tmp_path,monkeypatch):
- monkeypatch.setenv('TEST_TOKEN','one-token'); monkeypatch.setenv('OTHER_TOKEN','two-token'); p=sites(tmp_path); assert a.get_site('one',p)['baseUrl']!=a.get_site('two',p)['baseUrl']
+ monkeypatch.setenv('TEST_TOKEN','one-token'); monkeypatch.setenv('OTHER_TOKEN','two-token'); p=sites(tmp_path); assert a.get_site('one',p)['jiraBaseUrl']!=a.get_site('two',p)['jiraBaseUrl']
 def test_multipart_contains_bytes(tmp_path):
  p=tmp_path/'x.bin'; p.write_bytes(b'ACTUAL-BYTES'); body,ctype=a.multipart(p); assert b'ACTUAL-BYTES' in body and 'multipart/form-data' in ctype
 
@@ -78,6 +78,33 @@ def test_pagination_start_at():
  pages=[{'issues':[{'id':'1'}],'startAt':0,'maxResults':1,'total':2},{'issues':[{'id':'2'}],'startAt':1,'maxResults':1,'total':2}]
  def op(req,timeout): return Response(pages.pop(0))
  n=ns(all_pages=True,max_pages=2,max_items=2,sites_file='unused'); out=a.paginate({},'https://x?startAt=0',{},n,op); assert len(out['items'])==2 and out['pages']==2
+
+def test_manifest_argmap_and_required_identifiers():
+ manifest=json.loads((Path(__file__).parents[1]/'harness.json').read_text()); cmd=manifest['commands']['jira.issues.comments.update']; args={x['arg'] for x in cmd['argMap']}
+ assert {'sitesFile','issueIdOrKey','commentId','batch','allPages','maxUploadBytes'}<=args
+ assert cmd['inputSchema']['additionalProperties'] is False and {'site','issueIdOrKey','commentId'}<=set(cmd['inputSchema']['required'])
+
+def test_oauth_service_urls_are_separate(tmp_path):
+ s=a.get_site('one',sites(tmp_path)); assert '/ex/jira/' in s['jiraBaseUrl'] and '/ex/confluence/' in s['confluenceBaseUrl']
+
+def test_basic_origin_defaults_both_services(tmp_path):
+ p=tmp_path/'basic.json'; p.write_text(json.dumps({'sites':{'b':{'baseUrl':'https://basic.atlassian.net','auth':{'type':'basic','email':'x@y','tokenRef':'env:X'}}}})); p.chmod(0o600); s=a.get_site('b',p); assert s['jiraBaseUrl']==s['confluenceBaseUrl']
+
+def test_confirmation_concurrency(tmp_path,monkeypatch):
+ import threading
+ monkeypatch.setenv('ATLASSIAN_STATE_DIR',str(tmp_path/'state')); token=a.preview('x','one','/p',{},None); results=[]
+ def use():
+  try:a.consume(token,'x','one','/p',{},None); results.append('ok')
+  except a.Failure:results.append('rejected')
+ ts=[threading.Thread(target=use) for _ in range(2)]; [t.start() for t in ts]; [t.join() for t in ts]; assert sorted(results)==['ok','rejected']
+
+def test_main_effect_and_page_envelopes(tmp_path,monkeypatch,capsys):
+ monkeypatch.setenv('ATLASSIAN_STATE_DIR',str(tmp_path/'state')); p=sites(tmp_path); a.main(['jira.issues.create','--site','one','--sites-file',str(p),'--body','{}','--dry-run']); out=json.loads(capsys.readouterr().out); assert out['effects'][0]['status']=='planned' and out['provenance']['service']=='jira' and 'page' in out
+
+def test_batch_shape_validation():
+ n=ns(batch='{}')
+ with pytest.raises(a.Failure) as e:a.run_batch(n)
+ assert e.value.code=='batch_invalid'
 
 def test_contract_inventory():
  assert len(a.CONTRACTS)==26 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)
