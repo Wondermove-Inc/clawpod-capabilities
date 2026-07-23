@@ -32,6 +32,8 @@ def test_gmail_settings_profile_is_available_for_filter_consent():
 def test_workspace_max_profile_covers_full_service_scopes():
  assert set(SCOPES["workspace-max"])=={
   "https://mail.google.com/",
+  "https://www.googleapis.com/auth/gmail.settings.basic",
+  "https://www.googleapis.com/auth/gmail.settings.sharing",
   "https://www.googleapis.com/auth/calendar",
   "https://www.googleapis.com/auth/drive",
  }
