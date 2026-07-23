@@ -124,6 +124,14 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
             classes = command.get("safetyClasses") if isinstance(command, dict) else None
             if not isinstance(classes, list) or not classes or any(item not in HARNESS_SAFETY_CLASSES for item in classes):
                 fail(f"{label} harness command {command_name} contains an unsupported safety class")
+            arg_map = command.get("argMap") if isinstance(command, dict) else None
+            if not isinstance(arg_map, list):
+                fail(f"{label} harness command {command_name} argMap must be an array")
+            for arg_position, arg in enumerate(arg_map):
+                if not isinstance(arg, dict):
+                    fail(f"{label} harness command {command_name} argMap[{arg_position}] must be an object")
+                if arg.get("valueType") == "path" and arg.get("pathRole") not in {"input", "output", "inout"}:
+                    fail(f"{label} harness command {command_name} argMap[{arg_position}] path args require pathRole")
 
     files = entry["files"]
     if not isinstance(files, list) or not files:

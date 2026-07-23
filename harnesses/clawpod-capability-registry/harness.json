@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, inspect, install, validate, update, and roll back AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -223,6 +223,7 @@
           "type": "option",
           "flag": "--target-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         },
         {
@@ -230,6 +231,7 @@
           "type": "option",
           "flag": "--skills-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         },
         {
@@ -237,6 +239,7 @@
           "type": "option",
           "flag": "--harnesses-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         }
       ]
@@ -311,6 +314,7 @@
           "type": "option",
           "flag": "--target-root",
           "valueType": "path",
+          "pathRole": "input",
           "optional": true
         },
         {
@@ -318,6 +322,7 @@
           "type": "option",
           "flag": "--skills-root",
           "valueType": "path",
+          "pathRole": "input",
           "optional": true
         },
         {
@@ -325,6 +330,7 @@
           "type": "option",
           "flag": "--harnesses-root",
           "valueType": "path",
+          "pathRole": "input",
           "optional": true
         }
       ]
@@ -399,6 +405,7 @@
           "type": "option",
           "flag": "--target-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         },
         {
@@ -406,6 +413,7 @@
           "type": "option",
           "flag": "--skills-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         },
         {
@@ -413,6 +421,7 @@
           "type": "option",
           "flag": "--harnesses-root",
           "valueType": "path",
+          "pathRole": "inout",
           "optional": true
         }
       ]
