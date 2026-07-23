@@ -54,6 +54,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -131,6 +134,13 @@
           "flag": "--max-bytes",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         }
       ],
       "retryPolicy": {
@@ -170,6 +180,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -256,6 +269,13 @@
           "flag": "--max-bytes",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         }
       ],
       "retryPolicy": {
@@ -298,6 +318,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -391,6 +414,13 @@
           "flag": "--max-bytes",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         }
       ],
       "retryPolicy": {
@@ -430,6 +460,9 @@
           },
           "output": {
             "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -510,6 +543,13 @@
           "valueType": "path",
           "optional": false,
           "pathRole": "output"
+        },
+        {
+          "arg": "overwrite",
+          "type": "option",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         }
       ],
       "retryPolicy": {
@@ -536,6 +576,9 @@
             "type": "string"
           },
           "bundle": {
+            "type": "string"
+          },
+          "asOf": {
             "type": "string"
           }
         },
@@ -593,6 +636,13 @@
           "valueType": "path",
           "optional": false,
           "pathRole": "input"
+        },
+        {
+          "arg": "asOf",
+          "type": "option",
+          "flag": "--as-of",
+          "valueType": "string",
+          "optional": true
         }
       ],
       "retryPolicy": {

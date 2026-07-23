@@ -27,6 +27,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -99,6 +102,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -174,6 +180,9 @@
           },
           "maxBytes": {
             "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -249,6 +258,9 @@
           },
           "output": {
             "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -308,6 +320,9 @@
             "type": "string"
           },
           "bundle": {
+            "type": "string"
+          },
+          "asOf": {
             "type": "string"
           }
         },
