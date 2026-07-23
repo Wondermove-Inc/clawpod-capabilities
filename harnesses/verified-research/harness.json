@@ -144,8 +144,8 @@
         }
       ],
       "retryPolicy": {
-        "mode": "bounded-idempotent",
-        "maxAttempts": 2
+        "mode": "none",
+        "maxAttempts": 1
       }
     },
     "source.batch": {
@@ -279,8 +279,8 @@
         }
       ],
       "retryPolicy": {
-        "mode": "bounded-idempotent",
-        "maxAttempts": 2
+        "mode": "none",
+        "maxAttempts": 1
       }
     },
     "source.import": {

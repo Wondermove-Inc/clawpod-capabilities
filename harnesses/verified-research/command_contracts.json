@@ -3,7 +3,7 @@
   "commands": {
     "source.fetch": {
       "backend": "python-stdlib",
-      "mutation": false,
+      "mutation": true,
       "required": [
         "url"
       ],
@@ -73,7 +73,7 @@
     },
     "source.batch": {
       "backend": "python-stdlib",
-      "mutation": false,
+      "mutation": true,
       "required": [
         "inputRoot",
         "manifest"
@@ -148,7 +148,7 @@
     },
     "source.import": {
       "backend": "python-stdlib",
-      "mutation": false,
+      "mutation": true,
       "required": [
         "inputRoot",
         "capture"

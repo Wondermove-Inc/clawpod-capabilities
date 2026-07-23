@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded deterministic evidence capture. Fetched content is untrusted data."""
 from __future__ import annotations
-import argparse, codecs, datetime as dt, hashlib, html, ipaddress, json, os, re, shutil, socket, stat, subprocess, tempfile, urllib.error, urllib.parse, urllib.request, uuid
+import argparse, codecs, datetime as dt, email.utils, hashlib, html, ipaddress, json, os, re, shutil, socket, stat, subprocess, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid
 from html.parser import HTMLParser
 from pathlib import Path
 from xml.etree import ElementTree
@@ -27,15 +27,14 @@ def validate_shape(v,depth=0):
   if len(v)>1000: raise VError('INPUT_LIMIT','object too large')
   for k,x in v.items(): validate_shape(k,depth+1); validate_shape(x,depth+1)
 def root_path(root,output=False):
- if not root: raise VError('INVALID_PATH','explicit root required')
+ if not root: raise VError('INVALID_PATH','explicit existing root required')
  p=Path(root)
  if p.is_symlink(): raise VError('INVALID_PATH','symlink root forbidden')
  try: rp=p.resolve(strict=True)
- except FileNotFoundError:
-  if output: p.mkdir(parents=True,mode=0o700); rp=p.resolve(strict=True)
-  else: raise VError('INVALID_PATH','root missing')
+ except FileNotFoundError: raise VError('INVALID_PATH','root must already exist')
  if not rp.is_dir(): raise VError('INVALID_PATH','root must be directory')
- if output and rp.stat().st_mode & 0o022: raise VError('INVALID_PATH','output root must not be group/world writable')
+ mode=stat.S_IMODE(rp.stat().st_mode)
+ if output and mode & 0o022: raise VError('INVALID_PATH','output root must not be group/world writable')
  return rp
 def safe_path(root,rel,must_exist=False,output=False):
  p=root_path(root,output); q=Path(rel or '')
@@ -84,7 +83,13 @@ def syntax_url(url,resolve=True,allow_test=False):
  try: port=u.port
  except ValueError: raise VError('UNSAFE_URL','invalid port')
  fixture=os.getenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE') if allow_test and os.getenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE')=='1' else None
- fixture_ok=fixture and Path(fixture).is_file() and host in ('127.0.0.1','localhost')
+ fixture_ok=False
+ if fixture:
+  fp=Path(fixture)
+  try:
+   st=fp.lstat(); fixture_ok=stat.S_ISREG(st.st_mode) and not fp.is_symlink() and st.st_uid==os.getuid() and stat.S_IMODE(st.st_mode)==0o600
+  except OSError: fixture_ok=False
+  fixture_ok=fixture_ok and host in ('127.0.0.1','localhost')
  if port and port not in SAFE_PORTS and not fixture_ok: raise VError('UNSAFE_URL','unsafe port')
  try:
   lit=ipaddress.ip_address(host.strip('[]'))
@@ -137,12 +142,20 @@ def candidate(field,value,method,confidence='medium',valid=True,diagnostic=None)
  return d
 def parse_date(raw,as_of=None):
  s=str(raw).strip()
+ if not s or len(s)>200: return False,'malformed date'
+ x=None
  try:
-  x=dt.datetime.fromisoformat(s.replace('Z','+00:00'))
-  if x.tzinfo is None: x=x.replace(tzinfo=dt.timezone.utc)
-  if as_of and x>as_of+dt.timedelta(days=2): return False,'future date'
-  return True,None
- except ValueError: return False,'malformed date'
+  if re.fullmatch(r'\d{4}-\d{2}-\d{2}(?:[Tt ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:[Zz]|[+-]\d{2}:?\d{2})?)?',s): x=dt.datetime.fromisoformat(s.replace('Z','+00:00').replace('z','+00:00'))
+  else: x=email.utils.parsedate_to_datetime(s)
+ except (TypeError,ValueError,OverflowError): return False,'malformed date'
+ if not isinstance(x,dt.datetime): return False,'malformed date'
+ if x.tzinfo is None: x=x.replace(tzinfo=dt.timezone.utc)
+ try: x=x.astimezone(dt.timezone.utc)
+ except (ValueError,OverflowError): return False,'malformed date'
+ if as_of:
+  limit=as_of if as_of.tzinfo else as_of.replace(tzinfo=dt.timezone.utc)
+  if x>limit.astimezone(dt.timezone.utc)+dt.timedelta(days=2): return False,'future date: '+x.isoformat().replace('+00:00','Z')
+ return True,x.isoformat().replace('+00:00','Z')
 def charset_decode(raw,ctype,header):
  m=re.search(r'charset\s*=\s*["\']?([^;"\'\s]+)',header or '',re.I); names=[m.group(1) if m else None,'utf-8','windows-1252']
  for n in names:
@@ -150,18 +163,56 @@ def charset_decode(raw,ctype,header):
   try: codecs.lookup(n); return raw.decode(n,'strict'),n
   except (LookupError,UnicodeDecodeError): continue
  return raw.decode('utf-8','replace'),'utf-8-replacement'
-def pdf_text(raw):
- binary=shutil.which('pdftotext')
+def pdf_text(raw,binary=None,popen_factory=subprocess.Popen,max_output=MAX_TEXT,timeout=10):
+ binary=binary or shutil.which('pdftotext')
  if not binary: return '', 'dependency_missing'
- env={'PATH':str(Path(binary).parent),'LANG':'C','LC_ALL':'C'}
+ resolved=str(Path(binary).resolve()); env={'PATH':str(Path(resolved).parent),'LANG':'C','LC_ALL':'C'}
+ infd,inname=tempfile.mkstemp(prefix='verified-research-pdf-in-'); outfd,outname=tempfile.mkstemp(prefix='verified-research-pdf-out-'); os.close(outfd)
  try:
-  p=subprocess.Popen([str(Path(binary).resolve()),'-layout','-','-'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,env=env)
-  out,_=p.communicate(raw,timeout=10)
-  if len(out)>MAX_TEXT: p.kill(); raise VError('OUTPUT_LIMIT','PDF text exceeds limit')
-  text=normalize(out.decode('utf-8','replace')); return text,('ok' if text else 'unsupported')
- except subprocess.TimeoutExpired:
-  p.kill(); p.communicate(); raise VError('TIMEOUT','PDF extraction timed out',True)
- except OSError: return '', 'dependency_missing'
+  with os.fdopen(infd,'wb') as f: f.write(raw)
+  try: p=popen_factory([resolved,'-layout',inname,outname],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,env=env)
+  except OSError: return '', 'dependency_missing'
+  start=time.monotonic()
+  try:
+   while p.poll() is None:
+    if time.monotonic()-start>timeout: p.kill(); p.wait(); raise VError('TIMEOUT','PDF extraction timed out',True)
+    if os.path.getsize(outname)>max_output: p.kill(); p.wait(); raise VError('OUTPUT_LIMIT','PDF text exceeds limit')
+    time.sleep(.01)
+   if os.path.getsize(outname)>max_output: raise VError('OUTPUT_LIMIT','PDF text exceeds limit')
+  finally:
+   if p.poll() is None: p.kill(); p.wait()
+  data=read_bounded(Path(outname),max_output); text=normalize(data.decode('utf-8','replace')); return text,('ok' if text else 'unsupported')
+ finally:
+  for name in (inname,outname):
+   try: os.unlink(name)
+   except FileNotFoundError: pass
+
+def local_name(e): return e.tag.rsplit('}',1)[-1].lower()
+def element_text(e): return normalize(' '.join(x for x in e.itertext()))
+def feed_extract(root,candidates):
+ entries=[]; feed_title=None
+ def add(field,value,path,confidence='medium'):
+  if value: candidates.append(candidate(field,value,'feed-element:'+path,confidence))
+ channel=next((e for e in root.iter() if local_name(e) in ('channel','feed')),root)
+ for child in list(channel):
+  tag=local_name(child); val=element_text(child); path='/'+local_name(channel)+'/'+tag
+  if tag=='title' and val: feed_title=feed_title or val; add('publisher',val,path,'medium'); add('title',val,path,'medium')
+  elif tag in ('author','managingeditor','webmaster'):
+   name=next((element_text(x) for x in child.iter() if local_name(x)=='name' and element_text(x)),val); add('author',name,path)
+  elif tag in ('published','pubdate'): add('published',val,path)
+  elif tag in ('updated','lastbuilddate'): add('modified',val,path)
+  elif tag=='link': add('link',child.attrib.get('href') or val,path)
+ for idx,e in enumerate(x for x in root.iter() if local_name(x) in ('item','entry')):
+  item={}; base=f'/{local_name(e)}[{idx}]'
+  for child in list(e):
+   tag=local_name(child); val=element_text(child); path=base+'/'+tag
+   if tag=='link': val=child.attrib.get('href') or val
+   if tag=='author': val=next((element_text(x) for x in child.iter() if local_name(x)=='name' and element_text(x)),val)
+   if tag in ('title','author','published','pubdate','updated','link') and val:
+    field={'pubdate':'published','updated':'modified'}.get(tag,tag); add(field,val,path)
+   if val and len(item)<30: item[tag]=val[:4000]
+  entries.append(item)
+ return normalize(json.dumps({'feedTitle':feed_title,'entries':entries},ensure_ascii=False,sort_keys=True,indent=2))
 def source_record(requested,final,ctype,raw,headers=None):
  headers=headers or {}; candidates=[candidate('contentType',headers.get('Content-Type',ctype),'http-header','high'),candidate('finalUrl',final,'http-redirect','high')]
  if headers.get('Last-Modified'): candidates.append(candidate('modified',headers['Last-Modified'],'http-header'))
@@ -174,16 +225,7 @@ def source_record(requested,final,ctype,raw,headers=None):
   except (json.JSONDecodeError,UnicodeDecodeError): raise VError('MALFORMED_CONTENT','invalid JSON')
  elif any(x in ctype for x in ('xml','rss','atom')) or raw.lstrip().startswith(b'<?xml'):
   kind='feed'
-  try:
-   root=ElementTree.fromstring(raw); entries=[]
-   for e in root.iter():
-    tag=e.tag.rsplit('}',1)[-1].lower()
-    val=normalize(e.text or '')
-    if tag in ('title','author','name','published','updated','pubdate','link') and val:
-     field={'pubdate':'published','updated':'modified','name':'author'}.get(tag,tag); candidates.append(candidate(field,val,'feed-element'))
-    if tag in ('item','entry'):
-     item={c.tag.rsplit('}',1)[-1]:normalize(c.text or '') for c in list(e) if normalize(c.text or '')}; entries.append(item)
-   text=normalize(json.dumps({'entries':entries,'metadata':[x for x in candidates if x.get('method')=='feed-element']},ensure_ascii=False,sort_keys=True,indent=2))
+  try: root=ElementTree.fromstring(raw); text=feed_extract(root,candidates)
   except ElementTree.ParseError: raise VError('MALFORMED_CONTENT','invalid XML')
  elif ctype.startswith('text/plain'):
   kind='text'; decoded,_=charset_decode(raw,ctype,headers.get('Content-Type','')); text=normalize(decoded)
@@ -207,8 +249,13 @@ def source_record(requested,final,ctype,raw,headers=None):
    joined=urllib.parse.urljoin(final or requested or '',href)
    try: val=syntax_url(joined,resolve=False,allow_test=True); candidates.append(candidate('canonicalUrl',val,'html-link','high')); canonical=canonical or val
    except VError: candidates.append(candidate('canonicalUrl','[rejected]','html-link','low',False,'unsafe canonical URL'))
+ for c in candidates:
+  if c.get('field') in ('published','modified'):
+   ok,diag=parse_date(c.get('rawValue',''))
+   if ok: c['normalizedTimestamp']=diag
+   else: c['valid']=False; c['diagnostic']=diag
  sid='src-'+digest(raw)[:16]
- return {'schemaVersion':1,'id':sid,'requestedUrl':requested,'finalUrl':final,'canonicalUrl':canonical,'mediaType':ctype,'kind':kind,'title':title,'metadataCandidates':candidates[:100],'rawSha256':digest(raw),'textSha256':digest(text.encode()),'text':text,'lineCount':len(text.splitlines()) if text else 0,'extraction':extraction,'rawBytes':len(raw)},raw
+ return {'schemaVersion':1,'id':sid,'requestedUrl':requested,'finalUrl':final,'canonicalUrl':canonical,'mediaType':ctype,'contentTypeHeader':str(headers.get('Content-Type',ctype))[:200],'kind':kind,'title':title,'metadataCandidates':candidates[:100],'rawSha256':digest(raw),'textSha256':digest(text.encode()),'text':text,'lineCount':len(text.splitlines()) if text else 0,'extraction':extraction,'rawBytes':len(raw)},raw
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*a,**k): return None
 def fetch(url,timeout=10,max_bytes=MAX_BYTES):
@@ -246,50 +293,105 @@ def validate_bundle(b,root=None,as_of=None):
   sid=s.get('id') if isinstance(s,dict) else None
   if not isinstance(sid,str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',sid) or sid in ids: issues.append({'code':'INVALID_OR_DUPLICATE_SOURCE_ID','sourceId':sid}); continue
   ids.add(sid); byid[sid]=s
-  if digest(s.get('text','').encode())!=s.get('textSha256'): issues.append({'code':'TEXT_HASH_MISMATCH','sourceId':sid})
+  text=s.get('text'); tsha=s.get('textSha256'); rsha=s.get('rawSha256'); rb=s.get('rawBytes'); media=s.get('mediaType'); snap=s.get('snapshotPath')
+  if not isinstance(text,str) or len(text)>MAX_TEXT: issues.append({'code':'INVALID_SOURCE_TEXT','sourceId':sid}); text=''
+  if not isinstance(tsha,str) or not re.fullmatch(r'[a-f0-9]{64}',tsha): issues.append({'code':'INVALID_TEXT_HASH','sourceId':sid})
+  elif digest(text.encode())!=tsha: issues.append({'code':'TEXT_HASH_MISMATCH','sourceId':sid})
+  if not isinstance(rsha,str) or not re.fullmatch(r'[a-f0-9]{64}',rsha): issues.append({'code':'INVALID_RAW_HASH','sourceId':sid})
+  if not isinstance(rb,int) or isinstance(rb,bool) or rb<0 or rb>MAX_BYTES: issues.append({'code':'INVALID_RAW_BYTES','sourceId':sid})
+  if not isinstance(media,str) or not media or len(media)>200: issues.append({'code':'INVALID_MEDIA_TYPE','sourceId':sid})
+  cth=s.get('contentTypeHeader',media)
+  if not isinstance(cth,str) or not cth or len(cth)>200: issues.append({'code':'INVALID_CONTENT_TYPE_HEADER','sourceId':sid})
+  if snap is not None and (not isinstance(snap,str) or len(snap)>500): issues.append({'code':'INVALID_SNAPSHOT_PATH','sourceId':sid}); snap=None
   for f in ('finalUrl','canonicalUrl'):
    if s.get(f):
+    if not isinstance(s[f],str) or len(s[f])>4000: issues.append({'code':'INVALID_LINK','sourceId':sid,'field':f}); continue
     try: syntax_url(s[f],False,True)
     except VError: issues.append({'code':'INVALID_LINK','sourceId':sid,'field':f})
-  if s.get('fetchState') in ('broken','unfetched'): issues.append({'code':'BROKEN_SOURCE','sourceId':sid})
-  if s.get('snapshotPath') and root:
-   try: raw=read_bounded(safe_path(root,s['snapshotPath'],True),MAX_BYTES)
-   except VError: issues.append({'code':'MISSING_SNAPSHOT','sourceId':sid})
-   else:
-    if len(raw)!=s.get('rawBytes') or digest(raw)!=s.get('rawSha256'): issues.append({'code':'RAW_HASH_MISMATCH','sourceId':sid})
-  elif s.get('snapshotPath'): warnings.append({'code':'SNAPSHOT_NOT_CHECKED','sourceId':sid})
-  fields={x.get('field') for x in s.get('metadataCandidates',[]) if isinstance(x,dict) and x.get('valid')}
+  mdc=s.get('metadataCandidates',[])
+  if not isinstance(mdc,list) or len(mdc)>100: issues.append({'code':'INVALID_METADATA_CANDIDATES','sourceId':sid}); mdc=[]
+  for x in mdc:
+   if not isinstance(x,dict) or not isinstance(x.get('field'),str) or not 1<=len(x['field'])<=64 or not isinstance(x.get('method'),str) or not 1<=len(x['method'])<=200 or x.get('confidence') not in ('high','medium','low') or not isinstance(x.get('valid'),bool) or not isinstance(x.get('rawValue'),str) or len(x['rawValue'])>4000:
+    issues.append({'code':'INVALID_METADATA_CANDIDATE','sourceId':sid}); continue
+   if x['field'] in ('published','modified'):
+    ok,diag=parse_date(x['rawValue'],as_of)
+    if not ok: issues.append({'code':'INVALID_DATE','sourceId':sid,'diagnostic':diag})
+  fields={x.get('field') for x in mdc if isinstance(x,dict) and x.get('valid') is True}
   if 'published' not in fields and 'modified' not in fields: warnings.append({'code':'MISSING_DATE','sourceId':sid})
   if 'publisher' not in fields: warnings.append({'code':'MISSING_PUBLISHER','sourceId':sid})
-  for x in s.get('metadataCandidates',[]):
-   if isinstance(x,dict) and x.get('field') in ('published','modified'):
-    ok,why=parse_date(x.get('rawValue',''),as_of)
-    if not ok: issues.append({'code':'INVALID_DATE','sourceId':sid,'diagnostic':why})
- claimids=set()
+  if s.get('fetchState') in ('broken','unfetched'): issues.append({'code':'BROKEN_SOURCE','sourceId':sid})
+  if snap and root:
+   try: raw=read_bounded(safe_path(root,snap,True),MAX_BYTES)
+   except VError: issues.append({'code':'MISSING_SNAPSHOT','sourceId':sid})
+   else:
+    raw_ok=isinstance(rb,int) and len(raw)==rb and isinstance(rsha,str) and digest(raw)==rsha
+    if not raw_ok: issues.append({'code':'RAW_HASH_MISMATCH','sourceId':sid})
+    if raw_ok and isinstance(media,str):
+     try: derived,_=source_record(None,None,media,raw,{'Content-Type':s.get('contentTypeHeader',media)})
+     except VError as e: warnings.append({'code':'TEXT_REEXTRACTION_UNAVAILABLE','sourceId':sid,'diagnostic':e.code})
+     else:
+      if derived.get('extraction') in ('dependency_missing','unsupported'): warnings.append({'code':'TEXT_REEXTRACTION_UNAVAILABLE','sourceId':sid,'diagnostic':derived.get('extraction')})
+      elif derived.get('textSha256')!=tsha: issues.append({'code':'SNAPSHOT_TEXT_MISMATCH','sourceId':sid})
+  elif snap: warnings.append({'code':'SNAPSHOT_NOT_CHECKED','sourceId':sid})
+ claimids={c.get('id') for c in claims if isinstance(c,dict) and isinstance(c.get('id'),str)}
+ seen_claims=set()
  for c in claims:
   cid=c.get('id') if isinstance(c,dict) else None; text=c.get('text') if isinstance(c,dict) else None; statusv=c.get('status') if isinstance(c,dict) else None; evs=c.get('evidence',[]) if isinstance(c,dict) else []
-  if not isinstance(cid,str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',cid) or cid in claimids: issues.append({'code':'INVALID_OR_DUPLICATE_CLAIM_ID','claimId':cid})
-  else: claimids.add(cid)
+  if not isinstance(cid,str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',cid) or cid in seen_claims: issues.append({'code':'INVALID_OR_DUPLICATE_CLAIM_ID','claimId':cid})
+  else: seen_claims.add(cid)
   if not isinstance(text,str) or not text.strip() or len(text)>10000: issues.append({'code':'INVALID_CLAIM_TEXT','claimId':cid})
   if statusv not in STATUSES: issues.append({'code':'INVALID_STATUS','claimId':cid})
   if statusv in ('unresolved','conflicted'): issues.append({'code':'UNRESOLVED_CLAIM','claimId':cid})
   if not isinstance(evs,list) or len(evs)>MAX_EVIDENCE: issues.append({'code':'INVALID_EVIDENCE_COUNT','claimId':cid}); continue
-  if statusv in ('supported','verified') and not evs: issues.append({'code':'EVIDENCE_REQUIRED','claimId':cid})
   conf=c.get('confidence')
   if conf is not None and (not isinstance(conf,(int,float)) or isinstance(conf,bool) or not 0<=conf<=1): issues.append({'code':'INVALID_CONFIDENCE','claimId':cid})
   contradictions=c.get('contradictions',[])
-  if not isinstance(contradictions,list) or len(contradictions)>50 or any(not isinstance(x,dict) or not isinstance(x.get('claimId'),str) or not isinstance(x.get('reason'),str) or not x['reason'].strip() for x in contradictions): issues.append({'code':'INVALID_CONTRADICTIONS','claimId':cid})
-  seen=set()
+  if not isinstance(contradictions,list) or len(contradictions)>50: issues.append({'code':'INVALID_CONTRADICTIONS','claimId':cid}); contradictions=[]
+  for x in contradictions:
+   if not isinstance(x,dict) or not isinstance(x.get('claimId'),str) or x.get('claimId') not in claimids or x.get('claimId')==cid or not isinstance(x.get('reason'),str) or not x['reason'].strip() or len(x['reason'])>4000: issues.append({'code':'INVALID_CONTRADICTION','claimId':cid})
+  seen=set(); valid_evidence=0
   for ev in evs:
-   if not isinstance(ev,dict): issues.append({'code':'INVALID_EVIDENCE','claimId':cid}); continue
+   if not isinstance(ev,dict) or not isinstance(ev.get('sourceId'),str) or not isinstance(ev.get('quote'),str) or len(ev.get('quote',''))>100000: issues.append({'code':'INVALID_EVIDENCE','claimId':cid}); continue
    key=(ev.get('sourceId'),ev.get('startLine'),ev.get('endLine'))
    if key in seen: issues.append({'code':'DUPLICATE_EVIDENCE','claimId':cid}); continue
-   seen.add(key); s=byid.get(ev.get('sourceId'))
-   if not s: issues.append({'code':'MISSING_SOURCE','claimId':cid}); continue
-   a,z=ev.get('startLine'),ev.get('endLine'); lines=s.get('text','').splitlines()
+   seen.add(key); source=byid.get(ev['sourceId'])
+   if not source: issues.append({'code':'MISSING_SOURCE','claimId':cid}); continue
+   a,z=ev.get('startLine'),ev.get('endLine'); lines=source.get('text','').splitlines()
    if not isinstance(a,int) or isinstance(a,bool) or not isinstance(z,int) or isinstance(z,bool) or a<1 or z<a or z>len(lines): issues.append({'code':'INVALID_LINE_RANGE','claimId':cid}); continue
-   if ev.get('quote')!='\n'.join(lines[a-1:z]): issues.append({'code':'QUOTE_MISMATCH','claimId':cid})
+   if ev['quote']!='\n'.join(lines[a-1:z]): issues.append({'code':'QUOTE_MISMATCH','claimId':cid}); continue
+   valid_evidence+=1
+  if statusv in ('supported','verified') and valid_evidence<1: issues.append({'code':'VALID_EVIDENCE_REQUIRED','claimId':cid})
  return issues,warnings
+
+def md_escape(value):
+ s=str(value or '').replace('\\','\\\\').replace('`','\\`').replace('[','\\[').replace(']','\\]').replace('<','&lt;').replace('>','&gt;')
+ return '\n'.join(('\\'+line if line.startswith('#') else line) for line in s.splitlines())
+def metadata_value(source,field):
+ for x in source.get('metadataCandidates',[]):
+  if isinstance(x,dict) and x.get('field')==field and x.get('valid') is True: return x.get('rawValue','')
+ return ''
+def render_markdown(bundle,warnings):
+ byid={s['id']:s for s in bundle['sources'] if isinstance(s,dict) and isinstance(s.get('id'),str)}; out=['# Evidence Bundle','']
+ for c in bundle['claims']:
+  out += [f"## Claim: {md_escape(c.get('id'))}",f"- Text: {md_escape(c.get('text'))}",f"- Status: {md_escape(c.get('status'))}",f"- Confidence: {md_escape(c.get('confidence','not provided'))}"]
+  evs=c.get('evidence',[])
+  if not evs: out.append('- Evidence: none')
+  for i,e in enumerate(evs,1):
+   src=byid.get(e.get('sourceId'),{}); url=src.get('canonicalUrl') or src.get('finalUrl') or ''; label=md_escape(src.get('title') or src.get('id') or 'source')
+   out += [f"### Evidence {i}",f"- Source: {label}",f"- Publisher: {md_escape(metadata_value(src,'publisher') or 'unknown')}",f"- Date: {md_escape(metadata_value(src,'published') or metadata_value(src,'modified') or 'unknown')}",f"- URL: {md_escape(url)}",f"- Lines: {e.get('startLine')}-{e.get('endLine')}",'```text',md_escape(e.get('quote','')),'```']
+  cons=c.get('contradictions',[])
+  if cons:
+   out.append('### Contradictions')
+   for x in cons: out.append(f"- {md_escape(x.get('claimId'))}: {md_escape(x.get('reason'))}")
+  if c.get('status') in ('unresolved','conflicted'): out.append('- Warning: claim is unresolved or conflicted.')
+  out.append('')
+ out += ['## Source Inventory','']
+ for s in bundle['sources']:
+  out += [f"### Source: {md_escape(s.get('id'))}",f"- Title: {md_escape(s.get('title') or 'unknown')}",f"- URL: {md_escape(s.get('canonicalUrl') or s.get('finalUrl') or '')}",f"- Raw SHA-256: `{md_escape(s.get('rawSha256'))}`",f"- Text SHA-256: `{md_escape(s.get('textSha256'))}`",f"- Snapshot: {md_escape(s.get('snapshotPath') or 'not stored')}"]
+ for w in warnings: out.append(f"- Validation warning: {md_escape(w.get('code'))} {md_escape(w.get('sourceId',''))}")
+ data=('\n'.join(out)+'\n').encode()
+ if len(data)>MAX_OUTPUT: raise VError('OUTPUT_LIMIT','Markdown evidence bundle exceeds output limit')
+ return data
 
 def output(command,data=None,error=None):
  r={'ok':error is None,'schemaVersion':1,'command':command,'requestId':str(uuid.uuid4()),'data':data,'effects':[],'provenance':{'tool':'verified-research','version':'0.1.0'}}
@@ -308,16 +410,26 @@ def cmd(a):
  if c=='source.batch':
   m=load(a.input_root,a.manifest); urls=m.get('urls') if isinstance(m,dict) else None
   if not isinstance(urls,list) or not urls or len(urls)>MAX_ITEMS or any(not isinstance(x,str) or len(x)>4000 for x in urls): raise VError('MALFORMED_INPUT','urls must be a nonempty bounded string array')
-  records=[]; failures=[]; seen={}
+  records=[]; raws=[]; failures=[]; seen={}
   for i,u in enumerate(urls):
    try:
-    r,_=fetch(u,a.timeout,a.max_bytes); key=r.get('canonicalUrl') or r['finalUrl']
+    r,raw=fetch(u,a.timeout,a.max_bytes); key=r.get('canonicalUrl') or r['finalUrl']
     if key in seen or r['rawSha256'] in seen: r['duplicateOf']=seen.get(key) or seen.get(r['rawSha256'])
     else: seen[key]=seen[r['rawSha256']]=r['id']
-    records.append(r)
+    records.append(r); raws.append((i,raw))
    except VError as e: failures.append({'index':i,'url':re.sub(r'//[^/@]+@','//[redacted]@',u)[:4000],'error':{'code':e.code,'message':e.message,'retryable':e.retryable}})
-  d={'sources':records,'failures':failures,'partial':bool(failures)}
-  if a.output: write_json(a.output_root,a.output,d,overwrite)
+  written=[]
+  if a.output:
+   op=safe_path(a.output_root,a.output,output=True); planned=[]
+   for record,(idx,raw) in zip(records,raws):
+    rel=f"{a.output}.snapshots/{idx:03d}-{record['rawSha256'][:16]}.bytes"; planned.append((record,raw,rel,safe_path(a.output_root,rel,output=True)))
+   if not overwrite and (op.exists() or any(path.exists() for _,_,_,path in planned)): raise VError('OUTPUT_EXISTS','batch output exists; pass --overwrite')
+   try:
+    for record,raw,rel,path in planned: atomic(path,raw,overwrite); record['snapshotPath']=rel; written.append(rel)
+    d={'sources':records,'failures':failures,'partial':bool(failures),'writtenSnapshots':written}; write_json(a.output_root,a.output,d,overwrite)
+   except VError as e:
+    d={'sources':records,'failures':failures+[{'error':{'code':e.code,'message':e.message,'retryable':e.retryable}}],'partial':True,'writtenSnapshots':written}; raise Partial(d)
+  else: d={'sources':records,'failures':failures,'partial':bool(failures),'writtenSnapshots':[]}
   if failures: raise Partial(d)
   return d
  if c=='source.import':
@@ -330,10 +442,12 @@ def cmd(a):
  if c=='bundle.build':
   src=load(a.input_root,a.sources); cl=load(a.input_root,a.claims); sources=src.get('sources',src if isinstance(src,list) else []); claims=cl.get('claims',cl if isinstance(cl,list) else [])
   core={'schemaVersion':1,'sources':sources,'claims':claims}; probe=dict(core); probe['manifestSha256']=digest(stable(core).encode()); issues,warnings=validate_bundle(probe,a.input_root,None)
-  if issues: raise VError('VALIDATION_FAILED',stable(issues)[:4000])
+  unresolved=[x for x in issues if x.get('code')=='UNRESOLVED_CLAIM']; fatal=[x for x in issues if x.get('code')!='UNRESOLVED_CLAIM']; warnings += unresolved
+  if fatal: raise VError('VALIDATION_FAILED',stable(fatal)[:4000])
   jp=safe_path(a.output_root,a.output,output=True); mp=safe_path(a.output_root,a.output+'.md',output=True)
   if not overwrite and (jp.exists() or mp.exists()): raise VError('OUTPUT_EXISTS','bundle output exists; pass --overwrite')
-  write_json(a.output_root,a.output,probe,overwrite); md=['# Evidence Bundle']+[f"## {x['id']}: {x['text']}" for x in claims]; atomic(mp,('\n\n'.join(md)+'\n').encode(),overwrite)
+  markdown=render_markdown(probe,warnings)
+  write_json(a.output_root,a.output,probe,overwrite); atomic(mp,markdown,overwrite)
   return {'bundle':probe,'warnings':warnings,'jsonPath':a.output,'markdownPath':a.output+'.md'}
  if c in ('bundle.validate','bundle.inspect'):
   b=load(a.input_root,a.bundle)

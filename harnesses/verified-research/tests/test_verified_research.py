@@ -13,18 +13,22 @@ class H(BaseHTTPRequestHandler):
   if self.path=='/compressed': self.send_response(200); self.send_header('Content-Encoding','gzip'); self.end_headers(); return
   if self.path=='/declared-large': self.send_response(200); self.send_header('Content-Length','999999'); self.end_headers(); return
   if self.path=='/metadata': body=b'''<html><head><title>Doc</title><meta name="author" content="A"><meta property="article:published_time" content="2024-01-02T00:00:00Z"><meta property="og:site_name" content="Site"><script type="application/ld+json">{"dateModified":"2024-01-03T00:00:00Z"}</script></head><body><p>One</p><p>Two</p></body></html>'''; typ='text/html'
+  elif self.path=='/rss': body=b'''<?xml version="1.0"?><rss><channel><title>Example Publisher</title><link>https://example.com/</link><lastBuildDate>Tue, 02 Jan 2024 04:05:06 GMT</lastBuildDate><item><title>Story</title><link>https://example.com/story</link><author>Alice</author><pubDate>Tue, 02 Jan 2024 03:04:05 +0000</pubDate></item></channel></rss>'''; typ='application/rss+xml'
+  elif self.path=='/atom': body=b'''<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><title>Atom Publisher</title><link href="https://example.com/feed"/><updated>2024-01-03T00:00:00Z</updated><author><name>Feed Author</name></author><entry><title>Entry</title><link href="https://example.com/entry"/><published>2024-01-02T00:00:00Z</published><author><name>Entry Author</name></author></entry></feed>'''; typ='application/atom+xml'
   elif self.path=='/unsafe-canonical': body=b'<link rel="canonical" href="http://169.254.169.254/private"><p>X</p>'; typ='text/html'
   elif self.path=='/large': body=b'x'*200; typ='text/plain'
   elif self.path=='/json': body=b'{"b":2,"a":1}'; typ='application/json'
   elif self.path=='/feed': body=b'<?xml version="1.0"?><rss><channel><title>Feed</title><item><title>One</title></item></channel></rss>'; typ='application/rss+xml'
   elif self.path=='/pdf': body=b'%PDF-1.4\nnot a complete pdf'; typ='application/pdf'
   else: body=b'<html><head><title>T</title><link rel="canonical" href="/canonical"></head><body>A  B\nC<script>ignore</script></body></html>'; typ='text/html'
-  self.send_response(200); self.send_header('Content-Type',typ); self.send_header('Content-Length',str(len(body))); self.end_headers(); self.wfile.write(body)
+  self.send_response(200); self.send_header('Content-Type',typ); self.send_header('Content-Length',str(len(body)))
+  if self.path=='/metadata': self.send_header('Last-Modified','Tue, 02 Jan 2024 03:04:05 GMT')
+  self.end_headers(); self.wfile.write(body)
  def log_message(self,*a): pass
 
 @pytest.fixture
 def server(monkeypatch,tmp_path):
- fixture=tmp_path/'fixture.json'; fixture.write_text('{}')
+ fixture=tmp_path/'fixture.json'; fixture.write_text('{}'); fixture.chmod(0o600)
  s=HTTPServer(('127.0.0.1',0),H); t=threading.Thread(target=s.serve_forever,daemon=True); t.start(); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE','1'); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(fixture)); yield f'http://127.0.0.1:{s.server_port}'; s.shutdown()
 
 def test_html_redirect_canonical_deterministic(server):
@@ -49,7 +53,7 @@ def test_test_seam_requires_flag(monkeypatch,tmp_path):
  monkeypatch.delenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE',raising=False)
  with pytest.raises(vr.VError): vr.syntax_url('http://127.0.0.1:8888')
  with pytest.raises(vr.VError): vr.syntax_url('http://127.0.0.1:8888',True,True)
- fixture=tmp_path/'fixture.json'; fixture.write_text('{}'); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE','1'); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(fixture))
+ fixture=tmp_path/'fixture.json'; fixture.write_text('{}'); fixture.chmod(0o600); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE','1'); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(fixture))
  assert vr.syntax_url('http://127.0.0.1:8888',True,True).startswith('http://127.0.0.1:8888')
 
 def test_paths_and_symlink(tmp_path):
@@ -70,7 +74,7 @@ def test_batch_partial_and_dedupe(tmp_path,server):
  r=e.value.data; assert r['partial'] and r['sources'][1]['duplicateOf']==r['sources'][0]['id']; assert len(r['failures'])==1
 
 def build_bundle(tmp_path,status='supported',quote='Alpha'):
- text='Alpha\nBeta'; s={'id':'s1','text':text,'textSha256':vr.digest(text.encode()),'finalUrl':'https://example.com/a','canonicalUrl':None}
+ text='Alpha\nBeta'; raw=text.encode(); s={'id':'s1','text':text,'textSha256':vr.digest(raw),'rawSha256':vr.digest(raw),'rawBytes':len(raw),'mediaType':'text/plain','finalUrl':'https://example.com/a','canonicalUrl':None,'metadataCandidates':[]}
  (tmp_path/'s.json').write_text(json.dumps({'sources':[s]})); (tmp_path/'c.json').write_text(json.dumps({'claims':[{'id':'c1','text':'Claim','status':status,'evidence':[{'sourceId':'s1','startLine':1,'endLine':1,'quote':quote}]}]}))
  a=type('A',(),dict(command='bundle.build',input_root=str(tmp_path),sources='s.json',claims='c.json',output_root=str(tmp_path),output='bundle.json'))
  return vr.cmd(a)['bundle']
@@ -116,7 +120,7 @@ def test_metadata_candidates_and_block_lines(server):
 
 def test_claim_integrity_rules(tmp_path):
  text='A'; base={'schemaVersion':1,'sources':[{'id':'s','text':text,'textSha256':vr.digest(text.encode()),'finalUrl':'https://example.com','metadataCandidates':[]}],'claims':[{'id':'c','text':'X','status':'supported','confidence':2,'evidence':[]},{'id':'c','text':'','status':'bogus','evidence':[]}]}; base['manifestSha256']=vr.digest(vr.stable({k:v for k,v in base.items() if k!='manifestSha256'}).encode())
- issues,_=vr.validate_bundle(base); codes={x['code'] for x in issues}; assert {'EVIDENCE_REQUIRED','INVALID_CONFIDENCE','INVALID_OR_DUPLICATE_CLAIM_ID','INVALID_CLAIM_TEXT','INVALID_STATUS'} <= codes
+ issues,_=vr.validate_bundle(base); codes={x['code'] for x in issues}; assert {'VALID_EVIDENCE_REQUIRED','INVALID_CONFIDENCE','INVALID_OR_DUPLICATE_CLAIM_ID','INVALID_CLAIM_TEXT','INVALID_STATUS'} <= codes
 
 def test_dates_future_and_malformed():
  s={'id':'s','text':'A','textSha256':vr.digest(b'A'),'finalUrl':'https://example.com','metadataCandidates':[vr.candidate('published','not-date','x'),vr.candidate('modified','2099-01-01T00:00:00Z','x')]}; b={'schemaVersion':1,'sources':[s],'claims':[]}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); issues,_=vr.validate_bundle(b,as_of=vr.dt.datetime(2025,1,1,tzinfo=vr.dt.timezone.utc)); assert [x['code'] for x in issues].count('INVALID_DATE')==2
@@ -133,22 +137,19 @@ def test_oversized_json_rejected_before_read(tmp_path):
  p=tmp_path/'huge.json'; p.write_bytes(b' '* (vr.MAX_INPUT+1))
  with pytest.raises(vr.VError,match='byte limit'): vr.load(tmp_path,'huge.json')
 
-def test_pdf_timeout_and_overflow(monkeypatch):
- monkeypatch.setattr(vr.shutil,'which',lambda x:'/bin/echo')
+def test_pdf_timeout_and_overflow():
  class TimeoutP:
-  def __init__(self,*a,**k): pass
-  def communicate(self,*a,**k):
-   if 'timeout' in k: raise subprocess.TimeoutExpired('x',1)
-   return b'',b''
-  def kill(self): pass
- monkeypatch.setattr(vr.subprocess,'Popen',TimeoutP)
- with pytest.raises(vr.VError,match='timed out'): vr.pdf_text(b'x')
+  def __init__(self,*a,**k): self.dead=False
+  def poll(self): return 0 if self.dead else None
+  def kill(self): self.dead=True
+  def wait(self): return 0
+ with pytest.raises(vr.VError,match='timed out'): vr.pdf_text(b'x',binary='/bin/echo',popen_factory=TimeoutP,timeout=.01)
  class BigP:
-  def __init__(self,*a,**k): pass
-  def communicate(self,*a,**k): return b'x'*(vr.MAX_TEXT+1),b''
+  def __init__(self,args,**k): Path(args[-1]).write_bytes(b'x'*101)
+  def poll(self): return 0
   def kill(self): pass
- monkeypatch.setattr(vr.subprocess,'Popen',BigP)
- with pytest.raises(vr.VError,match='exceeds'): vr.pdf_text(b'x')
+  def wait(self): return 0
+ with pytest.raises(vr.VError,match='exceeds'): vr.pdf_text(b'x',binary='/bin/echo',popen_factory=BigP,max_output=100)
 
 def test_fetch_rejects_private_redirect_compression_and_length(server):
  for path,code in [('/private-redirect','UNSAFE_URL'),('/compressed','UNSUPPORTED_ENCODING'),('/declared-large','SIZE_LIMIT')]:
@@ -166,3 +167,63 @@ def test_partial_cli_and_internal_error_redaction(tmp_path):
 
 def test_deterministic_output_excluding_request_id(tmp_path):
  (tmp_path/'b.json').write_text(json.dumps({'schemaVersion':1,'sources':[],'claims':[],'manifestSha256':vr.digest(vr.stable({'schemaVersion':1,'sources':[],'claims':[]}).encode())})); a=type('A',(),dict(command='bundle.inspect',input_root=str(tmp_path),bundle='b.json')); x=vr.output(a.command,vr.cmd(a)); y=vr.output(a.command,vr.cmd(a)); x.pop('requestId'); y.pop('requestId'); assert x==y
+
+def test_rfc_http_date_rss_and_namespaced_atom(server):
+ html,_=vr.fetch(server+'/metadata'); modified=[x for x in html['metadataCandidates'] if x['field']=='modified' and x['method']=='http-header'][0]
+ assert modified['rawValue']=='Tue, 02 Jan 2024 03:04:05 GMT' and modified['normalizedTimestamp']=='2024-01-02T03:04:05Z'
+ rss,_=vr.fetch(server+'/rss'); atom,_=vr.fetch(server+'/atom')
+ rc={(x['field'],x['rawValue']) for x in rss['metadataCandidates']}; ac={(x['field'],x['rawValue']) for x in atom['metadataCandidates']}
+ assert ('link','https://example.com/story') in rc and ('author','Alice') in rc and ('published','Tue, 02 Jan 2024 03:04:05 +0000') in rc and ('publisher','Example Publisher') in rc
+ assert ('link','https://example.com/entry') in ac and ('author','Entry Author') in ac and ('published','2024-01-02T00:00:00Z') in ac and ('publisher','Atom Publisher') in ac
+ assert all(x['method'].startswith('feed-element:/') for x in rss['metadataCandidates'] if x['field'] in ('link','author','published','publisher'))
+ assert vr.parse_date('Wed, 31 Feb 2024 10:00:00 GMT')[0] is False
+
+def test_batch_snapshots_are_verifiable_and_tamper_detected(tmp_path,server):
+ (tmp_path/'m.json').write_text(json.dumps({'urls':[server+'/html',server+'/json']}))
+ a=type('A',(),dict(command='source.batch',input_root=str(tmp_path),manifest='m.json',output_root=str(tmp_path),output='batch.json',timeout=3,max_bytes=10000,overwrite=False))
+ d=vr.cmd(a); assert len(d['writtenSnapshots'])==2 and all((tmp_path/x).is_file() for x in d['writtenSnapshots'])
+ b={'schemaVersion':1,'sources':d['sources'],'claims':[]}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); (tmp_path/'bundle.json').write_text(json.dumps(b))
+ v=type('A',(),dict(command='bundle.validate',input_root=str(tmp_path),bundle='bundle.json',as_of=None)); assert vr.cmd(v)['valid']
+ (tmp_path/d['writtenSnapshots'][0]).write_bytes(b'changed'); assert 'RAW_HASH_MISMATCH' in {x['code'] for x in vr.cmd(v)['issues']}
+
+def test_snapshot_text_derivation_detects_recomputed_record(tmp_path):
+ raw=b'Alpha\n'; (tmp_path/'raw.bytes').write_bytes(raw); text='Different'
+ s={'id':'s','text':text,'textSha256':vr.digest(text.encode()),'rawSha256':vr.digest(raw),'rawBytes':len(raw),'mediaType':'text/plain','snapshotPath':'raw.bytes','finalUrl':'https://example.com','canonicalUrl':None,'metadataCandidates':[]}
+ b={'schemaVersion':1,'sources':[s],'claims':[]}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); issues,_=vr.validate_bundle(b,tmp_path)
+ assert 'SNAPSHOT_TEXT_MISMATCH' in {x['code'] for x in issues}
+
+def test_fixture_gate_requires_private_regular_owned_file(monkeypatch,tmp_path):
+ monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_MODE','1'); f=tmp_path/'f'; f.write_text('{}'); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(f))
+ f.chmod(0o644)
+ with pytest.raises(vr.VError): vr.syntax_url('http://127.0.0.1:8888',True,True)
+ f.chmod(0o600); link=tmp_path/'link'; link.symlink_to(f); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(link))
+ with pytest.raises(vr.VError): vr.syntax_url('http://127.0.0.1:8888',True,True)
+ monkeypatch.setattr(vr.os,'getuid',lambda: f.stat().st_uid+1); monkeypatch.setenv('VERIFIED_RESEARCH_INTERNAL_TEST_FIXTURE',str(f))
+ with pytest.raises(vr.VError): vr.syntax_url('http://127.0.0.1:8888',True,True)
+
+def test_output_root_must_exist_and_be_private(tmp_path):
+ missing=tmp_path/'missing'
+ with pytest.raises(vr.VError,match='already exist'): vr.root_path(missing,True)
+ public=tmp_path/'public'; public.mkdir(); public.chmod(0o777)
+ with pytest.raises(vr.VError,match='writable'): vr.root_path(public,True)
+
+def test_source_candidate_evidence_and_contradiction_limits():
+ raw=b'A'; bad_candidates=[{'field':'x','rawValue':'v','method':'m','confidence':'medium','valid':True}]*101
+ s={'id':'s','text':'A','textSha256':vr.digest(raw),'rawSha256':vr.digest(raw),'rawBytes':1,'mediaType':'text/plain','finalUrl':'https://example.com','metadataCandidates':bad_candidates}
+ claims=[{'id':'a','text':'A','status':'supported','evidence':[{'sourceId':'missing','startLine':1,'endLine':1,'quote':'A'}],'contradictions':[{'claimId':'missing','reason':'x'}]}]
+ b={'schemaVersion':1,'sources':[s],'claims':claims}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); issues,_=vr.validate_bundle(b); codes={x['code'] for x in issues}
+ assert {'INVALID_METADATA_CANDIDATES','MISSING_SOURCE','VALID_EVIDENCE_REQUIRED','INVALID_CONTRADICTION'} <= codes
+ s['metadataCandidates']=[{'field':1,'rawValue':'x'*4001,'method':False,'confidence':'bogus','valid':'yes'}]; b['manifestSha256']=vr.digest(vr.stable({k:v for k,v in b.items() if k!='manifestSha256'}).encode()); issues,_=vr.validate_bundle(b); assert 'INVALID_METADATA_CANDIDATE' in {x['code'] for x in issues}
+
+def test_markdown_contains_evidence_inventory_and_escapes(monkeypatch):
+ raw=b'Quote'; src={'id':'s','title':'# Fake heading','text':'Quote','textSha256':vr.digest(raw),'rawSha256':vr.digest(raw),'rawBytes':5,'mediaType':'text/plain','finalUrl':'https://example.com/a','canonicalUrl':None,'snapshotPath':'s.bytes','metadataCandidates':[vr.candidate('publisher','Pub','x'),vr.candidate('published','2024-01-02','x')]}
+ claims=[{'id':'c','text':'Claim','status':'supported','confidence':.9,'evidence':[{'sourceId':'s','startLine':1,'endLine':1,'quote':'Quote'}],'contradictions':[]}]; b={'schemaVersion':1,'sources':[src],'claims':claims}; data=vr.render_markdown(b,[]).decode()
+ assert '## Claim: c' in data and '- Status: supported' in data and '- Confidence: 0.9' in data and '- Publisher: Pub' in data and '- Date: 2024-01-02' in data and '- Lines: 1-1' in data and 'Raw SHA-256' in data and 'Snapshot: s.bytes' in data and '\\# Fake heading' in data
+ monkeypatch.setattr(vr,'MAX_OUTPUT',100)
+ with pytest.raises(vr.VError,match='Markdown'): vr.render_markdown(b,[])
+
+def test_pdf_snapshot_reextraction_unavailable_is_warning(monkeypatch,tmp_path):
+ raw=b'%PDF-1.4\n'; (tmp_path/'p.bytes').write_bytes(raw); monkeypatch.setattr(vr.shutil,'which',lambda _:None)
+ s={'id':'p','text':'','textSha256':vr.digest(b''),'rawSha256':vr.digest(raw),'rawBytes':len(raw),'mediaType':'application/pdf','snapshotPath':'p.bytes','finalUrl':'https://example.com/p.pdf','metadataCandidates':[]}
+ b={'schemaVersion':1,'sources':[s],'claims':[]}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); issues,warnings=vr.validate_bundle(b,tmp_path)
+ assert not issues and 'TEXT_REEXTRACTION_UNAVAILABLE' in {x['code'] for x in warnings}

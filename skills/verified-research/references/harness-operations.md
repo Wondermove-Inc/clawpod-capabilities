@@ -1,11 +1,11 @@
 # Harness operations
 
-The Harness consumes bounded JSON through explicit input roots and writes only beneath explicit output roots. Every path is relative and symlink-free. Existing outputs fail closed unless `overwrite` is explicitly true.
+The Harness consumes bounded JSON through explicit input roots and writes only beneath explicit, already-existing private output roots. Every path is relative and symlink-free. Existing outputs fail closed unless `overwrite` is explicitly true.
 
 - `source.fetch`: public `url`, optionally `outputRoot` plus `snapshot`; the latter stores an exact `<snapshot>.bytes` file and a JSON source record.
-- `source.batch`: `inputRoot` plus a nonempty bounded URL `manifest`; optional output captures per-item results. Any failed item returns `PARTIAL_FAILURE` while retaining successes.
+- `source.batch`: `inputRoot` plus a nonempty bounded URL `manifest`; when output is requested, every successful item receives a deterministic exact-byte snapshot path. Any failed item returns `PARTIAL_FAILURE` while retaining successes and listing exactly which snapshots were written.
 - `source.import`: `inputRoot` plus local `capture`; optional public `sourceUrl` is syntax-checked without live DNS for offline use. Output stores exact bytes and the source record.
-- `bundle.build`: source and claim JSON inputs plus explicit output. It validates structures before writing JSON and bounded Markdown.
+- `bundle.build`: source and claim JSON inputs plus explicit output. It validates structures before writing JSON and bounded escaped Markdown containing claims, evidence, exact quotes and lines, contradictions, warnings, source metadata, URLs, hashes, and snapshot inventory.
 - `bundle.validate`: `inputRoot` plus `bundle`, optionally `asOf` for future-date checks. It performs no network requests and rechecks referenced snapshots.
 - `bundle.inspect`: bounded read-only summary.
 

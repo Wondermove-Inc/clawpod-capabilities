@@ -174,7 +174,7 @@
         },
         {
           "path": "references/harness-operations.md",
-          "sha256": "8dff4696cab28a90afb67284dd4a9ae5a4e4b5057944c57fbae315fc927bd68d"
+          "sha256": "43bd2f8625072334a1215271cf4aca1961f8f60cb96727ff08a059f5a1544150"
         },
         {
           "path": "references/research-policy.md",
@@ -422,7 +422,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "70677bd5e16991bf8ec14026cf1cf02e4d6712c882751bd810d157cd052a4d63"
+          "sha256": "aaf5d5e03e004879fc1de91ca783f0433f3b7bdb497d359b8c80c730d9c474c3"
         },
         {
           "path": "TEST.md",
@@ -430,19 +430,19 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "c5f546a8ee9b8570f5587fb46cff01cf008b8235f6273856dff667345f084cbd"
+          "sha256": "9bb6a311060d6d25186da107093d6b37a21491e0fffe2907403c85cdce759dcc"
         },
         {
           "path": "harness.json",
-          "sha256": "6f5f66424c89e792c5791e0ec4c1786d619a7712da64804e359f76abc9075e0d"
+          "sha256": "d3a26f6aa427e352662d64f240bd18e2a8b806cd34b002b05ceb9ba4dad4a637"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "79bec92bb0a10270e928faba8a0781b7f463a1f0fc4d4c0b130da662a6e036dd"
+          "sha256": "f6656563cf13c481e5e3a430d1868de9917b2ae8ffc95dea3db8129bc78a6733"
         },
         {
           "path": "verified_research.py",
-          "sha256": "2ee50fb309ef5470ef841c76d088d8ec0258dd74a922e663834ea2db9f698ba5"
+          "sha256": "8a07f49a6239eb3fff4835d0a8a408acbcf31de3b655ce793c30e4be5d26f6a7"
         }
       ]
     }
