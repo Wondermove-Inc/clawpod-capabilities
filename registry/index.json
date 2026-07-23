@@ -3,6 +3,39 @@
   "schemaVersion": 1,
   "capabilities": [
     {
+      "id": "atlassian",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route approved Jira and Confluence work through the typed Atlassian Cloud harness.",
+      "path": "skills/atlassian",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "63a9cc85ff3683e102ec6e80ffde23ff6270c80be05e4555d603ad9ec2414ce0"
+        },
+        {
+          "path": "references/commands.md",
+          "sha256": "aa9f87c3d9db07b49fb300091e11c8f3559e34a701c269e3b4519d54c8da3dab"
+        },
+        {
+          "path": "references/configuration.md",
+          "sha256": "0bc23add765e56a8f68f32a426fde6d344f59c2384f2803e65f8a946a319f076"
+        }
+      ]
+    },
+    {
       "id": "clawpod-capability-registry",
       "type": "skill",
       "version": "0.1.0",
@@ -57,6 +90,43 @@
         {
           "path": "references/scopes.md",
           "sha256": "71fba0c139d605e376523c85db3ad49fb10f8afe50354995df52b5a273c14437"
+        }
+      ]
+    },
+    {
+      "id": "atlassian",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
+      "path": "harnesses/atlassian",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "atlassian.py",
+          "sha256": "56afea3795a892e1d354d57222ef6c9f941c526ad3e15fdb2e61e3208be3da0d"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "adb8f150f9cafcaf974564d20a0642d255e1881220de3c4e80d921fc3499fb0d"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "b23e19d8f14fcd3713cae14ec89910e6e45a1df782bd4f01301f121c8fca9dba"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "7b053d7bb982b908cd8412c683f08536914c0c04bab7bd6c7de77732f7a1e7b8"
         }
       ]
     },

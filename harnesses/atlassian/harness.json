@@ -1,0 +1,1339 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "atlassian",
+  "title": "Atlassian Cloud",
+  "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
+  "version": "0.1.0",
+  "entrypoint": "./atlassian.py",
+  "packageRoot": ".",
+  "whenToUse": [
+    "Operate Jira Cloud or Confluence Cloud through approved credentials"
+  ],
+  "capabilities": [
+    "jira-cloud-v3",
+    "confluence-cloud-v2",
+    "confluence-cloud-v1-fallback",
+    "multi-site",
+    "safe-transfer"
+  ],
+  "authModel": {
+    "type": "basic-or-oauth-bearer",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "auth.sites.list": {
+      "description": "auth.sites.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "auth.sites.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "auth.whoami": {
+      "description": "auth.whoami through Atlassian Cloud REST.",
+      "baseArgv": [
+        "auth.whoami"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.search": {
+      "description": "jira.issues.search through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.search"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.get": {
+      "description": "jira.issues.get through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.create": {
+      "description": "jira.issues.create through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.update": {
+      "description": "jira.issues.update through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.delete": {
+      "description": "jira.issues.delete through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.transitions.list": {
+      "description": "jira.issues.transitions.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.transitions.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.transition": {
+      "description": "jira.issues.transition through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.transition"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.list": {
+      "description": "jira.issues.comments.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.comments.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.create": {
+      "description": "jira.issues.comments.create through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.comments.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.update": {
+      "description": "jira.issues.comments.update through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.comments.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.delete": {
+      "description": "jira.issues.comments.delete through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.comments.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.attachments.add": {
+      "description": "jira.issues.attachments.add through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.issues.attachments.add"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.projects.list": {
+      "description": "jira.projects.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.projects.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.projects.get": {
+      "description": "jira.projects.get through Atlassian Cloud REST.",
+      "baseArgv": [
+        "jira.projects.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.list": {
+      "description": "confluence.pages.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.pages.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.get": {
+      "description": "confluence.pages.get through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.pages.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.create": {
+      "description": "confluence.pages.create through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.pages.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.update": {
+      "description": "confluence.pages.update through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.pages.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.delete": {
+      "description": "confluence.pages.delete through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.pages.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.spaces.list": {
+      "description": "confluence.spaces.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.spaces.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.spaces.get": {
+      "description": "confluence.spaces.get through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.spaces.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.search": {
+      "description": "confluence.search through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.search"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.attachments.list": {
+      "description": "confluence.attachments.list through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.attachments.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.attachments.add": {
+      "description": "confluence.attachments.add through Atlassian Cloud REST.",
+      "baseArgv": [
+        "confluence.attachments.add"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    }
+  }
+}

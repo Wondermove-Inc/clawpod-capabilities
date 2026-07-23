@@ -1,0 +1,1201 @@
+{
+  "schemaVersion": 1,
+  "commands": {
+    "auth.sites.list": {
+      "method": "GET",
+      "path": "",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "auth.whoami": {
+      "method": "GET",
+      "path": "/rest/api/3/myself",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.search": {
+      "method": "GET",
+      "path": "/rest/api/3/search/jql",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.get": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.create": {
+      "method": "POST",
+      "path": "/rest/api/3/issue",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.update": {
+      "method": "PUT",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.delete": {
+      "method": "DELETE",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.transitions.list": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/transitions",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.transition": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/transitions",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.list": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.create": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.update": {
+      "method": "PUT",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.comments.delete": {
+      "method": "DELETE",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.issues.attachments.add": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/attachments",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.projects.list": {
+      "method": "GET",
+      "path": "/rest/api/3/project/search",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "jira.projects.get": {
+      "method": "GET",
+      "path": "/rest/api/3/project/{projectIdOrKey}",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.get": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.create": {
+      "method": "POST",
+      "path": "/wiki/api/v2/pages",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.update": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.pages.delete": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.spaces.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.spaces.get": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces/{spaceId}",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.search": {
+      "method": "GET",
+      "path": "/wiki/rest/api/search",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.attachments.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{pageId}/attachments",
+      "mutation": false,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    },
+    "confluence.attachments.add": {
+      "method": "POST",
+      "path": "/wiki/rest/api/content/{pageId}/child/attachment",
+      "mutation": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ]
+      }
+    }
+  }
+}
