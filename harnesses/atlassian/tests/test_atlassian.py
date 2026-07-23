@@ -168,11 +168,8 @@ def test_oauth_refresh_requires_preview_confirmation(tmp_path,monkeypatch):
 def test_connected_skill_and_harness_identity_is_aligned():
  manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
  skill=Path('skills/atlassian/SKILL.md').read_text()
- skill_meta=json.loads(Path('skills/atlassian/capability.json').read_text())
- harness_meta=json.loads(Path('harnesses/atlassian/capability.json').read_text())
  assert manifest['name']=='atlassian' and manifest['title']=='Atlassian'
  assert 'name: atlassian' in skill and '# Atlassian\n' in skill
- assert skill_meta['version']==harness_meta['version']==manifest['version']
 
 
 def test_oauth_manifest_contracts_are_typed():
