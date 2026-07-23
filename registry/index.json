@@ -150,6 +150,43 @@
       }
     },
     {
+      "id": "verified-research",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Apply source hierarchy, cross-checking, contradiction handling, confidence, and no-fabrication rules to evidence-backed research.",
+      "path": "skills/verified-research",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "read-only",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f18ba40da1e06929d3ad4fb502f5e65f02fdc9995f94eb935eac8d92bef3d992"
+        },
+        {
+          "path": "references/harness-operations.md",
+          "sha256": "d4bce231ee2928f5fdeed8f84f9ca8eee917f672433ecf6904c56a2729989276"
+        },
+        {
+          "path": "references/research-policy.md",
+          "sha256": "c35e6a19fad1818225ee7e692315ff75a37290b1c693ff7eb7cd2fa452861114"
+        }
+      ],
+      "linkedHarness": {
+        "id": "verified-research",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "atlassian",
       "type": "harness",
       "version": "0.3.0",
@@ -361,6 +398,51 @@
         {
           "path": "scripts/generate_schemas.py",
           "sha256": "12696f6ac8bcfe271b6950adf4cb653d8b3266da53095ac39285882d0c24078e"
+        }
+      ]
+    },
+    {
+      "id": "verified-research",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
+      "path": "harnesses/verified-research",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "6525fe080b51a075f814f05adf45dd5691e3ea8587e98a93e2618baba3514434"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "c4a9b940b9dfdc873f9d8b9c85238d1a20d0a52667620082f473c749e4bd9b26"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "1e282d7a038137a7b5865c4032f628a4567b909f9f60424a413c9848496b232d"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "51ff0e82aceeb061a3b54367b2db436961a042f85be28547a796eb201ae2df62"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "b1dbff05c8e61ef45ac66bd5c318ad5e68116b18915e3a0b221600ba1948df5e"
+        },
+        {
+          "path": "verified_research.py",
+          "sha256": "484a989a1dcf0b7a7570c3970bd000a2909058f796bb1cff3cba98dcfd8ac7d8"
         }
       ]
     }
