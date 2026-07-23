@@ -65,6 +65,19 @@ class ValidatorTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("path args require pathRole", result.stderr)
 
+    def test_harness_command_unknown_fields_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = Path(directory) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            manifest = copy / "harnesses" / "verified-research" / "harness.json"
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            data["commands"]["source.fetch"]["retryPolicy"] = {"mode": "none", "maxAttempts": 1}
+            manifest.write_text(json.dumps(data), encoding="utf-8")
+
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("unsupported fields: retryPolicy", result.stderr)
+
     def test_skill_frontmatter_name_must_match_registry_id(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
