@@ -1,0 +1,8106 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "github",
+  "title": "GitHub",
+  "description": "Guarded typed GitHub operations through the real gh CLI with stable JSON and bounded execution.",
+  "version": "0.1.0",
+  "entrypoint": "./github.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 30000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Operate GitHub repositories, issues, pull requests, workflow runs, releases, or bounded API reads"
+  ],
+  "capabilities": [
+    "gh-cli",
+    "async-auth-onboarding",
+    "guarded-mutations",
+    "stable-json"
+  ],
+  "authModel": {
+    "type": "gh-cli-protected-storage",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "auth.status": {
+      "description": "auth status through GitHub CLI.",
+      "baseArgv": [
+        "auth.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "repo.view": {
+      "description": "repo view through GitHub CLI.",
+      "baseArgv": [
+        "repo.view"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.list": {
+      "description": "issue list through GitHub CLI.",
+      "baseArgv": [
+        "issue.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.get": {
+      "description": "issue get through GitHub CLI.",
+      "baseArgv": [
+        "issue.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.list": {
+      "description": "pr list through GitHub CLI.",
+      "baseArgv": [
+        "pr.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.view": {
+      "description": "pr view through GitHub CLI.",
+      "baseArgv": [
+        "pr.view"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.checks": {
+      "description": "pr checks through GitHub CLI.",
+      "baseArgv": [
+        "pr.checks"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "run.list": {
+      "description": "run list through GitHub CLI.",
+      "baseArgv": [
+        "run.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "run.view": {
+      "description": "run view through GitHub CLI.",
+      "baseArgv": [
+        "run.view"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "run.logs": {
+      "description": "run logs through GitHub CLI.",
+      "baseArgv": [
+        "run.logs"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "release.list": {
+      "description": "release list through GitHub CLI.",
+      "baseArgv": [
+        "release.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "release.view": {
+      "description": "release view through GitHub CLI.",
+      "baseArgv": [
+        "release.view"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "api.get": {
+      "description": "api get through GitHub CLI.",
+      "baseArgv": [
+        "api.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "endpoint"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.create": {
+      "description": "issue create through GitHub CLI.",
+      "baseArgv": [
+        "issue.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "title"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.comment": {
+      "description": "issue comment through GitHub CLI.",
+      "baseArgv": [
+        "issue.comment"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "body"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.close": {
+      "description": "issue close through GitHub CLI.",
+      "baseArgv": [
+        "issue.close"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "issue.reopen": {
+      "description": "issue reopen through GitHub CLI.",
+      "baseArgv": [
+        "issue.reopen"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.create": {
+      "description": "pr create through GitHub CLI.",
+      "baseArgv": [
+        "pr.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "title",
+          "head",
+          "base"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.comment": {
+      "description": "pr comment through GitHub CLI.",
+      "baseArgv": [
+        "pr.comment"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "body"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.review": {
+      "description": "pr review through GitHub CLI.",
+      "baseArgv": [
+        "pr.review"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "review"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "pr.merge": {
+      "description": "pr merge through GitHub CLI.",
+      "baseArgv": [
+        "pr.merge"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "run.rerun": {
+      "description": "run rerun through GitHub CLI.",
+      "baseArgv": [
+        "run.rerun"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "run.cancel": {
+      "description": "run cancel through GitHub CLI.",
+      "baseArgv": [
+        "run.cancel"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "release.create": {
+      "description": "release create through GitHub CLI.",
+      "baseArgv": [
+        "release.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag",
+          "title"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "release.upload": {
+      "description": "release upload through GitHub CLI.",
+      "baseArgv": [
+        "release.upload"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag",
+          "file"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.login.start": {
+      "description": "auth login start through GitHub CLI.",
+      "baseArgv": [
+        "auth.login.start"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "humanAccountAction",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.login.status": {
+      "description": "auth login status through GitHub CLI.",
+      "baseArgv": [
+        "auth.login.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "jobId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.login.cancel": {
+      "description": "auth login cancel through GitHub CLI.",
+      "baseArgv": [
+        "auth.login.cancel"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "jobId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobsDir": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobsDir",
+          "type": "option",
+          "flag": "--jobs-dir",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

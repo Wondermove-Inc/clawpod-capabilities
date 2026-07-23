@@ -1,0 +1,1 @@
+{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.0","description":"Route GitHub work through the canonical guarded GitHub CLI Harness and onboarding contract.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos","windows"]},"safety":{"risk":"credential-related","approvalRequired":true}}

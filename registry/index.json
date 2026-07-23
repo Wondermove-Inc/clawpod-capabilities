@@ -65,6 +65,39 @@
       ]
     },
     {
+      "id": "github",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route GitHub work through the canonical guarded GitHub CLI Harness and onboarding contract.",
+      "path": "skills/github",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9de408bba9439e7660fdb83effbd31dda737e58f806bf0c1234117a4a897c573"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "4ae1f6c67d48db3b02110f77ea93aac942d7346493c9ffc61459d0846a561f11"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "1c7798a68f80dd2b8487fcf4b01516d44c985fc01aaac427419881d79d9c3991"
+        }
+      ]
+    },
+    {
       "id": "google-workspace",
       "type": "skill",
       "version": "0.2.1",
@@ -184,6 +217,51 @@
         {
           "path": "harness.json",
           "sha256": "a9e44c923a71ee8d13e0ce0f69779b95545eb8846b8ab107f94930e2ebf266d2"
+        }
+      ]
+    },
+    {
+      "id": "github",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute guarded GitHub operations through the real gh CLI with stable JSON and bounded retries.",
+      "path": "harnesses/github",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "3fffff1316999d8a33064b1c8d7a80a1cf3103716dcee6dc3ecc2959d1431abc"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "52e23056caa9b58abeb83cbe60e84dd431b695566c682e096a31623ede07c0c8"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "c00836feea448effa83b0e41352f2fa5421ab1980d99b36c7b5018f681eb4ad5"
+        },
+        {
+          "path": "github.py",
+          "sha256": "5d9d4a51b593dc42236cbc6fc842d3c3ff2a4fd4d6768170d78c97c4405829dc"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "0016df434d238a56bb48c0454cd1632c6a876715e88f6025fa187d23e713e7c9"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "3957d2d3b7d54d12b1dc42b4914a609b045ef81c7d504f0c38464e0eb7fc1be9"
         }
       ]
     },
