@@ -2,7 +2,7 @@ import io,json,os,stat,subprocess,sys,time
 from pathlib import Path
 from urllib.error import HTTPError
 import pytest
-sys.path.insert(0,str(Path(__file__).parents[1])); import atlassian as a
+sys.path.insert(0,str(Path(__file__).parents[1])); import atlassian as a; import oauth3lo as o
 
 def sites(tmp_path,auth=None):
  p=tmp_path/'sites.json'; p.write_text(json.dumps({'sites':{'one':{'jiraBaseUrl':'https://api.atlassian.com/ex/jira/cloud-one','confluenceBaseUrl':'https://api.atlassian.com/ex/confluence/cloud-one','auth':auth or {'type':'oauth','tokenRef':'env:TEST_TOKEN'}},'two':{'jiraBaseUrl':'https://api.atlassian.com/ex/jira/cloud-two','confluenceBaseUrl':'https://api.atlassian.com/ex/confluence/cloud-two','auth':{'type':'oauth','tokenRef':'env:OTHER_TOKEN'}}}})); p.chmod(0o600); return p
@@ -13,7 +13,7 @@ class Response:
  def read(self): return self.data
 
 def ns(**kw):
- base=dict(command='jira.issues.get',site='one',sites_file=None,params=None,body=None,dry_run=False,confirm=None,idempotency_key=None,input_path=None,transfer_root=None,max_upload_bytes=1024,timeout_ms=100,retries=0,all_pages=False,max_pages=10,max_items=1000,issueIdOrKey='A-1',commentId=None,projectIdOrKey=None,pageId=None,spaceId=None); base.update(kw); return type('N',(),base)()
+ base=dict(command='jira.issues.get',site='one',sites_file=None,params=None,body=None,dry_run=False,confirm=None,idempotency_key=None,input_path=None,transfer_root=None,client_path=None,output_path=None,sites_output_path=None,site_alias=None,resource_url=None,managed_browser_devtools_url=None,smoke_tests=None,overwrite=False,max_upload_bytes=1024,timeout_ms=100,retries=0,all_pages=False,max_pages=10,max_items=1000,issueIdOrKey='A-1',commentId=None,projectIdOrKey=None,pageId=None,spaceId=None); base.update(kw); return type('N',(),base)()
 def test_auth_reference_and_redaction(tmp_path,monkeypatch):
  monkeypatch.setenv('TEST_TOKEN','supersecret'); s=a.get_site('one',sites(tmp_path)); assert a.authorization(s).startswith('Bearer '); assert 'supersecret' not in json.dumps(a.redact({'Authorization':a.authorization(s)}))
 def test_auth_file_permissions(tmp_path):
@@ -106,5 +106,81 @@ def test_batch_shape_validation():
  with pytest.raises(a.Failure) as e:a.run_batch(n)
  assert e.value.code=='batch_invalid'
 
+def test_oauth_client_requires_fixed_loopback_and_core_scopes(tmp_path):
+ p=tmp_path/'client.json'; p.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'https://remote.example/cb','scopes':['offline_access','read:me']}})); p.chmod(0o600)
+ with pytest.raises(o.OAuthFailure) as e:o._client(p)
+ assert e.value.code=='oauth_redirect_invalid'
+
+
+def test_oauth_login_writes_private_bundle_and_site_alias(tmp_path,monkeypatch):
+ root=tmp_path/'private'; root.mkdir(mode=0o700); client=root/'client.json'; scopes=['offline_access','read:me','read:jira-work','read:confluence-content.all']
+ client.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'http://127.0.0.1:8765/oauth/atlassian/callback','scopes':scopes}})); client.chmod(0o600)
+ done=__import__('threading').Event(); done.set(); monkeypatch.setattr(o,'_receiver',lambda *args,**kwargs:({'code':'one-time-code'},done))
+ def opener(req,timeout):
+  url=req.full_url
+  if url==o.TOKEN_URL:return Response({'access_token':'access','refresh_token':'refresh','expires_in':3600,'scope':' '.join(scopes)})
+  if url==o.RESOURCES_URL:return Response([{'id':'cloud','name':'Work','url':'https://work.atlassian.net','scopes':scopes}])
+  if url==o.ME_URL:return Response({'account_id':'acct'})
+  if '/rest/api/3/myself' in url:return Response({'accountId':'acct'})
+  if '/wiki/api/v2/spaces' in url:return Response({'results':[]})
+  raise AssertionError(url)
+ out=o.login(transfer_root=root,client_path='client.json',output_path='credential.json',sites_output_path='sites.json',site_alias='work',resource_url='https://work.atlassian.net',managed_browser_devtools_url='http://127.0.0.1:18800',opener=opener,open_devtools=lambda *x:True)
+ encoded=json.dumps(out); assert out['desktopLocal'] and out['siteAlias']=='work' and '"access_token"' not in encoded and '"refresh_token"' not in encoded and 'one-time-code' not in encoded
+ for name in ('credential.json','sites.json'): assert stat.S_IMODE((root/name).stat().st_mode)==0o600
+ site=json.loads((root/'sites.json').read_text())['sites']['work']; assert site['jiraBaseUrl'].endswith('/cloud') and site['auth']['type']=='oauth'
+ assert a.secret(site['auth']['tokenRef'])=='access'
+
+
+def test_oauth_refresh_rotates_both_tokens(tmp_path):
+ root=tmp_path/'private'; root.mkdir(mode=0o700); p=root/'credential.json'; p.write_text(json.dumps({'type':'atlassian-oauth-3lo','client_id':'id','client_secret':'secret','refresh_token':'old','access_token':'old-access','site_alias':'work','scopes':['offline_access'],'expires_at':0})); p.chmod(0o600)
+ out=o.refresh(transfer_root=root,output_path='credential.json',opener=lambda req,timeout:Response({'access_token':'new-access','refresh_token':'new-refresh','expires_in':10,'scope':'offline_access'}))
+ saved=json.loads(p.read_text()); assert out['rotated'] and saved['access_token']=='new-access' and saved['refresh_token']=='new-refresh'
+
+
+def test_oauth_rejects_aliased_paths_and_public_root(tmp_path):
+ public=tmp_path/'public'; public.mkdir(mode=0o755); client=public/'client.json'; client.write_text('{}'); client.chmod(0o600)
+ with pytest.raises(o.OAuthFailure) as e:o._private_path(public,'client.json',existing=True)
+ assert e.value.code=='oauth_permissions'
+ root=tmp_path/'private2'; root.mkdir(mode=0o700); client=root/'same.json'; client.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'http://127.0.0.1:8765/oauth/atlassian/callback','scopes':['offline_access','read:me']}})); client.chmod(0o600)
+ with pytest.raises(o.OAuthFailure) as e:o.login(transfer_root=root,client_path='same.json',output_path='same.json',sites_output_path='sites.json',site_alias='work',resource_url='https://work.atlassian.net',managed_browser_devtools_url='http://127.0.0.1:18800',overwrite=True)
+ assert e.value.code=='oauth_path_invalid'
+
+
+def test_oauth_refresh_is_serialized(tmp_path):
+ import threading
+ root=tmp_path/'private'; root.mkdir(mode=0o700); p=root/'credential.json'; p.write_text(json.dumps({'type':'atlassian-oauth-3lo','client_id':'id','client_secret':'secret','refresh_token':'old','access_token':'old-access','site_alias':'work','scopes':['offline_access'],'expires_at':0})); p.chmod(0o600); calls=[]; guard=threading.Lock()
+ def opener(req,timeout):
+  supplied=json.loads(req.data)['refresh_token']
+  with guard: calls.append(supplied)
+  return Response({'access_token':'a-'+supplied,'refresh_token':'r1' if supplied=='old' else 'r2','expires_in':10,'scope':'offline_access'})
+ results=[]
+ def rotate(): results.append(o.refresh(transfer_root=root,output_path='credential.json',opener=opener)['rotated'])
+ ts=[threading.Thread(target=rotate) for _ in range(2)]; [t.start() for t in ts]; [t.join() for t in ts]
+ assert results==[True,True] and calls==['old','r1'] and json.loads(p.read_text())['refresh_token']=='r2'
+
+
+def test_oauth_refresh_requires_preview_confirmation(tmp_path,monkeypatch):
+ monkeypatch.setenv('ATLASSIAN_STATE_DIR',str(tmp_path/'state'))
+ out=a.execute(ns(command='auth.oauth.refresh',site=None,transfer_root='/private',output_path='credential.json',dry_run=True,timeout_ms=30000))
+ assert out['dryRun'] and out['request']=={'operation':'rotate-oauth-credentials'} and out['confirm']
+
+
+def test_connected_skill_and_harness_identity_is_aligned():
+ manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
+ skill=Path('skills/atlassian/SKILL.md').read_text()
+ skill_meta=json.loads(Path('skills/atlassian/capability.json').read_text())
+ harness_meta=json.loads(Path('harnesses/atlassian/capability.json').read_text())
+ assert manifest['name']=='atlassian' and manifest['title']=='Atlassian'
+ assert 'name: atlassian' in skill and '# Atlassian\n' in skill
+ assert skill_meta['version']==harness_meta['version']==manifest['version']
+
+
+def test_oauth_manifest_contracts_are_typed():
+ manifest=json.loads((Path(__file__).parents[1]/'harness.json').read_text())
+ login=manifest['commands']['auth.oauth.login']; assert {'credentialRelated','humanAccountAction','externalSideEffect'}<=set(login['safetyClasses'])
+ refresh=manifest['commands']['auth.oauth.refresh']; assert {'credentialRelated','humanAccountAction','externalSideEffect'}<=set(refresh['safetyClasses']) and manifest['authModel']['storesSecrets'] is True
+ assert {'transferRoot','clientPath','outputPath','sitesOutputPath','siteAlias','resourceUrl','managedBrowserDevtoolsUrl'}<=set(login['inputSchema']['required'])
+
+
 def test_contract_inventory():
- assert len(a.CONTRACTS)==26 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)
+ assert len(a.CONTRACTS)==29 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)
