@@ -1,0 +1,1 @@
+{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.1","description":"Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos","windows"]},"safety":{"risk":"credential-related","approvalRequired":true}}

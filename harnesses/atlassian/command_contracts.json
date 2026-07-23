@@ -1,0 +1,3133 @@
+{
+  "schemaVersion": 1,
+  "commands": {
+    "auth.sites.list": {
+      "method": "GET",
+      "path": "",
+      "mutation": false,
+      "required": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "auth.whoami": {
+      "method": "GET",
+      "path": "/rest/api/3/myself",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.search": {
+      "method": "GET",
+      "path": "/rest/api/3/search/jql",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.get": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": false,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.create": {
+      "method": "POST",
+      "path": "/rest/api/3/issue",
+      "mutation": true,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.update": {
+      "method": "PUT",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.delete": {
+      "method": "DELETE",
+      "path": "/rest/api/3/issue/{issueIdOrKey}",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.transitions.list": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/transitions",
+      "mutation": false,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.transition": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/transitions",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.comments.list": {
+      "method": "GET",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment",
+      "mutation": false,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.comments.create": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.comments.update": {
+      "method": "PUT",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey",
+        "commentId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey",
+          "commentId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.comments.delete": {
+      "method": "DELETE",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey",
+        "commentId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey",
+          "commentId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.issues.attachments.add": {
+      "method": "POST",
+      "path": "/rest/api/3/issue/{issueIdOrKey}/attachments",
+      "mutation": true,
+      "required": [
+        "site",
+        "issueIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "issueIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.projects.list": {
+      "method": "GET",
+      "path": "/rest/api/3/project/search",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jira.projects.get": {
+      "method": "GET",
+      "path": "/rest/api/3/project/{projectIdOrKey}",
+      "mutation": false,
+      "required": [
+        "site",
+        "projectIdOrKey"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "projectIdOrKey"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.pages.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.pages.get": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": false,
+      "required": [
+        "site",
+        "pageId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "pageId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.pages.create": {
+      "method": "POST",
+      "path": "/wiki/api/v2/pages",
+      "mutation": true,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.pages.update": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": true,
+      "required": [
+        "site",
+        "pageId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "pageId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.pages.delete": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/pages/{pageId}",
+      "mutation": true,
+      "required": [
+        "site",
+        "pageId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "pageId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.spaces.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.spaces.get": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces/{spaceId}",
+      "mutation": false,
+      "required": [
+        "site",
+        "spaceId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "spaceId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.search": {
+      "method": "GET",
+      "path": "/wiki/rest/api/search",
+      "mutation": false,
+      "required": [
+        "site"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.attachments.list": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{pageId}/attachments",
+      "mutation": false,
+      "required": [
+        "site",
+        "pageId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "pageId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confluence.attachments.add": {
+      "method": "POST",
+      "path": "/wiki/rest/api/content/{pageId}/child/attachment",
+      "mutation": true,
+      "required": [
+        "site",
+        "pageId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "site",
+          "pageId"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
