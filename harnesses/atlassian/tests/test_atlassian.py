@@ -26,7 +26,8 @@ def test_path_safety(tmp_path):
 def test_one_time_request_bound_confirm(tmp_path,monkeypatch):
  monkeypatch.setenv('ATLASSIAN_STATE_DIR',str(tmp_path/'state')); d=a.preview('x','one','/p',{},None); a.consume(d,'x','one','/p',{},None)
  with pytest.raises(a.Failure): a.consume(d,'x','one','/p',{},None)
-def test_mutation_preview_without_auth(tmp_path):
+def test_mutation_preview_without_auth(tmp_path,monkeypatch):
+ monkeypatch.setenv('ATLASSIAN_STATE_DIR',str(tmp_path/'state'))
  n=ns(command='jira.issues.create',issueIdOrKey=None,sites_file=str(sites(tmp_path)),body='{"fields":{}}',dry_run=True); out=a.execute(n); assert out['dryRun'] and out['confirm']
 def test_tenant_isolation(tmp_path,monkeypatch):
  monkeypatch.setenv('TEST_TOKEN','one-token'); monkeypatch.setenv('OTHER_TOKEN','two-token'); p=sites(tmp_path); assert a.get_site('one',p)['jiraBaseUrl']!=a.get_site('two',p)['jiraBaseUrl']
@@ -107,13 +108,13 @@ def test_batch_shape_validation():
  assert e.value.code=='batch_invalid'
 
 def test_oauth_client_requires_fixed_loopback_and_core_scopes(tmp_path):
- p=tmp_path/'client.json'; p.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'https://remote.example/cb','scopes':['offline_access','read:me']}})); p.chmod(0o600)
+ p=tmp_path/'client.json'; p.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'https://remote.example/cb','scopes':['offline_access','read:me','read:space:confluence']}})); p.chmod(0o600)
  with pytest.raises(o.OAuthFailure) as e:o._client(p)
  assert e.value.code=='oauth_redirect_invalid'
 
 
 def test_oauth_login_writes_private_bundle_and_site_alias(tmp_path,monkeypatch):
- root=tmp_path/'private'; root.mkdir(mode=0o700); client=root/'client.json'; scopes=['offline_access','read:me','read:jira-work','read:confluence-content.all']
+ root=tmp_path/'private'; root.mkdir(mode=0o700); client=root/'client.json'; scopes=['offline_access','read:me','read:jira-work','read:confluence-content.all','read:space:confluence']
  client.write_text(json.dumps({'oauth2':{'client_id':'id','client_secret':'secret','redirect_uri':'http://127.0.0.1:8765/oauth/atlassian/callback','scopes':scopes}})); client.chmod(0o600)
  done=__import__('threading').Event(); done.set(); monkeypatch.setattr(o,'_receiver',lambda *args,**kwargs:({'code':'one-time-code'},done))
  def opener(req,timeout):
@@ -121,7 +122,7 @@ def test_oauth_login_writes_private_bundle_and_site_alias(tmp_path,monkeypatch):
   if url==o.TOKEN_URL:return Response({'access_token':'access','refresh_token':'refresh','expires_in':3600,'scope':' '.join(scopes)})
   if url==o.RESOURCES_URL:return Response([{'id':'cloud','name':'Work','url':'https://work.atlassian.net','scopes':scopes}])
   if url==o.ME_URL:return Response({'account_id':'acct'})
-  if '/rest/api/3/myself' in url:return Response({'accountId':'acct'})
+  if '/rest/api/3/project/search?maxResults=1' in url:return Response({'values':[]})
   if '/wiki/api/v2/spaces' in url:return Response({'results':[]})
   raise AssertionError(url)
  out=o.login(transfer_root=root,client_path='client.json',output_path='credential.json',sites_output_path='sites.json',site_alias='work',resource_url='https://work.atlassian.net',managed_browser_devtools_url='http://127.0.0.1:18800',opener=opener,open_devtools=lambda *x:True)
@@ -169,15 +170,15 @@ def test_connected_skill_and_harness_identity_is_aligned():
  manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
  skill=Path('skills/atlassian/SKILL.md').read_text()
  assert manifest['name']=='atlassian' and manifest['title']=='Atlassian'
- assert 'name: atlassian' in skill and '# Atlassian\n' in skill
+ assert ('name: atlassian' in skill or 'name: "atlassian"' in skill) and '# Atlassian\n' in skill
 
 
 def test_skill_requires_user_facing_authorization_preflight():
  skill=Path('skills/atlassian/SKILL.md').read_text()
  onboarding=Path('skills/atlassian/references/oauth-onboarding.md').read_text()
- for phrase in ('Immediately after this capability is installed','installed but not yet connected','what the user must do','what the agent will do','managed browser will open','explicitly agrees','Do not invoke `auth.oauth.login`'):
+ for phrase in ('Immediately after installation and validation','installed but not connected','explicit approval in the current conversation','separate approval required for later mutations'):
   assert phrase in skill
- for phrase in ('User-facing preflight','Immediately after installation and validation','Start Atlassian authorization now?','Continue only after an explicit affirmative response'):
+ for phrase in ('Start Atlassian authorization now?','Continue only after an explicit affirmative response','user handles sign-in, passwords, and MFA only','Do not ask the user to press Allow again','fail closed before consent'):
   assert phrase in onboarding
 
 
@@ -190,4 +191,4 @@ def test_oauth_manifest_contracts_are_typed():
 
 
 def test_contract_inventory():
- assert len(a.CONTRACTS)==29 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)
+ assert len(a.CONTRACTS)==31 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)

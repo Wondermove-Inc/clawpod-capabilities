@@ -5,7 +5,7 @@
     {
       "id": "atlassian",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "description": "Route approved Jira and Confluence work through the typed Atlassian harness.",
       "path": "skills/atlassian",
       "compatibility": {
@@ -23,19 +23,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f4a9117fa219f2d03fd1f16dd7c9417dd7dc9a4035e88742ac096af6baf0b823"
+          "sha256": "3d77456076f4e98b91112b1af65ef04666cd0b552817f1e3867c396ab62ce559"
         },
         {
           "path": "references/commands.md",
-          "sha256": "6fb998730b01a38dd73e8350c0c0ff321306b17ae7cdf8259a60519f94cedb71"
+          "sha256": "0aee319e787f7a61dc892136d384180aa6b25d7040a8bdb01cb1c2a560f5e103"
         },
         {
           "path": "references/configuration.md",
-          "sha256": "18de67207403e4ba16ed3ad87d1665d6cc25c863f8b209f118f83eac10a48ae4"
+          "sha256": "409c6838936d63f64791b2f8d5d6c6ee330182413bad46bb32671c1fc9dc3a9d"
         },
         {
           "path": "references/oauth-onboarding.md",
-          "sha256": "afb5348c509dfb41ad480db3e4fac42062f4970cab38fb7c632449fdaba7152a"
+          "sha256": "37baf06ed4bb27b40b762cb84f31512376e408abe23403e231b8551439585dd7"
         }
       ]
     },
@@ -104,7 +104,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -121,24 +121,40 @@
       },
       "files": [
         {
+          "path": "README.md",
+          "sha256": "dfc041db551fe327e21c9546ce7f628dcefe1bf3f7362bc2f71ba62e0c8da8a5"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "6fc5c40360d5d0d901b2f0f800d6680428f744ba22b98537b3edcc665dfc3068"
+        },
+        {
           "path": "atlassian.py",
-          "sha256": "33b845cad4cb7547ba65cad56b4b04e1e7b329a513372cbc9e89789a61a2add6"
+          "sha256": "fb8b44d8845b6e3b136e77ace86ac166831684696b73db44f38fb1e10c70b0d8"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "f9b4e73992e34fe05b826809a670f7dbc6af6d95cd5eabf5ef8005cd71835ec1"
+          "sha256": "99e2a4189c0d8f4b74d3740c8c417197d81cfaf89344cfff8c70e585e554c025"
         },
         {
           "path": "harness.json",
-          "sha256": "72b3fc53a397fafbc5ddf3783650460b919d49dd369732fbfc64bc5fb2e10c23"
+          "sha256": "6b8c8927ad2ce57d6bcb3322d8f9cb052459b7d7f2e84ef2b5f7f729073d8607"
         },
         {
           "path": "oauth3lo.py",
-          "sha256": "656256385b307a736c573b1610385888b6f2f10a6ddcee7719b032e216cd5a0b"
+          "sha256": "aa5b6b538bfbff1d7c28ef6f234cae6d815c40e3cd3a0ce026d84ed4c82fe668"
+        },
+        {
+          "path": "oauth_cdp.js",
+          "sha256": "4576ce36cc327041a9a40be56ccf3e48d1be1eb48342cb12b9c7a25bc568a3e6"
         },
         {
           "path": "scripts/generate_schemas.py",
           "sha256": "607e15b7d64ad20cb22663e469fb7d7f6ed6efe9341ac6c294c80676471fdb76"
+        },
+        {
+          "path": "test_oauth_async.py",
+          "sha256": "3c463656c7eb5a0dd48ee9c53efc5ee1fbf9c940b8e5851f2d044164e091acff"
         }
       ]
     },
