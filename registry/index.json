@@ -92,7 +92,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Execute typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -134,7 +134,7 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "d57d604ec5a0eeb8c7dbc92e5061afa16e93cdc04eb46036e24b960c1a624f9e"
+          "sha256": "986617d9a77a8dadf3671636c2bfd9d75ca43fcb9bc5c61703e35308c5735b36"
         },
         {
           "path": "google_workspace_core/mime.py",
@@ -166,7 +166,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "cc9082f774057d2f6ed4e0c833e63a75881c29c8360fc0f6630735228d6fc2c3"
+          "sha256": "6121d08e43c3cc70a95d8711930f18f8ce7f948f4fc6aa869adfd5fd12fd4386"
         },
         {
           "path": "scripts/generate_schemas.py",
