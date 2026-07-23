@@ -1,6 +1,7 @@
 import io,json,stat,urllib.error
 from pathlib import Path
 import pytest
+from google_workspace_core.core import SCOPES
 from google_workspace_core.oauth_desktop import LoginError,_canonical_scopes,_devtools_endpoint,_open_devtools,_smoke
 
 
@@ -22,6 +23,18 @@ def test_devtools_new_tab_success_failure_and_encoded_target(monkeypatch):
  assert seen["method"]=="PUT" and seen["timeout"]==5 and "accounts.google.com" in seen["url"] and "%26b%3D2" in seen["url"]
  monkeypatch.setattr("urllib.request.urlopen",lambda *a,**k:(_ for _ in ()).throw(OSError("detail")))
  assert not _open_devtools("http://127.0.0.1:9222","https://accounts.google.com/",5)
+
+
+def test_gmail_settings_profile_is_available_for_filter_consent():
+ assert SCOPES["gmail-settings"]==["https://www.googleapis.com/auth/gmail.settings.basic"]
+
+
+def test_workspace_max_profile_covers_full_service_scopes():
+ assert set(SCOPES["workspace-max"])=={
+  "https://mail.google.com/",
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/drive",
+ }
 
 
 def test_requested_scope_canonicalization_and_subsumption():
