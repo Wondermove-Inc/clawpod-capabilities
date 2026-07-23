@@ -74,13 +74,20 @@ def entries() -> list[dict[str, Any]]:
     return list(load_registry()["capabilities"])
 
 
-def choose(capability_id: str, version: str | None = None) -> dict[str, Any]:
+def choose(capability_id: str, version: str | None = None, capability_type: str | None = None) -> dict[str, Any]:
     matches = [entry for entry in entries() if entry.get("id") == capability_id]
     if version is not None:
         matches = [entry for entry in matches if entry.get("version") == version]
+    if capability_type is not None:
+        if capability_type not in {"skill", "harness"}:
+            raise CapabilityError("invalid_input", "type must be skill or harness")
+        matches = [entry for entry in matches if entry.get("type") == capability_type]
     if not matches:
         suffix = f"@{version}" if version else ""
         raise CapabilityError("not_found", f"capability not found: {capability_id}{suffix}")
+    types = {entry.get("type") for entry in matches}
+    if capability_type is None and len(types) > 1:
+        raise CapabilityError("ambiguous_type", "capability id exists as both skill and harness; pass --type")
     return sorted(matches, key=lambda entry: tuple(int(part) for part in entry["version"].split("-")[0].split(".")), reverse=True)[0]
 
 
@@ -201,6 +208,59 @@ def install_entry(entry: dict[str, Any], target_root: str, *, replace: bool, bac
     }
 
 
+def linked_entries(entry: dict[str, Any]) -> list[dict[str, Any]]:
+    linked = entry.get("linkedHarness")
+    if not linked:
+        return [entry]
+    if entry.get("type") != "skill":
+        raise CapabilityError("invalid_registry", "only skills may declare a linked harness")
+    return [entry, choose(linked, entry["version"], "harness")]
+
+
+def install_unit(entry: dict[str, Any], skills_root: str | None, harnesses_root: str | None, *, replace: bool) -> dict[str, Any]:
+    unit = linked_entries(entry)
+    if len(unit) == 1:
+        root = skills_root if entry["type"] == "skill" else harnesses_root
+        if not root:
+            raise CapabilityError("invalid_target", "the matching explicit target root is required")
+        return {"unit": [install_entry(entry, root, replace=replace, backup=replace)]}
+    if not skills_root or not harnesses_root:
+        raise CapabilityError("linked_install_blocked", "linked Skill installation requires both --skills-root and --harnesses-root")
+    roots = {"skill": skills_root, "harness": harnesses_root}
+    snapshots: list[tuple[Path, Path | None]] = []
+    temp = Path(tempfile.mkdtemp(prefix=".clawpod-unit-"))
+    try:
+        for item in unit:
+            _, dest = package_destination(roots[item["type"]], item["id"])
+            snap = temp / item["type"]
+            if dest.exists(): shutil.copytree(dest, snap)
+            snapshots.append((dest, snap if snap.exists() else None))
+        results=[]
+        for item in unit:
+            results.append(install_entry(item, roots[item["type"]], replace=replace, backup=replace))
+        return {"transactional": True, "unit": results}
+    except Exception:
+        for dest, snap in snapshots:
+            if dest.exists(): shutil.rmtree(dest)
+            if snap is not None: shutil.copytree(snap, dest)
+        raise
+    finally:
+        shutil.rmtree(temp, ignore_errors=True)
+
+
+def validate_unit(entry: dict[str, Any], skills_root: str | None, harnesses_root: str | None) -> dict[str, Any]:
+    unit=linked_entries(entry)
+    if len(unit)>1 and (not skills_root or not harnesses_root):
+        raise CapabilityError("linked_install_blocked", "linked Skill validation requires both --skills-root and --harnesses-root")
+    roots={"skill":skills_root,"harness":harnesses_root}
+    results=[]
+    for item in unit:
+        root=roots[item["type"]]
+        if not root: raise CapabilityError("invalid_target", "the matching explicit target root is required")
+        results.append(validate_installation(item,root))
+    return {"unit":results}
+
+
 def validate_installation(entry: dict[str, Any], target_root: str) -> dict[str, Any]:
     _, destination = package_destination(target_root, entry["id"])
     if not destination.is_dir():
@@ -259,12 +319,16 @@ def build_parser() -> argparse.ArgumentParser:
     inspect = sub.add_parser("inspect", help="Inspect one capability")
     inspect.add_argument("--id", required=True)
     inspect.add_argument("--version")
+    inspect.add_argument("--type", choices=("skill", "harness"))
 
     for name in ("install", "update", "validate"):
         command = sub.add_parser(name, help=f"{name.title()} a capability")
         command.add_argument("--id", required=True)
         command.add_argument("--version")
-        command.add_argument("--target-root", required=True)
+        command.add_argument("--type", choices=("skill", "harness"), required=True)
+        command.add_argument("--target-root")
+        command.add_argument("--skills-root")
+        command.add_argument("--harnesses-root")
 
     rollback = sub.add_parser("rollback", help="Restore a previous local backup")
     rollback.add_argument("--id", required=True)
@@ -289,17 +353,21 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         ]
         return {"query": args.query, "count": min(len(matches), args.limit), "capabilities": matches[: args.limit]}
     if args.command == "inspect":
-        return public_entry(choose(args.id, args.version))
-    if args.command == "install":
-        return install_entry(choose(args.id, args.version), args.target_root, replace=False, backup=False)
-    if args.command == "update":
-        entry = choose(args.id, args.version)
-        _, destination = package_destination(args.target_root, entry["id"])
-        if not destination.exists():
-            raise CapabilityError("not_installed", f"capability is not installed: {destination}")
-        return install_entry(entry, args.target_root, replace=True, backup=True)
-    if args.command == "validate":
-        return validate_installation(choose(args.id, args.version), args.target_root)
+        return public_entry(choose(args.id, args.version, args.type))
+    if args.command in {"install", "update", "validate"}:
+        entry=choose(args.id,args.version,args.type)
+        skills_root=args.skills_root or (args.target_root if args.type=="skill" else None)
+        harnesses_root=args.harnesses_root or (args.target_root if args.type=="harness" else None)
+        if args.command=="install": return install_unit(entry,skills_root,harnesses_root,replace=False)
+        if args.command=="update":
+            roots={"skill":skills_root,"harness":harnesses_root}
+            for item in linked_entries(entry):
+                root=roots[item["type"]]
+                if not root: raise CapabilityError("invalid_target", "the matching explicit target root is required")
+                _,destination=package_destination(root,item["id"])
+                if not destination.exists(): raise CapabilityError("not_installed",f"capability is not installed: {destination}")
+            return install_unit(entry,skills_root,harnesses_root,replace=True)
+        return validate_unit(entry,skills_root,harnesses_root)
     if args.command == "rollback":
         return rollback_installation(args.id, args.target_root, args.backup)
     raise CapabilityError("invalid_command", f"unsupported command: {args.command}")

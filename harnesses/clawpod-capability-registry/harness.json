@@ -12,7 +12,13 @@
     "A capability must be installed with provenance and digest checks",
     "An installed capability needs validation, update, or rollback"
   ],
-  "capabilities": ["registry-search", "verified-install", "local-validation", "backup", "rollback"],
+  "capabilities": [
+    "registry-search",
+    "verified-install",
+    "local-validation",
+    "backup",
+    "rollback"
+  ],
   "authModel": {
     "type": "public-read",
     "storesSecrets": false,
@@ -21,132 +27,453 @@
   "commands": {
     "list": {
       "description": "List capabilities in the canonical registry.",
-      "baseArgv": ["list"],
-      "safetyClasses": ["readOnly"],
-      "inputSchema": {"type": "object", "additionalProperties": false},
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "baseArgv": [
+        "list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": []
     },
     "search": {
       "description": "Search capability ids and descriptions.",
-      "baseArgv": ["search"],
-      "safetyClasses": ["readOnly"],
+      "baseArgv": [
+        "search"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "properties": {
-          "query": {"type": "string", "minLength": 1},
-          "limit": {"type": "integer", "minimum": 1, "maximum": 100}
+          "query": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "query", "type": "option", "flag": "--query", "valueType": "string"},
-        {"arg": "limit", "type": "option", "flag": "--limit", "valueType": "integer", "optional": true}
+        {
+          "arg": "query",
+          "type": "option",
+          "flag": "--query",
+          "valueType": "string"
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        }
       ]
     },
     "inspect": {
       "description": "Inspect one capability and its compatibility and safety metadata.",
-      "baseArgv": ["inspect"],
-      "safetyClasses": ["readOnly"],
+      "baseArgv": [
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "version": {"type": "string"}
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "id", "type": "option", "flag": "--id", "valueType": "string"},
-        {"arg": "version", "type": "option", "flag": "--version", "valueType": "string", "optional": true}
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string"
+        },
+        {
+          "arg": "version",
+          "type": "option",
+          "flag": "--version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "type",
+          "type": "option",
+          "flag": "--type",
+          "valueType": "string",
+          "optional": true
+        }
       ]
     },
     "install": {
       "description": "Install a capability into an explicit local target root after digest verification.",
-      "baseArgv": ["install"],
-      "safetyClasses": ["writeSafe"],
+      "baseArgv": [
+        "install"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "targetRoot"],
+        "required": [
+          "id",
+          "type"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "version": {"type": "string"},
-          "targetRoot": {"type": "string", "minLength": 1}
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "targetRoot": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "skillsRoot": {
+            "type": "string"
+          },
+          "harnessesRoot": {
+            "type": "string"
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "id", "type": "option", "flag": "--id", "valueType": "string"},
-        {"arg": "version", "type": "option", "flag": "--version", "valueType": "string", "optional": true},
-        {"arg": "targetRoot", "type": "option", "flag": "--target-root", "valueType": "path", "pathRole": "output"}
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string"
+        },
+        {
+          "arg": "version",
+          "type": "option",
+          "flag": "--version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "type",
+          "type": "option",
+          "flag": "--type",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "targetRoot",
+          "type": "option",
+          "flag": "--target-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "skillsRoot",
+          "type": "option",
+          "flag": "--skills-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "harnessesRoot",
+          "type": "option",
+          "flag": "--harnesses-root",
+          "valueType": "path",
+          "optional": true
+        }
       ]
     },
     "validate": {
       "description": "Validate installed files against the canonical registry digests.",
-      "baseArgv": ["validate"],
-      "safetyClasses": ["readOnly"],
+      "baseArgv": [
+        "validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "targetRoot"],
+        "required": [
+          "id",
+          "type"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "version": {"type": "string"},
-          "targetRoot": {"type": "string", "minLength": 1}
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "targetRoot": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "skillsRoot": {
+            "type": "string"
+          },
+          "harnessesRoot": {
+            "type": "string"
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "id", "type": "option", "flag": "--id", "valueType": "string"},
-        {"arg": "version", "type": "option", "flag": "--version", "valueType": "string", "optional": true},
-        {"arg": "targetRoot", "type": "option", "flag": "--target-root", "valueType": "path", "pathRole": "input"}
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string"
+        },
+        {
+          "arg": "version",
+          "type": "option",
+          "flag": "--version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "type",
+          "type": "option",
+          "flag": "--type",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "targetRoot",
+          "type": "option",
+          "flag": "--target-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "skillsRoot",
+          "type": "option",
+          "flag": "--skills-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "harnessesRoot",
+          "type": "option",
+          "flag": "--harnesses-root",
+          "valueType": "path",
+          "optional": true
+        }
       ]
     },
     "update": {
       "description": "Update an installed capability after creating a local rollback backup.",
-      "baseArgv": ["update"],
-      "safetyClasses": ["writeSafe"],
+      "baseArgv": [
+        "update"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "targetRoot"],
+        "required": [
+          "id",
+          "type"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "version": {"type": "string"},
-          "targetRoot": {"type": "string", "minLength": 1}
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "targetRoot": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "skillsRoot": {
+            "type": "string"
+          },
+          "harnessesRoot": {
+            "type": "string"
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "id", "type": "option", "flag": "--id", "valueType": "string"},
-        {"arg": "version", "type": "option", "flag": "--version", "valueType": "string", "optional": true},
-        {"arg": "targetRoot", "type": "option", "flag": "--target-root", "valueType": "path", "pathRole": "inout"}
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string"
+        },
+        {
+          "arg": "version",
+          "type": "option",
+          "flag": "--version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "type",
+          "type": "option",
+          "flag": "--type",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "targetRoot",
+          "type": "option",
+          "flag": "--target-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "skillsRoot",
+          "type": "option",
+          "flag": "--skills-root",
+          "valueType": "path",
+          "optional": true
+        },
+        {
+          "arg": "harnessesRoot",
+          "type": "option",
+          "flag": "--harnesses-root",
+          "valueType": "path",
+          "optional": true
+        }
       ]
     },
     "rollback": {
       "description": "Restore the latest or selected local capability backup.",
-      "baseArgv": ["rollback"],
-      "safetyClasses": ["writeSafe"],
+      "baseArgv": [
+        "rollback"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "targetRoot"],
+        "required": [
+          "id",
+          "targetRoot"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "targetRoot": {"type": "string", "minLength": 1},
-          "backup": {"type": "string"}
+          "id": {
+            "type": "string"
+          },
+          "targetRoot": {
+            "type": "string"
+          },
+          "backup": {
+            "type": "string"
+          }
         }
       },
-      "outputSchema": {"type": "object", "required": ["ok", "command", "data"]},
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
       "argMap": [
-        {"arg": "id", "type": "option", "flag": "--id", "valueType": "string"},
-        {"arg": "targetRoot", "type": "option", "flag": "--target-root", "valueType": "path", "pathRole": "inout"},
-        {"arg": "backup", "type": "option", "flag": "--backup", "valueType": "path", "pathRole": "input", "optional": true}
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string"
+        },
+        {
+          "arg": "targetRoot",
+          "type": "option",
+          "flag": "--target-root",
+          "valueType": "path",
+          "pathRole": "inout"
+        },
+        {
+          "arg": "backup",
+          "type": "option",
+          "flag": "--backup",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
       ]
     }
   },

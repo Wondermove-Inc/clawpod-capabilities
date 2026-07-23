@@ -1,7 +1,9 @@
 # GitHub capability contract
 
-The canonical pair shares machine name `github` and title **GitHub**. The Skill routes intent and onboarding; the Harness deterministically wraps `gh`.
+The canonical pair shares machine name `github` and title **GitHub**. The Skill routes intent; the Harness deterministically wraps bounded `gh` argv.
 
-The pair is one installation unit. Operational readiness requires both package digests, Harness validation/trust, and a representative prepared read. Authorization and every external mutation remain separately approval-gated.
+The pair is one transactional installation unit. A Skill declares `linkedHarness: github`; registry install, update, and validation require explicit Skill and Harness roots, type-disambiguated selection, digest verification of both packages, and rollback on partial failure.
 
-Runtime manifest numeric schemas use `number` for Gateway compatibility. Package-local command contracts retain `integer` for bounded numeric CLI options. No arbitrary mutation passthrough is exposed.
+Version 0.1 requires a pre-authenticated system `gh` CLI. It does not claim agent-complete login. `auth.status` performs only a bounded user GET for an exact validated host and emits allowlisted identity fields. Authorization and every external mutation remain separately approval-gated.
+
+Runtime manifest numeric schemas use `number` for Gateway compatibility. Package-local contracts retain `integer`. No arbitrary mutation API passthrough is exposed. Output, input sizes, timeouts, retries, IDs, states, endpoints, and uploads are bounded. Mutation backend failures are non-retryable and marked potentially ambiguous.

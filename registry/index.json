@@ -85,17 +85,18 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "9de408bba9439e7660fdb83effbd31dda737e58f806bf0c1234117a4a897c573"
+          "sha256": "9dbe4f7edb5fcce0e423166079f043469d7e205cb52a3cb8cc7d34c11b10caa6"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "4ae1f6c67d48db3b02110f77ea93aac942d7346493c9ffc61459d0846a561f11"
+          "sha256": "b2b2326ea64fbb232860da3f0d59b60ba5694efa65260a0268ad5372b59df8b5"
         },
         {
           "path": "references/operations.md",
           "sha256": "1c7798a68f80dd2b8487fcf4b01516d44c985fc01aaac427419881d79d9c3991"
         }
-      ]
+      ],
+      "linkedHarness": "github"
     },
     {
       "id": "google-workspace",
@@ -212,11 +213,11 @@
       "files": [
         {
           "path": "clawpod_capability_registry.py",
-          "sha256": "3ff021dff41b5b4947dc329b9dd32efa3f666fc606bba317736bae65cecf6f8b"
+          "sha256": "3384e4299aba8ed0d2c99b44bebe181cf60b2a6e4d8451c5bd69d10177ba3168"
         },
         {
           "path": "harness.json",
-          "sha256": "a9e44c923a71ee8d13e0ce0f69779b95545eb8846b8ab107f94930e2ebf266d2"
+          "sha256": "648a0e7fa18b28a101861d5c4bbf54f935ab6544886e4acdfc2897167b284209"
         }
       ]
     },
@@ -241,27 +242,27 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "3fffff1316999d8a33064b1c8d7a80a1cf3103716dcee6dc3ecc2959d1431abc"
+          "sha256": "c9ca3471dd0bd03022e2f53dfb38dd4b135f60283f62f7f105759876582b5bcd"
         },
         {
           "path": "TEST.md",
-          "sha256": "52e23056caa9b58abeb83cbe60e84dd431b695566c682e096a31623ede07c0c8"
+          "sha256": "ab7471d15e77f253117e129e6b9f0846266568486ebffb0f9c6bc75c730fed9c"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "c00836feea448effa83b0e41352f2fa5421ab1980d99b36c7b5018f681eb4ad5"
+          "sha256": "ad32c1327bac2a9a28cb6093baf19ce6eefc7aa1313ee91ab5d70812491c6913"
         },
         {
           "path": "github.py",
-          "sha256": "5d9d4a51b593dc42236cbc6fc842d3c3ff2a4fd4d6768170d78c97c4405829dc"
+          "sha256": "9250ccd83268bfbe0c482dc9c8c9367652fa71367295ad7251d28693b77b4d03"
         },
         {
           "path": "harness.json",
-          "sha256": "0016df434d238a56bb48c0454cd1632c6a876715e88f6025fa187d23e713e7c9"
+          "sha256": "ac13b4ede3723ae38b6c761e2432acc5e8b99b8afcf5b017e5759b935f31adce"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "3957d2d3b7d54d12b1dc42b4914a609b045ef81c7d504f0c38464e0eb7fc1be9"
+          "sha256": "0e15e1ac6eea62fa0633cdf081d42266863cde2084437be52f20667335874bac"
         }
       ]
     },

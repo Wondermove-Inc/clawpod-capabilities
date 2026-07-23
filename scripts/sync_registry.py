@@ -14,7 +14,7 @@ from pathlib import Path
 NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$")
 RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "credential-related"}
-PACKAGE_METADATA_KEYS = {"$schema", "schemaVersion", "version", "description", "compatibility", "safety"}
+PACKAGE_METADATA_KEYS = {"$schema", "schemaVersion", "version", "description", "compatibility", "safety", "linkedHarness"}
 IGNORED_PARTS = {"tests", "__pycache__", ".git"}
 IGNORED_FILES = {"capability.json", ".DS_Store"}
 
@@ -92,6 +92,9 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
         raise SyncError(f"{path} safety requires only risk and approvalRequired")
     if safety["risk"] not in RISKS or not isinstance(safety["approvalRequired"], bool):
         raise SyncError(f"{path} safety contains invalid values")
+    linked = value.get("linkedHarness")
+    if linked is not None and (not isinstance(linked, str) or not NAME.fullmatch(linked)):
+        raise SyncError(f"{path} linkedHarness must be a lowercase hyphenated id")
     return value
 
 
@@ -140,7 +143,9 @@ def build_entry(root: Path, capability_type: str, package: Path) -> dict[str, ob
         if not isinstance(entrypoint, str) or not (package / entrypoint).is_file():
             raise SyncError(f"{interface_path} entrypoint is missing")
 
-    return {
+    if capability_type != "skill" and metadata.get("linkedHarness") is not None:
+        raise SyncError(f"{metadata_path} linkedHarness is valid only for skills")
+    entry = {
         "id": capability_id,
         "type": capability_type,
         "version": metadata["version"],
@@ -150,6 +155,9 @@ def build_entry(root: Path, capability_type: str, package: Path) -> dict[str, ob
         "safety": metadata["safety"],
         "files": package_files(package),
     }
+    if metadata.get("linkedHarness") is not None:
+        entry["linkedHarness"] = metadata["linkedHarness"]
+    return entry
 
 
 def package_directories(root: Path, collection: str) -> list[Path]:
@@ -165,6 +173,11 @@ def generate_registry(root: Path) -> dict[str, object]:
         for package in package_directories(root, collection):
             capabilities.append(build_entry(root, capability_type, package))
     capabilities.sort(key=lambda item: (0 if item["type"] == "skill" else 1, item["id"], item["version"]))
+    available = {(item["type"], item["id"], item["version"]) for item in capabilities}
+    for item in capabilities:
+        linked = item.get("linkedHarness")
+        if linked and ("harness", linked, item["version"]) not in available:
+            raise SyncError(f"linked harness {linked}@{item['version']} is missing for skill {item['id']}")
     return {
         "$schema": "../schemas/registry.schema.json",
         "schemaVersion": 1,

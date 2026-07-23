@@ -1,8 +1,7 @@
-# GitHub onboarding
+# GitHub onboarding prerequisite
 
-1. Verify both package digests, Harness validation/trust, `gh` presence, and canonical name/title.
-2. Run bounded `auth.status` for the intended host and expected account. Do not read credential/config files.
-3. If disconnected, explain: the user completes GitHub sign-in/password/MFA/verification/consent; the agent handles preflight, exact host/account checks, asynchronous status, verification, and cleanup; `gh` protects credential state; revoke with GitHub settings or approved `gh auth logout` outside this v1 Harness.
-4. Ask explicit permission to begin. Use `auth.login.start --dry-run`, then approved start. Never keep a Gateway call waiting for consent.
-5. Check `auth.login.status`; once finished, verify `auth.status --expected-account`, `repo.view`, then one bounded issue or PR list.
-6. On wrong host/account or insufficient access, stop. Re-consent or logout requires separate credential-related approval.
+Version 0.1 requires the system `gh` CLI to be authenticated before this capability is used. Login is intentionally outside the Harness because a safe, agent-complete browser handoff is not yet implemented.
+
+The human operator uses GitHub's supported `gh auth login` flow, handles sign-in, password, MFA, verification, and consent, and relies on `gh` protected credential storage. The agent never receives or records tokens or one-time codes. Then verify with Harness `auth.status --host <exact-host> --expected-account <exact-login>`.
+
+If verification fails, report the capability as installed but not connected. Revoke access using GitHub account settings or `gh auth logout` outside this capability. Each future mutation still requires preview and explicit approval.

@@ -1,39 +1,19 @@
-# GitHub Harness Test Plan
+# GitHub capability correction evidence
 
-Written before implementation.
+Validated locally on 2026-07-23 without live GitHub credentials, publication, installation, push, or provider mutations.
 
-## Inventory
+## Commands and results
 
-- `tests/test_github.py`: approximately 25 unit and fake-`gh` subprocess E2E tests.
-- Repository validation, registry determinism, secret-pattern scan, and whitespace checks.
+- `pytest -q harnesses/github/tests harnesses/clawpod-capability-registry/tests/test_core.py` → `37 passed in 1.28s`
+- `python3 scripts/validate.py && pytest -q` → `OK: validated 8 capability entries`; `208 passed, 151 subtests passed in 10.63s`
+- `python3 scripts/sync_registry.py --check` → synchronized
+- `python3 -m py_compile harnesses/github/github.py harnesses/clawpod-capability-registry/clawpod_capability_registry.py scripts/sync_registry.py scripts/validate.py` → passed
+- secret-pattern scan for GitHub token/Bearer forms → no matches
+- registry Harness unsupported `minLength` scan → no matches
+- `git diff --check` → passed
 
-## Planned coverage
+## Security/runtime coverage
 
-- Command catalog and `gh` argv mapping for repository, issue, pull request, workflow run, release, and bounded API GET operations.
-- Stable JSON success/error envelopes and stderr-only diagnostics.
-- Required input and malformed repository/API endpoint rejection.
-- Missing backend, backend nonzero exit, timeout, bounded retry on rate limiting, and no retry for mutations.
-- Read-only versus mutation preview/confirmation behavior, destructive classifications, and idempotency-key validation.
-- Redaction of token-like values from backend output and errors.
-- Auth states: disconnected, wrong host/account, connected, asynchronous login start/status/cancel, and fail-closed expected identity checks.
-- Installed-entrypoint-style execution from outside the package directory using the executable file.
-- Release upload path handling without embedding file contents or credentials in argv.
-- Manifest runtime numeric schema uses `number`; contract schemas may use `integer`.
+Synthetic `gh` tests prove that `auth.status` uses only bounded `GET user` argv, never invokes `gh auth status --json hosts`, returns only host/login/authenticated, and compares expected login exactly. Login start/status/cancel are absent. Tests cover validation, bounded endpoints and numerics, timeout, safe read retry, mutation non-retry, redaction, release upload clobber preview, and ambiguous mutation failure.
 
-## Safe backend strategy
-
-Tests place a fake `gh` executable first on `PATH`; no credentials or network are used. A future approval-gated real-backend check should run `auth.status`, `repo.view`, and one bounded `issue.list` against an explicitly approved repository and expected account, then use mutation previews only unless separate action approval is granted.
-
-## Results
-
-Executed 2026-07-23 in the isolated worktree with no live credentials or network.
-
-- `python3 -m pytest harnesses/github/tests -q`: `25 passed in 1.24s`.
-- `python3 scripts/sync_registry.py`: updated generated registry after final package changes.
-- `python3 scripts/sync_registry.py --check`: synchronized.
-- `python3 scripts/validate.py`: `OK: validated 8 capability entries`.
-- `python3 -m pytest -q`: `203 passed, 151 subtests passed in 10.24s`.
-- Secret-pattern scan over tracked/new source: no credential-shaped literals detected.
-- `git diff --check`: clean.
-
-Coverage uses a fake `gh` subprocess and installed-entrypoint-style executable invocation from `/tmp`. It verifies 25 cases including all read domains, mutation preview/confirmation, non-retry of writes, idempotent replay, bounded read retry, timeout, missing/failing backend, validation, redaction, exact-account failure, asynchronous authorization, manifest safety, runtime `number`, and contract `integer` schemas. Live provider behavior remains intentionally untested pending separate credential-use and network approval.
+Registry unit tests cover explicit type disambiguation, linked Skill plus Harness installation and validation, digest failure rollback, missing-root blocking, and standalone compatibility. No live authentication or real backend mutation was attempted.

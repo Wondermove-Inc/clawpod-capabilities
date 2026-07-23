@@ -9,18 +9,18 @@ Use the canonical `github` Harness. It wraps the real `gh` CLI. Do not construct
 
 ## Installation unit
 
-Treat this Skill and the same-named Harness as one unit. Installation is incomplete until both artifacts are present, name/title aligned (`github` / `GitHub`), digest validated, Harness trusted, and a representative `prepare → run` read succeeds. Never call the Skill alone operational.
+Treat this Skill and the same-named, same-title Harness (`github` / `GitHub`) as one transactional unit. Registry installation, update, and validation of this Skill must use explicit Skill and Harness roots, verify both manifests and digests, and roll back both on partial failure. The capability is incomplete if either artifact is absent or invalid.
 
-## Authorization gate
+## Onboarding prerequisite
 
-Immediately after installation validation, run `auth.status` for the exact host and expected account. If disconnected, say “installed but not connected,” explain the account/host, permission categories, protected `gh` credential storage, revocation, and future mutation approvals, then ask whether to start authorization. Do not use credentials or start consent without explicit approval.
+Version 0.1 does not automate GitHub login. Before use, the operator must authenticate the system `gh` CLI outside this capability using GitHub's supported login flow and protected credential storage. Never request, display, persist, or log tokens or one-time authorization codes.
 
-After approval, use `auth.login.start`; return promptly while the user completes only provider-required sign-in, password, MFA, verification, and consent. Poll with `auth.login.status` outside the Gateway wait path. Never request, automate, display, or persist those values. Finish only after `auth.status --expected-account`, `repo.view`, and a bounded read succeed. Fail closed on host/account mismatch.
+After that human-controlled prerequisite, run `auth.status` with the exact host and expected account. It performs only a bounded `GET user` query and returns allowlisted `host`, `login`, and `authenticated` fields. Fail closed on host or exact account mismatch. If disconnected, report “installed but not connected,” explain that pre-authenticated `gh` is required, and provide the provider's revocation path. Do not claim agent-complete onboarding.
 
-Read `references/operations.md` for command selection and `references/onboarding.md` for authorization and recovery.
+Read `references/operations.md` for command selection and `references/onboarding.md` for prerequisites and recovery.
 
 ## Operation
 
-Use read commands freely after prepare. For every mutation, first run `--dry-run`, show the target and effect, obtain explicit approval, then use the exact `--confirm <command>`. Closing, merging, cancelling, and clobbering uploads are destructive. Never infer authorization from installation, trust, prior review, or read access.
+Use read commands only after the authentication check. For every mutation, first run `--dry-run`, show the exact target and effect, obtain explicit approval, then use exact `--confirm <command>`. Mutations are never retried because backend commit may be ambiguous. Closing, merging, cancelling, and clobbering release uploads are destructive. Local idempotency keys are not proof of provider-side idempotency.
 
 Keep repository targets explicit. Use `api.get` only for its bounded GET allowlist. Never expose credentials or raw auth/config output.
