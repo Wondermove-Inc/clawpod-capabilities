@@ -1,5 +1,7 @@
 # Scope profiles
 
-Prefer narrow profiles: `identity`, `gmail-metadata`, `gmail-read`, `gmail-compose`, `gmail-modify`, `gmail-settings`, `calendar-freebusy`, `calendar-read`, `calendar-events`, `calendar-manage`, `drive-file`, `drive-metadata-read`, `drive-read`, or `drive-manage`.
+For new agent onboarding in this workspace, request `workspace-max` in one consent interaction so the installed Harness command surface is available without repeated incremental grants.
 
-Broad Gmail and Drive scopes can be sensitive or restricted and may require Google verification or a security assessment. `drive.file` cannot search arbitrary Drive content. Gmail sharing/delegate administration and Calendar ownership transfer require an explicitly configured Workspace admin model. Never silently fall back to service accounts or domain-wide delegation.
+`workspace-max` requests full Gmail, Gmail settings, Calendar, and Drive access plus identity scopes. These scopes can be sensitive or restricted and may require Google verification or a security assessment. OAuth access does not authorize individual sends, deletes, shares, invitations, ownership changes, or other side effects; those retain their command-level preview and approval gates.
+
+Narrow profiles remain available only for explicitly requested constrained credentials. Never silently downgrade `workspace-max`, add unrelated Google services, use service accounts, or enable domain-wide delegation.

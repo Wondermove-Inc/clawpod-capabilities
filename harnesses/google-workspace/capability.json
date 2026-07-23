@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.1",
-  "description": "Execute typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with stable JSON and safety controls.",
+  "version": "0.2.2",
+  "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

@@ -35,6 +35,8 @@ def provider_error(e):
   if "quota" in e.reason.lower():return "QUOTA_EXCEEDED"
   return "PERMISSION_DENIED"
  return "PROVIDER_ERROR"
+def managed_browser_url(body):
+ return body.get("managedBrowserDevtoolsUrl") or os.environ.get("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL") or os.environ.get("OPENCLAW_BROWSER_CDP_URL")
 def local_auth(command,payload,out):
  provider=CredentialProvider(); action=command.split(".",1)[1]
  if action=="scopes.list": out["data"]={"profiles":SCOPES}; return out,0
@@ -42,7 +44,9 @@ def local_auth(command,payload,out):
   from .oauth_desktop import desktop_login,LoginError
   body=payload.get("body",{})
   try:
-   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False),managed_browser_devtools_url=body.get("managedBrowserDevtoolsUrl"),smoke_tests=body.get("smokeTests",[]))
+   browser_url=managed_browser_url(body)
+   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False),managed_browser_devtools_url=browser_url,smoke_tests=body.get("smokeTests",[]))
+   result["desktopLocal"]=True;result["browserMode"]="managed-devtools" if browser_url else "system-browser"
   except LoginError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
   out["data"]={"resource":result};return out,0
  if action=="accounts.list":

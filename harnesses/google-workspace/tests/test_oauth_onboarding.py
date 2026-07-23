@@ -1,8 +1,17 @@
 import io,json,stat,urllib.error
 from pathlib import Path
 import pytest
-from google_workspace_core.core import SCOPES
+from google_workspace_core.core import SCOPES,managed_browser_url
 from google_workspace_core.oauth_desktop import LoginError,_canonical_scopes,_devtools_endpoint,_open_devtools,_smoke
+
+
+def test_agent_desktop_browser_url_precedence(monkeypatch):
+ monkeypatch.setenv("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL","http://127.0.0.1:18800")
+ monkeypatch.setenv("OPENCLAW_BROWSER_CDP_URL","http://127.0.0.1:19900")
+ assert managed_browser_url({})=="http://127.0.0.1:18800"
+ assert managed_browser_url({"managedBrowserDevtoolsUrl":"http://127.0.0.1:17700"})=="http://127.0.0.1:17700"
+ monkeypatch.delenv("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL")
+ assert managed_browser_url({})=="http://127.0.0.1:19900"
 
 
 def test_managed_endpoint_is_literal_loopback_only():
