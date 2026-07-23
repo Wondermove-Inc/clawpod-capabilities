@@ -46,7 +46,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
@@ -69,7 +69,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.2.0"
+        "version": "0.2.1"
       }
     },
     {
@@ -209,7 +209,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
@@ -231,7 +231,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "67969fd74274b1491abb26f63b8668163d52cec052f0501f531bd161c0ecd559"
+          "sha256": "ec181a7b76e2e056218b2fa09340c94efa8788e5227c8d8fe55073d20fd202a3"
         }
       ]
     },

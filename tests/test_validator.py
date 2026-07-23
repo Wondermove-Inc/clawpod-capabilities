@@ -51,6 +51,20 @@ class ValidatorTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("unsupported safety class", result.stderr)
 
+    def test_harness_path_arguments_require_runtime_roles(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = Path(directory) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            manifest = copy / "harnesses" / "clawpod-capability-registry" / "harness.json"
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            target_root = next(arg for arg in data["commands"]["install"]["argMap"] if arg["arg"] == "targetRoot")
+            target_root.pop("pathRole")
+            manifest.write_text(json.dumps(data), encoding="utf-8")
+
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("path args require pathRole", result.stderr)
+
     def test_skill_frontmatter_name_must_match_registry_id(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
