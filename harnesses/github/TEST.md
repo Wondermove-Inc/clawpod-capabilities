@@ -1,6 +1,6 @@
 # GitHub capability final correction evidence
 
-Validated locally on 2026-07-23 without network, live GitHub credentials, publication, installation, push, or provider mutations.
+Validated locally on 2026-07-23 without live GitHub credential use, installation, or provider mutations. Publication lifecycle actions were performed separately only after explicit approval.
 
 ## Commands and results
 
@@ -25,4 +25,4 @@ GitHub packages declare Linux and macOS only because bounded output currently re
 
 Every currently paired Skill declares typed exact linked Harness metadata `{id, version}`. Linked versions are independently selected rather than inferred from the Skill version. The registry capability pair is version `0.2.0`; its Skill links the exact Registry Harness `0.2.0`. Tests cover differing Skill/Harness versions, explicit type selection, transactional paired install/update/validation, digest verification, partial rollback, missing-root blocking, and standalone compatibility.
 
-No real registry fetch, authentication, Gateway install/trust change, or backend mutation was attempted.
+No real registry fetch, authentication, Gateway install/trust change, or backend mutation was attempted during local validation. Canonical CI independently validates registry synchronization, package schemas, tests, and trusted-candidate generation before merge.
