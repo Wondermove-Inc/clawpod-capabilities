@@ -93,8 +93,12 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
     if safety["risk"] not in RISKS or not isinstance(safety["approvalRequired"], bool):
         raise SyncError(f"{path} safety contains invalid values")
     linked = value.get("linkedHarness")
-    if linked is not None and (not isinstance(linked, str) or not NAME.fullmatch(linked)):
-        raise SyncError(f"{path} linkedHarness must be a lowercase hyphenated id")
+    if linked is not None and (
+        not isinstance(linked, dict) or set(linked) != {"id", "version"}
+        or not isinstance(linked.get("id"), str) or not NAME.fullmatch(linked["id"])
+        or not isinstance(linked.get("version"), str) or not SEMVER.fullmatch(linked["version"])
+    ):
+        raise SyncError(f"{path} linkedHarness must contain valid id and version")
     return value
 
 
@@ -176,8 +180,8 @@ def generate_registry(root: Path) -> dict[str, object]:
     available = {(item["type"], item["id"], item["version"]) for item in capabilities}
     for item in capabilities:
         linked = item.get("linkedHarness")
-        if linked and ("harness", linked, item["version"]) not in available:
-            raise SyncError(f"linked harness {linked}@{item['version']} is missing for skill {item['id']}")
+        if linked and ("harness", linked["id"], linked["version"]) not in available:
+            raise SyncError(f"linked harness {linked['id']}@{linked['version']} is missing for skill {item['id']}")
     return {
         "$schema": "../schemas/registry.schema.json",
         "schemaVersion": 1,

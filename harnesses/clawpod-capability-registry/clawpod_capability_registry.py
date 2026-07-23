@@ -214,7 +214,9 @@ def linked_entries(entry: dict[str, Any]) -> list[dict[str, Any]]:
         return [entry]
     if entry.get("type") != "skill":
         raise CapabilityError("invalid_registry", "only skills may declare a linked harness")
-    return [entry, choose(linked, entry["version"], "harness")]
+    if not isinstance(linked, dict) or set(linked) != {"id", "version"}:
+        raise CapabilityError("invalid_registry", "linkedHarness must contain id and version")
+    return [entry, choose(linked["id"], linked["version"], "harness")]
 
 
 def install_unit(entry: dict[str, Any], skills_root: str | None, harnesses_root: str | None, *, replace: bool) -> dict[str, Any]:

@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, inspect, install, validate, update, and roll back AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [

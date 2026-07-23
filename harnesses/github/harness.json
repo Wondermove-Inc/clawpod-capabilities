@@ -32,6 +32,7 @@
         "auth.status"
       ],
       "safetyClasses": [
+        "secretUse",
         "readOnly"
       ],
       "inputSchema": {

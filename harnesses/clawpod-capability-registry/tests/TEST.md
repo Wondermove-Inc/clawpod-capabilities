@@ -1,48 +1,19 @@
-# Test Plan
+# ClawPod Capability Registry test evidence
 
-## Inventory
+Validated locally without network, installation into live roots, publication, or credentials.
 
-- `test_core.py`: registry selection, path safety, digest validation, installation, update, and rollback unit tests.
-- `test_full_e2e.py`: subprocess JSON behavior and real canonical-registry read test.
+## Coverage
 
-## Unit Coverage
+- Explicit type selection and same-id ambiguity rejection.
+- Standalone Skill and Harness install, validation, update, and rollback.
+- Typed linked Harness metadata with independent exact Harness version.
+- Linked Skill plus Harness transactional install and validation using explicit roots.
+- Digest mismatch and partial-failure rollback.
+- Blocked linked install when either root is absent.
+- Harness entrypoint executable mode and provenance secret-field exclusion.
+- Deterministic local list and not-found behavior without canonical-registry network access.
+- Repository synchronization enforces exact linked Harness existence for every currently paired Skill, including pairs whose Skill and Harness versions differ.
 
-- Reject non-canonical network URLs.
-- Select latest compatible registry entry and exact versions.
-- Reject unsafe relative paths and malformed file manifests.
-- Install declared files only after SHA-256 verification.
-- Reject duplicate installation.
-- Detect modified installed files.
-- Update with a local backup.
-- Roll back to the previous local version.
+## Commands
 
-## End-to-End Coverage
-
-- Invoke the entrypoint through subprocess and verify JSON success and error envelopes.
-- Fetch the real public canonical registry and verify its repository identity and schema.
-- Confirm the installed CLI Harness lifecycle can discover and run read-only commands.
-
-## Safety Checks
-
-- No credentials are required or stored.
-- Network access is restricted to the canonical raw GitHub path.
-- Package paths cannot escape the explicit target root.
-- Updates preserve a rollback backup before replacement.
-
-## Test Results
-
-```text
-test_core.py: 6 tests passed
-- canonical source restriction
-- version selection
-- path traversal rejection
-- install/validate/update/rollback workflow
-- modified-file detection
-- provenance secret-field check
-
-test_full_e2e.py: 2 tests passed
-- real canonical registry list through subprocess
-- structured JSON not-found failure through subprocess
-```
-
-Total: 8 tests, 100% passed. The end-to-end read test uses the real public GitHub backend. Write-path tests use temporary local directories and deterministic mocked package payloads.
+See the repository and GitHub Harness `TEST.md` evidence for the final focused/full suite commands and counts. All tests use temporary roots and mocked payloads; no capability is installed into live agent state.

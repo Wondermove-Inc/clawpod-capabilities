@@ -46,7 +46,8 @@ def validate(a):
  if not HOST.fullmatch(a.host):raise ValueError("host must be an exact DNS hostname")
  if a.expected_account and not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})",a.expected_account):raise ValueError("invalid expected account")
  if a.repo and not re.fullmatch(r"[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}",a.repo):raise ValueError("repo must be owner/name")
- if a.state not in {"open","closed","merged","all"}:raise ValueError("invalid state")
+ allowed_states={"issue.list":{"open","closed","all"},"pr.list":{"open","closed","merged","all"}}
+ if a.command in allowed_states and a.state not in allowed_states[a.command]:raise ValueError(f"invalid state for {a.command}")
  for value,name in ((a.number,"number"),(a.run_id,"run-id")):
   if value is not None and (not value.isdigit() or int(value)<1):raise ValueError(f"--{name} must be a positive integer")
  if a.endpoint and (len(a.endpoint)>512 or not ENDPOINT.fullmatch(a.endpoint) or ".." in a.endpoint):raise ValueError("API GET endpoint is outside the bounded allowlist")
@@ -65,8 +66,12 @@ def run_gh(argv,a,retryable=True):
  if not exe:raise RuntimeError("GitHub CLI `gh` is not installed")
  for i in range(1+(a.retries if retryable else 0)):
   with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
-   try:r=subprocess.run([exe]+argv,stdout=out,stderr=err,timeout=a.timeout_ms/1000,env={**os.environ,"GH_PROMPT_DISABLED":"1"},preexec_fn=_limit_filesize)
-   except subprocess.TimeoutExpired:raise RuntimeError("gh command timed out")
+   try:
+    r=subprocess.run([exe]+argv,stdout=out,stderr=err,timeout=a.timeout_ms/1000,env={**os.environ,"GH_PROMPT_DISABLED":"1"},preexec_fn=_limit_filesize)
+    if not retryable:a.mutation_backend_started=True
+   except subprocess.TimeoutExpired:
+    if not retryable:a.mutation_backend_started=True
+    raise RuntimeError("gh command timed out")
    out.seek(0);rawout=out.read(MAX_OUTPUT+1);err.seek(0);rawerr=err.read(MAX_OUTPUT+1)
   if len(rawout)>MAX_OUTPUT or len(rawerr)>MAX_OUTPUT:raise RuntimeError("gh output exceeded 262144-byte limit")
   text=redact(rawout.decode("utf-8","replace"));error=redact(rawerr.decode("utf-8","replace"))
@@ -83,7 +88,7 @@ def auth_status(a):
  if a.expected_account is not None and login!=a.expected_account:raise RuntimeError("authenticated account does not match --expected-account")
  return {"host":a.host,"login":login,"authenticated":True}
 def main():
- a=parser().parse_args();effects=[]
+ a=parser().parse_args();a.mutation_backend_started=False;effects=[]
  try:
   validate(a)
   if a.command in MUTATE:
@@ -97,6 +102,6 @@ def main():
   print(json.dumps(envelope(a.command,True,data,effects=effects),separators=(",",":")))
  except (ValueError,RuntimeError,OSError,json.JSONDecodeError) as e:
   mutation=getattr(a,"command","") in MUTATE
-  error={"code":"command_failed","message":redact(str(e)),"retryable":False if mutation else "rate limit" in str(e).lower(),"ambiguousCommit":mutation and getattr(a,"confirm",None)==getattr(a,"command",None)}
+  error={"code":"command_failed","message":redact(str(e)),"retryable":False if mutation else "rate limit" in str(e).lower(),"ambiguousCommit":bool(mutation and getattr(a,"mutation_backend_started",False))}
   print(json.dumps(envelope(getattr(a,"command","unknown"),False,error=error),separators=(",",":")));print(redact(str(e))[:4096],file=sys.stderr);raise SystemExit(2)
 if __name__=="__main__":main()

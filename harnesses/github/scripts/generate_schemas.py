@@ -16,7 +16,7 @@ contracts={'schemaVersion':1,'commands':{}}
 for c in commands:
  req=[{'run_id':'runId'}.get(x,x) for x in REQUIRED.get(c,[])]
  inp={'type':'object','required':req,'properties':props,'additionalProperties':False}
- safety=['readOnly']
+ safety=['secretUse','readOnly'] if c=='auth.status' else ['readOnly']
  if c in MUTATE:safety=['externalSideEffect','humanAccountAction']+(['destructive'] if c in DESTRUCTIVE else [])
  manifest['commands'][c]={'description':c.replace('.',' ')+' through GitHub CLI.','baseArgv':[c],'safetyClasses':safety,'inputSchema':inp,'outputSchema':out,'argMap':argmap}
  ci=json.loads(json.dumps(inp))

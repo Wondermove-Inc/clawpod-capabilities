@@ -157,8 +157,12 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
     seen.add(key)
 
     linked = entry.get("linkedHarness")
-    if linked is not None and (capability_type != "skill" or not isinstance(linked, str) or not NAME.fullmatch(linked)):
-        fail(f"{label}.linkedHarness is valid only on skills and must be a capability id")
+    if linked is not None and (
+        capability_type != "skill" or not isinstance(linked, dict) or set(linked) != {"id", "version"}
+        or not isinstance(linked.get("id"), str) or not NAME.fullmatch(linked["id"])
+        or not isinstance(linked.get("version"), str) or not SEMVER.fullmatch(linked["version"])
+    ):
+        fail(f"{label}.linkedHarness must contain a valid Harness id and version")
 
     digest = entry.get("sha256")
     if digest is not None and (not isinstance(digest, str) or not SHA256.fullmatch(digest)):
@@ -204,7 +208,8 @@ def main() -> None:
         validate_entry(entry, position, seen)
     available={(entry["type"],entry["id"],entry["version"]) for entry in capabilities}
     for entry in capabilities:
-        if entry.get("linkedHarness") and ("harness",entry["linkedHarness"],entry["version"]) not in available:
+        linked=entry.get("linkedHarness")
+        if linked and ("harness",linked["id"],linked["version"]) not in available:
             fail(f"linked harness missing for {entry['id']}@{entry['version']}")
 
     print(f"OK: validated {len(capabilities)} capability entries")

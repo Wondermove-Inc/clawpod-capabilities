@@ -29,6 +29,21 @@ class RegistrySyncTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("is synchronized", result.stdout)
 
+    def test_all_skill_packages_declare_exact_linked_harness_versions(self) -> None:
+        registry=json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
+        entries={(e["type"],e["id"],e["version"]) for e in registry["capabilities"]}
+        skills=[e for e in registry["capabilities"] if e["type"]=="skill"]
+        self.assertTrue(skills)
+        for skill in skills:
+            linked=skill.get("linkedHarness")
+            self.assertEqual(set(linked or {}),{"id","version"})
+            self.assertIn(("harness",linked["id"],linked["version"]),entries)
+        registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
+        self.assertEqual(registry_skill["version"],"0.2.0")
+        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.2.0")
+        atlassian=next(e for e in skills if e["id"]=="atlassian")
+        self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
+
     def test_changed_package_file_makes_registry_stale(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = self.copy_repository(directory)

@@ -49,8 +49,8 @@ class CoreTests(unittest.TestCase):
 
     def test_linked_unit_install_validate_and_partial_rollback(self) -> None:
         skill_payload=b"skill"; harness_manifest=json.dumps({"entrypoint":"run.py"}).encode(); run=b"#!/usr/bin/env python3\n"
-        skill={**fixture_entry("0.1.0",skill_payload),"linkedHarness":"example-skill"}
-        harness={"id":"example-skill","type":"harness","version":"0.1.0","description":"Example harness used by tests.","path":"harnesses/example-skill","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"write-safe","approvalRequired":True},"files":[{"path":"harness.json","sha256":hashlib.sha256(harness_manifest).hexdigest()},{"path":"run.py","sha256":hashlib.sha256(run).hexdigest()}]}
+        skill={**fixture_entry("0.1.0",skill_payload),"linkedHarness":{"id":"example-skill","version":"0.2.0"}}
+        harness={"id":"example-skill","type":"harness","version":"0.2.0","description":"Example harness used by tests.","path":"harnesses/example-skill","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"write-safe","approvalRequired":True},"files":[{"path":"harness.json","sha256":hashlib.sha256(harness_manifest).hexdigest()},{"path":"run.py","sha256":hashlib.sha256(run).hexdigest()}]}
         payloads={"SKILL.md":skill_payload,"harness.json":harness_manifest,"run.py":run}
         def fetch(url:str,**_:object)->bytes:return payloads[url.rsplit('/',1)[-1]]
         with tempfile.TemporaryDirectory() as sroot,tempfile.TemporaryDirectory() as hroot:
@@ -64,8 +64,8 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(shutil_path.read_bytes(),before)
 
     def test_linked_unit_requires_both_roots(self) -> None:
-        skill={**fixture_entry("0.1.0",b"x"),"linkedHarness":"example-skill"}
-        harness={**fixture_entry("0.1.0",b"x"),"type":"harness"}
+        skill={**fixture_entry("0.1.0",b"x"),"linkedHarness":{"id":"example-skill","version":"0.2.0"}}
+        harness={**fixture_entry("0.2.0",b"x"),"type":"harness"}
         with patch.object(cap,"entries",return_value=[skill,harness]):
             with self.assertRaisesRegex(cap.CapabilityError,"both --skills-root"):
                 cap.install_unit(skill,"/tmp/skills",None,replace=False)

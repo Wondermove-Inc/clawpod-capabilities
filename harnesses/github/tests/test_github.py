@@ -32,9 +32,10 @@ def test_auth_status_is_bounded_allowlisted_and_exact(env):
 def test_fake_login_commands_removed(env,cmd):assert run([cmd],env).returncode==2
 def test_manifest_safety_and_no_login():
  m=json.loads((ROOT/'harness.json').read_text());assert m['title']=='GitHub';assert not any(x.startswith('auth.login') for x in m['commands'])
+ assert m['commands']['auth.status']['safetyClasses']==['secretUse','readOnly']
  assert 'destructive' in m['commands']['release.upload']['safetyClasses'];assert m['commands']['issue.create']['safetyClasses']==['externalSideEffect','humanAccountAction']
 def test_mutation_preview_confirmation_and_ambiguity(env):
- base=['issue.create','--repo','o/r','--title','x'];assert run(base,env).returncode==2
+ base=['issue.create','--repo','o/r','--title','x'];pre=data(run(base,env));assert pre['error']['ambiguousCommit'] is False
  p=data(run(base+['--dry-run'],env));assert p['data']['preview']['idempotency'].startswith('best-effort')
  bad=data(run(base+['--confirm','issue.create'],{**env,'FAKE_GH_MODE':'fail'}));assert bad['error']['retryable'] is False and bad['error']['ambiguousCommit'] is True
 def test_release_preview_discloses_clobber(env,tmp_path):
@@ -45,5 +46,5 @@ def test_read_retry_timeout_redaction(env,tmp_path):
  e={**env,'FAKE_GH_MODE':'rate','FAKE_COUNT':str(tmp_path/'n')};assert run(['repo.view','--repo','o/r'],e).returncode==0
  assert run(['repo.view','--repo','o/r','--timeout-ms','100'],{**env,'FAKE_GH_MODE':'timeout'}).returncode==2
  r=run(['repo.view','--repo','o/r'],{**env,'FAKE_GH_MODE':'secret'});assert 'ghp_' not in r.stdout+r.stderr
-@pytest.mark.parametrize('args',[['repo.view'],['repo.view','--repo','bad'],['api.get','--endpoint','graphql'],['repo.view','--repo','o/r','--limit','101'],['auth.status','--host','https://github.com'],['issue.get','--repo','o/r','--number','0'],['issue.list','--repo','o/r','--state','bad']])
+@pytest.mark.parametrize('args',[['repo.view'],['repo.view','--repo','bad'],['api.get','--endpoint','graphql'],['repo.view','--repo','o/r','--limit','101'],['auth.status','--host','https://github.com'],['issue.get','--repo','o/r','--number','0'],['issue.list','--repo','o/r','--state','bad'],['issue.list','--repo','o/r','--state','merged']])
 def test_validation(env,args):assert run(args,env).returncode==2

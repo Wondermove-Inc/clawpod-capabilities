@@ -1,42 +1,36 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 CLI = ROOT / "clawpod_capability_registry.py"
+SPEC=importlib.util.spec_from_file_location("registry_e2e",CLI);assert SPEC and SPEC.loader
+cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
 
 
 class EndToEndTests(unittest.TestCase):
-    def test_real_canonical_registry_list(self) -> None:
-        result = subprocess.run(
-            [str(CLI), "list"],
-            text=True,
-            capture_output=True,
-            check=False,
-            timeout=30,
-        )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        payload = json.loads(result.stdout)
-        self.assertTrue(payload["ok"])
-        self.assertEqual(payload["command"], "list")
-        self.assertEqual(payload["data"]["repository"], "Wondermove-Inc/clawpod-capabilities")
-        self.assertIsInstance(payload["data"]["capabilities"], list)
+    def test_local_list_shape_without_network(self) -> None:
+        fixture={"id":"example","type":"skill","version":"1.0.0","description":"Local deterministic fixture.","path":"skills/example","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"read-only","approvalRequired":False},"files":[{"path":"SKILL.md","sha256":"0"*64}]}
+        with patch.object(cap,"entries",return_value=[fixture]):
+            args=cap.build_parser().parse_args(["list"])
+            result=cap.run(args)
+        self.assertEqual(result["repository"],"Wondermove-Inc/clawpod-capabilities")
+        self.assertEqual(result["capabilities"][0]["type"],"skill")
+        self.assertEqual(result["capabilities"][0]["fileCount"],1)
 
     def test_not_found_is_structured_json(self) -> None:
-        result = subprocess.run(
-            [str(CLI), "inspect", "--id", "capability-that-does-not-exist"],
-            text=True,
-            capture_output=True,
-            check=False,
-            timeout=30,
-        )
-        self.assertEqual(result.returncode, 1)
-        payload = json.loads(result.stdout)
-        self.assertFalse(payload["ok"])
-        self.assertEqual(payload["error"]["code"], "not_found")
+        # `inspect` reaches selection before any filesystem mutation; replace the
+        # canonical read with an empty deterministic registry to prohibit network.
+        with patch.object(cap,"entries",return_value=[]):
+            args=cap.build_parser().parse_args(["inspect","--id","missing","--type","skill"])
+            with self.assertRaises(cap.CapabilityError) as raised:
+                cap.run(args)
+        self.assertEqual(raised.exception.code,"not_found")
 
 
 if __name__ == "__main__":

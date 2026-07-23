@@ -9,7 +9,7 @@ Use the canonical `github` Harness. It wraps the real `gh` CLI. Do not construct
 
 ## Installation unit
 
-Treat this Skill and the same-named, same-title Harness (`github` / `GitHub`) as one transactional unit. Registry installation, update, and validation of this Skill must use explicit Skill and Harness roots, verify both manifests and digests, and roll back both on partial failure. The capability is incomplete if either artifact is absent or invalid.
+Treat this Skill and its exact linked Harness (`github` / `GitHub`, Harness version 0.1.0) as one transactional unit. Version 0.1 supports Linux and macOS only because bounded subprocess output uses POSIX resource limits; Windows is not declared supported. Registry installation, update, and validation of this Skill must use explicit Skill and Harness roots, verify both manifests and digests, and roll back both on partial failure. The capability is incomplete if either artifact is absent or invalid.
 
 ## Onboarding prerequisite
 

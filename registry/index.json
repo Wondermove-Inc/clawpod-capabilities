@@ -37,12 +37,16 @@
           "path": "references/oauth-onboarding.md",
           "sha256": "37baf06ed4bb27b40b762cb84f31512376e408abe23403e231b8551439585dd7"
         }
-      ]
+      ],
+      "linkedHarness": {
+        "id": "atlassian",
+        "version": "0.3.0"
+      }
     },
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
@@ -60,9 +64,13 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "555b786898dc08a6e06d8b1087231ec1ec6daec22bee889ae9c0a808e218bc81"
+          "sha256": "00f8acae3dfd9377e330812a9e6e52460527e5991594e7007dc87726e0de4442"
         }
-      ]
+      ],
+      "linkedHarness": {
+        "id": "clawpod-capability-registry",
+        "version": "0.2.0"
+      }
     },
     {
       "id": "github",
@@ -74,8 +82,7 @@
         "openclaw": ">=2026.4.0",
         "platforms": [
           "linux",
-          "macos",
-          "windows"
+          "macos"
         ]
       },
       "safety": {
@@ -85,7 +92,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "9dbe4f7edb5fcce0e423166079f043469d7e205cb52a3cb8cc7d34c11b10caa6"
+          "sha256": "ae57aa639b0bc991c1563f3ff182a69dcb8481ad878c068588f79a9f03f30272"
         },
         {
           "path": "references/onboarding.md",
@@ -96,7 +103,10 @@
           "sha256": "1c7798a68f80dd2b8487fcf4b01516d44c985fc01aaac427419881d79d9c3991"
         }
       ],
-      "linkedHarness": "github"
+      "linkedHarness": {
+        "id": "github",
+        "version": "0.1.0"
+      }
     },
     {
       "id": "google-workspace",
@@ -133,7 +143,11 @@
           "path": "references/scopes.md",
           "sha256": "670481eeff9b712eff89befbac118f937dc61808e77a6037cceea59fe29139ed"
         }
-      ]
+      ],
+      "linkedHarness": {
+        "id": "google-workspace",
+        "version": "0.2.2"
+      }
     },
     {
       "id": "atlassian",
@@ -195,7 +209,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
@@ -213,11 +227,11 @@
       "files": [
         {
           "path": "clawpod_capability_registry.py",
-          "sha256": "3384e4299aba8ed0d2c99b44bebe181cf60b2a6e4d8451c5bd69d10177ba3168"
+          "sha256": "0cb2ef851f911ebb21a62e041df87b833a211486ca3fbfc7e8d0c306cf6dd85d"
         },
         {
           "path": "harness.json",
-          "sha256": "648a0e7fa18b28a101861d5c4bbf54f935ab6544886e4acdfc2897167b284209"
+          "sha256": "67969fd74274b1491abb26f63b8668163d52cec052f0501f531bd161c0ecd559"
         }
       ]
     },
@@ -231,8 +245,7 @@
         "openclaw": ">=2026.4.0",
         "platforms": [
           "linux",
-          "macos",
-          "windows"
+          "macos"
         ]
       },
       "safety": {
@@ -246,7 +259,7 @@
         },
         {
           "path": "TEST.md",
-          "sha256": "ab7471d15e77f253117e129e6b9f0846266568486ebffb0f9c6bc75c730fed9c"
+          "sha256": "78499c11e310bea9ede95697a641129e144099682e06719eb14ad9e47b9b240b"
         },
         {
           "path": "command_contracts.json",
@@ -254,15 +267,15 @@
         },
         {
           "path": "github.py",
-          "sha256": "9250ccd83268bfbe0c482dc9c8c9367652fa71367295ad7251d28693b77b4d03"
+          "sha256": "fd521fdf1567bc2fc22cb2f4b453df544242add63243bf9459c6e81059988146"
         },
         {
           "path": "harness.json",
-          "sha256": "ac13b4ede3723ae38b6c761e2432acc5e8b99b8afcf5b017e5759b935f31adce"
+          "sha256": "96ef2e7b4b4567c22247f34bc2e4a0bd80f5dda639cd5d9a3b058fce56012faf"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "0e15e1ac6eea62fa0633cdf081d42266863cde2084437be52f20667335874bac"
+          "sha256": "964deb8b53740eba357b04392c3fecda4a717ad00b171d564b94b30561bb55ca"
         }
       ]
     },
