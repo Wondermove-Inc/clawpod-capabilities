@@ -3,7 +3,7 @@ name: atlassian
 description: Operate Jira Cloud and Confluence Cloud through typed, approval-gated commands. Use for issue, project, workflow, comment, page, space, search, or attachment work across configured Atlassian sites.
 ---
 
-# Atlassian Cloud
+# Atlassian
 
 Use the `atlassian` harness, never construct ad hoc REST calls.
 

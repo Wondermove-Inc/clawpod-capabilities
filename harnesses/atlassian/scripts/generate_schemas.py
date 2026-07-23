@@ -19,7 +19,7 @@ def argmap(required):
   out.append(x)
  return out
 contracts={'schemaVersion':1,'commands':{}}
-manifest={'schemaVersion':1,'kind':'openclaw.harness.v1','name':'atlassian','title':'Atlassian Cloud','description':'Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.','version':'0.2.0','entrypoint':'./atlassian.py','packageRoot':'.','execution':{'cwd':'.','timeoutMs':120000,'requiresJson':True},'whenToUse':['Operate Jira Cloud or Confluence Cloud through approved credentials'],'capabilities':['jira-cloud-v3','confluence-cloud-v2','confluence-cloud-v1-fallback','multi-site','safe-transfer'],'authModel':{'type':'basic-or-oauth-bearer','storesSecrets':True,'requiresHumanAccount':True},'commands':{}}
+manifest={'schemaVersion':1,'kind':'openclaw.harness.v1','name':'atlassian','title':'Atlassian','description':'Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.','version':'0.2.0','entrypoint':'./atlassian.py','packageRoot':'.','execution':{'cwd':'.','timeoutMs':120000,'requiresJson':True},'whenToUse':['Operate Jira Cloud or Confluence Cloud through approved credentials'],'capabilities':['jira-cloud-v3','confluence-cloud-v2','confluence-cloud-v1-fallback','multi-site','safe-transfer'],'authModel':{'type':'basic-or-oauth-bearer','storesSecrets':True,'requiresHumanAccount':True},'commands':{}}
 for name,(method,path,mutation,ids) in COMMANDS.items():
  if name=='auth.sites.list': required=[]
  elif name=='auth.oauth.login': required=['transferRoot','clientPath','outputPath','sitesOutputPath','siteAlias','resourceUrl','managedBrowserDevtoolsUrl']
