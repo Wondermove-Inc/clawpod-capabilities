@@ -8,6 +8,7 @@ args=sys.argv[1:];mode=os.getenv("FAKE_GH_MODE","")
 open(os.environ["ARGV_LOG"],"a").write(json.dumps(args)+"\\n")
 if mode=="timeout":time.sleep(2)
 if mode=="fail":print("backend failed",file=sys.stderr);sys.exit(3)
+if mode=="require-home" and not os.getenv("HOME"):print("HOME missing",file=sys.stderr);sys.exit(3)
 if mode=="rate":
  p=os.environ["FAKE_COUNT"];n=int(open(p).read()) if os.path.exists(p) else 0;open(p,"w").write(str(n+1))
  if n==0:print("rate limit",file=sys.stderr);sys.exit(75)
@@ -28,6 +29,10 @@ def test_auth_status_is_bounded_allowlisted_and_exact(env):
  argv=json.loads(Path(env['ARGV_LOG']).read_text().splitlines()[-1]);assert argv==['api','--hostname','github.com','--method','GET','user','--jq','{login:.login}']
  assert 'auth status' not in ' '.join(argv) and 'hosts' not in argv and 'token' not in r.stdout.lower()
  assert run(['auth.status','--expected-account','Octocat'],env).returncode==2
+def test_gateway_style_environment_recovers_system_home(env):
+ e={**env,'FAKE_GH_MODE':'require-home'};e.pop('HOME',None)
+ r=run(['auth.status','--host','github.com'],e)
+ assert r.returncode==0 and data(r)['data']['authenticated'] is True
 @pytest.mark.parametrize('cmd',['auth.login.start','auth.login.status','auth.login.cancel'])
 def test_fake_login_commands_removed(env,cmd):assert run([cmd],env).returncode==2
 def test_manifest_safety_and_no_login():

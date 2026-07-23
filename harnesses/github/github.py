@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Guarded JSON wrapper around the real GitHub CLI (`gh`)."""
 from __future__ import annotations
-import argparse, hashlib, json, os, re, resource, shutil, subprocess, sys, tempfile, time, uuid
+import argparse, hashlib, json, os, pwd, re, resource, shutil, subprocess, sys, tempfile, time, uuid
 from pathlib import Path
 
 MAX_OUTPUT=262144; MAX_TITLE=256; MAX_BODY=65536; MAX_UPLOAD=100*1024*1024
@@ -61,13 +61,21 @@ def validate(a):
   if f.stat().st_size>MAX_UPLOAD:raise ValueError("upload exceeds 100 MiB")
 def format_argv(t,a):return [x.format(**vars(a)) for x in t]
 def _limit_filesize():resource.setrlimit(resource.RLIMIT_FSIZE,(MAX_OUTPUT+1,MAX_OUTPUT+1))
+def _gh_env():
+ env={**os.environ,"GH_PROMPT_DISABLED":"1"}
+ if not env.get("HOME"):
+  try:home=pwd.getpwuid(os.geteuid()).pw_dir
+  except KeyError as e:raise RuntimeError("cannot resolve the system account home for GitHub CLI authentication") from e
+  if not home or not os.path.isabs(home):raise RuntimeError("system account home is invalid")
+  env["HOME"]=home
+ return env
 def run_gh(argv,a,retryable=True):
  exe=shutil.which("gh")
  if not exe:raise RuntimeError("GitHub CLI `gh` is not installed")
  for i in range(1+(a.retries if retryable else 0)):
   with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
    try:
-    r=subprocess.run([exe]+argv,stdout=out,stderr=err,timeout=a.timeout_ms/1000,env={**os.environ,"GH_PROMPT_DISABLED":"1"},preexec_fn=_limit_filesize)
+    r=subprocess.run([exe]+argv,stdout=out,stderr=err,timeout=a.timeout_ms/1000,env=_gh_env(),preexec_fn=_limit_filesize)
     if not retryable:a.mutation_backend_started=True
    except subprocess.TimeoutExpired:
     if not retryable:a.mutation_backend_started=True

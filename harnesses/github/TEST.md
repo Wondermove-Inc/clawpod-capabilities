@@ -4,8 +4,8 @@ Validated locally on 2026-07-23 without live GitHub credential use, installation
 
 ## Commands and results
 
-- `pytest -q harnesses/github/tests harnesses/clawpod-capability-registry/tests tests/test_registry_sync.py` → `45 passed in 1.54s`
-- `pytest -q` → `210 passed, 151 subtests passed in 10.30s`
+- `pytest -q harnesses/github/tests harnesses/clawpod-capability-registry/tests tests/test_registry_sync.py` → `46 passed in 1.63s`
+- `pytest -q` → `211 passed, 151 subtests passed in 10.51s`
 - `python3 scripts/sync_registry.py --check` → synchronized
 - `python3 scripts/validate.py` → `OK: validated 8 capability entries`
 - `python3 -m py_compile harnesses/github/github.py harnesses/github/scripts/generate_schemas.py harnesses/clawpod-capability-registry/clawpod_capability_registry.py scripts/sync_registry.py scripts/validate.py` → passed
