@@ -4,11 +4,13 @@ Each installed agent must issue and store its own Google OAuth credential on tha
 
 ## User-facing preflight
 
-When the selected account alias has no usable credential, do not begin silently and do not expose an authorization URL. First tell the user:
+Immediately after installation and validation, if the selected account alias has no usable credential, do not call the capability ready, do not begin silently, and do not expose an authorization URL. Give the same notice before first credentialed use if onboarding was deferred. First tell the user:
 
 - Google authorization is required before the requested Workspace work can continue.
 - The intended account alias and that the user chooses or confirms the Google account in the managed browser.
 - `workspace-max` grants Gmail and Gmail Settings, Calendar, Drive, and identity access so the full Harness command surface is available without repeated consent.
+- What the user must do: sign in, choose or confirm the Google account, review the consent screen, and approve the displayed permissions.
+- What the agent will do: open the managed browser, receive and validate the callback, store the credential securely, and run sanitized account and service verification.
 - The agent's managed browser will open for Google sign-in and consent.
 - The credential is scoped, revocable, and stored only in that agent's protected local files.
 - Broad OAuth scopes do not bypass later preview and approval for sends, shares, deletes, invitations, ownership changes, or other side effects.
