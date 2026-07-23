@@ -7,9 +7,9 @@ description: Operate Gmail, Google Calendar, Google Drive, and broad one-consent
 
 Use the `google-workspace` Harness for Gmail v1, Calendar v3, Drive v3, and OAuth account work.
 
-## First-use authorization gate
+## Post-install and first-use authorization gate
 
-Before any credentialed operation, inspect whether the selected account alias already has a usable local credential. If not, stop and tell the user that Google login and permission grant are required; identify the intended account alias; explain that `workspace-max` requests Gmail and Gmail Settings, Calendar, Drive, and identity access; state that the agent's managed browser will open and that the resulting credential stays in that agent's protected local storage. Explain that these broad scopes do not authorize later sends, shares, deletes, invitations, or other side effects. Ask whether to start authorization now. Do not invoke `auth.login`, open the browser, or create credential state until the user explicitly agrees in the current conversation. Read `references/onboarding.md` and `references/scopes.md` before consent.
+Immediately after this capability is installed and validated, inspect whether the selected account alias already has a usable local credential. If not, do not report it as ready for use. Tell the user it is installed but not yet connected; explain the planned Google Workspace onboarding, the intended account alias, that `workspace-max` requests Gmail and Gmail Settings, Calendar, Drive, and identity access, what the user must do, what the agent will do, that the managed browser will open, protected local credential storage, and revocation. Explain that these broad scopes do not authorize later sends, shares, deletes, invitations, or other side effects. Ask whether to start authorization now. Apply the same gate before later credentialed use if onboarding is deferred. Do not invoke `auth.login`, open the browser, or create credential state until the user explicitly agrees in the current conversation. Read `references/onboarding.md` and `references/scopes.md` before consent.
 
 1. Identify the exact account alias. Never infer one when multiple aliases exist.
 2. For a newly installed agent whose user approved onboarding, issue that agent's own credential on its managed desktop with `auth.login` and `workspace-max`.
