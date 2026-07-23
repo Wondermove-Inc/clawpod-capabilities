@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "google-workspace",
   "title": "Google Workspace",
-  "description": "Typed Gmail v1, Calendar v3, Drive v3, and OAuth operations with previews, confirmations, retries, and structured evidence.",
-  "version": "0.2.1",
+  "description": "Typed Gmail v1, Calendar v3, Drive v3, and agent-desktop OAuth operations with previews, confirmations, retries, and structured evidence.",
+  "version": "0.2.2",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [

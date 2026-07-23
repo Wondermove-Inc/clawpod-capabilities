@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
-  "description": "Route approved Gmail, Calendar, Drive, and OAuth work through the typed Google Workspace harness.",
+  "version": "0.2.0",
+  "description": "Route Gmail, Calendar, Drive, and agent-desktop OAuth onboarding through the typed Google Workspace Harness.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
