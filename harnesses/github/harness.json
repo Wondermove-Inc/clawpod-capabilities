@@ -4,7 +4,7 @@
   "name": "github",
   "title": "GitHub",
   "description": "Guarded typed GitHub operations through the real gh CLI with stable JSON and bounded execution.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./github.py",
   "packageRoot": ".",
   "execution": {

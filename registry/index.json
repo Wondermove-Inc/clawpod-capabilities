@@ -75,7 +75,7 @@
     {
       "id": "github",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Route GitHub work through the canonical guarded GitHub CLI Harness and onboarding contract.",
       "path": "skills/github",
       "compatibility": {
@@ -92,7 +92,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ae57aa639b0bc991c1563f3ff182a69dcb8481ad878c068588f79a9f03f30272"
+          "sha256": "b030d16efda8a127c8a00f822c409aa3f9af1b7d20f38c4e2206282978938714"
         },
         {
           "path": "references/onboarding.md",
@@ -105,7 +105,7 @@
       ],
       "linkedHarness": {
         "id": "github",
-        "version": "0.1.0"
+        "version": "0.1.1"
       }
     },
     {
@@ -238,7 +238,7 @@
     {
       "id": "github",
       "type": "harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Execute guarded GitHub operations through the real gh CLI with stable JSON and bounded retries.",
       "path": "harnesses/github",
       "compatibility": {
@@ -259,7 +259,7 @@
         },
         {
           "path": "TEST.md",
-          "sha256": "9c91a04e166ee8d3f253637e164734d075fdb65ed3aa8782e7bb0420293a2ae8"
+          "sha256": "b8d83b2beb101132e32eddeea3c1a1f3443962fa4042f45ebd3fa36d90fb4889"
         },
         {
           "path": "command_contracts.json",
@@ -267,11 +267,11 @@
         },
         {
           "path": "github.py",
-          "sha256": "fd521fdf1567bc2fc22cb2f4b453df544242add63243bf9459c6e81059988146"
+          "sha256": "309b0227479a044c39b6c7d263a6997313fff87e5975fbe11b3aec832c4c2edd"
         },
         {
           "path": "harness.json",
-          "sha256": "96ef2e7b4b4567c22247f34bc2e4a0bd80f5dda639cd5d9a3b058fce56012faf"
+          "sha256": "39ca886f894ba85b5b82cf0df9bd858be16ff9702a74e5c29f9b02721b47c57b"
         },
         {
           "path": "scripts/generate_schemas.py",
