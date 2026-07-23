@@ -1,0 +1,2851 @@
+{
+  "schemaVersion": 1,
+  "commands": {
+    "auth.status": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "repo.view": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.list": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.get": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.list": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.view": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.checks": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "run.list": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "run.view": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "runId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "run.logs": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "runId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "release.list": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "release.view": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "repo",
+        "tag"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "api.get": {
+      "backend": "gh",
+      "mutation": false,
+      "required": [
+        "endpoint"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "endpoint"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.create": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "title"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "title"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.comment": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number",
+        "body"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "body"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.close": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue.reopen": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.create": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "title",
+        "head",
+        "base"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "title",
+          "head",
+          "base"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.comment": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number",
+        "body"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "body"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.review": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number",
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number",
+          "review"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pr.merge": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "number"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "run.rerun": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "runId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "run.cancel": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "runId"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "runId"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "release.create": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "tag",
+        "title"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag",
+          "title"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "release.upload": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "tag",
+        "file"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag",
+          "file"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
