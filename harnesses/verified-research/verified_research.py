@@ -37,8 +37,10 @@ def root_path(root,output=False):
  if output and mode & 0o022: raise VError('INVALID_PATH','output root must not be group/world writable')
  return rp
 def safe_path(root,rel,must_exist=False,output=False):
- p=root_path(root,output); q=Path(rel or '')
- if not rel or q.is_absolute() or '..' in q.parts: raise VError('INVALID_PATH','relative non-traversing path required')
+ p=root_path(root,output)
+ if not isinstance(rel,str) or not rel or len(rel)>500 or '\x00' in rel: raise VError('INVALID_PATH','bounded nonempty relative child name required')
+ q=Path(rel)
+ if q.is_absolute() or '..' in q.parts: raise VError('INVALID_PATH','relative non-traversing path required')
  cur=p
  for part in q.parts:
   cur=cur/part
@@ -400,7 +402,10 @@ def output(command,data=None,error=None):
 def write_json(root,rel,v,overwrite=False): atomic(safe_path(root,rel,output=True),(json.dumps(v,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode(),overwrite)
 def cmd(a):
  c=a.command; overwrite=getattr(a,"overwrite",False)
+ def require_pair(left,right,label):
+  if bool(left)!=bool(right): raise VError('MALFORMED_INPUT',label+' requires both root and relative child name')
  if c=='source.fetch':
+  require_pair(getattr(a,'output_root',None),getattr(a,'snapshot',None),'snapshot output')
   r,raw=fetch(a.url,a.timeout,a.max_bytes)
   if a.snapshot:
    snap=a.snapshot+'.bytes'; bp=safe_path(a.output_root,snap,output=True); jp=safe_path(a.output_root,a.snapshot,output=True)
@@ -408,6 +413,7 @@ def cmd(a):
    atomic(bp,raw,overwrite); r['snapshotPath']=snap; write_json(a.output_root,a.snapshot,r,overwrite)
   return {'source':r}
  if c=='source.batch':
+  require_pair(getattr(a,'output_root',None),getattr(a,'output',None),'batch output')
   m=load(a.input_root,a.manifest); urls=m.get('urls') if isinstance(m,dict) else None
   if not isinstance(urls,list) or not urls or len(urls)>MAX_ITEMS or any(not isinstance(x,str) or len(x)>4000 for x in urls): raise VError('MALFORMED_INPUT','urls must be a nonempty bounded string array')
   records=[]; raws=[]; failures=[]; seen={}
@@ -433,6 +439,7 @@ def cmd(a):
   if failures: raise Partial(d)
   return d
  if c=='source.import':
+  require_pair(getattr(a,'output_root',None),getattr(a,'output',None),'import output')
   p=safe_path(a.input_root,a.capture,True); raw=read_bounded(p,a.max_bytes); url=syntax_url(a.source_url,False) if a.source_url else None; r,_=source_record(url,url,a.media_type,raw,{})
   if a.output:
    snap=a.output+'.bytes'; bp=safe_path(a.output_root,snap,output=True); jp=safe_path(a.output_root,a.output,output=True)
@@ -440,6 +447,7 @@ def cmd(a):
    atomic(bp,raw,overwrite); r['snapshotPath']=snap; write_json(a.output_root,a.output,r,overwrite)
   return {'source':r}
  if c=='bundle.build':
+  if not getattr(a,'output_root',None) or not getattr(a,'output',None): raise VError('MALFORMED_INPUT','bundle output requires both root and relative child name')
   src=load(a.input_root,a.sources); cl=load(a.input_root,a.claims); sources=src.get('sources',src if isinstance(src,list) else []); claims=cl.get('claims',cl if isinstance(cl,list) else [])
   core={'schemaVersion':1,'sources':sources,'claims':claims}; probe=dict(core); probe['manifestSha256']=digest(stable(core).encode()); issues,warnings=validate_bundle(probe,a.input_root,None)
   unresolved=[x for x in issues if x.get('code')=='UNRESOLVED_CLAIM']; fatal=[x for x in issues if x.get('code')!='UNRESOLVED_CLAIM']; warnings += unresolved

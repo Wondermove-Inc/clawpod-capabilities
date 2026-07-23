@@ -1,6 +1,6 @@
 # Harness operations
 
-The Harness consumes bounded JSON through explicit input roots and writes only beneath explicit, already-existing private output roots. Every path is relative and symlink-free. Existing outputs fail closed unless `overwrite` is explicitly true.
+The Harness consumes bounded JSON through explicit input roots and writes only beneath explicit, already-existing private output roots. In the Gateway contract only `inputRoot` and `outputRoot` are path arguments. `snapshot`, `manifest`, `output`, `capture`, `sources`, `claims`, and `bundle` are bounded relative-name strings, preventing Gateway path normalization from turning them into rejected absolute paths. Root/name pairs must be complete, child names must remain beneath their root and symlink-free, and existing outputs fail closed unless `overwrite` is explicitly true.
 
 - `source.fetch`: public `url`, optionally `outputRoot` plus `snapshot`; the latter stores an exact `<snapshot>.bytes` file and a JSON source record.
 - `source.batch`: `inputRoot` plus a nonempty bounded URL `manifest`; when output is requested, every successful item receives a deterministic exact-byte snapshot path. Any failed item returns `PARTIAL_FAILURE` while retaining successes and listing exactly which snapshots were written.

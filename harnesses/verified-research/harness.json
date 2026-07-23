@@ -117,9 +117,8 @@
           "arg": "snapshot",
           "type": "option",
           "flag": "--snapshot",
-          "valueType": "path",
-          "optional": true,
-          "pathRole": "output"
+          "valueType": "string",
+          "optional": true
         },
         {
           "arg": "timeout",
@@ -236,9 +235,8 @@
           "arg": "manifest",
           "type": "option",
           "flag": "--manifest",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "outputRoot",
@@ -252,9 +250,8 @@
           "arg": "output",
           "type": "option",
           "flag": "--output",
-          "valueType": "path",
-          "optional": true,
-          "pathRole": "output"
+          "valueType": "string",
+          "optional": true
         },
         {
           "arg": "timeout",
@@ -374,9 +371,8 @@
           "arg": "capture",
           "type": "option",
           "flag": "--capture",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "sourceUrl",
@@ -404,9 +400,8 @@
           "arg": "output",
           "type": "option",
           "flag": "--output",
-          "valueType": "path",
-          "optional": true,
-          "pathRole": "output"
+          "valueType": "string",
+          "optional": true
         },
         {
           "arg": "maxBytes",
@@ -516,17 +511,15 @@
           "arg": "sources",
           "type": "option",
           "flag": "--sources",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "claims",
           "type": "option",
           "flag": "--claims",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "outputRoot",
@@ -540,9 +533,8 @@
           "arg": "output",
           "type": "option",
           "flag": "--output",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "output"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "overwrite",
@@ -633,9 +625,8 @@
           "arg": "bundle",
           "type": "option",
           "flag": "--bundle",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         },
         {
           "arg": "asOf",
@@ -723,9 +714,8 @@
           "arg": "bundle",
           "type": "option",
           "flag": "--bundle",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
+          "valueType": "string",
+          "optional": false
         }
       ],
       "retryPolicy": {

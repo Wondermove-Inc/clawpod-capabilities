@@ -7,6 +7,12 @@
       "required": [
         "url"
       ],
+      "rootPathArgs": [
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "snapshot"
+      ],
       "inputSchema": {
         "type": "object",
         "required": [
@@ -77,6 +83,14 @@
       "required": [
         "inputRoot",
         "manifest"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "manifest",
+        "output"
       ],
       "inputSchema": {
         "type": "object",
@@ -152,6 +166,14 @@
       "required": [
         "inputRoot",
         "capture"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "capture",
+        "output"
       ],
       "inputSchema": {
         "type": "object",
@@ -234,6 +256,15 @@
         "outputRoot",
         "output"
       ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "claims",
+        "output",
+        "sources"
+      ],
       "inputSchema": {
         "type": "object",
         "required": [
@@ -309,6 +340,12 @@
         "inputRoot",
         "bundle"
       ],
+      "rootPathArgs": [
+        "inputRoot"
+      ],
+      "relativeChildArgs": [
+        "bundle"
+      ],
       "inputSchema": {
         "type": "object",
         "required": [
@@ -370,6 +407,12 @@
       "mutation": false,
       "required": [
         "inputRoot",
+        "bundle"
+      ],
+      "rootPathArgs": [
+        "inputRoot"
+      ],
+      "relativeChildArgs": [
         "bundle"
       ],
       "inputSchema": {

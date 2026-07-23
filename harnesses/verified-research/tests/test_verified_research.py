@@ -100,10 +100,17 @@ def test_no_secret_in_http_failure(server):
  assert 'token' not in e.value.message and 'secret' not in e.value.message
 
 def test_command_schema_path_roles_and_simple_types():
- h=json.loads((P.parent/'harness.json').read_text())
- for c in h['commands'].values():
+ h=json.loads((P.parent/'harness.json').read_text()); contracts=json.loads((P.parent/'command_contracts.json').read_text())['commands']; child_names={'snapshot','manifest','output','capture','sources','claims','bundle'}
+ for name,c in h['commands'].items():
   for a in c['argMap']:
-   if a['valueType']=='path': assert a['pathRole'] in ('input','output')
+   if a['arg'] in ('inputRoot','outputRoot'):
+    assert a['valueType']=='path' and a['pathRole'] in ('input','output')
+   elif a['arg'] in child_names:
+    assert a['valueType']=='string' and 'pathRole' not in a
+   else:
+    assert a['valueType']!='path' and 'pathRole' not in a
+  assert contracts[name]['rootPathArgs']==sorted(a['arg'] for a in c['argMap'] if a['arg'] in ('inputRoot','outputRoot'))
+  assert contracts[name]['relativeChildArgs']==sorted(a['arg'] for a in c['argMap'] if a['arg'] in child_names)
   assert all(v.get('type') in ('string','integer','boolean','number') for v in c['inputSchema']['properties'].values())
 
 def test_snapshot_exact_bytes_and_tamper(tmp_path,server):
@@ -227,3 +234,31 @@ def test_pdf_snapshot_reextraction_unavailable_is_warning(monkeypatch,tmp_path):
  s={'id':'p','text':'','textSha256':vr.digest(b''),'rawSha256':vr.digest(raw),'rawBytes':len(raw),'mediaType':'application/pdf','snapshotPath':'p.bytes','finalUrl':'https://example.com/p.pdf','metadataCandidates':[]}
  b={'schemaVersion':1,'sources':[s],'claims':[]}; b['manifestSha256']=vr.digest(vr.stable(b).encode()); issues,warnings=vr.validate_bundle(b,tmp_path)
  assert not issues and 'TEXT_REEXTRACTION_UNAVAILABLE' in {x['code'] for x in warnings}
+
+def run_cli(args,env=None):
+ return subprocess.run([sys.executable,str(P),*args],text=True,capture_output=True,env=env)
+
+def test_cli_absolute_roots_nested_relative_children_and_fetch_without_snapshot(tmp_path,server):
+ nested=tmp_path/'nested'; nested.mkdir(); (nested/'capture.txt').write_text('Alpha\nBeta'); (nested/'manifest.json').write_text(json.dumps({'urls':[server+'/html']}))
+ env=dict(os.environ)
+ fetched=run_cli(['source.fetch','--url',server+'/html'],env); assert fetched.returncode==0 and json.loads(fetched.stdout)['data']['source']['text']=='A B\nC'
+ batch=run_cli(['source.batch','--input-root',str(tmp_path.resolve()),'--manifest','nested/manifest.json','--output-root',str(tmp_path.resolve()),'--output','nested/results/batch.json'],env); assert batch.returncode==0
+ batch_data=json.loads((nested/'results/batch.json').read_text()); assert batch_data['sources'][0]['snapshotPath'].startswith('nested/results/batch.json.snapshots/')
+ imported=run_cli(['source.import','--input-root',str(tmp_path.resolve()),'--capture','nested/capture.txt','--output-root',str(tmp_path.resolve()),'--output','nested/records/source.json'],env); assert imported.returncode==0
+ source=json.loads((nested/'records/source.json').read_text()); (nested/'sources.json').write_text(json.dumps({'sources':[source]})); (nested/'claims.json').write_text(json.dumps({'claims':[{'id':'c','text':'Alpha exists','status':'supported','evidence':[{'sourceId':source['id'],'startLine':1,'endLine':1,'quote':'Alpha'}]}]}))
+ built=run_cli(['bundle.build','--input-root',str(tmp_path.resolve()),'--sources','nested/sources.json','--claims','nested/claims.json','--output-root',str(tmp_path.resolve()),'--output','nested/bundles/evidence.json'],env); assert built.returncode==0
+ validated=run_cli(['bundle.validate','--input-root',str(tmp_path.resolve()),'--bundle','nested/bundles/evidence.json'],env); assert validated.returncode==0 and json.loads(validated.stdout)['data']['valid']
+ inspected=run_cli(['bundle.inspect','--input-root',str(tmp_path.resolve()),'--bundle','nested/bundles/evidence.json'],env); assert inspected.returncode==0 and json.loads(inspected.stdout)['data']['claimCount']==1
+
+def test_cli_incomplete_output_root_name_pairs_fail(tmp_path):
+ nested=tmp_path/'nested'; nested.mkdir(); (nested/'capture').write_text('x'); (nested/'manifest.json').write_text(json.dumps({'urls':['https://example.com']}))
+ cases=[
+  ['source.fetch','--url','https://example.com','--output-root',str(tmp_path)],
+  ['source.fetch','--url','https://example.com','--snapshot','nested/x.json'],
+  ['source.batch','--input-root',str(tmp_path),'--manifest','nested/manifest.json','--output-root',str(tmp_path)],
+  ['source.import','--input-root',str(tmp_path),'--capture','nested/capture','--output','nested/x.json'],
+  ['source.import','--input-root',str(tmp_path),'--capture','nested/capture','--output-root',str(tmp_path)],
+ ]
+ for args in cases:
+  r=run_cli(args); assert r.returncode==2, (args,r.stdout,r.stderr)
+  assert json.loads(r.stdout)['error']['code']=='MALFORMED_INPUT'
