@@ -396,7 +396,7 @@ def render_markdown(bundle,warnings):
  return data
 
 def output(command,data=None,error=None):
- r={'ok':error is None,'schemaVersion':1,'command':command,'requestId':str(uuid.uuid4()),'data':data,'effects':[],'provenance':{'tool':'verified-research','version':'0.1.1'}}
+ r={'ok':error is None,'schemaVersion':1,'command':command,'requestId':str(uuid.uuid4()),'data':data,'effects':[],'provenance':{'tool':'verified-research','version':'0.1.2'}}
  if error: r['error']={'code':error.code,'message':error.message,'retryable':error.retryable}
  return r
 def write_json(root,rel,v,overwrite=False): atomic(safe_path(root,rel,output=True),(json.dumps(v,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode(),overwrite)

@@ -152,7 +152,7 @@
     {
       "id": "verified-research",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Apply source hierarchy, cross-checking, contradiction handling, confidence, and no-fabrication rules to evidence-backed research.",
       "path": "skills/verified-research",
       "compatibility": {
@@ -170,7 +170,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "75688fed9e239135544762450234282adaee91358e105d496a556cb58aee3c8f"
+          "sha256": "f1d941d668a158a29f86e4f5fedf84b364f70d8dab06cee575584a20e84328fb"
         },
         {
           "path": "references/harness-operations.md",
@@ -183,7 +183,7 @@
       ],
       "linkedHarness": {
         "id": "verified-research",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -404,7 +404,7 @@
     {
       "id": "verified-research",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
       "path": "harnesses/verified-research",
       "compatibility": {
@@ -430,19 +430,19 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "eec7b66c3ef07e18b9b4767688bdfcb43fdc0942e5602b94dc05013bd0542ca4"
+          "sha256": "a6a1ec9ee7e50576985477513762db77e819a7d33728662d15172ece6002a879"
         },
         {
           "path": "harness.json",
-          "sha256": "ac45e4e8025663bfb38d8e92e4b3d2c832f9bb33768360f0681b22ebe9744074"
+          "sha256": "1fd0b319410628cf948e1215587d66a108a7798666ef48050d2cdbac68c734eb"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "b31bc55e6e80328d566a205447b79df3684689690b4e1f4033c74eb1b840a37f"
+          "sha256": "5bc449e332cc878cdacaf589982733eb7135ca286c35d73597f073d41dee5d2a"
         },
         {
           "path": "verified_research.py",
-          "sha256": "c1bbbb9a2bc304e0a0bfcfa3cb9ff60f2e7e7fb33eb0e5aed7898c6ce2392d9b"
+          "sha256": "35033d0eeca82f1eef307a9c7eed35d63f9d5d59bee7fb84169c5f9cdb4bd1d5"
         }
       ]
     }
