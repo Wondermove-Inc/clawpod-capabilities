@@ -5,7 +5,7 @@
     {
       "id": "atlassian",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Route approved Jira and Confluence work through the typed Atlassian harness.",
       "path": "skills/atlassian",
       "compatibility": {
@@ -23,7 +23,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f2591688abec36a9f3f3c3defd8c9341fd788bcabf142b28021952e8e0c52154"
+          "sha256": "f4a9117fa219f2d03fd1f16dd7c9417dd7dc9a4035e88742ac096af6baf0b823"
         },
         {
           "path": "references/commands.md",
@@ -35,7 +35,7 @@
         },
         {
           "path": "references/oauth-onboarding.md",
-          "sha256": "c722e03c1e725278e63fee27144182c06fb23dfe3a1323d8ae1c99d2e46c08f1"
+          "sha256": "afb5348c509dfb41ad480db3e4fac42062f4970cab38fb7c632449fdaba7152a"
         }
       ]
     },
@@ -60,14 +60,14 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "78444b9dea00b4a87d1a5178a14b3bf9ed93e26de83dea335fdb6cbb14dcf060"
+          "sha256": "555b786898dc08a6e06d8b1087231ec1ec6daec22bee889ae9c0a808e218bc81"
         }
       ]
     },
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Route Gmail, Calendar, Drive, and agent-desktop OAuth onboarding through the typed Google Workspace Harness.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -85,11 +85,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ea352aa0eab6e9a648628c00f14ca79c120f1a5ac4a2f9ec4c00d3ea7a97b7b7"
+          "sha256": "a6b2231b3f1bf199ec447f776ce74536ce8cafbfeaab993f2f0a06d1b678b96f"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "08e1db051be115bb4f8d159f31a2deecf867fe17b4b776584c21dd7790414f93"
+          "sha256": "7aec23b5a01c3cee3308cb51975fb38ad87e22684659b7a5fbf5bd36dc06b5f7"
         },
         {
           "path": "references/operations.md",
@@ -97,7 +97,7 @@
         },
         {
           "path": "references/scopes.md",
-          "sha256": "ba1e8e61b00c4afb71584b966b012837cfe3ebd4b782d0b410d8b6a379b1bde5"
+          "sha256": "670481eeff9b712eff89befbac118f937dc61808e77a6037cceea59fe29139ed"
         }
       ]
     },
