@@ -4,7 +4,7 @@
   "name": "atlassian",
   "title": "Atlassian Cloud",
   "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
   "execution": {
@@ -24,7 +24,7 @@
   ],
   "authModel": {
     "type": "basic-or-oauth-bearer",
-    "storesSecrets": false,
+    "storesSecrets": true,
     "requiresHumanAccount": true
   },
   "commands": {
@@ -81,6 +81,30 @@
           },
           "transferRoot": {
             "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
           },
           "maxUploadBytes": {
             "type": "integer"
@@ -246,6 +270,1143 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxUploadBytes",
+          "type": "option",
+          "flag": "--max-upload-bytes",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "batch",
+          "type": "option",
+          "flag": "--batch",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.oauth.login": {
+      "description": "auth.oauth.login through Atlassian Cloud REST.",
+      "baseArgv": [
+        "auth.oauth.login"
+      ],
+      "safetyClasses": [
+        "credentialRelated",
+        "humanAccountAction",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "transferRoot",
+          "clientPath",
+          "outputPath",
+          "sitesOutputPath",
+          "siteAlias",
+          "resourceUrl",
+          "managedBrowserDevtoolsUrl"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "site",
+          "type": "option",
+          "flag": "--site",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sitesFile",
+          "type": "option",
+          "flag": "--sites-file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "issueIdOrKey",
+          "type": "option",
+          "flag": "--issue-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "commentId",
+          "type": "option",
+          "flag": "--comment-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectIdOrKey",
+          "type": "option",
+          "flag": "--project-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageId",
+          "type": "option",
+          "flag": "--page-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "spaceId",
+          "type": "option",
+          "flag": "--space-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxUploadBytes",
+          "type": "option",
+          "flag": "--max-upload-bytes",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "batch",
+          "type": "option",
+          "flag": "--batch",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.oauth.status": {
+      "description": "auth.oauth.status through Atlassian Cloud REST.",
+      "baseArgv": [
+        "auth.oauth.status"
+      ],
+      "safetyClasses": [
+        "credentialRelated",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "transferRoot",
+          "outputPath"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "site",
+          "type": "option",
+          "flag": "--site",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sitesFile",
+          "type": "option",
+          "flag": "--sites-file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "issueIdOrKey",
+          "type": "option",
+          "flag": "--issue-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "commentId",
+          "type": "option",
+          "flag": "--comment-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectIdOrKey",
+          "type": "option",
+          "flag": "--project-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageId",
+          "type": "option",
+          "flag": "--page-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "spaceId",
+          "type": "option",
+          "flag": "--space-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxUploadBytes",
+          "type": "option",
+          "flag": "--max-upload-bytes",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "batch",
+          "type": "option",
+          "flag": "--batch",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.oauth.refresh": {
+      "description": "auth.oauth.refresh through Atlassian Cloud REST.",
+      "baseArgv": [
+        "auth.oauth.refresh"
+      ],
+      "safetyClasses": [
+        "credentialRelated",
+        "humanAccountAction",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "transferRoot",
+          "outputPath"
+        ],
+        "properties": {
+          "site": {
+            "type": "string"
+          },
+          "sitesFile": {
+            "type": "string"
+          },
+          "issueIdOrKey": {
+            "type": "string"
+          },
+          "commentId": {
+            "type": "string"
+          },
+          "projectIdOrKey": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "spaceId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "maxUploadBytes": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "batch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "page": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "site",
+          "type": "option",
+          "flag": "--site",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sitesFile",
+          "type": "option",
+          "flag": "--sites-file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "issueIdOrKey",
+          "type": "option",
+          "flag": "--issue-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "commentId",
+          "type": "option",
+          "flag": "--comment-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectIdOrKey",
+          "type": "option",
+          "flag": "--project-id-or-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageId",
+          "type": "option",
+          "flag": "--page-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "spaceId",
+          "type": "option",
+          "flag": "--space-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -354,6 +1515,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -518,6 +1703,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -626,6 +1870,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -790,6 +2058,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -899,6 +2226,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -1063,6 +2414,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -1172,6 +2582,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -1336,6 +2770,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -1446,6 +2939,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -1610,6 +3127,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -1720,6 +3296,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -1884,6 +3484,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -1993,6 +3652,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -2157,6 +3840,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -2267,6 +4009,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -2431,6 +4197,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -2540,6 +4365,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -2704,6 +4553,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -2814,6 +4722,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -2978,6 +4910,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -3089,6 +5080,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -3253,6 +5268,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -3364,6 +5438,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -3528,6 +5626,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -3638,6 +5795,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -3802,6 +5983,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -3910,6 +6150,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -4074,6 +6338,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -4183,6 +6506,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -4347,6 +6694,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -4455,6 +6861,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -4619,6 +7049,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -4728,6 +7217,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -4892,6 +7405,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -5001,6 +7573,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -5165,6 +7761,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -5275,6 +7930,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -5439,6 +8118,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -5549,6 +8287,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -5713,6 +8475,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -5821,6 +8642,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -5985,6 +8830,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -6094,6 +8998,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -6258,6 +9186,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -6366,6 +9353,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -6530,6 +9541,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -6639,6 +9709,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -6803,6 +9897,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",
@@ -6913,6 +10066,30 @@
           "transferRoot": {
             "type": "string"
           },
+          "clientPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "sitesOutputPath": {
+            "type": "string"
+          },
+          "siteAlias": {
+            "type": "string"
+          },
+          "resourceUrl": {
+            "type": "string"
+          },
+          "managedBrowserDevtoolsUrl": {
+            "type": "string"
+          },
+          "smokeTests": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
           "maxUploadBytes": {
             "type": "integer"
           },
@@ -7077,6 +10254,65 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "inout"
+        },
+        {
+          "arg": "clientPath",
+          "type": "option",
+          "flag": "--client-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "sitesOutputPath",
+          "type": "option",
+          "flag": "--sites-output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "siteAlias",
+          "type": "option",
+          "flag": "--site-alias",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceUrl",
+          "type": "option",
+          "flag": "--resource-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "managedBrowserDevtoolsUrl",
+          "type": "option",
+          "flag": "--managed-browser-devtools-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "smokeTests",
+          "type": "option",
+          "flag": "--smoke-tests",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "maxUploadBytes",

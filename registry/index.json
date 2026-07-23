@@ -23,15 +23,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "63a9cc85ff3683e102ec6e80ffde23ff6270c80be05e4555d603ad9ec2414ce0"
+          "sha256": "9bb7032bba49a4599fb541eb1d78761e005af396fce2ec6b2e8cdaad15a578bc"
         },
         {
           "path": "references/commands.md",
-          "sha256": "aa9f87c3d9db07b49fb300091e11c8f3559e34a701c269e3b4519d54c8da3dab"
+          "sha256": "6fb998730b01a38dd73e8350c0c0ff321306b17ae7cdf8259a60519f94cedb71"
         },
         {
           "path": "references/configuration.md",
-          "sha256": "a770d58ff2d28fbfee517966b1e691652d6a426b98436b6795a6c04e3e488ee9"
+          "sha256": "18de67207403e4ba16ed3ad87d1665d6cc25c863f8b209f118f83eac10a48ae4"
+        },
+        {
+          "path": "references/oauth-onboarding.md",
+          "sha256": "c722e03c1e725278e63fee27144182c06fb23dfe3a1323d8ae1c99d2e46c08f1"
         }
       ]
     },
@@ -100,7 +104,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -118,19 +122,23 @@
       "files": [
         {
           "path": "atlassian.py",
-          "sha256": "575c5e2edcbc243e40192dcfaa8f78c3e75426a041361c82aeb30552a06bf365"
+          "sha256": "33b845cad4cb7547ba65cad56b4b04e1e7b329a513372cbc9e89789a61a2add6"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "18cada028244de8c9dbf0fca91bffe76d5e246e03b707f041b0ca6e9b9a6d4a3"
+          "sha256": "f9b4e73992e34fe05b826809a670f7dbc6af6d95cd5eabf5ef8005cd71835ec1"
         },
         {
           "path": "harness.json",
-          "sha256": "efd2f01a66c4887ba3730527bdc934367ccea66985a76b1481fa23195a86fd50"
+          "sha256": "20fef401384845e41cd015ab3e0142ccda3b73a8f0c69ea06da20a0f1e788c3e"
+        },
+        {
+          "path": "oauth3lo.py",
+          "sha256": "656256385b307a736c573b1610385888b6f2f10a6ddcee7719b032e216cd5a0b"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "63de19a245e2e82bd20be517912537fc0f56ebc86fa73a548308f27028afe5b0"
+          "sha256": "67d848e6985a929a60a7a0ebc6ef053349153c5642b2f8a9ff2f7ce403dba1e8"
         }
       ]
     },

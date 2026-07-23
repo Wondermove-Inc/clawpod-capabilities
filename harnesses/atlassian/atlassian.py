@@ -7,7 +7,8 @@ from pathlib import Path
 from urllib.error import HTTPError,URLError
 from urllib.parse import urlencode,urljoin,urlparse,parse_qs
 from urllib.request import Request,urlopen
-ROOT=Path(__file__).parent; CONTRACTS=json.loads((ROOT/'command_contracts.json').read_text())['commands']; SENSITIVE=re.compile(r'(?i)(authorization|api[_-]?token|access[_-]?token|password|secret|cookie)')
+import oauth3lo
+ROOT=Path(__file__).parent; CONTRACTS=json.loads((ROOT/'command_contracts.json').read_text())['commands']; SENSITIVE=re.compile(r'(?i)(authorization|api[_-]?token|access[_-]?token|refresh[_-]?token|password|secret|cookie|code)')
 class Failure(Exception):
  def __init__(self,code,message,retryable=False,ambiguous=False,systemic=False): super().__init__(message); self.code,self.message,self.retryable,self.ambiguous,self.systemic=code,message,retryable,ambiguous,systemic
 def redact(v):
@@ -46,7 +47,7 @@ def get_site(alias,path=None):
  out['jiraBaseUrl']=valid_origin(out.get('jiraBaseUrl'),'jiraBaseUrl'); out['confluenceBaseUrl']=valid_origin(out.get('confluenceBaseUrl'),'confluenceBaseUrl')
  return out
 def service_for(command):
- if command=='auth.sites.list': return 'control','local'
+ if command=='auth.sites.list' or command.startswith('auth.oauth.'): return 'control','local'
  if command.startswith('jira.') or command=='auth.whoami': return 'jira','v3'
  if command=='confluence.search' or command=='confluence.attachments.add': return 'confluence','v1'
  return 'confluence','v2'
@@ -56,6 +57,9 @@ def secret(ref):
  if kind=='env': out=os.getenv(val)
  elif kind=='file':
   p=Path(val).expanduser(); secure_file(p,'auth'); out=p.read_text().strip() if p.exists() else None
+  if out and out.startswith('{'):
+   try: out=json.loads(out).get('access_token')
+   except Exception: raise Failure('auth_invalid','credential bundle is invalid') from None
  else: raise Failure('auth_invalid','unsupported credential provider')
  if not out: raise Failure('auth_missing','credential reference could not be resolved',systemic=True)
  return out
@@ -65,7 +69,8 @@ def authorization(s):
  if typ=='basic' and a.get('email'): return 'Basic '+base64.b64encode((a['email']+':'+secret(a.get('tokenRef'))).encode()).decode()
  raise Failure('auth_invalid','auth.type must be basic or oauth',systemic=True)
 def bounds(ns):
- if not 100<=ns.timeout_ms<=120000: raise Failure('timeout_invalid','timeout must be 100..120000 ms')
+ upper=600000 if ns.command=='auth.oauth.login' else 120000
+ if not 100<=ns.timeout_ms<=upper: raise Failure('timeout_invalid',f'timeout must be 100..{upper} ms')
  if not 0<=ns.retries<=5: raise Failure('retry_invalid','retries must be 0..5')
  if not 1<=ns.max_pages<=100 or not 1<=ns.max_items<=10000: raise Failure('pagination_invalid','pagination bounds exceeded')
 def state_dir():
@@ -139,6 +144,18 @@ def execute(ns,opener=urlopen):
  bounds(ns); c=CONTRACTS.get(ns.command)
  if not c: raise Failure('command_unknown','unknown command')
  if ns.command=='auth.sites.list': return {'sites':sorted(load_sites(ns.sites_file))}
+ try:
+  if ns.command=='auth.oauth.login':
+   tests=tuple(x for x in (ns.smoke_tests or 'jira,confluence').split(',') if x)
+   return oauth3lo.login(transfer_root=ns.transfer_root,client_path=ns.client_path,output_path=ns.output_path,sites_output_path=ns.sites_output_path,site_alias=ns.site_alias,resource_url=ns.resource_url,managed_browser_devtools_url=ns.managed_browser_devtools_url,timeout=ns.timeout_ms/1000,overwrite=ns.overwrite,smoke_tests=tests)
+  if ns.command=='auth.oauth.status': return oauth3lo.status(transfer_root=ns.transfer_root,output_path=ns.output_path)
+  if ns.command=='auth.oauth.refresh':
+   marker={'output':hashlib.sha256((str(ns.transfer_root)+'\0'+str(ns.output_path)).encode()).hexdigest()}
+   if ns.dry_run:return {'dryRun':True,'confirm':preview(ns.command,'oauth-local','/oauth/token',{},marker),'expiresInSeconds':300,'request':{'operation':'rotate-oauth-credentials'}}
+   if not ns.confirm:raise Failure('confirm_required','successful dry-run confirmation required')
+   consume(ns.confirm,ns.command,'oauth-local','/oauth/token',{},marker)
+   return oauth3lo.refresh(transfer_root=ns.transfer_root,output_path=ns.output_path,timeout=ns.timeout_ms/1000)
+ except oauth3lo.OAuthFailure as e: raise Failure(e.code,e.message,e.retryable,False,e.code.startswith('oauth_')) from None
  if not ns.site: raise Failure('site_required','--site is required')
  s=get_site(ns.site,ns.sites_file); params=json.loads(ns.params or '{}'); body=json.loads(ns.body) if ns.body else None; path=c['path']
  for k,v in vars(ns).items():
@@ -166,7 +183,7 @@ def run_batch(ns):
  try: items=json.loads(Path(ns.batch).read_text() if Path(ns.batch).is_file() else ns.batch)
  except Exception: raise Failure('batch_invalid','batch must be a JSON array or readable JSON file')
  if not isinstance(items,list) or not 1<=len(items)<=100 or not all(isinstance(x,dict) for x in items): raise Failure('batch_invalid','batch must contain 1..100 command objects')
- allowed={a.dest for a in parser()._actions}; aliases={'sites_file':'sites_file','issue_id_or_key':'issueIdOrKey','project_id_or_key':'projectIdOrKey','comment_id':'commentId','page_id':'pageId','space_id':'spaceId','sitesFile':'sites_file','dryRun':'dry_run','idempotencyKey':'idempotency_key','inputPath':'input_path','transferRoot':'transfer_root','maxUploadBytes':'max_upload_bytes','timeoutMs':'timeout_ms','allPages':'all_pages','maxPages':'max_pages','maxItems':'max_items','issueIdOrKey':'issueIdOrKey','projectIdOrKey':'projectIdOrKey','commentId':'commentId','pageId':'pageId','spaceId':'spaceId'}; out=[]
+ allowed={a.dest for a in parser()._actions}; aliases={'sites_file':'sites_file','issue_id_or_key':'issueIdOrKey','project_id_or_key':'projectIdOrKey','comment_id':'commentId','page_id':'pageId','space_id':'spaceId','sitesFile':'sites_file','dryRun':'dry_run','idempotencyKey':'idempotency_key','inputPath':'input_path','transferRoot':'transfer_root','maxUploadBytes':'max_upload_bytes','timeoutMs':'timeout_ms','allPages':'all_pages','maxPages':'max_pages','maxItems':'max_items','issueIdOrKey':'issueIdOrKey','projectIdOrKey':'projectIdOrKey','commentId':'commentId','pageId':'pageId','spaceId':'spaceId','clientPath':'client_path','outputPath':'output_path','sitesOutputPath':'sites_output_path','siteAlias':'site_alias','resourceUrl':'resource_url','managedBrowserDevtoolsUrl':'managed_browser_devtools_url','smokeTests':'smoke_tests','overwrite':'overwrite'}; out=[]
  for index,original in enumerate(items):
   item=dict(original); command=item.pop('command',None)
   if not isinstance(command,str) or command not in CONTRACTS or item.keys()-set(aliases)-allowed: out.append({'index':index,'ok':False,'error':{'code':'batch_item_invalid','message':'invalid command or arguments','retryable':False,'ambiguousCommit':False}}); continue
@@ -178,7 +195,7 @@ def run_batch(ns):
    if e.systemic: break
  failed=sum(not x['ok'] for x in out); return {'items':out,'summary':{'requested':len(items),'processed':len(out),'succeeded':len(out)-failed,'failed':failed,'stopped':len(out)<len(items)},'stopped':len(out)<len(items)}
 def parser():
- p=argparse.ArgumentParser(); p.add_argument('command',nargs='?'); p.add_argument('--site'); p.add_argument('--sites-file'); p.add_argument('--params'); p.add_argument('--body'); p.add_argument('--batch'); p.add_argument('--dry-run',action='store_true'); p.add_argument('--confirm'); p.add_argument('--idempotency-key'); p.add_argument('--input-path'); p.add_argument('--transfer-root'); p.add_argument('--max-upload-bytes',type=int,default=25*1024*1024); p.add_argument('--timeout-ms',type=int,default=30000); p.add_argument('--retries',type=int,default=3); p.add_argument('--all-pages',action='store_true'); p.add_argument('--max-pages',type=int,default=10); p.add_argument('--max-items',type=int,default=1000)
+ p=argparse.ArgumentParser(); p.add_argument('command',nargs='?'); p.add_argument('--site'); p.add_argument('--sites-file'); p.add_argument('--params'); p.add_argument('--body'); p.add_argument('--batch'); p.add_argument('--dry-run',action='store_true'); p.add_argument('--confirm'); p.add_argument('--idempotency-key'); p.add_argument('--input-path'); p.add_argument('--transfer-root'); p.add_argument('--client-path'); p.add_argument('--output-path'); p.add_argument('--sites-output-path'); p.add_argument('--site-alias'); p.add_argument('--resource-url'); p.add_argument('--managed-browser-devtools-url'); p.add_argument('--smoke-tests'); p.add_argument('--overwrite',action='store_true'); p.add_argument('--max-upload-bytes',type=int,default=25*1024*1024); p.add_argument('--timeout-ms',type=int,default=30000); p.add_argument('--retries',type=int,default=3); p.add_argument('--all-pages',action='store_true'); p.add_argument('--max-pages',type=int,default=10); p.add_argument('--max-items',type=int,default=1000)
  for d in ('issueIdOrKey','commentId','projectIdOrKey','pageId','spaceId'):p.add_argument('--'+re.sub(r'([A-Z])',lambda m:'-'+m.group(1).lower(),d),dest=d)
  return p
 def main(argv=None):
