@@ -172,6 +172,15 @@ def test_connected_skill_and_harness_identity_is_aligned():
  assert 'name: atlassian' in skill and '# Atlassian\n' in skill
 
 
+def test_skill_requires_user_facing_authorization_preflight():
+ skill=Path('skills/atlassian/SKILL.md').read_text()
+ onboarding=Path('skills/atlassian/references/oauth-onboarding.md').read_text()
+ for phrase in ('Immediately after this capability is installed','installed but not yet connected','what the user must do','what the agent will do','managed browser will open','explicitly agrees','Do not invoke `auth.oauth.login`'):
+  assert phrase in skill
+ for phrase in ('User-facing preflight','Immediately after installation and validation','Start Atlassian authorization now?','Continue only after an explicit affirmative response'):
+  assert phrase in onboarding
+
+
 def test_oauth_manifest_contracts_are_typed():
  manifest=json.loads((Path(__file__).parents[1]/'harness.json').read_text())
  login=manifest['commands']['auth.oauth.login']; assert {'secretUse','humanAccountAction','externalSideEffect'}<=set(login['safetyClasses'])
