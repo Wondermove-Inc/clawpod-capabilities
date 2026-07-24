@@ -39,10 +39,23 @@ class RegistrySyncTests(unittest.TestCase):
             self.assertEqual(set(linked or {}),{"id","version"})
             self.assertIn(("harness",linked["id"],linked["version"]),entries)
         registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
-        self.assertEqual(registry_skill["version"],"0.3.0")
-        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.0")
+        self.assertEqual(registry_skill["version"],"0.3.1")
+        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.1")
         atlassian=next(e for e in skills if e["id"]=="atlassian")
         self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
+
+    def test_registry_harness_uses_gateway_supported_input_schema(self) -> None:
+        manifest = json.loads(
+            (ROOT / "harnesses" / "clawpod-capability-registry" / "harness.json").read_text(encoding="utf-8")
+        )
+        unsupported = {"minimum", "maximum"}
+        for command_name, command in manifest["commands"].items():
+            properties = command["inputSchema"].get("properties", {})
+            for argument_name, schema in properties.items():
+                self.assertTrue(
+                    unsupported.isdisjoint(schema),
+                    f"{command_name}.{argument_name} uses unsupported Gateway schema keywords",
+                )
 
     def test_changed_package_file_makes_registry_stale(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

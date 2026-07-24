@@ -46,7 +46,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "description": "Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
@@ -69,7 +69,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.3.0"
+        "version": "0.3.1"
       }
     },
     {
@@ -246,7 +246,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "description": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
@@ -268,7 +268,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "a0afb2f61f3b348a877a1c53abacf0fbb34b6c5ea2de6d1dc59bee47938073ac"
+          "sha256": "9f729aa2e96121fdf9dc25970de45f0b8aa5bcc35bf1feaacbb8e98ea2bbe4d7"
         }
       ]
     },
