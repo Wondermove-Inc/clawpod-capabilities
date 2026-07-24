@@ -3,21 +3,24 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
-  "description": "Search, inspect, install, validate, update, and roll back AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
-  "version": "0.2.1",
+  "description": "Search, assess, install, validate, update, and roll back capabilities, with deterministic registry-first WORKFLOW onboarding.",
+  "version": "0.3.0",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
     "An agent needs to discover reusable capabilities",
     "A capability must be installed with provenance and digest checks",
-    "An installed capability needs validation, update, or rollback"
+    "An installed capability needs validation, update, or rollback",
+    "Registry-first creation policy must be activated or checked in an agent-owned WORKFLOW.md"
   ],
   "capabilities": [
     "registry-search",
     "verified-install",
     "local-validation",
     "backup",
-    "rollback"
+    "rollback",
+    "workflow-policy-status",
+    "workflow-policy-onboarding"
   ],
   "authModel": {
     "type": "public-read",
@@ -154,7 +157,7 @@
       ]
     },
     "install": {
-      "description": "Install a capability into an explicit local target root after digest verification.",
+      "description": "Install a capability into an explicit local target root after digest verification. For clawpod-capability-registry itself, workflowPath is required and onboarding completes transactionally.",
       "baseArgv": [
         "install"
       ],
@@ -185,6 +188,9 @@
             "type": "string"
           },
           "harnessesRoot": {
+            "type": "string"
+          },
+          "workflowPath": {
             "type": "string"
           }
         }
@@ -238,6 +244,14 @@
           "arg": "harnessesRoot",
           "type": "option",
           "flag": "--harnesses-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "workflowPath",
+          "type": "option",
+          "flag": "--workflow-path",
           "valueType": "path",
           "pathRole": "inout",
           "optional": true
@@ -336,7 +350,7 @@
       ]
     },
     "update": {
-      "description": "Update an installed capability after creating a local rollback backup.",
+      "description": "Update an installed capability after creating a local rollback backup. For clawpod-capability-registry itself, workflowPath is required and onboarding completes transactionally.",
       "baseArgv": [
         "update"
       ],
@@ -367,6 +381,9 @@
             "type": "string"
           },
           "harnessesRoot": {
+            "type": "string"
+          },
+          "workflowPath": {
             "type": "string"
           }
         }
@@ -420,6 +437,14 @@
           "arg": "harnessesRoot",
           "type": "option",
           "flag": "--harnesses-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "workflowPath",
+          "type": "option",
+          "flag": "--workflow-path",
           "valueType": "path",
           "pathRole": "inout",
           "optional": true
@@ -482,6 +507,82 @@
           "valueType": "path",
           "pathRole": "input",
           "optional": true
+        }
+      ]
+    },
+    "workflow-status": {
+      "description": "Read the versioned registry-first managed policy status without modifying WORKFLOW.md.",
+      "baseArgv": [
+        "workflow-status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workflowPath"
+        ],
+        "properties": {
+          "workflowPath": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "workflowPath",
+          "type": "option",
+          "flag": "--workflow-path",
+          "valueType": "path",
+          "pathRole": "input"
+        }
+      ]
+    },
+    "workflow-activate": {
+      "description": "Atomically append or replace only the exact registry-first managed block in an existing WORKFLOW.md.",
+      "baseArgv": [
+        "workflow-activate"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workflowPath"
+        ],
+        "properties": {
+          "workflowPath": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "data"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "workflowPath",
+          "type": "option",
+          "flag": "--workflow-path",
+          "valueType": "path",
+          "pathRole": "inout"
         }
       ]
     }

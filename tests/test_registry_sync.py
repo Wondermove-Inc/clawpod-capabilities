@@ -39,8 +39,8 @@ class RegistrySyncTests(unittest.TestCase):
             self.assertEqual(set(linked or {}),{"id","version"})
             self.assertIn(("harness",linked["id"],linked["version"]),entries)
         registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
-        self.assertEqual(registry_skill["version"],"0.2.1")
-        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.2.1")
+        self.assertEqual(registry_skill["version"],"0.3.0")
+        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.0")
         atlassian=next(e for e in skills if e["id"]=="atlassian")
         self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
 

@@ -29,6 +29,126 @@ def fixture_entry(version: str, payload: bytes) -> dict:
 
 
 class CoreTests(unittest.TestCase):
+    def test_workflow_empty_existing_file_append_and_idempotence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"")
+            first = cap.activate_workflow_policy(str(workflow))
+            after = workflow.read_bytes()
+            self.assertTrue(first["changed"])
+            self.assertEqual(first["policyStatus"], "active")
+            self.assertEqual(first["policyVersion"], cap.WORKFLOW_POLICY_VERSION)
+            second = cap.activate_workflow_policy(str(workflow))
+            self.assertFalse(second["changed"])
+            self.assertEqual(workflow.read_bytes(), after)
+
+    def test_workflow_preserves_sentinel_bytes_before_and_after_replacement(self) -> None:
+        before = b"\xef\xbb\xbf# user header\r\nSENTINEL-BEFORE\x00\n"
+        after = b"\r\nSENTINEL-AFTER\xff\n"
+        old = cap.WORKFLOW_BEGIN + b"\nold managed policy\n" + cap.WORKFLOW_END
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(before + old + after)
+            result = cap.activate_workflow_policy(str(workflow))
+            updated = workflow.read_bytes()
+            self.assertTrue(result["changed"])
+            self.assertEqual(result["previousPolicyStatus"], "outdated")
+            self.assertTrue(updated.startswith(before))
+            self.assertTrue(updated.endswith(after))
+            self.assertEqual(updated[:len(before)], before)
+            self.assertEqual(updated[-len(after):], after)
+
+    def test_workflow_missing_is_not_created(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            with self.assertRaises(cap.CapabilityError) as raised:
+                cap.activate_workflow_policy(str(workflow))
+            self.assertEqual(raised.exception.code, "workflow_missing")
+            self.assertFalse(workflow.exists())
+
+    def test_malformed_workflow_markers_never_mutate(self) -> None:
+        malformed = [
+            cap.WORKFLOW_BEGIN + b"\nunclosed",
+            cap.WORKFLOW_END + b"\n" + cap.WORKFLOW_BEGIN,
+            cap.WORKFLOW_BEGIN + b"\n" + cap.WORKFLOW_BEGIN + b"\n" + cap.WORKFLOW_END,
+            cap.WORKFLOW_BEGIN + b"\n" + cap.WORKFLOW_END + b"\n" + cap.WORKFLOW_END,
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            for payload in malformed:
+                workflow.write_bytes(payload)
+                with self.assertRaises(cap.CapabilityError) as raised:
+                    cap.activate_workflow_policy(str(workflow))
+                self.assertEqual(raised.exception.code, "malformed_workflow_markers")
+                self.assertEqual(workflow.read_bytes(), payload)
+
+    def test_workflow_status_is_read_only_and_path_hashed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"user content")
+            before = workflow.read_bytes()
+            status = cap.inspect_workflow_policy(str(workflow))
+            self.assertEqual(status["policyStatus"], "absent")
+            self.assertEqual(len(status["workflowPathHash"]), 64)
+            self.assertNotIn(str(workflow), json.dumps(status))
+            self.assertEqual(workflow.read_bytes(), before)
+
+    def test_unrelated_install_does_not_mutate_workflow(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"unrelated sentinel")
+            with patch.object(cap, "install_unit", return_value={"unit": []}) as install:
+                result = cap.install_unit_with_onboarding(
+                    fixture_entry("1.0.0", b"x"), directory, None, replace=False, workflow=str(workflow)
+                )
+            install.assert_called_once()
+            self.assertEqual(result, {"unit": []})
+            self.assertEqual(workflow.read_bytes(), b"unrelated sentinel")
+
+    def test_registry_install_requires_workflow_and_rolls_back_on_onboarding_failure(self) -> None:
+        entry = {**fixture_entry("1.0.0", b"x"), "id": "clawpod-capability-registry"}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "skills"
+            destination = root / entry["id"]
+            destination.mkdir(parents=True)
+            (destination / "old").write_bytes(b"old")
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"sentinel")
+            with self.assertRaises(cap.CapabilityError) as required:
+                cap.install_unit_with_onboarding(entry, str(root), None, replace=True, workflow=None)
+            self.assertEqual(required.exception.code, "workflow_path_required")
+
+            def fake_install(*_: object, **__: object) -> dict:
+                shutil = __import__("shutil")
+                shutil.rmtree(destination)
+                destination.mkdir()
+                (destination / "new").write_bytes(b"new")
+                return {"unit": []}
+
+            with patch.object(cap, "install_unit", side_effect=fake_install), patch.object(
+                cap, "atomic_write", side_effect=OSError("disk full")
+            ):
+                with self.assertRaises(OSError):
+                    cap.install_unit_with_onboarding(entry, str(root), None, replace=True, workflow=str(workflow))
+            self.assertEqual((destination / "old").read_bytes(), b"old")
+            self.assertFalse((destination / "new").exists())
+            self.assertEqual(workflow.read_bytes(), b"sentinel")
+
+    def test_registry_install_completes_workflow_onboarding(self) -> None:
+        entry = {**fixture_entry("1.0.0", b"x"), "id": "clawpod-capability-registry"}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "skills"
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"owner content\n")
+            with patch.object(cap, "install_unit", return_value={"unit": [{"id": entry["id"]}]}):
+                result = cap.install_unit_with_onboarding(
+                    entry, str(root), None, replace=False, workflow=str(workflow)
+                )
+            self.assertTrue(result["onboardingComplete"])
+            self.assertEqual(result["workflowPolicy"]["policyStatus"], "active")
+            self.assertTrue(result["workflowPolicy"]["changed"])
+            self.assertTrue(workflow.read_bytes().startswith(b"owner content\n"))
+
     def test_rejects_noncanonical_url(self) -> None:
         with self.assertRaisesRegex(cap.CapabilityError, "non-canonical"):
             cap.fetch_bytes("https://example.com/index.json")

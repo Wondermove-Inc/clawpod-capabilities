@@ -46,8 +46,8 @@
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.2.1",
-      "description": "Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
+      "version": "0.3.0",
+      "description": "Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -64,12 +64,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "00f8acae3dfd9377e330812a9e6e52460527e5991594e7007dc87726e0de4442"
+          "sha256": "89d65aafc9c107bbc7c704836f34e0ea5f135be3901d1c309f3c080e20d0ddb3"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.2.1"
+        "version": "0.3.0"
       }
     },
     {
@@ -246,8 +246,8 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.2.1",
-      "description": "Search, inspect, install, validate, update, and roll back capabilities from the canonical ClawPod registry with digest verification.",
+      "version": "0.3.0",
+      "description": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -264,11 +264,11 @@
       "files": [
         {
           "path": "clawpod_capability_registry.py",
-          "sha256": "0cb2ef851f911ebb21a62e041df87b833a211486ca3fbfc7e8d0c306cf6dd85d"
+          "sha256": "f2daf2e4308bbdb5fcc9a885922f1b8d0f6c4d3a237dfdf9dbed8b679f1ef58c"
         },
         {
           "path": "harness.json",
-          "sha256": "ec181a7b76e2e056218b2fa09340c94efa8788e5227c8d8fe55073d20fd202a3"
+          "sha256": "a0afb2f61f3b348a877a1c53abacf0fbb34b6c5ea2de6d1dc59bee47938073ac"
         }
       ]
     },

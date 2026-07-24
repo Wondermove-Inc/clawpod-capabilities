@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.1",
-  "description": "Discover, assess, install, validate, update, or roll back reusable AgentSkills and CLI Harnesses from the canonical ClawPod registry.",
+  "version": "0.3.0",
+  "description": "Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
@@ -17,6 +17,6 @@
   },
   "linkedHarness": {
     "id": "clawpod-capability-registry",
-    "version": "0.2.1"
+    "version": "0.3.0"
   }
 }
