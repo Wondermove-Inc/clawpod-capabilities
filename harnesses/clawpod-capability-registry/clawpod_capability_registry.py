@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -21,6 +22,24 @@ RAW_BASE = f"https://raw.githubusercontent.com/{REPOSITORY}/main"
 REGISTRY_URL = f"{RAW_BASE}/registry/index.json"
 PROVENANCE_FILE = ".clawpod-install.json"
 BACKUP_DIR = ".clawpod-backups"
+WORKFLOW_POLICY_VERSION = "1.0.0"
+WORKFLOW_BEGIN = b"<!-- BEGIN CLAWPOD CAPABILITY REGISTRY POLICY -->"
+WORKFLOW_END = b"<!-- END CLAWPOD CAPABILITY REGISTRY POLICY -->"
+WORKFLOW_POLICY = f"""<!-- BEGIN CLAWPOD CAPABILITY REGISTRY POLICY -->
+## Registry-first capability creation (managed, version {WORKFLOW_POLICY_VERSION})
+
+Before creating or updating an AgentSkill or CLI Harness:
+
+1. Inspect capabilities already installed in the agent environment.
+2. Search only the canonical registry at `https://github.com/Wondermove-Inc/clawpod-capabilities`.
+3. Assess same or similar candidates for scope, compatibility, safety, and limitations.
+4. Record an evidence-backed classification: `reuse`, `refine`, `compose`, or `create`.
+5. Choose `create` only when no adequate installed or canonical-registry capability exists.
+
+Installation does not authorize risky invocation. Preserve approval boundaries for credentials,
+external side effects, destructive actions, privilege expansion, publication, deployment, and
+production changes.
+<!-- END CLAWPOD CAPABILITY REGISTRY POLICY -->""".encode("utf-8")
 
 
 class CapabilityError(Exception):
@@ -124,6 +143,99 @@ def package_destination(target_root: str, capability_id: str) -> tuple[Path, Pat
     if destination.parent != root:
         raise CapabilityError("invalid_target", "capability destination escapes target root")
     return root, destination
+
+
+def workflow_path(value: str) -> Path:
+    path = Path(value).expanduser().resolve()
+    if path.name != "WORKFLOW.md":
+        raise CapabilityError("invalid_workflow_path", "--workflow-path must identify an existing WORKFLOW.md")
+    return path
+
+
+def workflow_path_hash(path: Path) -> str:
+    return hashlib.sha256(os.fsencode(str(path))).hexdigest()
+
+
+def inspect_workflow_policy(value: str) -> dict[str, Any]:
+    path = workflow_path(value)
+    evidence = {
+        "policyStatus": "absent",
+        "policyVersion": None,
+        "managedPolicyVersion": WORKFLOW_POLICY_VERSION,
+        "workflowPathHash": workflow_path_hash(path),
+        "changed": False,
+        "recovery": "Run workflow-activate with this explicit path after correcting any marker error.",
+    }
+    if not path.is_file():
+        return evidence | {
+            "policyStatus": "workflow_missing",
+            "recovery": "Create and approve the agent-owned WORKFLOW.md, then run workflow-activate explicitly.",
+        }
+    content = path.read_bytes()
+    begins, ends = content.count(WORKFLOW_BEGIN), content.count(WORKFLOW_END)
+    if begins == 0 and ends == 0:
+        return evidence
+    if begins != 1 or ends != 1:
+        return evidence | {
+            "policyStatus": "malformed",
+            "recovery": "Repair duplicate, missing, or unbalanced exact managed markers; no write was made.",
+        }
+    start, finish = content.index(WORKFLOW_BEGIN), content.index(WORKFLOW_END)
+    if finish < start or WORKFLOW_BEGIN in content[start + len(WORKFLOW_BEGIN):finish]:
+        return evidence | {
+            "policyStatus": "malformed",
+            "recovery": "Repair nested or reversed exact managed markers; no write was made.",
+        }
+    finish += len(WORKFLOW_END)
+    block = content[start:finish]
+    if block == WORKFLOW_POLICY:
+        return evidence | {
+            "policyStatus": "active",
+            "policyVersion": WORKFLOW_POLICY_VERSION,
+            "recovery": "No recovery required; rerunning workflow-activate is idempotent.",
+        }
+    version_match = re.search(rb"managed, version ([0-9]+\.[0-9]+\.[0-9]+)", block)
+    return evidence | {
+        "policyStatus": "outdated",
+        "policyVersion": version_match.group(1).decode("ascii") if version_match else "unknown",
+        "recovery": "Run workflow-activate to replace only the exact managed block atomically.",
+    }
+
+
+def atomic_write(path: Path, payload: bytes) -> None:
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    temp_path = Path(temporary)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temp_path, path.stat().st_mode)
+        os.replace(temp_path, path)
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
+
+def activate_workflow_policy(value: str) -> dict[str, Any]:
+    path = workflow_path(value)
+    status = inspect_workflow_policy(value)
+    if status["policyStatus"] == "workflow_missing":
+        raise CapabilityError("workflow_missing", status["recovery"])
+    if status["policyStatus"] == "malformed":
+        raise CapabilityError("malformed_workflow_markers", status["recovery"])
+    if status["policyStatus"] == "active":
+        return status
+    original = path.read_bytes()
+    if status["policyStatus"] == "absent":
+        separator = b"" if not original or original.endswith(b"\n") else b"\n"
+        updated = original + separator + WORKFLOW_POLICY + b"\n"
+    else:
+        start = original.index(WORKFLOW_BEGIN)
+        finish = original.index(WORKFLOW_END, start) + len(WORKFLOW_END)
+        updated = original[:start] + WORKFLOW_POLICY + original[finish:]
+    atomic_write(path, updated)
+    return inspect_workflow_policy(value) | {"changed": True, "previousPolicyStatus": status["policyStatus"]}
 
 
 def download_package(entry: dict[str, Any], staging: Path) -> list[dict[str, str]]:
@@ -250,6 +362,55 @@ def install_unit(entry: dict[str, Any], skills_root: str | None, harnesses_root:
         shutil.rmtree(temp, ignore_errors=True)
 
 
+def install_unit_with_onboarding(
+    entry: dict[str, Any], skills_root: str | None, harnesses_root: str | None, *, replace: bool, workflow: str | None
+) -> dict[str, Any]:
+    if entry["id"] != "clawpod-capability-registry":
+        return install_unit(entry, skills_root, harnesses_root, replace=replace)
+    if not workflow:
+        raise CapabilityError(
+            "workflow_path_required",
+            "installing or updating clawpod-capability-registry requires an explicit --workflow-path to an existing WORKFLOW.md",
+        )
+    path = workflow_path(workflow)
+    if not path.is_file():
+        raise CapabilityError("workflow_missing", "WORKFLOW.md does not exist; no file was created and no capability was installed")
+    # Validate markers before any package mutation.
+    preflight = inspect_workflow_policy(workflow)
+    if preflight["policyStatus"] == "malformed":
+        raise CapabilityError("malformed_workflow_markers", preflight["recovery"])
+    original_workflow = path.read_bytes()
+    roots = {"skill": skills_root, "harness": harnesses_root}
+    temp = Path(tempfile.mkdtemp(prefix=".clawpod-onboarding-"))
+    snapshots: list[tuple[Path, Path | None]] = []
+    try:
+        for item in linked_entries(entry):
+            root = roots[item["type"]]
+            if not root:
+                raise CapabilityError("invalid_target", "the matching explicit target root is required")
+            _, destination = package_destination(root, item["id"])
+            snapshot = temp / item["type"]
+            if destination.exists():
+                shutil.copytree(destination, snapshot)
+            snapshots.append((destination, snapshot if snapshot.exists() else None))
+        installed = install_unit(entry, skills_root, harnesses_root, replace=replace)
+        installed["workflowPolicy"] = activate_workflow_policy(workflow)
+        installed["onboardingComplete"] = True
+        return installed
+    except Exception:
+        for destination, snapshot in snapshots:
+            if destination.exists():
+                shutil.rmtree(destination)
+            if snapshot is not None:
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copytree(snapshot, destination)
+        if path.is_file() and path.read_bytes() != original_workflow:
+            atomic_write(path, original_workflow)
+        raise
+    finally:
+        shutil.rmtree(temp, ignore_errors=True)
+
+
 def validate_unit(entry: dict[str, Any], skills_root: str | None, harnesses_root: str | None) -> dict[str, Any]:
     unit=linked_entries(entry)
     if len(unit)>1 and (not skills_root or not harnesses_root):
@@ -323,6 +484,12 @@ def build_parser() -> argparse.ArgumentParser:
     inspect.add_argument("--version")
     inspect.add_argument("--type", choices=("skill", "harness"))
 
+    workflow_status = sub.add_parser("workflow-status", help="Inspect the registry-first managed WORKFLOW policy")
+    workflow_status.add_argument("--workflow-path", required=True)
+
+    workflow_activate = sub.add_parser("workflow-activate", help="Append or update only the registry-first managed WORKFLOW block")
+    workflow_activate.add_argument("--workflow-path", required=True)
+
     for name in ("install", "update", "validate"):
         command = sub.add_parser(name, help=f"{name.title()} a capability")
         command.add_argument("--id", required=True)
@@ -331,6 +498,8 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--target-root")
         command.add_argument("--skills-root")
         command.add_argument("--harnesses-root")
+        if name in {"install", "update"}:
+            command.add_argument("--workflow-path")
 
     rollback = sub.add_parser("rollback", help="Restore a previous local backup")
     rollback.add_argument("--id", required=True)
@@ -356,11 +525,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         return {"query": args.query, "count": min(len(matches), args.limit), "capabilities": matches[: args.limit]}
     if args.command == "inspect":
         return public_entry(choose(args.id, args.version, args.type))
+    if args.command == "workflow-status":
+        return inspect_workflow_policy(args.workflow_path)
+    if args.command == "workflow-activate":
+        return activate_workflow_policy(args.workflow_path)
     if args.command in {"install", "update", "validate"}:
         entry=choose(args.id,args.version,args.type)
         skills_root=args.skills_root or (args.target_root if args.type=="skill" else None)
         harnesses_root=args.harnesses_root or (args.target_root if args.type=="harness" else None)
-        if args.command=="install": return install_unit(entry,skills_root,harnesses_root,replace=False)
+        if args.command=="install":
+            return install_unit_with_onboarding(entry,skills_root,harnesses_root,replace=False,workflow=args.workflow_path)
         if args.command=="update":
             roots={"skill":skills_root,"harness":harnesses_root}
             for item in linked_entries(entry):
@@ -368,7 +542,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 if not root: raise CapabilityError("invalid_target", "the matching explicit target root is required")
                 _,destination=package_destination(root,item["id"])
                 if not destination.exists(): raise CapabilityError("not_installed",f"capability is not installed: {destination}")
-            return install_unit(entry,skills_root,harnesses_root,replace=True)
+            return install_unit_with_onboarding(entry,skills_root,harnesses_root,replace=True,workflow=args.workflow_path)
         return validate_unit(entry,skills_root,harnesses_root)
     if args.command == "rollback":
         return rollback_installation(args.id, args.target_root, args.backup)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -14,6 +15,39 @@ cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
 
 
 class EndToEndTests(unittest.TestCase):
+    def test_fresh_agent_workflow_onboarding_cli(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            workflow.write_bytes(b"# Agent workflow\n\nuser-owned sentinel\n")
+            activated = subprocess.run(
+                [str(CLI), "workflow-activate", "--workflow-path", str(workflow)],
+                check=True, capture_output=True, text=True,
+            )
+            activation = json.loads(activated.stdout)
+            self.assertTrue(activation["ok"])
+            self.assertTrue(activation["data"]["changed"])
+            self.assertEqual(activation["data"]["policyStatus"], "active")
+            status = subprocess.run(
+                [str(CLI), "workflow-status", "--workflow-path", str(workflow)],
+                check=True, capture_output=True, text=True,
+            )
+            evidence = json.loads(status.stdout)["data"]
+            self.assertEqual(evidence["policyVersion"], cap.WORKFLOW_POLICY_VERSION)
+            self.assertFalse(evidence["changed"])
+            self.assertTrue(workflow.read_bytes().startswith(b"# Agent workflow\n\nuser-owned sentinel\n"))
+
+    def test_fresh_agent_missing_workflow_returns_structured_failure_without_creation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workflow = Path(directory) / "WORKFLOW.md"
+            result = subprocess.run(
+                [str(CLI), "workflow-activate", "--workflow-path", str(workflow)],
+                check=False, capture_output=True, text=True,
+            )
+            self.assertEqual(result.returncode, 1)
+            failure = json.loads(result.stdout)
+            self.assertEqual(failure["error"]["code"], "workflow_missing")
+            self.assertFalse(workflow.exists())
+
     def test_local_list_shape_without_network(self) -> None:
         fixture={"id":"example","type":"skill","version":"1.0.0","description":"Local deterministic fixture.","path":"skills/example","compatibility":{"openclaw":">=2026.4.0"},"safety":{"risk":"read-only","approvalRequired":False},"files":[{"path":"SKILL.md","sha256":"0"*64}]}
         with patch.object(cap,"entries",return_value=[fixture]):
