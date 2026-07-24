@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, assess, install, validate, update, and roll back capabilities, with deterministic registry-first WORKFLOW onboarding.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -69,9 +69,7 @@
             "type": "string"
           },
           "limit": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           }
         }
       },
