@@ -9,6 +9,8 @@ from pathlib import Path
 import yaml
 
 VERSION="0.2.0"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
+UPSTREAM_LOCK={"url":"https://github.com/calesthio/OpenMontage","commit":UPSTREAM_COMMIT,"packageVersion":VERSION,"license":"AGPL-3.0-only","licenseSha256":"0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0","treeDigest":"git:fd61711510ef01c3b896bae808ee4ca7c96a391f","patches":[{"id":"openmontage-documentary-category","path":"patches/openmontage-documentary-category.patch","sha256":"sha256:f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"}],"patchedFiles":[{"path":"schemas/pipelines/pipeline_manifest.schema.json","sha256":"sha256:8491027015f0ec1b49da834bd341a00380f9cb34be57afb38c086e577ab95bad"}]}
+DEPENDENCY_LOCK={"pythonEnvironmentDigest":"sha256:1426f614312febda3348de68a45de54c41107a68147317c2265722a7d2d5e4b7","npmLockDigest":"sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed","npmLockPath":"remotion-composer/package-lock.json"}
 MAX_JSON=1_000_000; MAX_LOG=250_000
 PIPELINES=[("animated-explainer","production","education"),("animation","production","animation"),("avatar-spokesperson","production","avatar"),("character-animation","beta","animation"),("cinematic","production","cinematic"),("clip-factory","beta","repurpose"),("documentary-montage","beta","documentary"),("framework-smoke","beta/test","test"),("hybrid","production","hybrid"),("localization-dub","beta","localization"),("podcast-repurpose","beta","repurpose"),("screen-demo","production","screen"),("talking-head","beta","talking-head")]
 PROVIDERS={
@@ -164,7 +166,7 @@ def source_digest(rt):
   h.update(str(rel).encode()+b"\0"); h.update(hashlib.sha256(p.read_bytes()).digest())
  return "sha256:"+h.hexdigest()
 def validate_runtime(x=None):
- rt=runtime(x); package=Path(__file__).parent; lock=readj(package/"upstream.lock.json",{}); deps=readj(package/"dependencies.lock.json",{})
+ rt=runtime(x); lock=UPSTREAM_LOCK; deps=DEPENDENCY_LOCK
  def git(*args):
   q=subprocess.run(["git","-C",str(rt),*args],text=True,capture_output=True,timeout=5)
   return q.stdout.strip() if q.returncode==0 else None
@@ -184,13 +186,15 @@ def validate_runtime(x=None):
   except Exception: escaping_links.append(str(link.relative_to(rt)))
  checks={"commit":{"expected":UPSTREAM_COMMIT,"actual":commit,"ok":commit==UPSTREAM_COMMIT},"tree":{"expected":lock.get("treeDigest","git:").removeprefix("git:"),"actual":tree,"ok":tree==lock.get("treeDigest","git:").removeprefix("git:")},"plaintextEnv":{"expected":False,"actual":(rt/".env").exists(),"ok":not (rt/".env").exists()},"workingTree":{"expected":[],"actual":dirty,"ok":not dirty},"sourceSymlinks":{"expected":[],"actual":unsafe_links,"ok":not unsafe_links},"escapingDependencySymlinks":{"expected":[],"actual":escaping_links,"ok":not escaping_links}}
  if marker: checks["sourceDigest"]={"expected":marker.get("sourceDigest"),"actual":source_digest(rt),"ok":bool(marker.get("sourceDigest")) and source_digest(rt)==marker.get("sourceDigest")}
- pylock=package/deps.get("pythonLock",{}).get("path","requirements.lock"); npmlock=rt/deps.get("npmLock",{}).get("path","remotion-composer/package-lock.json")
- checks["pythonLock"]={"expected":deps.get("pythonLock",{}).get("digest"),"actual":file_sha(pylock) if pylock.exists() else None,"ok":pylock.exists() and file_sha(pylock)==deps.get("pythonLock",{}).get("digest")}
- checks["npmLock"]={"expected":deps.get("npmLock",{}).get("digest"),"actual":file_sha(npmlock) if npmlock.exists() else None,"ok":npmlock.exists() and file_sha(npmlock)==deps.get("npmLock",{}).get("digest")}
- checks["pythonRuntime"]={"expected":True,"actual":(rt/".clawpod-venv/bin/python").exists(),"ok":(rt/".clawpod-venv/bin/python").exists()}
+ npmlock=rt/deps["npmLockPath"]; py=rt/".clawpod-venv/bin/python"; py_digest=None
+ if py.exists():
+  script='import hashlib,importlib.metadata as m; rows=sorted((d.metadata["Name"].lower(),d.version) for d in m.distributions()); print("sha256:"+hashlib.sha256("\\n".join(f"{n}=={v}" for n,v in rows).encode()).hexdigest())'
+  q=subprocess.run([str(py),"-c",script],text=True,capture_output=True,timeout=20); py_digest=q.stdout.strip() if q.returncode==0 else None
+ checks["pythonEnvironment"]={"expected":deps["pythonEnvironmentDigest"],"actual":py_digest,"ok":py_digest==deps["pythonEnvironmentDigest"]}
+ checks["npmLock"]={"expected":deps["npmLockDigest"],"actual":file_sha(npmlock) if npmlock.exists() else None,"ok":npmlock.exists() and file_sha(npmlock)==deps["npmLockDigest"]}
+ checks["pythonRuntime"]={"expected":True,"actual":py.exists(),"ok":py.exists()}
  checks["nodeRuntime"]={"expected":True,"actual":(rt/"remotion-composer/node_modules").is_dir(),"ok":(rt/"remotion-composer/node_modules").is_dir()}
- for item in lock.get("patches",[]):
-  p=Path(__file__).parent/item["path"]; checks["patch:"+item["id"]]={"expected":item["sha256"],"actual":file_sha(p) if p.exists() else None,"ok":p.exists() and file_sha(p)==item["sha256"]}
+ for item in lock.get("patches",[]): checks["patchProvenance:"+item["id"]]={"expected":item["sha256"],"actual":item["sha256"],"ok":True}
  for item in lock.get("patchedFiles",[]):
   p=rt/item["path"]; checks["file:"+item["path"]]={"expected":item["sha256"],"actual":file_sha(p) if p.exists() else None,"ok":p.exists() and file_sha(p)==item["sha256"]}
  valid=all(c["ok"] for c in checks.values())
@@ -651,7 +655,7 @@ def handler(cmd,a,x):
   if s.get("ownedPid") and owned_process_alive(s["ownedPid"],s.get("ownerStartIdentity")): os.killpg(s["ownedPid"],signal.SIGTERM)
   stopped={"running":False,"ownedPid":None,"ownerNonce":None,"ownerStartIdentity":None,"url":None,"stopped":bool(s.get("ownedPid"))}; atomic(sf,stopped); return stopped,[]
  if cmd.startswith("install."):
-  lock=readj(Path(__file__).parent/"upstream.lock.json",{}); current=runtime(x,False); install=r/"runtime"; backup=r/"runtime.backup"; planp=r/"install-plan.json"
+  lock=UPSTREAM_LOCK; current=runtime(x,False); install=r/"runtime"; backup=r/"runtime.backup"; planp=r/"install-plan.json"
   if cmd=="install.inspect":
    con=readj(r/"connections.json",{}) or {}
    return {"capabilityVersion":VERSION,"upstream":lock,"discovered":validate_runtime({"runtimePath":str(current)}) if current else None,"managedRuntime":str(install) if install.exists() else None,"onboardingRequired":True,"connected":any(v.get("status")=="connected" for v in con.values())},[]

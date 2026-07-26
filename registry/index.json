@@ -352,7 +352,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "8f1071c5316c3228f13013edc93ebb940cb23f1313cf0ce23bc50a3554684bb1"
+          "sha256": "893e7f60df66be804cb123ade75ff0f2ffe54db9dc7f8f26fecd8d4e4cad4f71"
         },
         {
           "path": "command_contracts.json",
