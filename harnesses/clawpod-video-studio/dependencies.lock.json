@@ -1,0 +1,18 @@
+{
+  "node": ">=18",
+  "npmLock": {
+    "digest": "sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed",
+    "installMode": "npm ci --ignore-scripts",
+    "path": "remotion-composer/package-lock.json"
+  },
+  "policy": "Resolve the pinned upstream source into an isolated runtime; install Python with --require-hashes and npm with npm ci --ignore-scripts; never run upstream make setup.",
+  "python": ">=3.11,<3.13",
+  "pythonLock": {
+    "digest": "sha256:e55a16a8933693b05783d46d11e5e7f505e9da3003ee4f63351367d9cc48f1a5",
+    "path": "requirements.lock",
+    "venvRelativePath": ".clawpod-venv"
+  },
+  "schemaVersion": 1,
+  "status": "resolved-locked",
+  "upstreamCommit": "c36e41223e819441748817105635ac4036d41b10"
+}

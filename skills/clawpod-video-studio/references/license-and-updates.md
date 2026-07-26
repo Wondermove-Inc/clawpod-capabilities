@@ -1,0 +1,3 @@
+# License and updates
+
+OpenMontage is the pinned GNU AGPLv3 backend, not the capability identity. Pin the exact source commit plus tree, license, local-patch, patched-file, and dependency digests. Preserve notices and obtain legal review before publication or network-service use of a modified or combined work. Keep the ClawPod Video Studio adapter separable and call public upstream interfaces. Stage updates immutably, resolve and hash Python/npm dependencies, use npm ci, reapply and verify documented patches, validate contracts and tests, then atomically activate while retaining last known-good. Never run upstream make setup or create `.env`. Roll back code without deleting projects or protected secret pointers.

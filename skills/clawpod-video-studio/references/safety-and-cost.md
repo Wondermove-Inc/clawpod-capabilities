@@ -1,0 +1,3 @@
+# Safety and cost
+
+Safety classes progress from read-only and local-write to credential metadata, credential use, paid external action, user-visible external action, destructive action, and install mutation. Connection is not generation approval. Bind approval to job, plan digest, provider/model, operation, maximum USD, and expiry. Changed intent invalidates approval. Never allow upstream observe mode to bypass policy. Preserve reservations on unknown provider state; reconcile actual spend on every terminal outcome.

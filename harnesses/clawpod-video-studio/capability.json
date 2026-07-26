@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Execute typed ClawPod video-production lifecycle operations against a pinned and patched OpenMontage backend.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  }
+}
