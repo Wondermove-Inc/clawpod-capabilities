@@ -352,7 +352,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "3f65180e45ccb92858bfd35832241facdf5f91494c5a1a4c533ecafabbd812e2"
+          "sha256": "8f1071c5316c3228f13013edc93ebb940cb23f1313cf0ce23bc50a3554684bb1"
         },
         {
           "path": "command_contracts.json",
@@ -365,10 +365,6 @@
         {
           "path": "harness.json",
           "sha256": "6acfbac0f53878e5c628f42d8e71bf92efbf2db6939f76cce79a3310235406ab"
-        },
-        {
-          "path": "openmontage_runner.py",
-          "sha256": "2d434eeb17942619ecb5632789660ec85935ff4f00cb7a365b25404002366705"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",

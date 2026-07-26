@@ -123,7 +123,7 @@ class HarnessTests(unittest.TestCase):
   p,o=self.invoke('artifact.list',{'projectId':'demo'}); self.assertGreaterEqual(len(o['data']['items']),3); self.assertTrue(all(i['sha256'].startswith('sha256:') for i in o['data']['items']))
  def test_upstream_registry_and_local_tool_execution(self):
   runtime=Path('/workspace/vendor/openmontage')/om.UPSTREAM_COMMIT
-  p=subprocess.run([str(runtime/'.clawpod-venv/bin/python'),str(ROOT/'openmontage_runner.py')],input=json.dumps({'operation':'list'}),text=True,capture_output=True,env={**os.environ,'OPENMONTAGE_RUNTIME':str(runtime)})
+  p=subprocess.run([str(runtime/'.clawpod-venv/bin/python'),str(CLI),'_openmontage_runner'],input=json.dumps({'operation':'list'}),text=True,capture_output=True,env={**os.environ,'OPENMONTAGE_RUNTIME':str(runtime)})
   listing=json.loads(p.stdout); self.assertEqual(p.returncode,0); self.assertGreaterEqual(listing['data']['count'],100); self.assertIn('audio_probe',listing['data']['names'])
   self.create(); wav=self.root/'projects'/'demo'/'assets'/'tone.wav'; subprocess.run(['ffmpeg','-v','error','-f','lavfi','-i','sine=frequency=440:duration=0.2','-y',str(wav)],check=True)
   payload={'tool':'audio_probe','projectId':'demo','input':{'input_path':'assets/tone.wav'},'maximumUsd':0}

@@ -4,7 +4,7 @@ Secrets are accepted only from the process environment or mode-0600 files and
 are never persisted, echoed, or placed on child argv.
 """
 from __future__ import annotations
-import argparse, contextlib, datetime as dt, fcntl, hashlib, json, os, re, shutil, signal, socket, stat, subprocess, sys, tempfile, time, urllib.error, urllib.request, uuid
+import argparse, contextlib, dataclasses, datetime as dt, enum, fcntl, hashlib, json, os, re, shutil, signal, socket, stat, subprocess, sys, tempfile, time, urllib.error, urllib.request, uuid
 from pathlib import Path
 import yaml
 
@@ -241,10 +241,10 @@ LOCAL_EXECUTABLES={"ffprobe":"ffprobe","ffmpeg":"ffmpeg"}
 def upstream_python(rt): return str(rt/".clawpod-venv/bin/python") if (rt/".clawpod-venv/bin/python").exists() else sys.executable
 
 def registry_call(rt,request,timeout=90,cancel_file=None,secret_values=None,cancel_nonce=None):
- runner=Path(__file__).parent/"openmontage_runner.py"
+ runner=Path(__file__).resolve()
  env={k:v for k,v in os.environ.items() if not SECRET_RE.search(k)}
  env["OPENMONTAGE_RUNTIME"]=str(rt); env.update(secret_values or {})
- start=time.monotonic(); p=subprocess.Popen([upstream_python(rt),str(runner)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env,start_new_session=True)
+ start=time.monotonic(); p=subprocess.Popen([upstream_python(rt),str(runner),"_openmontage_runner"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env,start_new_session=True)
  assert p.stdin is not None; p.stdin.write(stable(request)); p.stdin.close()
  try:
   while p.poll() is None:
@@ -701,10 +701,38 @@ def handler(cmd,a,x):
   return {"rolledBack":True,"targetPath":str(install),"replacedPath":str(failed) if failed.exists() else None,"validation":restored},[]
  raise E("INVALID_ARGUMENT","unsupported command")
 
+def isolated_openmontage_runner():
+ def emit(value):
+  def default(v):
+   if dataclasses.is_dataclass(v): return dataclasses.asdict(v)
+   if isinstance(v,enum.Enum): return v.value
+   if isinstance(v,Path): return str(v)
+   raise TypeError(type(v).__name__)
+  sys.stdout.write(json.dumps(value,default=default,sort_keys=True,separators=(",",":")))
+ rt=Path(os.environ.get("OPENMONTAGE_RUNTIME","")).resolve()
+ if not rt.is_dir() or not (rt/"tools").is_dir(): emit({"ok":False,"error":{"code":"RUNTIME_NOT_FOUND"}}); return 8
+ if (rt/".env").exists(): emit({"ok":False,"error":{"code":"PLAINTEXT_SECRET_FILE_FORBIDDEN"}}); return 9
+ raw=sys.stdin.buffer.read(MAX_JSON+1)
+ if len(raw)>MAX_JSON: emit({"ok":False,"error":{"code":"INPUT_TOO_LARGE"}}); return 2
+ try:
+  req=json.loads(raw or b"{}");
+  if not isinstance(req,dict): raise ValueError("object required")
+  sys.path.insert(0,str(rt)); from tools.tool_registry import ToolRegistry
+  ToolRegistry._load_dotenv=staticmethod(lambda:None); registry=ToolRegistry(); registry.discover(); operation=req.get("operation")
+  if operation=="list": emit({"ok":True,"data":{"names":sorted(registry.list_all()),"count":len(registry.list_all())}}); return 0
+  tool=registry.get(req.get("tool"))
+  if tool is None: emit({"ok":False,"error":{"code":"TOOL_NOT_FOUND"}}); return 3
+  if operation=="inspect": emit({"ok":True,"data":tool.get_info()}); return 0
+  if operation!="run" or not isinstance(req.get("input"),dict): emit({"ok":False,"error":{"code":"INVALID_ARGUMENT"}}); return 2
+  result=tool.execute(req["input"]); raw_data=json.dumps(getattr(result,"data",{}),default=str,sort_keys=True).encode(); artifacts=[str(z) for z in (getattr(result,"artifacts",None) or []) if isinstance(z,(str,Path))]
+  safe={"success":bool(getattr(result,"success",False)),"artifacts":artifacts,"cost_usd":float(getattr(result,"cost_usd",0) or 0),"duration_seconds":float(getattr(result,"duration_seconds",0) or 0),"seed":getattr(result,"seed",None) if isinstance(getattr(result,"seed",None),(int,type(None))) else None,"model":str(getattr(result,"model","") or "")[:200] or None,"data_digest":"sha256:"+hashlib.sha256(raw_data).hexdigest(),"error_type":type(getattr(result,"error",None)).__name__ if getattr(result,"error",None) else None}; emit({"ok":safe["success"],"data":safe}); return 0 if safe["success"] else 7
+ except Exception as exc: emit({"ok":False,"error":{"code":"UPSTREAM_EXCEPTION","type":type(exc).__name__}}); return 7
+
 def parser():
- p=argparse.ArgumentParser(); p.add_argument("command",choices=COMMANDS+["_worker"]); p.add_argument("--root"); p.add_argument("--input-json"); p.add_argument("--project-id"); p.add_argument("--pipeline-id"); p.add_argument("--provider"); p.add_argument("--job-id"); p.add_argument("--nonce"); return p
+ p=argparse.ArgumentParser(); p.add_argument("command",choices=COMMANDS+["_worker","_openmontage_runner"]); p.add_argument("--root"); p.add_argument("--input-json"); p.add_argument("--project-id"); p.add_argument("--pipeline-id"); p.add_argument("--provider"); p.add_argument("--job-id"); p.add_argument("--nonce"); return p
 def main():
  a=parser().parse_args()
+ if a.command=="_openmontage_runner": return isolated_openmontage_runner()
  if a.command=="_worker": return worker(root(a),a.job_id,a.nonce)
  try: data,w=handler(a.command,a,load_json_arg(a.input_json)); print(stable(envelope(a.command,data=data,warnings=w))); return 0
  except E as e: return fail(a.command,e)
