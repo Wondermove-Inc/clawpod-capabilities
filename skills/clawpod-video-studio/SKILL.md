@@ -16,8 +16,8 @@ Immediately after installation, say: **“ClawPod Video Studio is installed but 
 3. Ask which provider categories or named providers the user wants to connect. Offer `defer`, keyless/local, stock+voice, or a user-selected profile.
 4. Obtain explicit approval before accepting, storing, verifying, or using credentials.
 5. Store approved credentials with protected secret tooling. Never place values in chat echoes, prompts, argv, `.env`, files, logs, fixtures, artifacts, reports, or child-agent prompts.
-6. Call `connection.configure` with protected secret pointer IDs only. Persist only provider, pointer metadata, labels, status, timestamps, and revocation guidance.
-7. With separate secret-use approval, call `connection.verify`. Use only a non-billable identity, quota, or model-list endpoint. If none exists, retain `configured_unverified`; never generate media merely to test a credential.
+6. Call `connection.configure` with protected secret pointer IDs and the intended environment or mode-0600 file injection target only. Persist only provider, pointer/injection metadata, status, timestamps, and revocation guidance. The Harness never resolves or stores plaintext.
+7. With separate secret-use and network-read approval, inject the selected pointer through the protected runtime and call `connection.verify`. The built-in non-billable read adapters cover OpenAI, Google, ElevenLabs, Pexels, Unsplash, and xAI. If a provider has no reviewed endpoint, retain `configured_unverified`; never generate media merely to test a credential.
 8. Keep independent provider states: `connected`, `configured_unverified`, `missing_companion_field`, `invalid`, `revoked`, or `deferred`.
 9. Explain that connection never authorizes generation, spending, publication, browser opening, or external sharing.
 
@@ -33,12 +33,13 @@ Read `references/onboarding.md` when connecting providers or recovering authoriz
 4. Select exactly one validated pipeline and state beta or test status. Permit `documentary-montage` only when `system.validate` confirms the pinned `openmontage-documentary-category` patch digest and the manifest validates.
 5. Call `pipeline.inspect`, then load the pinned upstream manifest and current stage director. Before a tool call, read that tool’s declared upstream knowledge.
 6. Create or inspect the project. Present concepts, provider/model alternatives, Remotion and HyperFrames when both are available, delivery promise, itemized estimate/range, sample plan, gates, and recommendation.
-7. Commit a deterministic plan with `project.plan`, then call `run.prepare`.
+7. Commit a deterministic plan with `project.plan`, then call `run.prepare`. Every operation must name a declared stage or an OpenMontage tool with complete typed input; all 13 pinned pipeline manifests are resolved into stage/tool contracts.
 8. Obtain separate exact approvals for human gates, secret use, paid/external actions, browser/UI actions, overwrite/cancel, and publication. Bind paid approval to job, plan digest, provider, model, operation, maximum USD, and expiry. Any changed digest, provider, model, quantity, or maximum cost requires new approval.
-9. Use `run.start` only with the unchanged prepared intent. Long work runs detached and returns immediately. Track it through Workboard and push completion or wake-guard, never Gateway polling loops.
-10. At `awaiting_human`, present the artifact, review criteria, current and remaining cost, then end the turn. Resume only after `checkpoint.approve` or a revision request.
-11. Do not silently substitute provider, model, runtime, motion/still treatment, narration, music, or publishing path.
-12. Run `qa.run`, inspect QA and final artifacts, and verify actual outputs before presenting completion.
+9. Use `run.start` only with the unchanged prepared intent and inject approved provider pointers into that process. It starts an owned detached worker, returns immediately, checkpoints each completed operation, and preserves partial artifacts. Track it through Workboard and push completion or wake-guard, never Gateway polling loops.
+10. Use `tool.prepare` and `tool.run` for bounded individual tools. Local tools execute credential-free. API/hybrid tools require an exact digest, positive cost ceiling, external-action approval, configured provider, and protected runtime injection. Never put a secret in `inputJson`.
+11. At an explicit human checkpoint, present the artifact, review criteria, current and remaining cost, then end the turn. Resume only after `checkpoint.approve` or a revision request.
+12. Do not silently substitute provider, model, runtime, motion/still treatment, narration, music, or publishing path.
+13. Run `qa.run`, inspect QA and final artifacts, and verify actual ffprobe container, duration, video/frame, optional audio/subtitle, delivery, digest, provenance, and cost evidence before presenting completion.
 
 Read `references/pipelines.md` for pipeline boundaries and `references/operations.md` for command selection.
 
@@ -68,4 +69,4 @@ Read `references/errors-and-recovery.md` for detailed recovery paths.
 
 Require the canonical render and media metadata, relevant ffprobe/frame/audio/subtitle/delivery checks, reconciled cost, provider provenance, approval/publication state, known limitations, and reusable failure lessons.
 
-The linked Harness is incomplete until name/title alignment, manifest validation, trust, representative `prepare → run`, onboarding checks, pinned patch verification, and the zero-key path succeed.
+The linked Harness is incomplete until name/title alignment, manifest validation, trust, representative detached `prepare → run`, direct local OpenMontage tool execution, onboarding checks, pinned source/patch verification, Backlot ownership checks, transactional runtime validation, real media QA, and the zero-key path succeed. Cloud-provider coverage must be reported separately as verified, credential-blocked, or adapter-unavailable; never infer it from local tests.

@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-video-studio",
   "title": "ClawPod Video Studio",
-  "description": "Typed, approval-bound ClawPod video production with a pinned OpenMontage backend, protected provider onboarding, detached jobs, cost controls, checkpoints, and QA.",
-  "version": "0.1.0",
+  "description": "Typed, approval-bound ClawPod video production with a digest-verified OpenMontage runtime, protected provider injection, detached jobs, cost controls, checkpoints, and media QA.",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_video_studio.py",
   "packageRoot": ".",
   "execution": {
