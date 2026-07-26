@@ -73,6 +73,58 @@
       }
     },
     {
+      "id": "clawpod-video-studio",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route governed end-to-end video production through ClawPod Video Studio and its pinned OpenMontage backend.",
+      "path": "skills/clawpod-video-studio",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "d657658ea63f9f89d12c58d6ddf018bc0b2f10c58e8a96e8eee97a9c730868d6"
+        },
+        {
+          "path": "references/errors-and-recovery.md",
+          "sha256": "fac7ccfd3e1ab34e13fc342896dc4420e51b945ec2f8bbf0d2f96c295532d1e7"
+        },
+        {
+          "path": "references/license-and-updates.md",
+          "sha256": "49c45126f96232794b9f3ed0ed0dbdcd7713edce8b5138196cfd040955b2d873"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "595a21f495f792e8fe027e12cdcfad530890e42d7df572da9bfed9cf3146be01"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "0477a9b25fb93a6a8ae18e3263a3f14a6b2e57e12d9ef7e47359eb07b3f44ed2"
+        },
+        {
+          "path": "references/pipelines.md",
+          "sha256": "fc5698812f845fd4578669067969f1b0359fc9f488a911c60316eb5642e07347"
+        },
+        {
+          "path": "references/safety-and-cost.md",
+          "sha256": "fcbd16c6ecde468441ee308af6452a794547797e2bffc57275a7e93167d774b1"
+        }
+      ],
+      "linkedHarness": {
+        "id": "clawpod-video-studio",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "github",
       "type": "skill",
       "version": "0.1.1",
@@ -269,6 +321,62 @@
         {
           "path": "harness.json",
           "sha256": "9f729aa2e96121fdf9dc25970de45f0b8aa5bcc35bf1feaacbb8e98ea2bbe4d7"
+        }
+      ]
+    },
+    {
+      "id": "clawpod-video-studio",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute typed ClawPod video-production lifecycle operations against a pinned and patched OpenMontage backend.",
+      "path": "harnesses/clawpod-video-studio",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "LICENSES/OpenMontage-AGPL-3.0.txt",
+          "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+        },
+        {
+          "path": "LICENSES/THIRD_PARTY-NOTICES.md",
+          "sha256": "e11de5d9a83d2ff86b89999346c5538a8d556ecbe775f28350b42d1d176e9cfa"
+        },
+        {
+          "path": "clawpod_video_studio.py",
+          "sha256": "a7ef6e7f3192166a3fd06947aabc4c9fde4a851955f7bc9f1e2cf5085b100570"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "490626d4ac80b0f43cfc2b914bf040636c169f525a00fdcaad12f7decd4b8137"
+        },
+        {
+          "path": "dependencies.lock.json",
+          "sha256": "110974af463a46e5f630d8153d027be08f4ce27702b97c00c2a859514111ddc7"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "4d242d65ab3a5efb675207f550c66d72ef7c766a7e079a85d4c95f97e3c34eae"
+        },
+        {
+          "path": "patches/openmontage-documentary-category.patch",
+          "sha256": "f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"
+        },
+        {
+          "path": "requirements.lock",
+          "sha256": "e55a16a8933693b05783d46d11e5e7f505e9da3003ee4f63351367d9cc48f1a5"
+        },
+        {
+          "path": "upstream.lock.json",
+          "sha256": "d9a337791d701ea2c69cf8a22e83fd874060a4a86c522ba78382eb113a2b79ce"
         }
       ]
     },

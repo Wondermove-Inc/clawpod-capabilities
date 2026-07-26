@@ -1,0 +1,13 @@
+diff --git a/schemas/pipelines/pipeline_manifest.schema.json b/schemas/pipelines/pipeline_manifest.schema.json
+index ebf73b4..a7737e4 100644
+--- a/schemas/pipelines/pipeline_manifest.schema.json
++++ b/schemas/pipelines/pipeline_manifest.schema.json
+@@ -11,7 +11,7 @@
+     "description": { "type": "string" },
+     "category": {
+       "type": "string",
+-      "enum": ["talking_head", "generated", "hybrid", "screen_recording", "animation", "cinematic", "custom"]
++      "enum": ["talking_head", "generated", "hybrid", "screen_recording", "animation", "cinematic", "documentary", "custom"]
+     },
+     "stability": {
+       "type": "string",

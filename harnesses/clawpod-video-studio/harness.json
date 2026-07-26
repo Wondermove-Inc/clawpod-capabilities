@@ -1,0 +1,5979 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-video-studio",
+  "title": "ClawPod Video Studio",
+  "description": "Typed, approval-bound ClawPod video production with a pinned OpenMontage backend, protected provider onboarding, detached jobs, cost controls, checkpoints, and QA.",
+  "version": "0.1.0",
+  "entrypoint": "./clawpod_video_studio.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 10000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Create, edit, repurpose, localize, animate, inspect, resume, or quality-check videos with ClawPod Video Studio",
+    "Connect media, image, video, speech, or music providers through protected secret pointers for the pinned OpenMontage backend"
+  ],
+  "capabilities": [
+    "agentic-video-production",
+    "provider-onboarding",
+    "cost-approval",
+    "background-jobs",
+    "quality-assurance"
+  ],
+  "authModel": {
+    "type": "multi-provider-secret-pointer",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "system.version": {
+      "description": "OpenMontage system.version operation.",
+      "baseArgv": [
+        "system.version"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "system.preflight": {
+      "description": "OpenMontage system.preflight operation.",
+      "baseArgv": [
+        "system.preflight"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "system.validate": {
+      "description": "OpenMontage system.validate operation.",
+      "baseArgv": [
+        "system.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "pipeline.list": {
+      "description": "OpenMontage pipeline.list operation.",
+      "baseArgv": [
+        "pipeline.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "pipeline.inspect": {
+      "description": "OpenMontage pipeline.inspect operation.",
+      "baseArgv": [
+        "pipeline.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "provider.summary": {
+      "description": "OpenMontage provider.summary operation.",
+      "baseArgv": [
+        "provider.summary"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "provider.list": {
+      "description": "OpenMontage provider.list operation.",
+      "baseArgv": [
+        "provider.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "provider.inspect": {
+      "description": "OpenMontage provider.inspect operation.",
+      "baseArgv": [
+        "provider.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "provider.requirements": {
+      "description": "OpenMontage provider.requirements operation.",
+      "baseArgv": [
+        "provider.requirements"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "connection.list": {
+      "description": "OpenMontage connection.list operation.",
+      "baseArgv": [
+        "connection.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "connection.configure": {
+      "description": "OpenMontage connection.configure operation.",
+      "baseArgv": [
+        "connection.configure"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "connection.verify": {
+      "description": "OpenMontage connection.verify operation.",
+      "baseArgv": [
+        "connection.verify"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse",
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "connection.revoke": {
+      "description": "OpenMontage connection.revoke operation.",
+      "baseArgv": [
+        "connection.revoke"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "project.create": {
+      "description": "OpenMontage project.create operation.",
+      "baseArgv": [
+        "project.create"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "project.list": {
+      "description": "OpenMontage project.list operation.",
+      "baseArgv": [
+        "project.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "project.inspect": {
+      "description": "OpenMontage project.inspect operation.",
+      "baseArgv": [
+        "project.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "project.validate": {
+      "description": "OpenMontage project.validate operation.",
+      "baseArgv": [
+        "project.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "project.plan": {
+      "description": "OpenMontage project.plan operation.",
+      "baseArgv": [
+        "project.plan"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "cost.estimate": {
+      "description": "OpenMontage cost.estimate operation.",
+      "baseArgv": [
+        "cost.estimate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "cost.inspect": {
+      "description": "OpenMontage cost.inspect operation.",
+      "baseArgv": [
+        "cost.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.prepare": {
+      "description": "OpenMontage run.prepare operation.",
+      "baseArgv": [
+        "run.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.start": {
+      "description": "OpenMontage run.start operation.",
+      "baseArgv": [
+        "run.start"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse",
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.status": {
+      "description": "OpenMontage run.status operation.",
+      "baseArgv": [
+        "run.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.inspect": {
+      "description": "OpenMontage run.inspect operation.",
+      "baseArgv": [
+        "run.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.logs": {
+      "description": "OpenMontage run.logs operation.",
+      "baseArgv": [
+        "run.logs"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.resume": {
+      "description": "OpenMontage run.resume operation.",
+      "baseArgv": [
+        "run.resume"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse",
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "run.cancel": {
+      "description": "OpenMontage run.cancel operation.",
+      "baseArgv": [
+        "run.cancel"
+      ],
+      "safetyClasses": [
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "checkpoint.inspect": {
+      "description": "OpenMontage checkpoint.inspect operation.",
+      "baseArgv": [
+        "checkpoint.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "checkpoint.approve": {
+      "description": "OpenMontage checkpoint.approve operation.",
+      "baseArgv": [
+        "checkpoint.approve"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "checkpoint.request-revision": {
+      "description": "OpenMontage checkpoint.request-revision operation.",
+      "baseArgv": [
+        "checkpoint.request-revision"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "checkpoint.fail": {
+      "description": "OpenMontage checkpoint.fail operation.",
+      "baseArgv": [
+        "checkpoint.fail"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "stage.prepare": {
+      "description": "OpenMontage stage.prepare operation.",
+      "baseArgv": [
+        "stage.prepare"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "stage.validate": {
+      "description": "OpenMontage stage.validate operation.",
+      "baseArgv": [
+        "stage.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "stage.commit": {
+      "description": "OpenMontage stage.commit operation.",
+      "baseArgv": [
+        "stage.commit"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tool.prepare": {
+      "description": "OpenMontage tool.prepare operation.",
+      "baseArgv": [
+        "tool.prepare"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tool.run": {
+      "description": "OpenMontage tool.run operation.",
+      "baseArgv": [
+        "tool.run"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse",
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "qa.run": {
+      "description": "OpenMontage qa.run operation.",
+      "baseArgv": [
+        "qa.run"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "qa.inspect": {
+      "description": "OpenMontage qa.inspect operation.",
+      "baseArgv": [
+        "qa.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "artifact.list": {
+      "description": "OpenMontage artifact.list operation.",
+      "baseArgv": [
+        "artifact.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "artifact.inspect": {
+      "description": "OpenMontage artifact.inspect operation.",
+      "baseArgv": [
+        "artifact.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "artifact.export": {
+      "description": "OpenMontage artifact.export operation.",
+      "baseArgv": [
+        "artifact.export"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "backlot.status": {
+      "description": "OpenMontage backlot.status operation.",
+      "baseArgv": [
+        "backlot.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "backlot.start": {
+      "description": "OpenMontage backlot.start operation.",
+      "baseArgv": [
+        "backlot.start"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "backlot.open": {
+      "description": "OpenMontage backlot.open operation.",
+      "baseArgv": [
+        "backlot.open"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "backlot.stop": {
+      "description": "OpenMontage backlot.stop operation.",
+      "baseArgv": [
+        "backlot.stop"
+      ],
+      "safetyClasses": [
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "install.inspect": {
+      "description": "OpenMontage install.inspect operation.",
+      "baseArgv": [
+        "install.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "install.plan-update": {
+      "description": "OpenMontage install.plan-update operation.",
+      "baseArgv": [
+        "install.plan-update"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "install.apply-update": {
+      "description": "OpenMontage install.apply-update operation.",
+      "baseArgv": [
+        "install.apply-update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "install.rollback": {
+      "description": "OpenMontage install.rollback operation.",
+      "baseArgv": [
+        "install.rollback"
+      ],
+      "safetyClasses": [
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

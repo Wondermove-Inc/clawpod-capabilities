@@ -1,0 +1,3 @@
+# Provider onboarding
+
+Run live `provider.requirements`; do not hardcode runtime availability. Baseline categories include keyless archives/local tools, stock media, image/video gateways, direct video providers, speech/audio, music, and optional local GPU models. Ask which providers to connect. Accept credentials only after explicit approval and route every value to protected secret storage. Bind providers to pointer IDs, never values. Verify with free identity/quota/catalog calls where possible. Record partial states independently. State permissions, billing/data-retention exposure, and provider-console revocation plus local binding removal. Installation is not operational cloud readiness.

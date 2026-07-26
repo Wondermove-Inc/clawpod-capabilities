@@ -23,7 +23,9 @@ class ValidatorTests(unittest.TestCase):
     def test_repository_registry_is_valid(self) -> None:
         result = self.run_validator(ROOT)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("validated 10 capability entries", result.stdout)
+        registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
+        expected = len(registry["capabilities"])
+        self.assertIn(f"validated {expected} capability entries", result.stdout)
 
     def test_invalid_entry_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

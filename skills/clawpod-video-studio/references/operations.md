@@ -1,0 +1,3 @@
+# Operation selection
+
+Use read commands before writes. Use `project.create/inspect/plan`, then `run.prepare`. `run.start` and `run.resume` require unchanged prepared intent and bound approvals. Use detached jobs for long operations, checkpoint commands for gates, stage commands for Skill-produced canonical artifacts, tool commands for exact upstream tool calls, QA before completion, and artifact commands for provenance/export. Backlot is optional read-only UI on loopback. Install update and rollback remain separate explicit mutations.
