@@ -344,7 +344,7 @@ def ensure_page_image(jd,page,args):
   check_pixels(src);dest=destdir/("page-1"+ext);shutil.copyfile(src,dest);return dest
  if ext==".pdf":
   tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"review-{page}"
-  subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile","-ppm",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"})
+  subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"})
   raster=prefix.with_suffix(".ppm");check_pixels(raster);dest=destdir/f"page-{page}.ppm";shutil.copyfile(raster,dest);raster.unlink(missing_ok=True);cleanup(jd);return dest
  raise ValueError("bounded page image unavailable for vision review")
 
@@ -382,7 +382,7 @@ def process(jd,args,cmd,worker=False):
      z=subprocess.run(["pdftotext","-f",str(page),"-l",str(page),str(src),"-"],capture_output=True,text=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"})
      if z.returncode==0:text=z.stdout.strip()
     if text:pages.append(page_result(page,text,1.0,"text-layer",m));checkpoint(jd,m,pages);continue
-    tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"page-{page}";subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile","-ppm",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"});img=prefix.with_suffix(".ppm");check_pixels(img);keep=jd/"page-images"/f"page-{page}.ppm";keep.parent.mkdir(exist_ok=True);shutil.copyfile(img,keep);pages.append(ocr_image(img,page,m,args));checkpoint(jd,m,pages);img.unlink(missing_ok=True);cleanup(jd)
+    tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"page-{page}";subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"});img=prefix.with_suffix(".ppm");check_pixels(img);keep=jd/"page-images"/f"page-{page}.ppm";keep.parent.mkdir(exist_ok=True);shutil.copyfile(img,keep);pages.append(ocr_image(img,page,m,args));checkpoint(jd,m,pages);img.unlink(missing_ok=True);cleanup(jd)
   else:
    if start==1:
     check_pixels(src);keep=jd/"page-images"/("page-1"+src.suffix.lower());keep.parent.mkdir(exist_ok=True);shutil.copyfile(src,keep);pages.append(ocr_image(src,1,m,args));checkpoint(jd,m,pages)

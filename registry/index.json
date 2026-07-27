@@ -394,7 +394,7 @@
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "ebab9f48732359a05bde64084e48416019eff802c00acb35c0958d9c14012cf5"
+          "sha256": "4ee42bee071c8c1ef1fd700ee4559eeabfe0e41b2b979f1b881066c6192b6bcc"
         },
         {
           "path": "command_contracts.json",
