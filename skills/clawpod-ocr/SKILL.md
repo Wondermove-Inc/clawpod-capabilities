@@ -41,11 +41,12 @@ After installation, verify `system.version`, `engine.requirements`, `engine.veri
 The document must include:
 
 - Enterprise cover with title, document ID, generation time, and security label.
-- Executive QA summary and file index.
-- One numbered, page-separated section per source file.
-- Original image and immutable raw OCR together for direct comparison.
-- Filename, confidence, language, engine, source SHA-256, dimensions/pages, cache, validation, raw-preservation, and review-required status.
+- Executive information, review-needed highlights, and a clean file index.
+- One numbered, page-separated reader-facing section per source file.
+- A clearly labeled `읽기용 정리본` before source comparison. It may insert deterministic section, sentence, and bounded paragraph boundaries; common receipt labels become grouped sections and two-column label/value rows, with each value ending at the next recognized label. It must preserve recognized token content and sequence modulo whitespace, add no content, and never claim authoritative correction.
+- Original image in a later source-evidence subsection with filename, confidence, language, engine, source SHA-256, dimensions/pages, cache, validation, raw-preservation, and review-required status.
 - A separately labeled corrected/normalized section only when `result.corrected.json` exists.
+- One consolidated `RAW OCR (감사용 원문)` appendix after all reader-facing sections. It identifies each file and digest and states that `result.json` is immutable.
 - Consistent professional styles, header, footer, and page-number fields.
 
 For non-image jobs without retained raster imagery, state that the source preview is unavailable while retaining digest provenance. Never alter `result.json`. Never overwrite an existing report.

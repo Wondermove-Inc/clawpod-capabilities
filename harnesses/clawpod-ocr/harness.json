@@ -4,7 +4,7 @@
   "name": "clawpod-ocr",
   "title": "ClawPod OCR",
   "description": "Bounded local Korean and English OCR with comparison DOCX reports, a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "entrypoint": "./clawpod_ocr.py",
   "packageRoot": ".",
   "execution": {

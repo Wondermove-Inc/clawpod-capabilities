@@ -1,9 +1,11 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>ClawPod OCR Enterprise Comparison Report</title>
-<style>body{font-family:Aptos,Arial,sans-serif;color:#243447;margin:1in}h1{color:#17365d}h2{color:#365f91;border-bottom:1px solid #b8cce4}.badge{font-weight:bold;color:#548235}.review{color:#c00000}.meta{font-size:9pt;color:#59636e}.source{max-width:6in;max-height:4in}pre{white-space:pre-wrap;font-family:Aptos,Arial,sans-serif}</style></head>
-<body><h1>OCR COMPARISON REPORT</h1><p>Enterprise document verification package</p>
-<p class="meta">Document ID: {{document_id}} | Generated: {{generated_at}} | Security label: {{security_label}}</p>
-<h2>1. Executive summary</h2><p>{{qa_summary}}</p><h2>2. Contents and file index</h2><p>{{file_index}}</p>
-<section><h2>{{section_number}}. {{source_filename}}</h2><p class="badge">{{qa_status}}</p><p class="meta">{{metadata}}</p>
-<h3>Original source image</h3>{{source_image}}<h3>Raw OCR (immutable)</h3><pre>{{raw_ocr}}</pre>
-<h3>Corrected/normalized text (separate derived result)</h3><pre>{{corrected_text}}</pre></section></body></html>
+<html><head><meta charset="utf-8"><title>ClawPod OCR Reader-First Enterprise Report</title>
+<style>body{font-family:Aptos,"Malgun Gothic",Arial,sans-serif;color:#243447;margin:1in}h1{color:#17365d}h2{color:#365f91;border-bottom:1px solid #b8cce4}h3{color:#4f81bd}.review{font-weight:bold;color:#c00000}.meta,.note{font-size:9pt;color:#59636e}.source{max-width:6in;max-height:4in}table{width:100%;border-collapse:collapse;margin:.4em 0}th,td{border:1px solid #b8cce4;padding:.35em;text-align:left}.reading{line-height:1.5}.raw{white-space:pre-wrap;font-family:Consolas,monospace;font-size:9pt}.page{page-break-before:always}</style></head>
+<body><h1>OCR ENTERPRISE REPORT</h1><p>Reader-first document verification package</p>
+<table><tr><th>Document ID</th><td>{{document_id}}</td></tr><tr><th>Generated</th><td>{{generated_at}}</td></tr><tr><th>Security label</th><td>{{security_label}}</td></tr></table>
+<h2>1. Executive information</h2><p>{{executive_summary}}</p><h2>2. Review-needed highlights</h2><p class="review">{{review_highlights}}</p><h2>3. File index</h2>{{file_index}}
+<section class="page"><h2>{{section_number}}. {{source_filename}}</h2><h3>Executive information</h3>{{information_block}}
+<h3>읽기용 정리본</h3><p class="note">표시 정규화본이며 권위 있는 교정본이 아닙니다. 의미 해석이나 문자 교정을 하지 않습니다.</p><div class="reading">{{reading_view}}</div>
+<h3>Corrected/normalized text (separate derived result)</h3><div class="reading">{{corrected_text}}</div>
+<h3>Source comparison and evidence</h3><p class="meta">{{metadata}}</p>{{source_image}}</section>
+<section class="page"><h2>Appendix A. RAW OCR (감사용 원문)</h2><p class="note">result.json에서 읽은 변경 불가 감사 증거입니다.</p><h3>{{source_filename}} · {{source_sha256}}</h3><pre class="raw">{{raw_ocr}}</pre></section></body></html>

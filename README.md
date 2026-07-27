@@ -154,6 +154,6 @@ Never publish credentials, internal endpoints, customer data, private configurat
 
 No license has been selected yet. Until one is added, copyright remains with the repository owner and reuse is not granted beyond applicable law.
 
-### ClawPod OCR 0.3.0
+### ClawPod OCR 0.3.1
 
 ClawPod OCR produces local enterprise `.docx` comparison reports for one or multiple completed OCR jobs. Reports preserve and distinguish raw OCR from separately corrected text and include source imagery, QA metadata, document controls, and file-specific sections.
