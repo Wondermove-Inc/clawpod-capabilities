@@ -73,6 +73,49 @@
       }
     },
     {
+      "id": "clawpod-ocr",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Extract Korean and English text locally with Tesseract and optionally correct low-confidence pages through guarded Ollama.",
+      "path": "skills/clawpod-ocr",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "0b66c0d44753603a8714acd15fd1300483292bf45cc4b6ea737f973806b13f72"
+        },
+        {
+          "path": "references/errors-and-recovery.md",
+          "sha256": "688a50d6ac6969c6675176330877ba6e9be07ba864857749b0f086262b34213e"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "86adab2c8117c9efaf98e5e3e190f1957cc0788a8936637946c9c5d55fdeec54"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "573e0abcf2493914a3de7e4b257bf4bed8fbb841c3404caa6ec35d621a8fceaf"
+        },
+        {
+          "path": "references/safety-and-privacy.md",
+          "sha256": "614db1f0e22c6cd8d6323566fb58fce2ed4213aec07a5f013983ac1f7583ee70"
+        }
+      ],
+      "linkedHarness": {
+        "id": "clawpod-ocr",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "clawpod-video-studio",
       "type": "skill",
       "version": "0.2.0",

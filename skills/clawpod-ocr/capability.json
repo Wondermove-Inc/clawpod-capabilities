@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Extract Korean and English text locally with Tesseract and optionally correct low-confidence pages through guarded Ollama.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "clawpod-ocr",
+    "version": "0.1.0"
+  }
+}
