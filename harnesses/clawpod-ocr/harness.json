@@ -87,6 +87,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -250,11 +267,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "system.preflight": {
-      "description": "system.preflight bounded OCR operation.",
+      "description": "Compare the current local OCR probe with persisted onboarding verification.",
       "baseArgv": [
         "system.preflight"
       ],
@@ -314,6 +359,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -477,11 +539,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "engine.requirements": {
-      "description": "engine.requirements bounded OCR operation.",
+      "description": "Describe required local OCR tools, versions, languages, and limits without probing.",
       "baseArgv": [
         "engine.requirements"
       ],
@@ -541,6 +631,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -704,16 +811,44 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "engine.verify": {
-      "description": "engine.verify bounded OCR operation.",
+      "description": "Probe Tesseract 5, kor/eng/osd, and Poppler, then persist exact local onboarding state.",
       "baseArgv": [
         "engine.verify"
       ],
       "safetyClasses": [
-        "readOnly"
+        "writeSafe"
       ],
       "inputSchema": {
         "type": "object",
@@ -768,6 +903,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -931,11 +1083,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "onboarding.status": {
-      "description": "onboarding.status bounded OCR operation.",
+      "description": "Report exact persisted local and optional Ollama onboarding states.",
       "baseArgv": [
         "onboarding.status"
       ],
@@ -995,6 +1175,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1157,6 +1354,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -1222,6 +1447,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1384,6 +1626,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -1450,6 +1720,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1613,16 +1900,44 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "ollama.verify": {
-      "description": "ollama.verify bounded OCR operation.",
+      "description": "Verify transport, auth injection, model existence, and usable vision capability.",
       "baseArgv": [
         "ollama.verify"
       ],
       "safetyClasses": [
-        "readOnly",
+        "writeSafe",
         "secretUse",
         "externalSideEffect"
       ],
@@ -1679,6 +1994,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1841,6 +2173,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -1907,6 +2267,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2069,6 +2446,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -2134,6 +2539,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2297,6 +2719,34 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
@@ -2306,7 +2756,7 @@
         "ocr.prepare"
       ],
       "safetyClasses": [
-        "writeSafe"
+        "readOnly"
       ],
       "inputSchema": {
         "type": "object",
@@ -2361,6 +2811,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2524,11 +2991,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "ocr.start": {
-      "description": "ocr.start bounded OCR operation.",
+      "description": "Run OCR or launch one real owned detached worker with page checkpoints.",
       "baseArgv": [
         "ocr.start"
       ],
@@ -2588,6 +3083,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2751,11 +3263,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "job.status": {
-      "description": "job.status bounded OCR operation.",
+      "description": "Reconcile owned worker liveness and report checkpoint state.",
       "baseArgv": [
         "job.status"
       ],
@@ -2815,6 +3355,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2977,6 +3534,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -3042,6 +3627,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -3205,11 +3807,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "job.resume": {
-      "description": "job.resume bounded OCR operation.",
+      "description": "Continue an interrupted or cancelled owned job from its next unfinished page.",
       "baseArgv": [
         "job.resume"
       ],
@@ -3269,6 +3899,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -3432,11 +4079,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "job.cancel": {
-      "description": "job.cancel bounded OCR operation.",
+      "description": "Safely terminate only the PID with the persisted owned start identity.",
       "baseArgv": [
         "job.cancel"
       ],
@@ -3497,6 +4172,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -3659,6 +4351,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -3724,6 +4444,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -3886,6 +4623,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -3951,6 +4716,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -4113,6 +4895,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -4178,6 +4988,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -4340,6 +5167,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -4405,6 +5260,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -4568,6 +5440,34 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
@@ -4577,7 +5477,7 @@
         "review.prepare"
       ],
       "safetyClasses": [
-        "writeSafe"
+        "readOnly"
       ],
       "inputSchema": {
         "type": "object",
@@ -4632,6 +5532,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -4795,11 +5712,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "review.start": {
-      "description": "review.start bounded OCR operation.",
+      "description": "Send bounded low-confidence page images to a verified Ollama vision model after approval.",
       "baseArgv": [
         "review.start"
       ],
@@ -4861,6 +5806,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -5023,6 +5985,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -5088,6 +6078,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -5251,11 +6258,39 @@
           "flag": "--approved",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
         }
       ]
     },
     "correction.apply": {
-      "description": "correction.apply bounded OCR operation.",
+      "description": "Apply only explicitly selected correction IDs or pages into a separate corrected result.",
       "baseArgv": [
         "correction.apply"
       ],
@@ -5315,6 +6350,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -5477,6 +6529,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -5542,6 +6622,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -5704,6 +6801,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]
@@ -5770,6 +6895,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -5932,6 +7074,34 @@
           "type": "option",
           "flag": "--approved",
           "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
           "optional": true
         }
       ]

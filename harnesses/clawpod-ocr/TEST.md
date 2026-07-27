@@ -1,5 +1,10 @@
 # Tests
 
-`python3 -m unittest harnesses/clawpod-ocr/test_clawpod_ocr.py -v`
+```sh
+python3 -W error::ResourceWarning -m unittest -v harnesses/clawpod-ocr/test_clawpod_ocr.py
+python3 scripts/validate.py
+python3 scripts/sync_registry.py --check
+python3 -m unittest discover -s tests -v
+```
 
-Tests are synthetic and use fake Poppler/Tesseract executables and a loopback HTTP server. No credentials, copyrighted documents, system package installation, or real Ollama endpoint are used.
+Synthetic tests cover real detached worker completion and ownership, liveness reconciliation, cancellation identity safety, all-page PDF checkpoint/resume and raster cleanup, fail-closed image dimensions and pixel ceilings, exact Tesseract/language onboarding states, escaped/path-safe exports, image-bearing Ollama requests, protected environment and mode-0600 file auth injection, malformed and vision-incompatible model behavior, explicit correction selection/provenance, immutable raw results, and clean loopback server shutdown. They install nothing and use no credentials, real Ollama, or copyrighted documents.

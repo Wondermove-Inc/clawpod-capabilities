@@ -67,6 +67,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -175,6 +192,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -283,6 +317,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -327,7 +378,7 @@
     },
     "engine.verify": {
       "backend": "python-stdlib/subprocess",
-      "mutation": false,
+      "mutation": true,
       "required": [],
       "rootPathArgs": [
         "stateRoot",
@@ -391,6 +442,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -499,6 +567,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -607,6 +692,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -715,6 +817,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -759,7 +878,7 @@
     },
     "ollama.verify": {
       "backend": "python-stdlib/subprocess",
-      "mutation": false,
+      "mutation": true,
       "required": [],
       "rootPathArgs": [
         "stateRoot",
@@ -823,6 +942,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -931,6 +1067,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1039,6 +1192,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1083,7 +1253,7 @@
     },
     "ocr.prepare": {
       "backend": "python-stdlib/subprocess",
-      "mutation": true,
+      "mutation": false,
       "required": [],
       "rootPathArgs": [
         "stateRoot",
@@ -1147,6 +1317,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1255,6 +1442,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1363,6 +1567,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1471,6 +1692,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1579,6 +1817,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1687,6 +1942,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1795,6 +2067,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -1903,6 +2192,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2011,6 +2317,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2119,6 +2442,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2163,7 +2503,7 @@
     },
     "review.prepare": {
       "backend": "python-stdlib/subprocess",
-      "mutation": true,
+      "mutation": false,
       "required": [],
       "rootPathArgs": [
         "stateRoot",
@@ -2227,6 +2567,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2335,6 +2692,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2443,6 +2817,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2551,6 +2942,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2659,6 +3067,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
@@ -2767,6 +3192,23 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "additionalProperties": false
