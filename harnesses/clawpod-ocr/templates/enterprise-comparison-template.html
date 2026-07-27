@@ -1,0 +1,9 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ClawPod OCR Enterprise Comparison Report</title>
+<style>body{font-family:Aptos,Arial,sans-serif;color:#243447;margin:1in}h1{color:#17365d}h2{color:#365f91;border-bottom:1px solid #b8cce4}.badge{font-weight:bold;color:#548235}.review{color:#c00000}.meta{font-size:9pt;color:#59636e}.source{max-width:6in;max-height:4in}pre{white-space:pre-wrap;font-family:Aptos,Arial,sans-serif}</style></head>
+<body><h1>OCR COMPARISON REPORT</h1><p>Enterprise document verification package</p>
+<p class="meta">Document ID: {{document_id}} | Generated: {{generated_at}} | Security label: {{security_label}}</p>
+<h2>1. Executive summary</h2><p>{{qa_summary}}</p><h2>2. Contents and file index</h2><p>{{file_index}}</p>
+<section><h2>{{section_number}}. {{source_filename}}</h2><p class="badge">{{qa_status}}</p><p class="meta">{{metadata}}</p>
+<h3>Original source image</h3>{{source_image}}<h3>Raw OCR (immutable)</h3><pre>{{raw_ocr}}</pre>
+<h3>Corrected/normalized text (separate derived result)</h3><pre>{{corrected_text}}</pre></section></body></html>
