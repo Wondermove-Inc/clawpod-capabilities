@@ -1,0 +1,5940 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-ocr",
+  "title": "ClawPod OCR",
+  "description": "Bounded local Korean and English OCR with detached jobs, provenance, caching, and opt-in guarded Ollama correction.",
+  "version": "0.1.0",
+  "entrypoint": "./clawpod_ocr.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 30000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Extract text from bounded PDFs and images locally with optional approved vision correction"
+  ],
+  "capabilities": [
+    "local-ocr",
+    "detached-jobs",
+    "ollama-correction"
+  ],
+  "authModel": {
+    "type": "optional-secret-pointer",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "system.version": {
+      "description": "system.version bounded OCR operation.",
+      "baseArgv": [
+        "system.version"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "system.preflight": {
+      "description": "system.preflight bounded OCR operation.",
+      "baseArgv": [
+        "system.preflight"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "engine.requirements": {
+      "description": "engine.requirements bounded OCR operation.",
+      "baseArgv": [
+        "engine.requirements"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "engine.verify": {
+      "description": "engine.verify bounded OCR operation.",
+      "baseArgv": [
+        "engine.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "onboarding.status": {
+      "description": "onboarding.status bounded OCR operation.",
+      "baseArgv": [
+        "onboarding.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ollama.requirements": {
+      "description": "ollama.requirements bounded OCR operation.",
+      "baseArgv": [
+        "ollama.requirements"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ollama.configure": {
+      "description": "ollama.configure bounded OCR operation.",
+      "baseArgv": [
+        "ollama.configure"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ollama.verify": {
+      "description": "ollama.verify bounded OCR operation.",
+      "baseArgv": [
+        "ollama.verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ollama.revoke": {
+      "description": "ollama.revoke bounded OCR operation.",
+      "baseArgv": [
+        "ollama.revoke"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "document.inspect": {
+      "description": "document.inspect bounded OCR operation.",
+      "baseArgv": [
+        "document.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ocr.prepare": {
+      "description": "ocr.prepare bounded OCR operation.",
+      "baseArgv": [
+        "ocr.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "ocr.start": {
+      "description": "ocr.start bounded OCR operation.",
+      "baseArgv": [
+        "ocr.start"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "job.status": {
+      "description": "job.status bounded OCR operation.",
+      "baseArgv": [
+        "job.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "job.logs": {
+      "description": "job.logs bounded OCR operation.",
+      "baseArgv": [
+        "job.logs"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "job.resume": {
+      "description": "job.resume bounded OCR operation.",
+      "baseArgv": [
+        "job.resume"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "job.cancel": {
+      "description": "job.cancel bounded OCR operation.",
+      "baseArgv": [
+        "job.cancel"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "result.inspect": {
+      "description": "result.inspect bounded OCR operation.",
+      "baseArgv": [
+        "result.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "result.validate": {
+      "description": "result.validate bounded OCR operation.",
+      "baseArgv": [
+        "result.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "result.export": {
+      "description": "result.export bounded OCR operation.",
+      "baseArgv": [
+        "result.export"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "review.export-low-confidence": {
+      "description": "review.export-low-confidence bounded OCR operation.",
+      "baseArgv": [
+        "review.export-low-confidence"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "review.prepare": {
+      "description": "review.prepare bounded OCR operation.",
+      "baseArgv": [
+        "review.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "review.start": {
+      "description": "review.start bounded OCR operation.",
+      "baseArgv": [
+        "review.start"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "secretUse",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "correction.inspect": {
+      "description": "correction.inspect bounded OCR operation.",
+      "baseArgv": [
+        "correction.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "correction.apply": {
+      "description": "correction.apply bounded OCR operation.",
+      "baseArgv": [
+        "correction.apply"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "cache.inspect": {
+      "description": "cache.inspect bounded OCR operation.",
+      "baseArgv": [
+        "cache.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "cache.prune": {
+      "description": "cache.prune bounded OCR operation.",
+      "baseArgv": [
+        "cache.prune"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

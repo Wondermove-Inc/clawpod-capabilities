@@ -325,6 +325,49 @@
       ]
     },
     {
+      "id": "clawpod-ocr",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Bounded local Korean and English OCR with detached jobs, provenance, caching, and opt-in guarded Ollama correction.",
+      "path": "harnesses/clawpod-ocr",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "b1908920336ba4076badf85a32a852d34aacbc3edb6dc98413f7aba855b1900c"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "c0d9a09a741bede8bf0b7cb66ee7824de7cd29934acde7efa10bc5880ec07d57"
+        },
+        {
+          "path": "clawpod_ocr.py",
+          "sha256": "8e813b23e70df377088c9c7bee281a2d6113ef9726430d8db2420a388f91044d"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "5839459e9300c28bd8e4a8e95003221133f1ff8af368c08f4fe0d4684aac1cfe"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "b22f46041557e6bc38c9747e21a21515ee9f972c0cd2252dfc1c3ef8a3c7c84f"
+        },
+        {
+          "path": "test_clawpod_ocr.py",
+          "sha256": "ccf8e6c85101dc0a7975c71b3454db6c79a5a855d0d0be7d2bc246884cb7660c"
+        }
+      ]
+    },
+    {
       "id": "clawpod-video-studio",
       "type": "harness",
       "version": "0.2.0",
