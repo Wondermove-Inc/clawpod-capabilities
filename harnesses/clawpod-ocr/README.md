@@ -7,3 +7,13 @@ Required Debian/Ubuntu packages: `poppler-utils tesseract-ocr tesseract-ocr-kor 
 Ollama is optional. HTTP is accepted only on loopback; all other endpoints require HTTPS. Configuration stores only a `secret:<pointer>` plus an injection target. The harness never resolves pointers. Inject a token separately through the declared environment variable or a file-path environment variable whose file is mode 0600. Verification checks the model and vision capability (or runs an image smoke test if capability metadata is absent). `review.prepare` enumerates each low-confidence page image digest and byte size, source digest, threshold, model, and endpoint identity, then returns an `intentDigest`. `review.start` requires approval of that exact unchanged digest and sends bounded **page images** through Ollama's `images` field. Cache-hit jobs are rebound to the current job ID and materialize verified page images on demand. Raw OCR is immutable; corrections are diff-only and `correction.apply` requires explicit IDs or pages.
 
 Limits: 64 MiB input, 200 PDF pages, 40 million decoded pixels per image/raster page, 8 MiB per reviewed page image, 2 MiB remote response, one worker, and 0.1–60 second command/backend timeout bounds. Relative output paths and symlink traversal are rejected. hOCR text is HTML-escaped; Markdown export uses explicit page headings.
+
+## Enterprise comparison reports (v0.3.0)
+
+`report.create` writes a real OOXML Word document from one or more completed, owner-matched jobs. Pass a bounded comma-separated `jobIds` value (maximum 50), an `outputRoot`, and a relative `.docx` `output`. The command never clobbers an existing file and limits aggregate source bytes to 256 MiB.
+
+```bash
+./clawpod_ocr.py report.create --state-root .state --job-ids job-1,job-2 --owner analyst --output-root ./deliverables --output comparison.docx --security-label INTERNAL
+```
+
+The standard-library OOXML backend embeds supported source images, preserves raw OCR, labels separately applied corrected text, and includes an enterprise cover, QA summary, file index, numbered per-file sections, metadata, headers, footers, and page fields. `templates/enterprise-comparison-template.html` is the editable visual source and `templates/enterprise-comparison-template.docx` is a valid reusable Word asset. No network, credentials, LibreOffice, or additional Python packages are required.

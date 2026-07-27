@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """ClawPod OCR: bounded local OCR and opt-in image-bearing Ollama review."""
 from __future__ import annotations
-import argparse, base64, hashlib, html, json, os, re, secrets, shutil, signal, stat, struct, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid
+import argparse, base64, hashlib, html, json, os, re, secrets, shutil, signal, stat, struct, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid, zipfile, zlib
 from pathlib import Path
 
-VERSION="0.2.0"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024
+VERSION="0.3.0"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024; MAX_REPORT_JOBS=50; MAX_REPORT_SOURCE_BYTES=256*1024*1024
 CHILDREN={}
 
 def out(cmd,data=None,effects=None,err=None):
@@ -36,6 +36,66 @@ def sha(p):
  with p.open("rb") as f:
   for x in iter(lambda:f.read(1024*1024),b""):h.update(x)
  return h.hexdigest()
+
+def job_ids(value):
+ if not isinstance(value,str) or not value.strip():raise ValueError("jobIds must be a non-empty comma-separated list")
+ ids=[x.strip() for x in value.split(",")]
+ if len(ids)>MAX_REPORT_JOBS:raise ValueError("report exceeds 50-job limit")
+ if any(not x or not re.fullmatch(r"[A-Za-z0-9._-]{1,128}",x) for x in ids):raise ValueError("malformed jobIds list")
+ if len(set(ids))!=len(ids):raise ValueError("duplicate job ID")
+ return ids
+
+def xml_text(value):return html.escape(str(value),quote=False)
+def png_from_ppm(p):
+ raw=p.read_bytes();m=re.fullmatch(br"P6\s+(?:#[^\n]*\s+)*(\d+)\s+(\d+)\s+(\d+)\s(.+)",raw,re.S)
+ if not m or int(m.group(3))!=255:raise ValueError("unsupported report image encoding")
+ w,h=int(m.group(1)),int(m.group(2));pixels=m.group(4)
+ if len(pixels)!=w*h*3:raise ValueError("malformed report image")
+ scan=b"".join(b"\0"+pixels[y*w*3:(y+1)*w*3] for y in range(h))
+ def chunk(k,v):return struct.pack(">I",len(v))+k+v+struct.pack(">I",zlib.crc32(k+v)&0xffffffff)
+ return b"\x89PNG\r\n\x1a\n"+chunk(b"IHDR",struct.pack(">IIBBBBB",w,h,8,2,0,0,0))+chunk(b"IDAT",zlib.compress(scan,9))+chunk(b"IEND",b"")
+
+def report_image(jd):
+ src=next(jd.glob("input.*"),None)
+ candidates=([src] if src and src.suffix.lower() in {".png",".jpg",".jpeg",".ppm",".pgm"} else [])+sorted((jd/"page-images").glob("page-*")) if (jd/"page-images").exists() else ([src] if src and src.suffix.lower() in {".png",".jpg",".jpeg",".ppm",".pgm"} else [])
+ if not candidates:return None
+ p=candidates[0];check_pixels(p)
+ if p.suffix.lower() in {".ppm",".pgm"}:return "png",png_from_ppm(p)
+ return ("jpeg" if p.suffix.lower() in {".jpg",".jpeg"} else "png"),p.read_bytes()
+
+def create_docx(path,records,document_id,generated,security_label):
+ ns='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"'
+ def p(text="",style=None,bold=False,color=None):
+  ps=f'<w:pStyle w:val="{style}"/>' if style else "";rp=("<w:b/>" if bold else "")+(f'<w:color w:val="{color}"/>' if color else "")
+  return f'<w:p><w:pPr>{ps}</w:pPr><w:r><w:rPr>{rp}</w:rPr><w:t xml:space="preserve">{xml_text(text)}</w:t></w:r></w:p>'
+ def pagebreak():return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+ def picture(rid,n,w,h):
+  maxcx,maxcy=5486400,3657600;scale=min(maxcx/(w*9525),maxcy/(h*9525),1);cx,cy=int(w*9525*scale),int(h*9525*scale)
+  return f'<w:p><w:r><w:drawing><wp:inline><wp:extent cx="{cx}" cy="{cy}"/><wp:docPr id="{n}" name="Source image {n}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="{n}" name="source-{n}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="{rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'
+ body=p("OCR COMPARISON REPORT","Title")+p("Enterprise document verification package",bold=True,color="365F91")+p(f"Document ID: {document_id}")+p(f"Generated: {generated}")+p(f"Security label: {security_label}")+p("1. Executive summary","Heading1")
+ review=sum(1 for r in records if r["review"]);body+=p(f"Files: {len(records)} | Passed QA: {len(records)-review} | Review required: {review}")+p("2. Contents and file index","Heading1")
+ for i,r in enumerate(records,1):body+=p(f"{i}. {r['filename']} | {r['qa']} | confidence {r['confidence']:.1%}")
+ media=[];rels=[]
+ for i,r in enumerate(records,1):
+  body+=pagebreak()+p(f"{i+2}. File {i}: {r['filename']}","Heading1")+p(f"QA STATUS: {r['qa']}",bold=True,color="C00000" if r['review'] else "548235")
+  body+=p(f"Source SHA-256: {r['sha']} | Dimensions/pages: {r['dimensions']} / {r['pages']}")+p(f"Confidence: {r['confidence']:.1%} | Language: {r['language']} | Engine: {r['engine']}")+p(f"Cache: {r['cache']} | Validation: {r['validation']} | Raw preservation: {r['raw_state']} | Review required: {'yes' if r['review'] else 'no'}")
+  if r["image"]:
+   ext,data,w,h=r["image"];rid=f"rIdImage{i}";media.append((f"word/media/source-{i}.{ext}",data));rels.append((rid,f"media/source-{i}.{ext}"));body+=p("Original source image","Heading2")+picture(rid,i,w,h)
+  else:body+=p("Original source image unavailable for direct embedding (source retained and identified by digest).","Heading2")
+  body+=p("Raw OCR (immutable)","Heading2")+p(r["raw"] or "[No OCR text]")
+  if r["corrected"] is not None:body+=p("Corrected/normalized text (separate derived result)","Heading2")+p(r["corrected"] or "[No corrected text]")
+ sect='<w:sectPr><w:headerReference w:type="default" r:id="rIdHeader"/><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr>'
+ document=f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document {ns}><w:body>{body}{sect}</w:body></w:document>'
+ styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="20"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:color w:val="17365D"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:rPr><w:b/><w:color w:val="365F91"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:rPr><w:b/><w:color w:val="4F81BD"/><w:sz w:val="24"/></w:rPr></w:style></w:styles>'
+ types='<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>'
+ rootrels='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'
+ docrels='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdHeader" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'+''.join(f'<Relationship Id="{rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="{target}"/>' for rid,target in rels)+'</Relationships>'
+ header=f'<?xml version="1.0" encoding="UTF-8"?><w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:r><w:t>ClawPod OCR | {xml_text(security_label)} | {xml_text(document_id)}</w:t></w:r></w:p></w:hdr>'
+ footer='<?xml version="1.0" encoding="UTF-8"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>Page </w:t></w:r><w:fldSimple w:instr="PAGE"/></w:p></w:ftr>'
+ path.parent.mkdir(parents=True,exist_ok=True)
+ with zipfile.ZipFile(path,"w",zipfile.ZIP_DEFLATED) as z:
+  for n,v in [("[Content_Types].xml",types),("_rels/.rels",rootrels),("word/document.xml",document),("word/styles.xml",styles),("word/_rels/document.xml.rels",docrels),("word/header1.xml",header),("word/footer1.xml",footer)]:z.writestr(n,v)
+  for n,v in media:z.writestr(n,v)
 def deps():return {x:shutil.which(x) for x in ("pdftotext","pdfinfo","pdftoppm","tesseract","ocrmypdf")}
 def bounded_timeout(v):
  v=float(v);return max(.1,min(v,60.0))
@@ -233,6 +293,37 @@ def run(args):
    if args.detached:
     m=worker_launch(jd,args);return out(cmd,{"jobId":jid,"status":m["status"],"workerPid":m["workerPid"],"checkpoint":"job.json"},[{"type":"worker-launch","jobId":jid}])
    return process(jd,args,cmd)
+  if cmd=="report.create":
+   ids=job_ids(args.job_ids);base=Path(args.output_root or ".").resolve();dest=safe(base,args.output)
+   if dest.suffix.lower()!=".docx":raise ValueError("report output must use .docx")
+   if dest.exists():raise ValueError("report output already exists")
+   if dest.parent.exists() and dest.parent.is_symlink():raise ValueError("output symlink forbidden")
+   records=[];total=0
+   for jid in ids:
+    proxy=argparse.Namespace(job_id=jid,owner=args.owner);m=owned(work,proxy);jd=work/jid
+    if m.get("status")!="completed":raise ValueError(f"job {jid} is not completed")
+    rp=jd/"result.json"
+    if not rp.exists():raise ValueError(f"job {jid} result unavailable")
+    raw=load(rp);src=next(jd.glob("input.*"),None)
+    if not src or src.is_symlink():raise ValueError(f"job {jid} source missing or symlinked")
+    total+=src.stat().st_size
+    if total>MAX_REPORT_SOURCE_BYTES:raise ValueError("report embedded source byte limit exceeded")
+    valid=sha(src)==m["source"]["sha256"];corrected_path=jd/"result.corrected.json";corrected=load(corrected_path) if corrected_path.exists() else None
+    raw_text="\n\n".join(str(x.get("text","")) for x in raw.get("pages",[]));corrected_text=None if corrected is None else "\n\n".join(str(x.get("correctedText",x.get("text",""))) for x in corrected.get("pages",[]))
+    confs=[float(x.get("confidence",0)) for x in raw.get("pages",[])];confidence=sum(confs)/len(confs) if confs else 0;review=confidence<args.threshold
+    img=report_image(jd);dims=m["source"].get("dimensions") or {};image=None
+    if img:
+     ext,data=img;w,h=image_dimensions(src) if src.suffix.lower() in {".png",".jpg",".jpeg",".ppm",".pgm"} else (dims.get("width",1200),dims.get("height",1600));image=(ext,data,w,h)
+    pages=raw.get("pages",[]);engine=", ".join(sorted({str(x.get("provenance",{}).get("engine","unknown")) for x in pages}));language=m.get("language","unknown")
+    records.append({"filename":m["source"].get("relativePath",src.name),"sha":m["source"]["sha256"],"dimensions":f'{dims.get("width","n/a")}x{dims.get("height","n/a")}' if dims else "n/a","pages":m["source"].get("pages",len(pages)),"confidence":confidence,"language":language,"engine":engine,"cache":"hit" if raw.get("cacheHit") else "miss","validation":"valid" if valid else "invalid","raw_state":"preserved" if raw.get("rawOcrPreserved") else "unconfirmed","review":review,"qa":"REVIEW REQUIRED" if review or not valid else "PASS","raw":raw_text,"corrected":corrected_text,"image":image})
+   document_id=args.document_id or f"OCR-{time.strftime('%Y%m%d')}-{hashlib.sha256(','.join(ids).encode()).hexdigest()[:10].upper()}";generated=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
+   dest.parent.mkdir(parents=True,exist_ok=True);tmp=dest.with_name(f'.{dest.name}.{secrets.token_hex(8)}.tmp')
+   try:
+    create_docx(tmp,records,document_id,generated,args.security_label)
+    if dest.exists():raise ValueError("report output already exists")
+    os.replace(tmp,dest)
+   finally:tmp.unlink(missing_ok=True)
+   return out(cmd,{"path":args.output,"documentId":document_id,"generatedAt":generated,"securityLabel":args.security_label,"jobIds":ids,"files":len(records),"reviewRequired":sum(1 for r in records if r["review"]),"sha256":sha(dest),"bytes":dest.stat().st_size,"rawResultsPreserved":True},[{"type":"report-write","path":args.output}])
   if cmd=="_worker":
    jd=work/args.job_id;m=load(jd/"job.json")
    if m.get("owner")!=args.owner or m.get("workerNonce")!=args.worker_nonce:return 3
@@ -421,5 +512,5 @@ def parse_bool(value):
  if text in {"0","false","no","off"}:return False
  raise argparse.ArgumentTypeError("expected a boolean value")
 def parser():
- p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--owner",default="default");p.add_argument("--detached",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--approved",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--approval-digest");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
+ p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--job-ids");p.add_argument("--owner",default="default");p.add_argument("--detached",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--security-label",default="INTERNAL");p.add_argument("--document-id");p.add_argument("--approved",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--approval-digest");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
 if __name__=="__main__":sys.exit(run(parser().parse_args()))

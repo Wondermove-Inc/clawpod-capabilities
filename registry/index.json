@@ -75,8 +75,8 @@
     {
       "id": "clawpod-ocr",
       "type": "skill",
-      "version": "0.2.0",
-      "description": "Extract Korean and English text locally with a one-call image fast path and optional guarded Ollama correction.",
+      "version": "0.3.0",
+      "description": "Extract Korean and English text locally and create enterprise comparison DOCX reports with guarded optional review.",
       "path": "skills/clawpod-ocr",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -91,11 +91,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6b536515d793afe32c30b8c671fcc3c1469c10fdcb4e0fe3631c9441006cabb8"
+          "sha256": "c0d7b1ef125687b9b0905517b466b915e749ce65ee82fd89f30952a74cda912e"
         },
         {
           "path": "references/errors-and-recovery.md",
-          "sha256": "688a50d6ac6969c6675176330877ba6e9be07ba864857749b0f086262b34213e"
+          "sha256": "8733ae0cc5d8c2239abe343e7ad383356bba230eaa515a6bc4fceab6cb1c9876"
         },
         {
           "path": "references/onboarding.md",
@@ -103,7 +103,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "7f83683fc618836bfc4d8091a211652a347706777ee8a2c9151982437f0f0bff"
+          "sha256": "c57855bd9e908fd9fee09c7c520a0c953dd63b1760b15668112e76fec5d88881"
         },
         {
           "path": "references/safety-and-privacy.md",
@@ -112,7 +112,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-ocr",
-        "version": "0.2.0"
+        "version": "0.3.0"
       }
     },
     {
@@ -370,8 +370,8 @@
     {
       "id": "clawpod-ocr",
       "type": "harness",
-      "version": "0.2.0",
-      "description": "Bounded local Korean and English OCR with a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
+      "version": "0.3.0",
+      "description": "Bounded local Korean and English OCR with enterprise comparison DOCX reports and optional guarded Ollama correction.",
       "path": "harnesses/clawpod-ocr",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -386,27 +386,35 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "c73263c95b46267f8c5cfbccbad466b43236c215b2e31043c843389a6e90b31b"
+          "sha256": "17f810dbf53b2be52c7b0147808936d9ce8decd736172fbfa97d2fca3a06032a"
         },
         {
           "path": "TEST.md",
-          "sha256": "0d89851de74db10cda129253bf595ed7a0c3230fdd89e400246df01d150de26b"
+          "sha256": "8afa9cdc1d709fea3a6ef846bbc36d7084b69a1ecb75169a9579dfa4cc3f13c8"
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "c6c97ae9076bc3fb3c259a5e78239aa92af4edd62ae11eb42cd10d52ab445c18"
+          "sha256": "eb9977bc83ab65170c4eafd5c0ac8d50740dab8d17cbaa35aedf937cb7edcd3e"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "e77f5b5a8af95fb7f0c67fcc226e5cf8894a5858c699e9ab8c20eb1ae336aa35"
+          "sha256": "67695ce72376d14f811a498b64882a187c01436aaf61d826f9131f0c4fc68e43"
         },
         {
           "path": "harness.json",
-          "sha256": "8d151ff39c1d57a404353a46cc5cebd11167fc9cdeeebd8ed56bdaef912f3715"
+          "sha256": "0d9f3047dbb2ad37722e73a84209be85a84c73c0e379d4c8eea27ac4d894802d"
+        },
+        {
+          "path": "templates/enterprise-comparison-template.docx",
+          "sha256": "6c370f493f77637fd293165e9663b5c7ff403145d39a6f35fe6c8076e9fe7776"
+        },
+        {
+          "path": "templates/enterprise-comparison-template.html",
+          "sha256": "70b2a22ac4be3a2d0fc99a71375555ce5df575b1a188a6dbddc166634ca82fe2"
         },
         {
           "path": "test_clawpod_ocr.py",
-          "sha256": "0d694fbfa9ecd0efbffc815d3e7e1b4e11a09bb4840444a78090788d3828605d"
+          "sha256": "4d882de15326634f2c1d6d73b6d21e0a66ef7c3b6f9cb3a365724ed85d86ddaf"
         }
       ]
     },

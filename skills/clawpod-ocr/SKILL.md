@@ -1,6 +1,6 @@
 ---
 name: "clawpod-ocr"
-description: "Extract Korean/English text locally, with a one-call fast path for simple images and guarded optional Ollama review."
+description: "Extract Korean/English text locally, create enterprise comparison DOCX reports, and optionally use guarded Ollama review."
 ---
 
 # ClawPod OCR
@@ -23,7 +23,7 @@ Use the standard workflow for PDFs, multi-page inputs, uncertain-duration work, 
 1. Reuse the installed and already verified local engine state. Do not repeat installation onboarding or `engine.verify` for every image; `ocr.quick` performs the current engine check.
 2. Call `ocr.quick` once through the normal Harness `prepare → run` path with the bounded input root, relative image path, `kor+eng` unless another language was requested, owner, and timeout.
 3. `ocr.quick` must inspect limits, run or reuse cached Tesseract OCR, preserve a job/result, validate the copied source digest, and return text, confidence, cache state, source digest, dimensions, engine, language, and raw-preservation state in one response.
-4. Report the extracted text immediately. Skip Workboard for a one-shot single image that completes in the same turn. Do not create a separate export or manually compare the image unless the user requests it, confidence is materially low, or the text is consequential and ambiguous.
+4. Report the extracted text immediately. `ocr.quick` also leaves a completed job that can feed `report.create`. Skip Workboard for a one-shot single image that completes in the same turn.
 5. If `ocr.quick` rejects the input or fails, report the exact reason and switch to the standard workflow only when retry is safe. Never use it for PDFs or multi-page work.
 
 ## Installation and immediate onboarding
@@ -49,7 +49,12 @@ The capability is locally operational only when current `system.preflight` match
 5. Use `job.status`, `job.logs`, checkpoints, `job.resume`, and `job.cancel` for lifecycle and recovery evidence.
 6. Prefer embedded PDF text. Rasterize only pages without text at 200 DPI, one page at a time, one worker, and `OMP_THREAD_LIMIT=1`.
 7. Run `result.validate` before export. Preserve raw OCR even when corrections exist.
-8. Use TXT or Markdown for reading, JSON for confidence/provenance, TSV/hOCR for layout tooling, and searchable PDF only when dependencies validate.
+8. Normally finish completed OCR with `report.create`: pass one or more completed job IDs as one bounded comma-separated `jobIds` string, an owner, bounded output root, and relative `.docx` output. Use one job for direct image/text comparison or multiple jobs for a consolidated enterprise report. Never overwrite an existing report.
+9. Use TXT or Markdown for reading, JSON for confidence/provenance, TSV/hOCR for layout tooling, and searchable PDF only when dependencies validate.
+
+## Comparison DOCX
+
+`report.create` is local, credential-free, and deterministic. It validates ownership and completion for every job, source integrity, output containment, symlink safety, a 50-file limit, and a 256 MiB aggregate source limit. The report includes document identity, generation time, security label, executive QA counts, file index, per-file page breaks, source image, confidence/language/engine/digest/dimensions/pages/cache/validation/raw-preservation metadata, and review-required state. Raw OCR is explicitly immutable. If `result.corrected.json` exists, corrected or normalized text appears in a separate labeled section.
 
 Read `references/operations.md` for detailed command and output contracts.
 

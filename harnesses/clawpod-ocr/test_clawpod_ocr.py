@@ -1,10 +1,11 @@
-import importlib.util, io, json, os, pathlib, socket, tempfile, threading, time, unittest
+import importlib.util, io, json, os, pathlib, socket, tempfile, threading, time, unittest, zipfile
 from contextlib import redirect_stdout
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+from unittest.mock import patch
 P=pathlib.Path(__file__).with_name('clawpod_ocr.py');S=importlib.util.spec_from_file_location('ocr',P);M=importlib.util.module_from_spec(S);S.loader.exec_module(M)
 class A:pass
 def args(cmd,**kw):
- a=A();defaults=dict(command=cmd,state_root=None,input_root=None,input=None,output_root=None,output='result.json',format='json',language='kor+eng',preprocess='default',job_id=None,owner='u',detached=False,endpoint=None,model='llava',secret=None,auth_mode='env',auth_env='CLAWPOD_OLLAMA_TOKEN',timeout=2,threshold=.75,approved=False,approval_digest=None,correction_id=None,page=None,worker_nonce=None);defaults.update(kw)
+ a=A();defaults=dict(command=cmd,state_root=None,input_root=None,input=None,output_root=None,output='result.json',format='json',language='kor+eng',preprocess='default',job_id=None,job_ids=None,owner='u',detached=False,endpoint=None,model='llava',secret=None,auth_mode='env',auth_env='CLAWPOD_OLLAMA_TOKEN',timeout=2,threshold=.75,security_label='INTERNAL',document_id=None,approved=False,approval_digest=None,correction_id=None,page=None,worker_nonce=None);defaults.update(kw)
  for k,v in defaults.items():setattr(a,k,v)
  return a
 def call(a):
@@ -62,6 +63,27 @@ class Tests(unittest.TestCase):
   self.fake('tesseract','if [ "$1" = "--version" ]; then echo "tesseract 5.3.0"; elif [ "$1" = "--list-langs" ]; then printf "kor\\neng\\nosd\\n"; else sleep 10; fi');(self.i/'slow.ppm').write_bytes(ppm());_,x=call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='slow.ppm',job_id='slow',detached=True,timeout=30));pid=x['data']['workerPid'];_,x=call(args('job.cancel',state_root=str(self.s),job_id='slow',timeout=2));self.assertEqual(x['data']['status'],'cancelled');self.assertIsNone(M.proc_start(pid))
  def test_export_escape_markdown_and_symlink(self):
   (self.i/'a.txt').write_text('<script>&');call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='a.txt',job_id='e'));call(args('result.export',state_root=str(self.s),job_id='e',output_root=str(self.r),output='x.html',format='hocr'));self.assertIn('&lt;script&gt;&amp;', (self.r/'x.html').read_text());call(args('result.export',state_root=str(self.s),job_id='e',output_root=str(self.r),output='x.md',format='markdown'));self.assertTrue((self.r/'x.md').read_text().startswith('## Page 1'));(self.r/'link').symlink_to(self.r/'real');_,x=call(args('result.export',state_root=str(self.s),job_id='e',output_root=str(self.r),output='link/x',format='txt'));self.assertFalse(x['ok'])
+ def test_single_and_multi_file_enterprise_docx(self):
+  for n in ('one','two'):
+   (self.i/f'{n}.ppm').write_bytes(ppm());call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input=f'{n}.ppm',job_id=n))
+  raw=(self.s/'jobs/one/result.json').read_bytes();r=json.loads(raw);r['pages'][0]['correctedText']='normalized text';M.atomic(self.s/'jobs/one/result.corrected.json',r)
+  _,one=call(args('report.create',state_root=str(self.s),job_ids='one',output_root=str(self.r),output='one.docx',document_id='DOC-ONE',security_label='CONFIDENTIAL'));self.assertTrue(one['ok']);self.assertEqual((self.s/'jobs/one/result.json').read_bytes(),raw)
+  with zipfile.ZipFile(self.r/'one.docx') as z:
+   names=set(z.namelist());xml=z.read('word/document.xml').decode();self.assertIn('[Content_Types].xml',names);self.assertTrue(any(x.startswith('word/media/') for x in names));self.assertIn('DOC-ONE',xml);self.assertIn('Raw OCR (immutable)',xml);self.assertIn('Corrected/normalized text',xml);self.assertIn('normalized text',xml)
+  _,multi=call(args('report.create',state_root=str(self.s),job_ids='one,two',output_root=str(self.r),output='multi.docx'));self.assertTrue(multi['ok']);self.assertEqual(multi['data']['files'],2)
+  with zipfile.ZipFile(self.r/'multi.docx') as z:
+   xml=z.read('word/document.xml').decode();self.assertIn('Executive summary',xml);self.assertIn('Contents and file index',xml);self.assertIn('one.ppm',xml);self.assertIn('two.ppm',xml);self.assertEqual(len([x for x in z.namelist() if x.startswith('word/media/')]),2)
+ def test_report_rejects_bad_jobs_paths_and_clobber(self):
+  (self.i/'a.ppm').write_bytes(ppm());call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='a.ppm',job_id='a'))
+  for ids in ('','a,a','a,../x','missing'):
+   _,x=call(args('report.create',state_root=str(self.s),job_ids=ids,output_root=str(self.r),output=f'x-{len(ids)}.docx'));self.assertFalse(x['ok'])
+  _,x=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='../x.docx'));self.assertFalse(x['ok']);(self.r/'link').symlink_to(self.r/'real');_,x=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='link/x.docx'));self.assertFalse(x['ok']);(self.r/'exists.docx').write_bytes(b'x');_,x=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='exists.docx'));self.assertFalse(x['ok'])
+ def test_report_rejects_incomplete_and_missing_result(self):
+  (self.i/'a.ppm').write_bytes(ppm());call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='a.ppm',job_id='a'));m=json.loads((self.s/'jobs/a/job.json').read_text());m['status']='running';M.atomic(self.s/'jobs/a/job.json',m);_,x=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='a.docx'));self.assertFalse(x['ok']);m['status']='completed';M.atomic(self.s/'jobs/a/job.json',m);(self.s/'jobs/a/result.json').unlink();_,x=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='b.docx'));self.assertFalse(x['ok'])
+ def test_report_owner_and_backend_unavailable(self):
+  (self.i/'a.ppm').write_bytes(ppm());call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='a.ppm',job_id='a'));_,foreign=call(args('report.create',state_root=str(self.s),job_ids='a',owner='other',output_root=str(self.r),output='foreign.docx'));self.assertFalse(foreign['ok'])
+  with patch.object(M,'create_docx',side_effect=OSError('OOXML backend unavailable')):
+   _,failed=call(args('report.create',state_root=str(self.s),job_ids='a',output_root=str(self.r),output='failed.docx'));self.assertFalse(failed['ok']);self.assertIn('backend unavailable',failed['error']['message']);self.assertFalse((self.r/'failed.docx').exists())
  def setup_review(self,secret=None,auth_mode='env',auth_env='CLAWPOD_OLLAMA_TOKEN'):
   ep=self.server();_,x=call(args('ollama.configure',state_root=str(self.s),endpoint=ep,secret=secret,auth_mode=auth_mode,auth_env=auth_env));self.assertTrue(x['ok']);return ep
  def test_vision_image_request_and_explicit_apply(self):
