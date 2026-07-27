@@ -8,7 +8,7 @@ Ollama is optional. HTTP is accepted only on loopback; all other endpoints requi
 
 Limits: 64 MiB input, 200 PDF pages, 40 million decoded pixels per image/raster page, 8 MiB per reviewed page image, 2 MiB remote response, one worker, and 0.1–60 second command/backend timeout bounds. Relative output paths and symlink traversal are rejected. hOCR text is HTML-escaped; Markdown export uses explicit page headings.
 
-## Enterprise comparison reports (v0.3.0)
+## Enterprise comparison reports (v0.3.1)
 
 `report.create` writes a real OOXML Word document from one or more completed, owner-matched jobs. Pass a bounded comma-separated `jobIds` value (maximum 50), an `outputRoot`, and a relative `.docx` `output`. The command never clobbers an existing file and limits aggregate source bytes to 256 MiB.
 
@@ -16,4 +16,4 @@ Limits: 64 MiB input, 200 PDF pages, 40 million decoded pixels per image/raster 
 ./clawpod_ocr.py report.create --state-root .state --job-ids job-1,job-2 --owner analyst --output-root ./deliverables --output comparison.docx --security-label INTERNAL
 ```
 
-The standard-library OOXML backend embeds supported source images, preserves raw OCR, labels separately applied corrected text, and includes an enterprise cover, QA summary, file index, numbered per-file sections, metadata, headers, footers, and page fields. `templates/enterprise-comparison-template.html` is the editable visual source and `templates/enterprise-comparison-template.docx` is a valid reusable Word asset. No network, credentials, LibreOffice, or additional Python packages are required.
+The standard-library OOXML backend produces a reader-first report with executive information, review-needed highlights, a clean file index, and numbered per-file sections. Each file starts with a presentation-normalized `읽기용 정리본`, then separate corrected text when available and an original-image source-evidence subsection. Full immutable raw OCR appears only in one consolidated audit appendix after all reader-facing sections. Conservative normalization inserts layout boundaries only: common receipt anchors produce grouped sections and longest-match label/value rows, while generic long one-line OCR uses sentence and bounded paragraph splits. Recognized token content and sequence are preserved modulo whitespace; no value is corrected or invented. `templates/enterprise-comparison-template.html` is the editable visual source and `templates/enterprise-comparison-template.docx` is a valid reusable Word asset. No network, credentials, LibreOffice, or additional Python packages are required.

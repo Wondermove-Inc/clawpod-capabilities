@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse, base64, hashlib, html, json, os, re, secrets, shutil, signal, stat, struct, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid, zipfile, zlib
 from pathlib import Path
 
-VERSION="0.3.0"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024; MAX_REPORT_JOBS=50; MAX_REPORT_SOURCE_BYTES=256*1024*1024
+VERSION="0.3.1"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024; MAX_REPORT_JOBS=50; MAX_REPORT_SOURCE_BYTES=256*1024*1024
 CHILDREN={}
 
 def out(cmd,data=None,effects=None,err=None):
@@ -63,35 +63,121 @@ def report_image(jd):
  if p.suffix.lower() in {".ppm",".pgm"}:return "png",png_from_ppm(p)
  return ("jpeg" if p.suffix.lower() in {".jpg",".jpeg"} else "png"),p.read_bytes()
 
+PRESENTATION_LABELS=(
+ "제휴 브랜드","차량 번호","운행 시간","운행 요금","결제 금액","결제 수단","결제 일시",
+ "운행 정보","호출 옵션","택시 정보","요금 정보","고객 지원","출발","도착","상호","기사명","통행료",
+)
+PRESENTATION_SECTIONS={"운행 정보","택시 정보","요금 정보","고객 지원"}
+
+def _label_pattern(label):
+ """Allow OCR-inserted horizontal whitespace inside Korean labels without rewriting it."""
+ return r"[ \t]*".join(re.escape(ch) for ch in label)
+
+def _generic_chunks(line,max_chars=180):
+ """Insert presentation boundaries only; every non-whitespace token remains unchanged."""
+ line=line.strip()
+ if not line:return []
+ if len(line)<=max_chars:return [line]
+ sentences=[x.strip() for x in re.findall(r".*?(?:[.!?。！？](?=\s|$)|$)",line) if x.strip()]
+ units=sentences if len(sentences)>1 else [line]
+ result=[]
+ for unit in units:
+  if len(unit)<=max_chars:result.append(unit);continue
+  words=unit.split();chunk=[];size=0
+  for word in words:
+   if chunk and size+1+len(word)>max_chars:result.append(" ".join(chunk));chunk=[word];size=len(word)
+   else:size+=len(word)+(1 if chunk else 0);chunk.append(word)
+  if chunk:result.append(" ".join(chunk))
+ return result
+
+def presentation_lines(raw):
+ """Segment OCR for reading while preserving token content and sequence modulo whitespace."""
+ text=str(raw or "").replace("\r\n","\n").replace("\r","\n");rows=[];blank=False
+ labels=sorted(PRESENTATION_LABELS,key=len,reverse=True)
+ label_re=re.compile("|".join(f"(?P<L{i}>{_label_pattern(label)})" for i,label in enumerate(labels)));seen_sections=set()
+ for original in text.split("\n"):
+  stripped=original.strip()
+  if not stripped:
+   if rows and not blank:rows.append(("blank",None,None))
+   blank=True;continue
+  blank=False
+  matches=[]
+  for candidate in label_re.finditer(stripped):
+   canonical=labels[int(candidate.lastgroup[1:])]
+   if canonical in PRESENTATION_SECTIONS and canonical in seen_sections:continue
+   matches.append(candidate)
+   if canonical in PRESENTATION_SECTIONS:seen_sections.add(canonical)
+  # A recognized label is a conservative boundary anchor. Text before the first
+  # anchor remains ordinary reading text; each value ends at the next anchor.
+  if matches:
+   prefix=stripped[:matches[0].start()].strip()
+   for chunk in _generic_chunks(prefix):rows.append(("line",chunk,None))
+   for i,m in enumerate(matches):
+    canonical=labels[int(m.lastgroup[1:])];label_text=m.group(0);value_start=m.end()
+    if value_start<len(stripped) and stripped[value_start]==":":label_text+=":";value_start+=1
+    value=stripped[value_start:matches[i+1].start() if i+1<len(matches) else len(stripped)].strip()
+    kind="section" if canonical in PRESENTATION_SECTIONS else "kv"
+    rows.append((kind,label_text,value))
+   continue
+  m=re.fullmatch(r"([^:\t]{1,40}?)\s*:\s*(\S(?:.*\S)?)",stripped)
+  if not m:m=re.fullmatch(r"([^:\t]{1,32}?)[ \t]{2,}(\S(?:.*\S)?)",stripped)
+  if m and m.group(1).strip() and m.group(2).strip():
+   label=m.group(1).strip()+(":" if ":" in stripped[:m.end(1)+2] else "")
+   rows.append(("kv",label,m.group(2).strip()))
+  else:
+   for chunk in _generic_chunks(stripped):rows.append(("line",chunk,None))
+ while rows and rows[-1][0]=="blank":rows.pop()
+ return rows
+
 def create_docx(path,records,document_id,generated,security_label):
  ns='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"'
  def p(text="",style=None,bold=False,color=None):
   ps=f'<w:pStyle w:val="{style}"/>' if style else "";rp=("<w:b/>" if bold else "")+(f'<w:color w:val="{color}"/>' if color else "")
   return f'<w:p><w:pPr>{ps}</w:pPr><w:r><w:rPr>{rp}</w:rPr><w:t xml:space="preserve">{xml_text(text)}</w:t></w:r></w:p>'
  def pagebreak():return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+ def table(rows):
+  def cell(x,b=False,width=4500):return f'<w:tc><w:tcPr><w:tcW w:w="{width}" w:type="dxa"/></w:tcPr>{p(x,bold=b)}</w:tc>'
+  return '<w:tbl><w:tblPr><w:tblW w:w="9000" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="B8CCE4"/><w:left w:val="single" w:sz="4" w:color="B8CCE4"/><w:bottom w:val="single" w:sz="4" w:color="B8CCE4"/><w:right w:val="single" w:sz="4" w:color="B8CCE4"/><w:insideH w:val="single" w:sz="4" w:color="D9E2F3"/><w:insideV w:val="single" w:sz="4" w:color="D9E2F3"/></w:tblBorders></w:tblPr>'+''.join(f'<w:tr>{cell(a,True,2400)}{cell(b,False,6600)}</w:tr>' for a,b in rows)+'</w:tbl>'
+ def reading(raw):
+  result="";pending=[]
+  def flush():
+   nonlocal result,pending
+   if pending:result+=table(pending);pending=[]
+  for kind,a,b in presentation_lines(raw):
+   if kind=="kv":pending.append((a,b or ""))
+   elif kind=="section":
+    flush();result+=p(a,"Heading3")
+    if b:
+     for chunk in _generic_chunks(b):result+=p(chunk)
+   else:flush();result+=p("" if kind=="blank" else a)
+  flush();return result or p("[인식된 텍스트 없음]")
  def picture(rid,n,w,h):
-  maxcx,maxcy=5486400,3657600;scale=min(maxcx/(w*9525),maxcy/(h*9525),1);cx,cy=int(w*9525*scale),int(h*9525*scale)
+  maxcx,maxcy=5486400,5943600;scale=min(maxcx/(w*9525),maxcy/(h*9525),1);cx,cy=int(w*9525*scale),int(h*9525*scale)
   return f'<w:p><w:r><w:drawing><wp:inline><wp:extent cx="{cx}" cy="{cy}"/><wp:docPr id="{n}" name="Source image {n}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="{n}" name="source-{n}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="{rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'
- body=p("OCR COMPARISON REPORT","Title")+p("Enterprise document verification package",bold=True,color="365F91")+p(f"Document ID: {document_id}")+p(f"Generated: {generated}")+p(f"Security label: {security_label}")+p("1. Executive summary","Heading1")
- review=sum(1 for r in records if r["review"]);body+=p(f"Files: {len(records)} | Passed QA: {len(records)-review} | Review required: {review}")+p("2. Contents and file index","Heading1")
- for i,r in enumerate(records,1):body+=p(f"{i}. {r['filename']} | {r['qa']} | confidence {r['confidence']:.1%}")
+ review=sum(1 for r in records if r["review"]);body=p("OCR ENTERPRISE REPORT","Title")+p("Reader-first document verification package",bold=True,color="365F91")+table([("Document ID",document_id),("Generated",generated),("Security label",security_label)])+p("1. Executive information","Heading1")
+ body+=p(f"Files: {len(records)} | Passed QA: {len(records)-review} | Review required: {review}")+p("2. Review-needed highlights","Heading1")
+ flagged=[f"{r['filename']}: confidence {r['confidence']:.1%}; validation {r['validation']}" for r in records if r["review"] or r["validation"]!="valid"]
+ body+=p("No automated review flags. Confirm against source evidence before consequential use." if not flagged else "\n".join(flagged),bold=bool(flagged),color="C00000" if flagged else None)+p("3. File index","Heading1")
+ body+=table([("File","QA / confidence")]+[(f"{i}. {r['filename']}",f"{r['qa']} / {r['confidence']:.1%}") for i,r in enumerate(records,1)])
  media=[];rels=[]
  for i,r in enumerate(records,1):
-  body+=pagebreak()+p(f"{i+2}. File {i}: {r['filename']}","Heading1")+p(f"QA STATUS: {r['qa']}",bold=True,color="C00000" if r['review'] else "548235")
-  body+=p(f"Source SHA-256: {r['sha']} | Dimensions/pages: {r['dimensions']} / {r['pages']}")+p(f"Confidence: {r['confidence']:.1%} | Language: {r['language']} | Engine: {r['engine']}")+p(f"Cache: {r['cache']} | Validation: {r['validation']} | Raw preservation: {r['raw_state']} | Review required: {'yes' if r['review'] else 'no'}")
+  body+=pagebreak()+p(f"{i+3}. File {i}: {r['filename']}","Heading1")+p("Executive information","Heading2")+table([("QA status",r['qa']),("Confidence",f"{r['confidence']:.1%}"),("Language / engine",f"{r['language']} / {r['engine']}"),("Pages / dimensions",f"{r['pages']} / {r['dimensions']}"),("Validation",r['validation']),("Review required",'yes' if r['review'] else 'no')])
+  body+=p("읽기용 정리본","Heading2")+p("표시 정규화본입니다. 권위 있는 교정본이 아니며, 줄바꿈·빈 줄·중복 공백만 보수적으로 정리했습니다. 의미 해석이나 문자 교정은 하지 않았습니다.",color="59636E")+reading(r["raw"])
+  if r["corrected"] is not None:body+=p("Corrected/normalized text (separate derived result)","Heading2")+p("This derived text is separate from the reading view and immutable raw OCR.",color="59636E")+reading(r["corrected"])
+  body+=p("Source comparison and evidence","Heading2")+p(f"Source SHA-256: {r['sha']} | Cache: {r['cache']} | Raw preservation: {r['raw_state']}")
   if r["image"]:
    ext,data,w,h=r["image"];rid=f"rIdImage{i}";media.append((f"word/media/source-{i}.{ext}",data));rels.append((rid,f"media/source-{i}.{ext}"));body+=p("Original source image","Heading2")+picture(rid,i,w,h)
   else:body+=p("Original source image unavailable for direct embedding (source retained and identified by digest).","Heading2")
-  body+=p("Raw OCR (immutable)","Heading2")+p(r["raw"] or "[No OCR text]")
-  if r["corrected"] is not None:body+=p("Corrected/normalized text (separate derived result)","Heading2")+p(r["corrected"] or "[No corrected text]")
+ body+=pagebreak()+p("Appendix A. RAW OCR (감사용 원문)","Heading1")+p("result.json에서 읽은 변경 불가 감사 증거입니다. 읽기용 정리본 및 별도 교정본과 분리되어 있으며 원문 기록은 수정되지 않습니다.",color="59636E")
+ for i,r in enumerate(records,1):body+=p(f"A.{i} {r['filename']}","Heading2")+p(f"Source SHA-256: {r['sha']} | Immutable: yes | Raw preservation: {r['raw_state']}")+p(r["raw"] or "[No OCR text]")
  sect='<w:sectPr><w:headerReference w:type="default" r:id="rIdHeader"/><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr>'
  document=f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document {ns}><w:body>{body}{sect}</w:body></w:document>'
- styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="20"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:color w:val="17365D"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:rPr><w:b/><w:color w:val="365F91"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:rPr><w:b/><w:color w:val="4F81BD"/><w:sz w:val="24"/></w:rPr></w:style></w:styles>'
+ styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="20"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:color w:val="17365D"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:rPr><w:b/><w:color w:val="365F91"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:rPr><w:b/><w:color w:val="4F81BD"/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:rPr><w:b/><w:color w:val="365F91"/><w:sz w:val="22"/></w:rPr></w:style></w:styles>'
  types='<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>'
  rootrels='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'
  docrels='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdHeader" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'+''.join(f'<Relationship Id="{rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="{target}"/>' for rid,target in rels)+'</Relationships>'
  header=f'<?xml version="1.0" encoding="UTF-8"?><w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:r><w:t>ClawPod OCR | {xml_text(security_label)} | {xml_text(document_id)}</w:t></w:r></w:p></w:hdr>'
- footer='<?xml version="1.0" encoding="UTF-8"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>Page </w:t></w:r><w:fldSimple w:instr="PAGE"/></w:p></w:ftr>'
+ footer='<?xml version="1.0" encoding="UTF-8"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t xml:space="preserve">Page </w:t></w:r><w:fldSimple w:instr="PAGE"/></w:p></w:ftr>'
  path.parent.mkdir(parents=True,exist_ok=True)
  with zipfile.ZipFile(path,"w",zipfile.ZIP_DEFLATED) as z:
   for n,v in [("[Content_Types].xml",types),("_rels/.rels",rootrels),("word/document.xml",document),("word/styles.xml",styles),("word/_rels/document.xml.rels",docrels),("word/header1.xml",header),("word/footer1.xml",footer)]:z.writestr(n,v)

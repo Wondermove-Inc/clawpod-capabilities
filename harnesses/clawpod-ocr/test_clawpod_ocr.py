@@ -69,10 +69,36 @@ class Tests(unittest.TestCase):
   raw=(self.s/'jobs/one/result.json').read_bytes();r=json.loads(raw);r['pages'][0]['correctedText']='normalized text';M.atomic(self.s/'jobs/one/result.corrected.json',r)
   _,one=call(args('report.create',state_root=str(self.s),job_ids='one',output_root=str(self.r),output='one.docx',document_id='DOC-ONE',security_label='CONFIDENTIAL'));self.assertTrue(one['ok']);self.assertEqual((self.s/'jobs/one/result.json').read_bytes(),raw)
   with zipfile.ZipFile(self.r/'one.docx') as z:
-   names=set(z.namelist());xml=z.read('word/document.xml').decode();self.assertIn('[Content_Types].xml',names);self.assertTrue(any(x.startswith('word/media/') for x in names));self.assertIn('DOC-ONE',xml);self.assertIn('Raw OCR (immutable)',xml);self.assertIn('Corrected/normalized text',xml);self.assertIn('normalized text',xml)
+   names=set(z.namelist());xml=z.read('word/document.xml').decode();self.assertIn('[Content_Types].xml',names);self.assertTrue(any(x.startswith('word/media/') for x in names));self.assertIn('DOC-ONE',xml);self.assertIn('읽기용 정리본',xml);self.assertIn('Appendix A. RAW OCR (감사용 원문)',xml);self.assertLess(xml.index('읽기용 정리본'),xml.index('Source comparison and evidence'));self.assertLess(xml.index('Source comparison and evidence'),xml.index('Appendix A. RAW OCR'));self.assertIn('Corrected/normalized text',xml);self.assertIn('normalized text',xml);self.assertEqual(xml.count('>normalized text<'),1);self.assertIn('Immutable: yes',xml)
   _,multi=call(args('report.create',state_root=str(self.s),job_ids='one,two',output_root=str(self.r),output='multi.docx'));self.assertTrue(multi['ok']);self.assertEqual(multi['data']['files'],2)
   with zipfile.ZipFile(self.r/'multi.docx') as z:
-   xml=z.read('word/document.xml').decode();self.assertIn('Executive summary',xml);self.assertIn('Contents and file index',xml);self.assertIn('one.ppm',xml);self.assertIn('two.ppm',xml);self.assertEqual(len([x for x in z.namelist() if x.startswith('word/media/')]),2)
+   xml=z.read('word/document.xml').decode();self.assertIn('Executive information',xml);self.assertIn('Review-needed highlights',xml);self.assertIn('File index',xml);self.assertIn('one.ppm',xml);self.assertIn('two.ppm',xml);self.assertEqual(xml.count('Appendix A. RAW OCR (감사용 원문)'),1);self.assertGreater(xml.index('Appendix A. RAW OCR'),xml.index('File 2: two.ppm'));self.assertEqual(len([x for x in z.namelist() if x.startswith('word/media/')]),2)
+ def test_presentation_normalization_is_conservative_and_table_fallback_is_safe(self):
+  raw='상호: 테스트 상점\r\n금액  12,300원\n애매한 한 칸\n\n\n토큰   순서 유지'
+  rows=M.presentation_lines(raw);self.assertEqual(rows[0],('kv','상호:','테스트 상점'));self.assertEqual(rows[1],('kv','금액','12,300원'));self.assertEqual(rows[2],('line','애매한 한 칸',None));self.assertEqual(rows.count(('blank',None,None)),1)
+  rendered=' '.join(x for row in rows for x in row[1:] if x);self.assertEqual(rendered.split(),raw.replace('\r','').split())
+ def test_one_line_receipt_is_segmented_without_token_mutation(self):
+  raw='Ao 택시 이용 상세 26.06.17 운행 정보 출발 OOS 양 재 역 점 도착 나 옥 길 센 트 럴 힐 아파트 운행 시간 20:42 - 21:23 호출 옵션 일반 택시 정보 상호 동 창 산 업 (주) 차량 번호 경기 37 바 1035 | 쏘나타 기 사 명 송 강 수 제휴 브랜드 캡 시 요금 정보 운행 요 금 ( 미 터 기 요금) 24,500 원 통행료 1,900 원 결제 금액 26,400 원 결제 수단 카 카 오 페이 현 대 카드 9490 결제 일시 26.06.17 21:23 @ 실제 요 금 과 다를 수 있습니다. 고객 지원 기 사 님께 전화'
+  rows=M.presentation_lines(raw)
+  self.assertEqual([r[1].replace(' ','') for r in rows if r[0]=='section'],['운행정보','택시정보','요금정보','고객지원'])
+  labels=[r[1].replace(' ','') for r in rows if r[0]=='kv']
+  for expected in ('출발','도착','운행시간','호출옵션','상호','차량번호','기사명','제휴브랜드','운행요금','통행료','결제금액','결제수단','결제일시'):self.assertIn(expected,labels)
+  rendered=' '.join(x for row in rows for x in row[1:] if x)
+  self.assertEqual(rendered.split(),raw.split())
+  self.assertEqual(set(rendered.split())-set(raw.split()),set())
+ def test_generic_long_line_uses_sentence_and_bounded_chunks(self):
+  raw=('첫 문장입니다. '+'긴문장토큰 '*80+'끝입니다!').strip();rows=M.presentation_lines(raw)
+  self.assertGreater(len(rows),2);self.assertTrue(all(len(r[1])<=180 for r in rows if r[0]=='line'))
+  self.assertEqual(' '.join(r[1] for r in rows if r[1]).split(),raw.split())
+ def test_receipt_raw_is_exactly_present_in_consolidated_appendix(self):
+  raw='운행 정보 출발 A 도착 B 결제 금액 1,000 원 고객 지원 문의\n둘째 줄 그대로'
+  record={'filename':'receipt.txt','qa':'PASS','confidence':.92,'language':'kor','engine':'test','sha':'a'*64,'dimensions':'n/a','pages':1,'cache':'miss','validation':'valid','raw_state':'preserved','review':False,'image':None,'raw':raw,'corrected':None}
+  target=self.r/'receipt.docx';M.create_docx(target,[record],'DOC','2026-01-01T00:00:00Z','INTERNAL')
+  with zipfile.ZipFile(target) as z:xml=z.read('word/document.xml').decode()
+  appendix=xml[xml.index('Appendix A. RAW OCR'):]
+  self.assertIn(M.xml_text(raw),appendix);self.assertEqual(xml.count('Appendix A. RAW OCR'),1)
+  reading=xml[xml.index('읽기용 정리본'):xml.index('Source comparison and evidence')]
+  self.assertIn('Heading3',reading);self.assertGreaterEqual(reading.count('<w:tr>'),3)
  def test_report_rejects_bad_jobs_paths_and_clobber(self):
   (self.i/'a.ppm').write_bytes(ppm());call(args('ocr.start',state_root=str(self.s),input_root=str(self.i),input='a.ppm',job_id='a'))
   for ids in ('','a,a','a,../x','missing'):
