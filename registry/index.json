@@ -91,11 +91,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c0d7b1ef125687b9b0905517b466b915e749ce65ee82fd89f30952a74cda912e"
+          "sha256": "868614ade2128739f874ed68ff2d84696528b8d4d20bee7bb261bda7255a2645"
         },
         {
           "path": "references/errors-and-recovery.md",
-          "sha256": "8733ae0cc5d8c2239abe343e7ad383356bba230eaa515a6bc4fceab6cb1c9876"
+          "sha256": "a523ba8a14d5051725ff7054502a6bebd12fa970e3e00e369e5e593f7d39b91c"
         },
         {
           "path": "references/onboarding.md",
@@ -103,7 +103,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "c57855bd9e908fd9fee09c7c520a0c953dd63b1760b15668112e76fec5d88881"
+          "sha256": "ed0c8429a9d7c365a98e64cd11137eebe40d88289b378254e0d195884d3b7006"
         },
         {
           "path": "references/safety-and-privacy.md",

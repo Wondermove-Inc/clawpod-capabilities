@@ -1,23 +1,15 @@
 # Errors and recovery
 
-- Prerequisite or language failure: install only with approval, run `engine.verify`, then `system.preflight`.
-- Input/path/resource failure: correct the source or limits; do not retry unchanged.
-- Interrupted job: inspect ownership and checkpoint, then resume only if no worker is alive.
-- Cancellation: verify owned worker stopped and preserve completed pages.
-- Cache mismatch: invalidate only the affected bounded entry and rerun.
-- Ollama configured but unverified: inject approved auth and verify; never transfer pages yet.
-- Model unavailable or vision-incompatible: select and verify another vision model.
-- Approval digest mismatch: rerun `review.prepare`, show the new intent, obtain new approval.
-- Timeout/malformed remote response: preserve local OCR and correction state; retry only when the request was not accepted or duplicated.
-- Correction provenance mismatch: do not apply; regenerate proposals against the current raw result.
+Classify failures before retrying. Re-run engine verification for prerequisite drift; correct bounded input paths for traversal or symlink failures; reduce files/pages for resource limits; resume interrupted jobs from checkpoints; and never signal an unowned worker.
 
-Always report completed pages, raw-result state, remote side effects, retry safety, and the exact recovery action.
+## Comparison report failures
 
-## Report failures
+- Empty, malformed, or duplicate `jobIds`: correct the bounded comma-separated list and prepare again.
+- Foreign or incomplete job: use the matching owner or wait/resume OCR completion.
+- Missing or source-mismatched result: stop; preserve evidence and regenerate OCR only when safe.
+- More than 50 jobs or over 256 MiB aggregate source data: split into multiple reports.
+- Existing, escaping, or symlinked output: choose a new bounded relative `.docx` path. Reports never clobber.
+- Missing image preview for PDF/text jobs: the report may still use digest provenance and explicitly mark the preview unavailable.
+- Invalid DOCX/package validation: preserve OCR jobs/results, remove only failed temporary output, and retry after fixing the artifact defect.
 
-- Malformed, empty, or duplicate job list: correct the comma-separated `jobIds`; do not retry unchanged.
-- Owner mismatch, missing result, or incomplete job: resume or complete the original owned OCR job first.
-- Output escape, symlink, or existing destination: choose a new bounded relative `.docx` path. Existing files are never replaced.
-- Source digest or image encoding failure: preserve the job and investigate integrity; do not claim a valid comparison.
-- Job/source limits: split into smaller reports. Maximums are 50 jobs and 256 MiB aggregate source bytes.
-- OOXML write failure: no network fallback is attempted. Fix local storage or permissions before a safe retry.
+Remote review failures never replace local OCR. Re-run `review.prepare` after any intent change, and never retry external transfer without matching approval.
