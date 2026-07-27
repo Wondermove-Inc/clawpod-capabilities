@@ -394,7 +394,7 @@
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "1ed5d13b8cfa621ad8c94e748466c2a429af7a238be94cf0903d655bc48f4c19"
+          "sha256": "ebab9f48732359a05bde64084e48416019eff802c00acb35c0958d9c14012cf5"
         },
         {
           "path": "command_contracts.json",
@@ -402,11 +402,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f5a908114e47ef1a447a1257f50b997f8f292fec79d8bdddf6139c6c6fb83b9f"
+          "sha256": "7a08f545adbcf83a30342938b8bbf8fe5e359fbeb211510034c3b3dee0076622"
         },
         {
           "path": "test_clawpod_ocr.py",
-          "sha256": "ea22523874af0df57ef2d3d65d08f0e22bd0cc5bbd5865bdbdbb055117abce00"
+          "sha256": "6ba340112a5a0a160b06c81a612f657af2e7530e9a4ed7380665b9b3b2ac3287"
         }
       ]
     },

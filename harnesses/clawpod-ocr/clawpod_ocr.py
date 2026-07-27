@@ -138,17 +138,17 @@ def reconcile(jd,m):
 def auth_headers(cfg):
  if not cfg.get("secretPointer"):return {}
  target=cfg.get("injection",{})
- token=None
- if target.get("type")=="env":token=os.environ.get(target.get("name", ""))
+ auth_value=None
+ if target.get("type")=="env":auth_value=os.environ.get(target.get("name", ""))
  elif target.get("type")=="file-env":
   fp=os.environ.get(target.get("name", ""))
   if fp:
    st=os.stat(fp)
    if stat.S_IMODE(st.st_mode)&0o077:raise ValueError("secret file must be mode 0600")
-   token=Path(fp).read_text(encoding="utf-8").strip()
- if not token:raise ValueError("configured secret requires separate protected injection")
- if len(token)>8192 or "\n" in token or "\r" in token:raise ValueError("invalid injected token")
- return {"Authorization":"Bearer "+token}
+   auth_value=Path(fp).read_text(encoding="utf-8").strip()
+ if not auth_value:raise ValueError("configured secret requires separate protected injection")
+ if len(auth_value)>8192 or "\n" in auth_value or "\r" in auth_value:raise ValueError("invalid injected token")
+ return {"Authorization":"Bearer "+auth_value}
 def http_json(cfg,path,timeout,body=None):
  data=None if body is None else json.dumps(body,separators=(",",":")).encode()
  headers={"Accept":"application/json",**auth_headers(cfg)}
@@ -401,6 +401,12 @@ def ocr_image(img,page,m,args):
  if z.returncode:raise ValueError("tesseract failed")
  rows=[x.split("\t") for x in z.stdout.splitlines()[1:] if x.strip()];words=[x for x in rows if len(x)>11 and x[11].strip()];conf=[max(0,float(x[10]))/100 for x in words if x[10] not in {"-1",""}];txt=" ".join(x[11] for x in words);c=round(sum(conf)/len(conf),4) if conf else 0.0;return page_result(page,txt,c,"tesseract-5",m)
 
+def parse_bool(value):
+ if isinstance(value,bool):return value
+ text=str(value).strip().lower()
+ if text in {"1","true","yes","on"}:return True
+ if text in {"0","false","no","off"}:return False
+ raise argparse.ArgumentTypeError("expected a boolean value")
 def parser():
- p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--owner",default="default");p.add_argument("--detached",action="store_true");p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--approved",action="store_true");p.add_argument("--approval-digest");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
+ p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--owner",default="default");p.add_argument("--detached",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--approved",nargs="?",const=True,default=False,type=parse_bool);p.add_argument("--approval-digest");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
 if __name__=="__main__":sys.exit(run(parser().parse_args()))

@@ -89,11 +89,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -102,12 +98,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -372,11 +366,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -385,12 +375,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -655,11 +643,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -668,12 +652,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -938,11 +920,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -951,12 +929,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1221,11 +1197,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -1234,12 +1206,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1504,11 +1474,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -1517,12 +1483,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1788,11 +1752,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -1801,12 +1761,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2073,11 +2031,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -2086,12 +2040,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2357,11 +2309,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -2370,12 +2318,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2640,11 +2586,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -2653,12 +2595,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2923,11 +2863,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -2936,12 +2872,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3206,11 +3140,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -3219,12 +3149,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3489,11 +3417,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -3502,12 +3426,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3772,11 +3694,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -3785,12 +3703,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4055,11 +3971,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -4068,12 +3980,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4339,11 +4249,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -4352,12 +4258,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4622,11 +4526,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -4635,12 +4535,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4905,11 +4803,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -4918,12 +4812,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5188,11 +5080,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -5201,12 +5089,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5471,11 +5357,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -5484,12 +5366,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5754,11 +5634,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -5767,12 +5643,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6039,11 +5913,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -6052,12 +5922,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6322,11 +6190,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -6335,12 +6199,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6605,11 +6467,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -6618,12 +6476,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6888,11 +6744,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -6901,12 +6753,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7172,11 +7022,7 @@
             "type": "boolean"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "env",
-              "file-env"
-            ]
+            "type": "string"
           },
           "authEnv": {
             "type": "string"
@@ -7185,12 +7031,10 @@
             "type": "string"
           },
           "page": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           },
           "approvalDigest": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false

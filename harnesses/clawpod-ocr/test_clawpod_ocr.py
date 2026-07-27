@@ -34,6 +34,8 @@ class Tests(unittest.TestCase):
   self.fake('pdfinfo','printf "Pages: 3\\n"');self.fake('pdftotext','exit 0');self.fake('pdftoppm','[ "$1" = "-r" ] && [ "$2" = "200" ] || exit 9; for out; do :; done; printf "P6\\n1 1\\n255\\n\\0\\0\\0" > "$out.ppm"');self.fake('tesseract','if [ "$1" = "--version" ]; then echo "tesseract 5.3.0"; elif [ "$1" = "--list-langs" ]; then printf "List of available languages (3):\\nkor\\neng\\nosd\\n"; else printf "level\\tpage_num\\tblock_num\\tpar_num\\tline_num\\tword_num\\tleft\\ttop\\twidth\\theight\\tconf\\ttext\\n5\\t1\\t1\\t1\\t1\\t1\\t0\\t0\\t1\\t1\\t60\\tpage-$1\\n"; fi')
  def server(self):
   s=ThreadingHTTPServer(('127.0.0.1',0),H);t=threading.Thread(target=s.serve_forever,daemon=True);t.start();self.addCleanup(lambda:(s.shutdown(),s.server_close(),t.join(2)));return f'http://127.0.0.1:{s.server_port}'
+ def test_gateway_boolean_option_shape(self):
+  parsed=M.parser().parse_args(['ocr.start','--detached','true','--approved','false']);self.assertTrue(parsed.detached);self.assertFalse(parsed.approved)
  def test_engine_semantics_and_persisted_onboarding(self):
   self.engines();_,r=call(args('engine.requirements',state_root=str(self.s)));self.assertNotIn('verified',r['data']);_,v=call(args('engine.verify',state_root=str(self.s)));self.assertEqual(v['data']['state'],'verified');self.assertEqual(v['data']['major'],5);_,p=call(args('system.preflight',state_root=str(self.s)));self.assertTrue(p['data']['ready']);_,o=call(args('onboarding.status',state_root=str(self.s)));self.assertEqual(o['data']['local']['state'],'verified')
  def test_verify_rejects_missing_language(self):
