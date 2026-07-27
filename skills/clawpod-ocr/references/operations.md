@@ -1,6 +1,8 @@
 # Operations
 
-Use `document.inspect → ocr.prepare → ocr.start → result.validate → result.export` for normal work. Use detached jobs for multi-page or uncertain-duration work and track completion without Gateway polling loops.
+For one local PNG/JPEG/PPM/PGM image with no custom export or remote review, use one `ocr.quick` invocation. It returns text, confidence, cache state, source digest, dimensions, engine/language, validation, and raw-preservation state while retaining a normal job/result for audit and later recovery.
+
+Use `document.inspect → ocr.prepare → ocr.start → result.validate → result.export` for PDFs, multi-page work, explicit exports, layout tooling, or recovery. Use detached jobs for multi-page or uncertain-duration work and track completion without Gateway polling loops.
 
 `job.resume` continues from persisted pages. `job.cancel` acts only on the exact owned PID/start identity/nonce. Never retry a job while its worker is alive.
 

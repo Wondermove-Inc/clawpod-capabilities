@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-ocr",
   "title": "ClawPod OCR",
-  "description": "Bounded local Korean and English OCR with detached jobs, provenance, caching, and opt-in guarded Ollama correction.",
-  "version": "0.1.0",
+  "description": "Bounded local Korean and English OCR with a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_ocr.py",
   "packageRoot": ".",
   "execution": {
@@ -7038,6 +7038,286 @@
           }
         },
         "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preprocess",
+          "type": "option",
+          "flag": "--preprocess",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "owner",
+          "type": "option",
+          "flag": "--owner",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secret",
+          "type": "option",
+          "flag": "--secret",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "threshold",
+          "type": "option",
+          "flag": "--threshold",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "detached",
+          "type": "option",
+          "flag": "--detached",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "approved",
+          "type": "option",
+          "flag": "--approved",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authEnv",
+          "type": "option",
+          "flag": "--auth-env",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "correctionId",
+          "type": "option",
+          "flag": "--correction-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "page",
+          "type": "option",
+          "flag": "--page",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "ocr.quick": {
+      "description": "Inspect, OCR, validate, and return one local image in a single bounded invocation.",
+      "baseArgv": [
+        "ocr.quick"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "approvalDigest": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "input"
+        ]
       },
       "outputSchema": {
         "type": "object",

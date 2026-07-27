@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
-  "description": "Bounded local Korean and English OCR with detached jobs, provenance, caching, and opt-in guarded Ollama correction.",
+  "version": "0.2.0",
+  "description": "Bounded local Korean and English OCR with a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

@@ -75,8 +75,8 @@
     {
       "id": "clawpod-ocr",
       "type": "skill",
-      "version": "0.1.0",
-      "description": "Extract Korean and English text locally with Tesseract and optionally correct low-confidence pages through guarded Ollama.",
+      "version": "0.2.0",
+      "description": "Extract Korean and English text locally with a one-call image fast path and optional guarded Ollama correction.",
       "path": "skills/clawpod-ocr",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -91,7 +91,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0b66c0d44753603a8714acd15fd1300483292bf45cc4b6ea737f973806b13f72"
+          "sha256": "6b536515d793afe32c30b8c671fcc3c1469c10fdcb4e0fe3631c9441006cabb8"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -103,7 +103,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "573e0abcf2493914a3de7e4b257bf4bed8fbb841c3404caa6ec35d621a8fceaf"
+          "sha256": "7f83683fc618836bfc4d8091a211652a347706777ee8a2c9151982437f0f0bff"
         },
         {
           "path": "references/safety-and-privacy.md",
@@ -112,7 +112,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-ocr",
-        "version": "0.1.0"
+        "version": "0.2.0"
       }
     },
     {
@@ -370,8 +370,8 @@
     {
       "id": "clawpod-ocr",
       "type": "harness",
-      "version": "0.1.0",
-      "description": "Bounded local Korean and English OCR with detached jobs, provenance, caching, and opt-in guarded Ollama correction.",
+      "version": "0.2.0",
+      "description": "Bounded local Korean and English OCR with a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
       "path": "harnesses/clawpod-ocr",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -386,27 +386,27 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "42424e8af6dd1c2ac24cedf412b6c1b55d80f80948e632bdad8da3a508bcaf58"
+          "sha256": "c73263c95b46267f8c5cfbccbad466b43236c215b2e31043c843389a6e90b31b"
         },
         {
           "path": "TEST.md",
-          "sha256": "76390b8d358b3deba5def71cfd4a3c1046cb6d1ac73e7668d2ce7e19caa4171c"
+          "sha256": "0d89851de74db10cda129253bf595ed7a0c3230fdd89e400246df01d150de26b"
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "4ee42bee071c8c1ef1fd700ee4559eeabfe0e41b2b979f1b881066c6192b6bcc"
+          "sha256": "c6c97ae9076bc3fb3c259a5e78239aa92af4edd62ae11eb42cd10d52ab445c18"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "a220a92060b822233fa68e8637631208e36c217897903e428872f444f38fad12"
+          "sha256": "e77f5b5a8af95fb7f0c67fcc226e5cf8894a5858c699e9ab8c20eb1ae336aa35"
         },
         {
           "path": "harness.json",
-          "sha256": "7a08f545adbcf83a30342938b8bbf8fe5e359fbeb211510034c3b3dee0076622"
+          "sha256": "8d151ff39c1d57a404353a46cc5cebd11167fc9cdeeebd8ed56bdaef912f3715"
         },
         {
           "path": "test_clawpod_ocr.py",
-          "sha256": "6ba340112a5a0a160b06c81a612f657af2e7530e9a4ed7380665b9b3b2ac3287"
+          "sha256": "0d694fbfa9ecd0efbffc815d3e7e1b4e11a09bb4840444a78090788d3828605d"
         }
       ]
     },

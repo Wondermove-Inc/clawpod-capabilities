@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse, base64, hashlib, html, json, os, re, secrets, shutil, signal, stat, struct, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid
 from pathlib import Path
 
-VERSION="0.1.0"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024
+VERSION="0.2.0"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024
 CHILDREN={}
 
 def out(cmd,data=None,effects=None,err=None):
@@ -212,6 +212,19 @@ def run(args):
   if cmd=="document.inspect":_,d=inspect_doc(inp,args.input);return out(cmd,d)
   if cmd=="ocr.prepare":
    _,d=inspect_doc(inp,args.input);key=hashlib.sha256((d["sha256"]+VERSION+args.language+args.preprocess).encode()).hexdigest();return out(cmd,{"planId":key,"document":d,"workers":1,"cacheKey":key})
+  if cmd=="ocr.quick":
+   require_local_engine(state,timeout);p,d=inspect_doc(inp,args.input)
+   if d["type"] not in {"png","jpeg","ppm","pgm"} or d["pages"]!=1:raise ValueError("ocr.quick accepts one local image only; use the standard workflow for PDFs or multi-page inputs")
+   jid=args.job_id or uuid.uuid4().hex;jd=work/jid
+   if not re.fullmatch(r"[A-Za-z0-9._-]{1,128}",jid):raise ValueError("invalid job id")
+   if jd.exists():raise ValueError("job already exists")
+   jd.mkdir();src=jd/("input"+p.suffix.lower());shutil.copyfile(p,src);key=hashlib.sha256((d["sha256"]+VERSION+args.language+args.preprocess).encode()).hexdigest();cache=state/"cache";cache.mkdir(exist_ok=True);cp=cache/(key+".json")
+   meta={"jobId":jid,"owner":args.owner,"status":"running","source":d,"language":args.language,"preprocess":args.preprocess,"completedPages":0,"createdAt":int(time.time()),"cancelRequested":False,"pages":[]};atomic(jd/"job.json",meta)
+   if cp.exists():result=load(cp);result.update({"jobId":jid,"source":d,"cacheHit":True})
+   else:
+    page=ocr_image(src,1,meta,args);result={"schemaVersion":1,"jobId":jid,"source":d,"rawOcrPreserved":True,"cacheKey":key,"cacheHit":False,"pages":[page]};atomic(cp,result)
+   atomic(jd/"result.json",result);meta.update({"status":"completed","completedPages":1,"pages":result["pages"],"checkpoint":"result.json"});atomic(jd/"job.json",meta);page=result["pages"][0];valid=sha(src)==d["sha256"]
+   return out(cmd,{"jobId":jid,"text":page["text"],"confidence":page["confidence"],"cacheHit":result["cacheHit"],"valid":valid,"rawPreserved":True,"sourceDigest":d["sha256"],"dimensions":d["dimensions"],"engine":page["provenance"]["engine"],"language":args.language},[{"type":"quick-result-write","jobId":jid}])
   if cmd=="ocr.start":
    require_local_engine(state,timeout);p,d=inspect_doc(inp,args.input);jid=args.job_id or uuid.uuid4().hex;jd=work/jid
    if not re.fullmatch(r"[A-Za-z0-9._-]{1,128}",jid):raise ValueError("invalid job id")

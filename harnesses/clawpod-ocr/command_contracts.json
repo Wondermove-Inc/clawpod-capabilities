@@ -3354,6 +3354,137 @@
         },
         "additionalProperties": false
       }
+    },
+    "ocr.quick": {
+      "backend": "python-stdlib/subprocess",
+      "mutation": true,
+      "required": [
+        "input"
+      ],
+      "rootPathArgs": [
+        "stateRoot",
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "input",
+        "output"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "preprocess": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "env",
+              "file-env"
+            ]
+          },
+          "authEnv": {
+            "type": "string"
+          },
+          "correctionId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "data",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }
