@@ -112,6 +112,13 @@ def tesseract_probe(timeout):
  result.update({"version":m.group(0) if m else None,"major":major,"languages":sorted(langs),"missingLanguages":missing,"verified":v.returncode==0 and l.returncode==0 and major==5 and not missing and bool(d["pdfinfo"] and d["pdftoppm"] and d["pdftotext"])})
  return result
 
+def require_local_engine(state,timeout):
+ p=state/"local-onboarding.json"
+ if not p.exists() or load(p).get("state")!="verified":raise ValueError("local OCR engine is not persistently verified; run engine.verify")
+ current=tesseract_probe(timeout)
+ if not current["verified"]:raise ValueError("current local OCR engine no longer matches verified Tesseract 5 kor/eng/osd requirements")
+ return current
+
 def proc_start(pid):
  try:
   fields=Path(f"/proc/{pid}/stat").read_text().split()
@@ -206,7 +213,7 @@ def run(args):
   if cmd=="ocr.prepare":
    _,d=inspect_doc(inp,args.input);key=hashlib.sha256((d["sha256"]+VERSION+args.language+args.preprocess).encode()).hexdigest();return out(cmd,{"planId":key,"document":d,"workers":1,"cacheKey":key})
   if cmd=="ocr.start":
-   p,d=inspect_doc(inp,args.input);jid=args.job_id or uuid.uuid4().hex;jd=work/jid
+   require_local_engine(state,timeout);p,d=inspect_doc(inp,args.input);jid=args.job_id or uuid.uuid4().hex;jd=work/jid
    if not re.fullmatch(r"[A-Za-z0-9._-]{1,128}",jid):raise ValueError("invalid job id")
    if jd.exists():raise ValueError("job already exists")
    jd.mkdir();shutil.copyfile(p,jd/("input"+p.suffix.lower()));meta={"jobId":jid,"owner":args.owner,"status":"created","source":d,"language":args.language,"preprocess":args.preprocess,"completedPages":0,"createdAt":int(time.time()),"cancelRequested":False,"pages":[]};atomic(jd/"job.json",meta)
@@ -216,6 +223,7 @@ def run(args):
   if cmd=="_worker":
    jd=work/args.job_id;m=load(jd/"job.json")
    if m.get("owner")!=args.owner or m.get("workerNonce")!=args.worker_nonce:return 3
+   require_local_engine(state,timeout)
    # Parent publishes PID/start identity before work, preventing completion from being overwritten by launch state.
    for _ in range(100):
     m=load(jd/"job.json")
@@ -226,7 +234,7 @@ def run(args):
   if cmd in {"job.status","job.logs"}:
    m=owned(work,args);m=reconcile(work/args.job_id,m);return out(cmd,m if cmd=="job.status" else {"jobId":m["jobId"],"events":load(work/args.job_id/"logs.json") if (work/args.job_id/"logs.json").exists() else []})
   if cmd=="job.resume":
-   m=owned(work,args);m=reconcile(work/args.job_id,m)
+   require_local_engine(state,timeout);m=owned(work,args);m=reconcile(work/args.job_id,m)
    if m["status"]=="running":raise ValueError("job already running")
    m["cancelRequested"]=False;atomic(work/args.job_id/"job.json",m)
    if args.detached:
@@ -270,16 +278,21 @@ def run(args):
    return out(cmd,r)
   if cmd=="review.export-low-confidence":
    owned(work,args);r=load(work/args.job_id/"result.json");items=[{"page":p["page"],"confidence":p["confidence"],"text":p["text"],"image":"page image retained locally"} for p in r["pages"] if p["confidence"]<args.threshold];dest=safe(Path(args.output_root or ".").resolve(),args.output);atomic(dest,{"schemaVersion":1,"jobId":args.job_id,"threshold":args.threshold,"items":items,"documentTransferred":False,"reviewUnit":"page"});return out(cmd,{"count":len(items),"path":args.output})
-  if cmd=="review.prepare":owned(work,args);return out(cmd,{"jobId":args.job_id,"intent":"ollama-vision-page-review","requiresSeparateApproval":True,"automaticTransfer":False,"mode":"diff-only"})
+  if cmd=="review.prepare":
+   owned(work,args);cfg=load(state/"ollama.json")
+   if cfg.get("state")!="verified":raise ValueError("Ollama vision model not verified")
+   intent=review_intent(work/args.job_id,cfg,args);atomic(work/args.job_id/"review-intent.json",intent);return out(cmd,intent,[{"type":"review-intent-write","jobId":args.job_id}])
   if cmd=="review.start":
    owned(work,args)
-   if not args.approved:raise ValueError("separate review approval required")
+   if not args.approved or not args.approval_digest:raise ValueError("exact review approval digest required")
    cfg=load(state/"ollama.json")
    if cfg.get("state")!="verified":raise ValueError("Ollama vision model not verified")
+   current=review_intent(work/args.job_id,cfg,args)
+   if not secrets.compare_digest(args.approval_digest,current["intentDigest"]):raise ValueError("review approval digest mismatch; prepare and approve the unchanged intent")
    raw=load(work/args.job_id/"result.json");corrections=[]
    for p in raw["pages"]:
     if p["confidence"]>=args.threshold:continue
-    img=page_image(work/args.job_id,p["page"]);b=img.read_bytes()
+    img=ensure_page_image(work/args.job_id,p["page"],args);b=img.read_bytes()
     if len(b)>MAX_IMAGE_TRANSFER:raise ValueError("page image transfer exceeds limit")
     resp=http_json(cfg,"/api/generate",timeout,{"model":cfg["model"],"prompt":"Review this page image. Return corrected OCR text only. Raw OCR: "+p["text"][:20000],"images":[base64.b64encode(b).decode()],"stream":False});corrected=resp.get("response")
     if not isinstance(corrected,str):raise ValueError("malformed Ollama response")
@@ -321,6 +334,29 @@ def page_image(jd,page):
   p=jd/"page-images"/f"page-{page}.{ext}"
   if p.exists():return p
  raise ValueError("bounded page image unavailable for vision review")
+
+def ensure_page_image(jd,page,args):
+ try:
+  p=page_image(jd,page);check_pixels(p);return p
+ except ValueError:pass
+ src=next(jd.glob("input.*"));ext=src.suffix.lower();destdir=jd/"page-images";destdir.mkdir(exist_ok=True)
+ if ext in {".png",".jpg",".jpeg",".ppm",".pgm"} and page==1:
+  check_pixels(src);dest=destdir/("page-1"+ext);shutil.copyfile(src,dest);return dest
+ if ext==".pdf":
+  tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"review-{page}"
+  subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile","-ppm",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"})
+  raster=prefix.with_suffix(".ppm");check_pixels(raster);dest=destdir/f"page-{page}.ppm";shutil.copyfile(raster,dest);raster.unlink(missing_ok=True);cleanup(jd);return dest
+ raise ValueError("bounded page image unavailable for vision review")
+
+def review_intent(jd,cfg,args):
+ raw=load(jd/"result.json");items=[]
+ for p in raw["pages"]:
+  if p["confidence"]>=args.threshold:continue
+  image=ensure_page_image(jd,p["page"],args);size=image.stat().st_size
+  if size>MAX_IMAGE_TRANSFER:raise ValueError("page image transfer exceeds limit")
+  items.append({"page":p["page"],"imageSha256":sha(image),"imageBytes":size})
+ payload={"schemaVersion":1,"jobId":raw["jobId"],"sourceDigest":raw["source"]["sha256"],"threshold":args.threshold,"pages":items,"model":cfg["model"],"endpointIdentity":cfg["endpoint"],"reviewUnit":"page","mode":"diff-only","automaticTransfer":False}
+ digest=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).hexdigest();return {**payload,"intentDigest":digest,"requiresSeparateApproval":True}
 def tiny_png():return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
 
 def process(jd,args,cmd,worker=False):
@@ -334,7 +370,7 @@ def process(jd,args,cmd,worker=False):
   if m.get("cancelRequested"):return out(cmd,m) if not worker else 0
   m["status"]="running";atomic(jd/"job.json",m);src=next(jd.glob("input.*"));cache=jd.parents[1]/"cache";cache.mkdir(exist_ok=True);key=hashlib.sha256((m["source"]["sha256"]+VERSION+m["language"]+m["preprocess"]).encode()).hexdigest();cp=cache/(key+".json")
   if cp.exists() and m["completedPages"]==0:
-   result=load(cp);result["cacheHit"]=True;atomic(jd/"result.json",result);m["status"]="completed";m["completedPages"]=len(result["pages"]);m["checkpoint"]="result.json";atomic(jd/"job.json",m);return out(cmd,{"jobId":m["jobId"],"status":"completed","cacheHit":True}) if not worker else 0
+   result=load(cp);result["jobId"]=m["jobId"];result["source"]=m["source"];result["cacheHit"]=True;atomic(jd/"result.json",result);m["status"]="completed";m["completedPages"]=len(result["pages"]);m["pages"]=result["pages"];m["checkpoint"]="result.json";atomic(jd/"job.json",m);return out(cmd,{"jobId":m["jobId"],"status":"completed","cacheHit":True}) if not worker else 0
   pages=list(m.get("pages",[]));ext=src.suffix.lower();start=len(pages)+1
   if ext==".txt" and start==1:
    text=src.read_text(encoding="utf-8");pages.append(page_result(1,text,1.0,"text-layer",m));checkpoint(jd,m,pages)
@@ -346,7 +382,7 @@ def process(jd,args,cmd,worker=False):
      z=subprocess.run(["pdftotext","-f",str(page),"-l",str(page),str(src),"-"],capture_output=True,text=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"})
      if z.returncode==0:text=z.stdout.strip()
     if text:pages.append(page_result(page,text,1.0,"text-layer",m));checkpoint(jd,m,pages);continue
-    tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"page-{page}";subprocess.run(["pdftoppm","-f",str(page),"-l",str(page),"-singlefile","-ppm",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"});img=prefix.with_suffix(".ppm");check_pixels(img);keep=jd/"page-images"/f"page-{page}.ppm";keep.parent.mkdir(exist_ok=True);shutil.copyfile(img,keep);pages.append(ocr_image(img,page,m,args));checkpoint(jd,m,pages);img.unlink(missing_ok=True);cleanup(jd)
+    tmp=jd/"tmp";tmp.mkdir(exist_ok=True);prefix=tmp/f"page-{page}";subprocess.run(["pdftoppm","-r","200","-f",str(page),"-l",str(page),"-singlefile","-ppm",str(src),str(prefix)],check=True,timeout=bounded_timeout(args.timeout),env={**os.environ,"OMP_THREAD_LIMIT":"1"});img=prefix.with_suffix(".ppm");check_pixels(img);keep=jd/"page-images"/f"page-{page}.ppm";keep.parent.mkdir(exist_ok=True);shutil.copyfile(img,keep);pages.append(ocr_image(img,page,m,args));checkpoint(jd,m,pages);img.unlink(missing_ok=True);cleanup(jd)
   else:
    if start==1:
     check_pixels(src);keep=jd/"page-images"/("page-1"+src.suffix.lower());keep.parent.mkdir(exist_ok=True);shutil.copyfile(src,keep);pages.append(ocr_image(src,1,m,args));checkpoint(jd,m,pages)
@@ -366,5 +402,5 @@ def ocr_image(img,page,m,args):
  rows=[x.split("\t") for x in z.stdout.splitlines()[1:] if x.strip()];words=[x for x in rows if len(x)>11 and x[11].strip()];conf=[max(0,float(x[10]))/100 for x in words if x[10] not in {"-1",""}];txt=" ".join(x[11] for x in words);c=round(sum(conf)/len(conf),4) if conf else 0.0;return page_result(page,txt,c,"tesseract-5",m)
 
 def parser():
- p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--owner",default="default");p.add_argument("--detached",action="store_true");p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--approved",action="store_true");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
+ p=argparse.ArgumentParser();p.add_argument("command");p.add_argument("--state-root");p.add_argument("--input-root");p.add_argument("--input");p.add_argument("--output-root");p.add_argument("--output",default="result.json");p.add_argument("--format",default="json",choices=["json","txt","markdown","tsv","hocr","searchable-pdf"]);p.add_argument("--language",default="kor+eng");p.add_argument("--preprocess",default="default");p.add_argument("--job-id");p.add_argument("--owner",default="default");p.add_argument("--detached",action="store_true");p.add_argument("--endpoint");p.add_argument("--model",default="llava");p.add_argument("--secret");p.add_argument("--auth-mode",default="env",choices=["env","file-env"]);p.add_argument("--auth-env",default="CLAWPOD_OLLAMA_TOKEN");p.add_argument("--timeout",type=float,default=15);p.add_argument("--threshold",type=float,default=.75);p.add_argument("--approved",action="store_true");p.add_argument("--approval-digest");p.add_argument("--correction-id",action="append");p.add_argument("--page",action="append",type=int);p.add_argument("--worker-nonce",help=argparse.SUPPRESS);return p
 if __name__=="__main__":sys.exit(run(parser().parse_args()))

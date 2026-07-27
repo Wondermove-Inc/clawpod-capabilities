@@ -104,6 +104,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -294,6 +298,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -376,6 +387,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -566,6 +581,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -648,6 +670,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -838,6 +864,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -920,6 +953,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -1110,6 +1147,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1192,6 +1236,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -1382,6 +1430,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1464,6 +1519,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -1654,6 +1713,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1737,6 +1803,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -1927,6 +1997,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2011,6 +2088,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -2201,6 +2282,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2284,6 +2372,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -2474,6 +2566,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2556,6 +2655,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -2746,6 +2849,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2828,6 +2938,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -3019,11 +3133,18 @@
           "flag": "--page",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "ocr.start": {
-      "description": "Run OCR or launch one real owned detached worker with page checkpoints.",
+      "description": "Require currently and persistently verified Tesseract 5 kor/eng/osd, then OCR locally or launch an owned detached worker.",
       "baseArgv": [
         "ocr.start"
       ],
@@ -3100,6 +3221,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -3290,6 +3415,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3372,6 +3504,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -3562,6 +3698,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3644,6 +3787,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -3835,11 +3982,18 @@
           "flag": "--page",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "job.resume": {
-      "description": "Continue an interrupted or cancelled owned job from its next unfinished page.",
+      "description": "Require current persisted engine verification, then continue an interrupted or cancelled owned job from its next unfinished page.",
       "baseArgv": [
         "job.resume"
       ],
@@ -3916,6 +4070,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -4106,6 +4264,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4189,6 +4354,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -4379,6 +4548,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4461,6 +4637,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -4651,6 +4831,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4733,6 +4920,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -4923,6 +5114,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5005,6 +5203,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -5195,6 +5397,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5277,6 +5486,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -5468,16 +5681,23 @@
           "flag": "--page",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "review.prepare": {
-      "description": "review.prepare bounded OCR operation.",
+      "description": "Materialize bounded 200 DPI page images and persist an exact digest-bound Ollama transfer intent.",
       "baseArgv": [
         "review.prepare"
       ],
       "safetyClasses": [
-        "readOnly"
+        "writeSafe"
       ],
       "inputSchema": {
         "type": "object",
@@ -5549,6 +5769,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -5740,11 +5964,18 @@
           "flag": "--page",
           "valueType": "number",
           "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "review.start": {
-      "description": "Send bounded low-confidence page images to a verified Ollama vision model after approval.",
+      "description": "Transfer only the unchanged digest-approved low-confidence page-image intent to verified Ollama vision.",
       "baseArgv": [
         "review.start"
       ],
@@ -5823,6 +6054,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -6013,6 +6248,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6095,6 +6337,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -6285,6 +6531,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6367,6 +6620,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -6557,6 +6814,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6639,6 +6903,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -6829,6 +7097,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6912,6 +7187,10 @@
           "page": {
             "type": "integer",
             "minimum": 1
+          },
+          "approvalDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "additionalProperties": false
@@ -7102,6 +7381,13 @@
           "type": "option",
           "flag": "--page",
           "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "approvalDigest",
+          "type": "option",
+          "flag": "--approval-digest",
+          "valueType": "string",
           "optional": true
         }
       ]

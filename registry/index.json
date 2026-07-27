@@ -343,27 +343,27 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "467f549b410d92935073f9a092155d302984aac72d0cd62cfb9692cb45581836"
+          "sha256": "42424e8af6dd1c2ac24cedf412b6c1b55d80f80948e632bdad8da3a508bcaf58"
         },
         {
           "path": "TEST.md",
-          "sha256": "202d7ef6ea595270a092d65d3c058fe602b492dd64f83ce0f599c08f430a8644"
+          "sha256": "76390b8d358b3deba5def71cfd4a3c1046cb6d1ac73e7668d2ce7e19caa4171c"
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "abc854225188e68e79b730d9267bb7ed6583408729ee944b3410501b27752fc9"
+          "sha256": "1ed5d13b8cfa621ad8c94e748466c2a429af7a238be94cf0903d655bc48f4c19"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "7e4beddedbba4dbc9ef80e0ab6fe5436b9bb979cf54229dbbbdbdd609fdc8cfa"
+          "sha256": "a220a92060b822233fa68e8637631208e36c217897903e428872f444f38fad12"
         },
         {
           "path": "harness.json",
-          "sha256": "83bd829a7a5cfd1b2c5c4390ec6584d06cf5394133ed266d19d206ce3ec4893d"
+          "sha256": "f5a908114e47ef1a447a1257f50b997f8f292fec79d8bdddf6139c6c6fb83b9f"
         },
         {
           "path": "test_clawpod_ocr.py",
-          "sha256": "f576de5f10ac66ebc9c9d4a74255e53cf8fe7b6ea3e58c5a6a9a697baf414017"
+          "sha256": "ea22523874af0df57ef2d3d65d08f0e22bd0cc5bbd5865bdbdbb055117abce00"
         }
       ]
     },
