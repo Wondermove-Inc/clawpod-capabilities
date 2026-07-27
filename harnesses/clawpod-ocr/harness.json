@@ -104,19 +104,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -417,19 +411,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -730,19 +718,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1043,19 +1025,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1356,19 +1332,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1669,19 +1639,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1983,19 +1947,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2298,19 +2256,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2612,19 +2564,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2925,19 +2871,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3238,19 +3178,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3551,19 +3485,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3864,19 +3792,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4177,19 +4099,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4490,19 +4406,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4804,19 +4714,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5117,19 +5021,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5430,19 +5328,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5743,19 +5635,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6056,19 +5942,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6369,19 +6249,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6684,19 +6558,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6997,19 +6865,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7310,19 +7172,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7623,19 +7479,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7937,19 +7787,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8250,19 +8094,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false,
@@ -8566,19 +8404,13 @@
             "type": "string"
           },
           "jobIds": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 6550
+            "type": "string"
           },
           "securityLabel": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "type": "string"
           },
           "documentId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false,
