@@ -75,7 +75,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -96,7 +96,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -397,7 +397,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -421,11 +421,11 @@
         },
         {
           "path": "clawpod_cloud_webhooks.py",
-          "sha256": "5c4fe9515dec1698f6857cb8deac28071a98e37e8a03417780c5e493f4edca8e"
+          "sha256": "55c701bdc64a585a4b38efdfdb5fcb8b2b42a6ec992c171d2d9766536aa85f43"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "ae739b3e3b817044ada923b44ba82c752fe8b7c2133908d58fff8fd4b5146298"
+          "sha256": "62fb98cd69cab6a05bf88a86f0702efa7848600b208fd56673f6fda3bbcefa3b"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -461,11 +461,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "4d81d58b0f7902310e41e0ad8c5673c2d1de4e9d0130c547e0ae0432d58d2b98"
+          "sha256": "a4c8df559187cc4f3cb8c07133b8d1af2e3d9e279e7bac5332e9b35886b697a5"
         },
         {
           "path": "setup.py",
-          "sha256": "e5802b19df854e3857f1bb0fead3e2b40bc3af933240b7f329ac44bd7c59a16a"
+          "sha256": "349c092283d04f01a6f9061c74a0d230ec73b51d57eec99c27b3e957514cebb4"
         }
       ]
     },

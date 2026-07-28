@@ -2,6 +2,7 @@
 """OpenClaw Gateway argv adapter for the ClawPod Cloud Webhooks CLI."""
 
 import json
+from pathlib import Path
 import subprocess
 import sys
 
@@ -94,7 +95,12 @@ def translate(gateway_argv):
     if positional_flag and positional is None:
         raise ValueError(f"{positional_flag} is required")
 
-    cli_argv = ["cli-anything-clawpod-cloud-webhooks", "--json"]
+    cli_argv = [
+        sys.executable,
+        "-m",
+        "cli_anything.clawpod_cloud_webhooks.clawpod_cloud_webhooks_cli",
+        "--json",
+    ]
     if base_url is not None:
         cli_argv.extend(("--base-url", base_url))
     cli_argv.extend(COMMANDS[command])
@@ -107,7 +113,14 @@ def translate(gateway_argv):
 def main(argv=None):
     try:
         cli_argv = translate(list(sys.argv[1:] if argv is None else argv))
-        result = subprocess.run(cli_argv, text=True, capture_output=True, timeout=30)
+        package_root = str(Path(__file__).resolve().parent)
+        result = subprocess.run(
+            cli_argv,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            cwd=package_root,
+        )
         if result.stdout:
             sys.stdout.write(result.stdout)
         else:
