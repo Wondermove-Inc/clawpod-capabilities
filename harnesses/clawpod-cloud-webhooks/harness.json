@@ -1,0 +1,2212 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-cloud-webhooks",
+  "title": "ClawPod Cloud Webhooks",
+  "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
+  "version": "0.1.0",
+  "entrypoint": "./clawpod_cloud_webhooks.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 30000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Inspect, audit, configure, or verify ClawPod Cloud Webhooks Sources, Playbooks, Rules, and Events"
+  ],
+  "capabilities": [
+    "real-http",
+    "guarded-mutations",
+    "stable-json",
+    "comprehensive-redaction"
+  ],
+  "authModel": {
+    "type": "rsa-oaep-cookie-session",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "system.version": {
+      "description": "Report canonical capability identity.",
+      "baseArgv": [
+        "system.version"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.contract": {
+      "description": "Describe RSA-OAEP protected onboarding contract.",
+      "baseArgv": [
+        "auth.contract"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.status": {
+      "description": "Read redacted session status.",
+      "baseArgv": [
+        "auth.status"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "permissions.list": {
+      "description": "List permissions.",
+      "baseArgv": [
+        "permissions.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "presets.list": {
+      "description": "List provider presets.",
+      "baseArgv": [
+        "presets.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "source.list": {
+      "description": "List Sources.",
+      "baseArgv": [
+        "source.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "source.get": {
+      "description": "Get a Source with sensitive values redacted.",
+      "baseArgv": [
+        "source.get"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "resourceId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.list": {
+      "description": "List Playbooks.",
+      "baseArgv": [
+        "playbook.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "rule.list": {
+      "description": "List Rules.",
+      "baseArgv": [
+        "rule.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "event.inspect-redacted": {
+      "description": "Inspect Event without sensitive headers or tokens.",
+      "baseArgv": [
+        "event.inspect-redacted"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "eventId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "eventId",
+          "type": "option",
+          "flag": "--event-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "event.verify": {
+      "description": "Verify terminal status, empty error, and optional destination evidence.",
+      "baseArgv": [
+        "event.verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "eventId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requireDestinationEvidence": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "eventId",
+          "type": "option",
+          "flag": "--event-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "requireDestinationEvidence",
+          "type": "option",
+          "flag": "--require-destination-evidence",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "audit.config": {
+      "description": "Audit known broken and unsafe configuration.",
+      "baseArgv": [
+        "audit.config"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "mutation.preview": {
+      "description": "Produce a redacted mutation preview and effect digest.",
+      "baseArgv": [
+        "mutation.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "kind",
+          "resourceId",
+          "tenantId",
+          "beforeJson",
+          "afterJson",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "source",
+              "playbook",
+              "rule"
+            ]
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "beforeJson": {
+            "type": "object"
+          },
+          "afterJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "kind",
+          "type": "option",
+          "flag": "--kind",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "beforeJson",
+          "type": "option",
+          "flag": "--before-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "afterJson",
+          "type": "option",
+          "flag": "--after-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "source.update": {
+      "description": "Read-before-write full Source update with digest and readback verification.",
+      "baseArgv": [
+        "source.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "changesJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changesJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "changesJson",
+          "type": "option",
+          "flag": "--changes-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.test-local": {
+      "description": "Locally validate body cap and construct, but never emit, HMAC signature.",
+      "baseArgv": [
+        "source.test-local"
+      ],
+      "safetyClasses": [
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "bodyFile",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "bodyFile": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "signingSecretEnv": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "bodyFile",
+          "type": "option",
+          "flag": "--body-file",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "signingSecretEnv",
+          "type": "option",
+          "flag": "--signing-secret-env",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "secret.rotate-warning": {
+      "description": "Warn and verify previous credential overlap metadata.",
+      "baseArgv": [
+        "secret.rotate-warning"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "metadataJson": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "metadataJson",
+          "type": "option",
+          "flag": "--metadata-json",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "secret.regenerate-warning": {
+      "description": "Warn that older rotation overlap may remain valid.",
+      "baseArgv": [
+        "secret.regenerate-warning"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "metadataJson": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "metadataJson",
+          "type": "option",
+          "flag": "--metadata-json",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

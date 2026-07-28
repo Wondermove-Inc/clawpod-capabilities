@@ -73,6 +73,33 @@
       }
     },
     {
+      "id": "clawpod-cloud-webhooks",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
+      "path": "skills/clawpod-cloud-webhooks",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "abf5d2df1ef9feff3a8d02a5b5465dd1959c19321858ea80d93227859d670127"
+        }
+      ],
+      "linkedHarness": {
+        "id": "clawpod-cloud-webhooks",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "clawpod-ocr",
       "type": "skill",
       "version": "0.3.1",
@@ -364,6 +391,81 @@
         {
           "path": "harness.json",
           "sha256": "9f729aa2e96121fdf9dc25970de45f0b8aa5bcc35bf1feaacbb8e98ea2bbe4d7"
+        }
+      ]
+    },
+    {
+      "id": "clawpod-cloud-webhooks",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
+      "path": "harnesses/clawpod-cloud-webhooks",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "93f8bb25b2bad5c4c6b293cc0b324bc10d55838a11da7fa7582821e27d6dd009"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "a5448cb450b7b607f775651c09b39a1b46e707d0d6f5b2d988db5e4d5d80785b"
+        },
+        {
+          "path": "clawpod_cloud_webhooks.py",
+          "sha256": "390bd8313a6326cb483f0b3c0ce62cbf88aaa549aaa06abdd4b64a21edd96bd2"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
+          "sha256": "91447944015cec709e8aa7655f7e9d64e1e4508e7023a57fe3746911c0fc6fed"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
+          "sha256": "798e9deb577c84d24d245c505d38bf10bdfd1783cbff706d6796d96c4a64605f"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/clawpod_cloud_webhooks_cli.py",
+          "sha256": "61f4c76ae89990accceca6663d4e1232f38fa077b9d512cfad297811d89c107d"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/core/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/core/contracts.py",
+          "sha256": "127568eb7acdda212526016cf67d13dc579ea99788e29f78db9d248dd4aa68a2"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/core/safety.py",
+          "sha256": "503c3fd737a3759173a85b8acacc247cdece21ee150e197ed417ff5e1728d809"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/utils/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "cli_anything/clawpod_cloud_webhooks/utils/backend.py",
+          "sha256": "25ae243815eac4e648deb2373fe29d7ba17f866a4148a68c0e30f8e79b038d6a"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "14accb693a55ae743478a18754bed2f71fe6fa1fddddf1d9c2771dde723276da"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "70e95aea881892e8514c821bdf3af42f9f76d4df9f20ef5ed3dea8574b3e3ab7"
+        },
+        {
+          "path": "setup.py",
+          "sha256": "12f5047af617ee7a6f71e6ea6c6eb1229ecbf585a6e820fc008b09041a01cb39"
         }
       ]
     },
