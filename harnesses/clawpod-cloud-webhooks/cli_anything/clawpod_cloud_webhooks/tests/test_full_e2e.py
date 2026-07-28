@@ -52,9 +52,10 @@ def synthetic_auth(monkeypatch):
     monkeypatch.setenv('CLAWPOD_CLOUD_EMAIL','synthetic@example.invalid'); monkeypatch.setenv('CLAWPOD_CLOUD_PASSWORD','synthetic-password')
 
 def cli_base():
-    p=shutil.which('cli-anything-clawpod-cloud-webhooks')
-    if p:return [p]
-    if os.getenv('CLI_ANYTHING_FORCE_INSTALLED')=='1': raise RuntimeError('installed CLI missing')
+    if os.getenv('CLI_ANYTHING_FORCE_INSTALLED')=='1':
+        p=shutil.which('cli-anything-clawpod-cloud-webhooks')
+        if p:return [p]
+        raise RuntimeError('installed CLI missing')
     return [sys.executable,'-m','cli_anything.clawpod_cloud_webhooks.clawpod_cloud_webhooks_cli']
 def run(server,args): return subprocess.run(cli_base()+['--base-url',server,'--json']+args,text=True,capture_output=True)
 
