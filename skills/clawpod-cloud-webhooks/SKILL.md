@@ -1,6 +1,6 @@
 ---
-name: clawpod-cloud-webhooks
-description: Operate and diagnose ClawPod Cloud Webhooks Sources, Playbooks, Rules, Events, guarded mutations, and protected onboarding.
+name: "clawpod-cloud-webhooks"
+description: "Operate and diagnose ClawPod Cloud Webhooks Sources, Playbooks, Rules, Events, guarded mutations, and protected onboarding."
 ---
 
 # ClawPod Cloud Webhooks
