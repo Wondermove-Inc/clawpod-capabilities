@@ -75,7 +75,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -96,7 +96,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
@@ -397,7 +397,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -417,7 +417,7 @@
         },
         {
           "path": "TEST.md",
-          "sha256": "9a22bcb898a96ae01b05b83d78b730aa4e5678d22516071f4deac81755504caf"
+          "sha256": "eb2c31b4e7424a6691c8862eb64f8f1379543896ac218ecbf4c1fc84301bcfa0"
         },
         {
           "path": "clawpod_cloud_webhooks.py",
@@ -425,7 +425,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "acf49f5a021eab661654fc8448e030081b7cbdfb6c4e9224b8b0060c4cf24507"
+          "sha256": "9f7a0ce81fc4333f7736c4c8d7c34d65dfa32857143f35246c82a3e5514ae689"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -461,11 +461,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "b4ed1bcc7d4f43221b11df2c9b869915921e28d423d6cae79a9b57c45d7bde5b"
+          "sha256": "b2b0fa5223e38e52cbd925928e261d9bf999c0f9044d69d6aca10b3bd30720f2"
         },
         {
           "path": "setup.py",
-          "sha256": "aae3cf6a596653acbba5cc10a89788ca505bbeaac8335177cba49c6c30cad4a7"
+          "sha256": "9050681fcb94a4826229cdf23a80d990160feaa7fb2e889f4947f95f2ecf1ac0"
         }
       ]
     },

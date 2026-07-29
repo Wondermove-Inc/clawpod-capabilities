@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 
@@ -18,3 +19,10 @@ def test_webhooks_skill_requires_immediate_post_install_onboarding_handoff():
         "exec.useSecrets",
     ):
         assert phrase in skill
+
+
+def test_webhooks_tls_output_schema_uses_gateway_supported_keywords():
+    manifest = json.loads(Path("harnesses/clawpod-cloud-webhooks/harness.json").read_text())
+    for command_name, command in manifest["commands"].items():
+        tls_mode = command["outputSchema"]["properties"]["tls_verification_mode"]
+        assert tls_mode == {"type": "string"}, command_name
