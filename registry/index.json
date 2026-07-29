@@ -433,7 +433,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/clawpod_cloud_webhooks_cli.py",
-          "sha256": "f7cfd4fbf1114ffbd693dbb601b3482d9e6c0097bb967f343e7d67c6ca6201a1"
+          "sha256": "1c7d80cd6255846f106094096743c26bd5303942b135f4f84c73117251469fce"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/core/__init__.py",

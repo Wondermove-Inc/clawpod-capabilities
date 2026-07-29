@@ -139,10 +139,10 @@ def test_onboard_success_auto_selects_and_never_mutates(server):
     assert p.returncode==0 and d['tenant']['id']=='t' and d['mutation_attempted'] is False
     assert d['permission_source']=='permissions_endpoint'
     assert not any(path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
-def test_onboard_live_identity_contract_uses_active_tenant_and_policy_actions(server):
-    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':'active-t','role':'member','tenantRole':'member','policyActions':['webhooks.read','webhooks.manage']}
+def test_onboard_live_identity_contract_uses_numeric_active_tenant_and_real_policy_actions(server):
+    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':2,'role':'member','tenantRole':'member','policyActions':['webhook:event:read','webhook:source:create','webhook:source:update','webhook:source:delete']}
     p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
-    assert p.returncode==0 and d['tenant']['id']=='active-t' and d['permission_source']=='identity_policy_actions'
+    assert p.returncode==0 and d['tenant']['id']=='2' and d['permission_source']=='identity_policy_actions'
     assert d['mutation_attempted'] is False and not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
 def test_onboard_live_tenant_admin_role_needs_no_permissions_fallback(server):
     STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':'active-t','tenantRole':'TA','policyActions':[]}

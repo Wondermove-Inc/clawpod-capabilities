@@ -108,7 +108,7 @@ def _normalized_permission(value): return re.sub(r'[^a-z0-9]+','_',_permission_n
 def _is_tenant_admin(value): return _normalized_permission(value) in ('ta','tenant_admin','tenantadmin')
 def _policy_allows_webhook_management(actions):
     names=[_normalized_permission(action) for action in actions if _permission_name(action)]
-    has_manage=any('webhook' in name and any(word in name for word in ('manage','manager','write','admin')) for name in names)
+    has_manage=any('webhook' in name and any(word in name for word in ('manage','manager','write','admin','create','update','delete')) for name in names)
     has_read=any('webhook' in name and any(word in name for word in ('read','view','list')) for name in names)
     return has_manage and has_read
 
@@ -130,7 +130,7 @@ def auth_onboard(state,tenant_id,approve_login):
     if not isinstance(tenants,list): tenants=[]
     normalized=[{"id":str(t.get('id')),"name":t.get('name')} for t in tenants if isinstance(t,dict) and t.get('id')]
     active_tenant_id=identity.get('activeTenantId')
-    active_tenant_id=active_tenant_id.strip() if isinstance(active_tenant_id,str) and active_tenant_id.strip() else None
+    active_tenant_id=str(active_tenant_id).strip() if isinstance(active_tenant_id,(str,int)) and not isinstance(active_tenant_id,bool) and str(active_tenant_id).strip() else None
     if tenant_id:
         selected=next((t for t in normalized if t['id']==tenant_id),None)
         if not selected and active_tenant_id==tenant_id: selected={"id":active_tenant_id,"name":None}
