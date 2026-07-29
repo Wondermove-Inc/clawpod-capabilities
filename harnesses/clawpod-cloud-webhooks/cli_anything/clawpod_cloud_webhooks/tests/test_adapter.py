@@ -102,4 +102,4 @@ def test_real_self_contained_adapter_subprocess():
     data = json.loads(result.stdout)
     assert result.returncode == 0
     assert data["ok"] is True
-    assert data["capability"]["version"] == "0.1.2"
+    assert data["capability"]["version"] == "0.1.3"
