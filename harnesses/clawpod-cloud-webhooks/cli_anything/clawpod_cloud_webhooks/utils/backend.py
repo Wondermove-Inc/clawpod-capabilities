@@ -76,7 +76,8 @@ class Backend:
             public_key=serialization.load_pem_public_key(pem.encode())
             plaintext=json.dumps({'password':password,'timestamp':int(time.time()*1000)},separators=(',',':')).encode()
             encrypted=public_key.encrypt(plaintext,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
-            self._raw_request('POST','/api/auth/login',body={'email':email,'encrypted_password':base64.b64encode(encrypted).decode()})
+            ciphertext=base64.b64encode(encrypted).decode()
+            self._raw_request('POST','/api/auth/login',body={'email':email,'password':ciphertext,'rememberMe':False})
             self.authenticated=True
         except BackendError: raise
         except Exception:
@@ -85,4 +86,4 @@ class Backend:
         if authenticated and not self.authenticated: self.login_from_env()
         return self._raw_request(method,path,body,headers,idempotency)
     def session_status(self): return {"connected":self.authenticated and bool(list(self.jar)),"session_storage":"protected in-memory CookieJar","cookie_values_exposed":False,"tls_verification_mode":self.tls_verification_mode}
-RSA_CONTRACT={"algorithm":"RSA-OAEP","hash":"SHA-256","public_key_path":"/api/auth/public-key","login_path":"/api/auth/login","refresh_path":"/api/auth/refresh","logout_path":"/api/auth/logout","credential_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"credential_transport":"encrypt JSON password and millisecond timestamp with portal public key","session":"HttpOnly cookie retained only in protected process-memory CookieJar","plaintext_persistence":False,"tls":{"default":"strict","preferred_internal_network_exception":"custom_ca","insecure_exception":"explicitly approved internal networks only","ca_persisted":False}}
+RSA_CONTRACT={"algorithm":"RSA-OAEP","hash":"SHA-256","public_key_path":"/api/auth/public-key","login_path":"/api/auth/login","login_request_fields":["email","password","rememberMe"],"encrypted_field":"password","remember_me":False,"refresh_path":"/api/auth/refresh","logout_path":"/api/auth/logout","credential_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"credential_transport":"encrypt JSON password and millisecond timestamp with portal public key; place the ciphertext in the outer password field","session":"HttpOnly cookie retained only in protected process-memory CookieJar","plaintext_persistence":False,"tls":{"default":"strict","preferred_internal_network_exception":"custom_ca","insecure_exception":"explicitly approved internal networks only","ca_persisted":False}}

@@ -196,3 +196,8 @@ The local synthetic HTTPS fixture proved strict rejection of an untrusted self-s
 ## Gateway schema compatibility recovery (0.1.6)
 
 The post-install Gateway `harness.run.prepare` gate rejected the 0.1.5 output schema because this runtime does not support `enum` on Harness output properties. Version 0.1.6 removes only that unsupported schema keyword from `tls_verification_mode`; the CLI, documentation, and tests still constrain emitted values to `strict`, `custom_ca`, or `insecure_approved`. Release verification must include real Gateway `harness.run.prepare → harness.run` for `system.version` and `auth.contract` after local installation.
+
+
+## Live login contract recovery (0.1.7)
+
+Live portal frontend inspection established that `/api/auth/login` expects exactly `email`, `password`, and `rememberMe`, with the RSA-OAEP ciphertext in the outer `password` field and `rememberMe=false`. Version 0.1.7 aligns the deterministic client with that contract. Tests decrypt the synthetic request, reject the legacy `encrypted_password` field, verify no plaintext leakage, and preserve process-memory-only sessions and no-mutation onboarding.
