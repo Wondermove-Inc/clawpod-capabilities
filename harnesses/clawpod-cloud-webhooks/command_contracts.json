@@ -2,13 +2,109 @@
   "schemaVersion": 1,
   "canonicalName": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
-  "output": {"type":"object","required":["ok"],"redaction":"recursive denylist plus bearer and URL-token path redaction"},
-  "global": {"baseUrl":{"type":"string","format":"uri"},"timeout":{"type":"number","minimum":0.001,"maximum":30},"retries":{"type":"integer","minimum":0,"maximum":3}},
-  "readCommands": ["system.version","auth.contract","auth.status","permissions.list","presets.list","source.list","source.get","playbook.list","rule.list","event.inspect-redacted","event.verify","audit.config"],
-  "mutationCommands": {
-    "mutation.preview":{"sideEffect":false,"required":["kind","resourceId","tenantId","beforeJson","afterJson","idempotencyKey"]},
-    "source.update":{"sideEffect":true,"approvalRequired":true,"required":["sourceId","tenantId","changesJson","idempotencyKey","effectDigest","approve"],"retry":"never blind retry","verification":"GET full Source after PUT"},
-    "source.test-local":{"sideEffect":false,"secretUse":true,"required":["bodyFile","idempotencyKey"]}
+  "output": {
+    "type": "object",
+    "required": [
+      "ok"
+    ],
+    "redaction": "recursive denylist plus bearer and URL-token path redaction"
   },
-  "guards": {"payloadMaxBytes":1048576,"brokenOperators":["in","not_in","gt","lt","gte","lte"],"messageTemplate":"rejected","agentTarget":"blocked without destination evidence proof","eventSuccess":"status delivered AND empty error_message AND destination evidence when required"}
+  "global": {
+    "baseUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "timeout": {
+      "type": "number",
+      "minimum": 0.001,
+      "maximum": 30
+    },
+    "retries": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    }
+  },
+  "readCommands": [
+    "system.version",
+    "auth.contract",
+    "auth.onboard",
+    "auth.status",
+    "permissions.list",
+    "presets.list",
+    "source.list",
+    "source.get",
+    "playbook.list",
+    "rule.list",
+    "event.inspect-redacted",
+    "event.verify",
+    "audit.config"
+  ],
+  "mutationCommands": {
+    "mutation.preview": {
+      "sideEffect": false,
+      "required": [
+        "kind",
+        "resourceId",
+        "tenantId",
+        "beforeJson",
+        "afterJson",
+        "idempotencyKey"
+      ]
+    },
+    "source.update": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "required": [
+        "sourceId",
+        "tenantId",
+        "changesJson",
+        "idempotencyKey",
+        "effectDigest",
+        "approve"
+      ],
+      "retry": "never blind retry",
+      "verification": "GET full Source after PUT"
+    },
+    "source.test-local": {
+      "sideEffect": false,
+      "secretUse": true,
+      "required": [
+        "bodyFile",
+        "idempotencyKey"
+      ]
+    }
+  },
+  "guards": {
+    "payloadMaxBytes": 1048576,
+    "brokenOperators": [
+      "in",
+      "not_in",
+      "gt",
+      "lt",
+      "gte",
+      "lte"
+    ],
+    "messageTemplate": "rejected",
+    "agentTarget": "blocked without destination evidence proof",
+    "eventSuccess": "status delivered AND empty error_message AND destination evidence when required"
+  },
+  "onboarding": {
+    "command": "auth.onboard",
+    "sideEffect": false,
+    "secretUse": true,
+    "humanAccountAction": true,
+    "approvalRequired": true,
+    "required": [
+      "baseUrl",
+      "approveLogin"
+    ],
+    "optional": [
+      "tenantId"
+    ],
+    "sessionPersistence": false,
+    "gatewaySecretInjection": false,
+    "protectedExecutionLane": "exec.useSecrets",
+    "stopsBeforeMutation": true
+  }
 }

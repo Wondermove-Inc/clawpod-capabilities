@@ -30,6 +30,27 @@ def test_gateway_base_argv_commands(command, expected):
     assert cli_args([command]) == expected
 
 
+def test_onboard_gateway_arguments_map_to_protected_cli_command():
+    assert cli_args([
+        "auth.onboard",
+        "--base-url",
+        "https://portal.example.invalid",
+        "--tenant-id",
+        "tenant-1",
+        "--approve-login",
+        "true",
+    ]) == [
+        "--json",
+        "--base-url",
+        "https://portal.example.invalid",
+        "auth",
+        "onboard",
+        "--tenant-id",
+        "tenant-1",
+        "--approve-login",
+    ]
+
+
 def test_local_module_is_used_instead_of_global_console_script():
     translated = ADAPTER.translate(["system.version"])
     assert translated[:3] == [
@@ -102,4 +123,4 @@ def test_real_self_contained_adapter_subprocess():
     data = json.loads(result.stdout)
     assert result.returncode == 0
     assert data["ok"] is True
-    assert data["capability"]["version"] == "0.1.3"
+    assert data["capability"]["version"] == "0.1.4"

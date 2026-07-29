@@ -11,5 +11,10 @@ def test_webhooks_skill_requires_immediate_post_install_onboarding_handoff():
         "protected credential/session handling and revocation",
         "ask whether to start onboarding now",
         "Omitting this handoff is an incomplete installation",
+        "Proactively ask for the ClawPod Cloud base URL",
+        "never ask for or accept a plaintext password/token in chat",
+        "Search existing secret pointers first",
+        "Never ask the user to configure environment variables or run commands",
+        "exec.useSecrets",
     ):
         assert phrase in skill

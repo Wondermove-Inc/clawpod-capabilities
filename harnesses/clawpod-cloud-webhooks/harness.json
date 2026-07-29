@@ -4,7 +4,7 @@
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
   "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
   "execution": {
@@ -220,6 +220,143 @@
         "additionalProperties": true
       },
       "argMap": []
+    },
+    "auth.onboard": {
+      "description": "Perform approval-gated protected onboarding, identity/tenant/permission readback, and stop before mutation.",
+      "baseArgv": [
+        "auth.onboard"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "approveLogin"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approveLogin": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "approveLogin",
+          "type": "option",
+          "flag": "--approve-login",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
     },
     "auth.status": {
       "description": "Read redacted session status.",
