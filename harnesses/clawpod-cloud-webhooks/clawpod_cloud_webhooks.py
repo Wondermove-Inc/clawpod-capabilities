@@ -9,6 +9,7 @@ import sys
 COMMANDS = {
     "system.version": ["system", "version"],
     "auth.contract": ["auth", "contract"],
+    "auth.onboard": ["auth", "onboard"],
     "auth.status": ["auth", "status"],
     "permissions.list": ["permissions", "list"],
     "presets.list": ["presets", "list"],
@@ -34,7 +35,7 @@ POSITIONAL_FLAGS = {
     "event.verify": "--event-id",
     "source.update": "--source-id",
 }
-BOOLEAN_FLAGS = {"--approve", "--require-destination-evidence"}
+BOOLEAN_FLAGS = {"--approve", "--approve-login", "--require-destination-evidence"}
 TRUE_VALUES = {"1", "true", "yes", "on"}
 FALSE_VALUES = {"0", "false", "no", "off"}
 

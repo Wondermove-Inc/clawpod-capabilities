@@ -169,3 +169,11 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 ```
 
 40/40 passed (100%) in 2.04 seconds. Added synthetic RSA-OAEP login/decryption, verified proxy path, missing protected environment, no-auth command, manifest schema/argMap, adapter parity, and secret warning mapping coverage. Gateway lifecycle validation/trust and live portal access were intentionally not run; parent owns those steps.
+
+## Autonomous Onboarding Results (0.1.4)
+
+- Harness unit, adapter, and mock E2E suite: **59 passed**.
+- Repository registry and onboarding suite: **29 passed**.
+- Added approval-before-network, missing protected credential, successful sole-tenant selection, ambiguous tenant, missing permission, no-mutation, redaction, and Gateway adapter mapping coverage.
+- Registry synchronization and validation passed for all 16 capability entries; `git diff --check` passed.
+- Tests used only a local mock portal and synthetic credentials. Live login, MFA, and the documented `exec.useSecrets` runtime lane remain unexercised until the user supplies an authorized account and separately approves credential use.

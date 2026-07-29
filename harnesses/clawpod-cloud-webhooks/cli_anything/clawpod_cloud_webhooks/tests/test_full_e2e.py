@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 PRIVATE_KEY=rsa.generate_private_key(public_exponent=65537,key_size=2048)
 PUBLIC_PEM=PRIVATE_KEY.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo).decode()
-STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0}
+STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0,'tenants':[{'id':'t','name':'Tenant'}],'permissions':['webhook_manager']}
 class H(BaseHTTPRequestHandler):
     def log_message(self,*a): pass
     def out(self,obj,status=200,headers=None):
@@ -23,13 +23,13 @@ class H(BaseHTTPRequestHandler):
             STATE['retry']+=1
             return self.out({'error':'later'},503) if STATE['retry']<3 else self.out({'ok':True})
         if self.path=='/authfail': return self.out({'authorization':'Bearer should-never-emit'},401)
-        if self.path.startswith('/api/proxy/auth/me'): return self.out({'authenticated':True})
+        if self.path.startswith('/api/proxy/auth/me'): return self.out({'authenticated':True,'email':'synthetic@example.invalid','tenants':STATE['tenants']})
         if '/webhook-sources/s1' in self.path: return self.out(dict(STATE['source']))
         if '/webhook-events/e1' in self.path: return self.out({'id':'e1','status':'delivered','error_message':'','headers':{'Authorization':'Bearer hidden','Cookie':'sid=hidden'},'request_url':'https://x/incoming/urlTOKEN12345','destination_evidence':{'message_id':'m'}})
         if '/webhook-events/e2' in self.path: return self.out({'id':'e2','status':'delivered','error_message':'tenant isolation violation'})
         if self.path.startswith('/api/proxy/webhook-sources'): return self.out([STATE['source']])
         if self.path.startswith('/api/proxy/webhook-'): return self.out({'items':[]})
-        if self.path.startswith('/api/proxy/auth/permissions'): return self.out({'items':['read']})
+        if self.path.startswith('/api/proxy/auth/permissions'): return self.out({'items':STATE['permissions']})
         return self.out({'error':'not found'},404)
     def do_POST(self):
         STATE['paths'].append(self.path); n=int(self.headers.get('Content-Length','0')); obj=json.loads(self.rfile.read(n))
@@ -81,6 +81,39 @@ def test_auth_contract(server):
     assert 'Immediately after installation' in handoff['timing']
     assert len(handoff['contents'])==5 and 'Ask whether to start onboarding now.' in handoff['contents']
     assert 'blocker' in d['onboarding']['missing_permission_behavior']
+    assert d['onboarding_prompts']['base_url']['ask_proactively']
+    assert d['onboarding_prompts']['account_identifier_and_prerequisite']['ask_proactively']
+    assert d['onboarding_prompts']['protected_credential']['ask_in_chat'] is False
+    assert d['onboarding_prompts']['protected_credential']['accept_from_chat'] is False
+    assert d['onboarding_prompts']['user_runs_commands'] is False
+    assert d['protected_credential_contract']['gateway_harness_run_injection_supported'] is False
+    assert 'protected credential pointers' in d['blockers']['missing_credential']
+def test_onboard_requires_explicit_login_approval_before_network(server):
+    STATE['paths'].clear()
+    p=run(server,['auth','onboard']); d=json.loads(p.stdout)
+    assert p.returncode==2 and d['error']['code']=='invalid_input'
+    assert STATE['paths']==[]
+def test_onboard_requires_protected_secret_injection(server):
+    env=os.environ.copy(); env.pop('CLAWPOD_CLOUD_EMAIL',None); env.pop('CLAWPOD_CLOUD_PASSWORD',None)
+    p=subprocess.run(cli_base()+['--base-url',server,'--json','auth','onboard','--approve-login'],text=True,capture_output=True,env=env)
+    assert p.returncode==2 and json.loads(p.stdout)['error']['code']=='auth_required'
+    assert 'synthetic-password' not in p.stdout
+
+def test_onboard_success_auto_selects_and_never_mutates(server):
+    STATE['tenants']=[{'id':'t','name':'Tenant'}]; STATE['permissions']=['webhook_manager']; STATE['paths'].clear()
+    p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==0 and d['tenant']['id']=='t' and d['mutation_attempted'] is False
+    assert not any(path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
+def test_onboard_ambiguous_tenant_stops_without_permission_or_mutation(server):
+    STATE['tenants']=[{'id':'t1','name':'One'},{'id':'t2','name':'Two'}]; STATE['paths'].clear()
+    p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==2 and d['error']['code']=='ambiguous_tenant' and d['mutation_attempted'] is False
+    assert not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
+    STATE['tenants']=[{'id':'t','name':'Tenant'}]
+def test_onboard_missing_permission_is_typed_and_redacted(server):
+    STATE['permissions']=['read']; p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==2 and d['error']['code']=='missing_permission' and 'synthetic-password' not in p.stdout
+    STATE['permissions']=['webhook_manager']
 def test_rsa_login_and_real_proxy_paths(server):
     STATE['paths'].clear(); STATE['logins']=0
     p=run(server,['source','list','--tenant-id','t']); assert p.returncode==0 and STATE['logins']==1

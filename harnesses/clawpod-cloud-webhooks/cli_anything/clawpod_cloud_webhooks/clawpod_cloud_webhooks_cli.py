@@ -62,6 +62,13 @@ def auth_contract():
         "ok":True,
         "login":RSA_CONTRACT,
         "onboarding_requires_explicit_approval":True,
+        "onboarding_prompts":{"base_url":{"ask_proactively":True,"chat_safe":True,"required":True},"account_identifier_and_prerequisite":{"ask_proactively":True,"chat_safe":True,"required":True},"protected_credential":{"ask_in_chat":False,"accept_from_chat":False,"channel":"protected secret input/storage only","search_existing_pointers_first":True},"user_runs_commands":False,"user_configures_environment":False},
+        "user_actions":["Supply the ClawPod Cloud base URL and non-secret account identifier/prerequisite when asked.","Provide password or token only through a protected secret channel.","Approve credential use and login.","Choose or approve a tenant only when more than one is available.","Complete unavoidable MFA or provider UI."],
+        "agent_actions":["Search protected secret pointers before requesting credentials.","Store newly supplied credentials in protected secret storage.","Validate the HTTPS base URL and account prerequisite.","Inject secrets only into the approved onboarding process.","Perform RSA-OAEP login, identity, tenant, and permission readback.","Auto-select the sole tenant and stop before every mutation."],
+        "protected_credential_contract":{"required_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"plaintext_chat":False,"process_only":True,"gateway_harness_run_injection_supported":False,"approved_execution_lane":"OpenClaw exec.useSecrets environment injection into the installed CLI process","session_persistence":False},
+        "approval_boundaries":{"credential_storage":"explicit approval","credential_use_and_login":"explicit approval","tenant_selection":"user approval only when ambiguous","mutation":"separate preview and execution approvals"},
+        "success_criteria":["authenticated identity read back","exactly one tenant selected or approved","Webhook Manager permission verified","session remains process-memory-only","no mutation attempted"],
+        "blockers":{"missing_credential":"Search protected credential pointers, then request protected-channel provision.","ambiguous_tenant":"Return redacted tenant choices and wait for target approval.","mfa_required":"Return mfa_required and wait for unavoidable provider interaction.","missing_permission":"Stop and request TA/Webhook Manager access.","auth_failed":"Stop; verify account or revoke/replace the protected secret.","backend_error":"Stop with retry safety and preserve no session."},
         "onboarding":{
             "required_account":"ClawPod Cloud TA account or an account with Webhook Manager permission",
             "installation_is_connection":False,
@@ -82,6 +89,33 @@ def auth_contract():
             "missing_permission_behavior":"Stop without mutation and report the missing TA/Webhook Manager access as a blocker."
         }
     })
+@auth.command('onboard')
+@click.option('--tenant-id')
+@click.option('--approve-login',is_flag=True)
+@click.pass_obj
+@guarded
+def auth_onboard(state,tenant_id,approve_login):
+    """Login, verify identity/tenant/permission, then stop before mutation."""
+    if not approve_login: raise ValueError('explicit credential-use and login approval is required')
+    identity=api(state,'GET','/api/proxy/auth/me')
+    tenants=identity.get('tenants',[]) if isinstance(identity,dict) else []
+    if not isinstance(tenants,list): tenants=[]
+    normalized=[{"id":str(t.get('id')),"name":t.get('name')} for t in tenants if isinstance(t,dict) and t.get('id')]
+    if tenant_id:
+        selected=next((t for t in normalized if t['id']==tenant_id),None)
+        if not selected: raise BackendError('tenant_not_available','approved tenant is not available to this account',False)
+    elif len(normalized)==1: selected=normalized[0]
+    elif len(normalized)>1:
+        emit({'ok':False,'error':{'code':'ambiguous_tenant','message':'multiple tenants are available; approve one tenant id','retry_safe':True},'tenants':normalized,'mutation_attempted':False})
+        raise click.exceptions.Exit(2)
+    else: raise BackendError('tenant_not_available','authenticated identity returned no available tenant',False)
+    permissions=api(state,'GET','/api/proxy/auth/permissions?tenant_id='+selected['id'])
+    raw=permissions.get('items',permissions.get('permissions',[])) if isinstance(permissions,dict) else permissions
+    names=[str(p.get('name') or p.get('code')) if isinstance(p,dict) else str(p) for p in (raw if isinstance(raw,list) else [])]
+    allowed=any(('webhook' in p.lower() and ('manage' in p.lower() or 'manager' in p.lower())) or p.lower() in ('ta','tenant_admin') for p in names)
+    if not allowed: raise BackendError('missing_permission','TA or Webhook Manager permission is required',False,403)
+    local=state.backend.session_status()
+    emit({'ok':True,'connected':True,'identity':identity,'tenant':selected,'permissions':names,'session':{'storage':local['session_storage'],'persistent':False,'sensitive_values_exposed':False},'mutation_attempted':False,'next':'separate approval is required before any mutation','revocation':{'portal':'Revoke account access or change the account password.','local':'End the process; no session is persisted. Run portal logout when available.'}})
 @auth.command('status')
 @click.pass_obj
 @guarded
