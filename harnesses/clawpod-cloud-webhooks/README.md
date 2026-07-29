@@ -6,7 +6,7 @@ CLI-Anything harness for guarded ClawPod Cloud Webhooks portal/API operations th
 
 - Never prints authorization, cookies, URL tokens, signing secrets, provider signatures, or sensitive header values.
 - The agent proactively asks for the base URL and non-secret account identifier/prerequisite. It never asks for or accepts a plaintext password/token in chat, searches protected secret pointers first, and stores newly supplied credentials through protected secret input/storage.
-- `auth onboard --approve-login` performs the complete non-mutating sequence: protected credential injection, RSA-OAEP login, identity and tenant discovery, sole-tenant selection (or typed ambiguity), Webhook Manager permission verification, and process-memory-only session readback.
+- `auth onboard --approve-login` performs the complete non-mutating sequence: protected credential injection, RSA-OAEP login, legacy or current identity and tenant discovery, conservative tenant selection (or typed ambiguity), tenant-admin or Webhook Manager policy verification with legacy permission fallback, and process-memory-only session readback.
 - Authenticated commands read `CLAWPOD_CLOUD_EMAIL` and `CLAWPOD_CLOUD_PASSWORD` only from protected process environment injection. The user is never asked to configure environment variables or run commands.
 - Rejects inbound bodies above 1,048,576 bytes.
 - Requires stable idempotency and effect-digest approval for mutations.

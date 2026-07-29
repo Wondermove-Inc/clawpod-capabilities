@@ -1,4 +1,4 @@
-import hashlib, hmac, json, shlex, sys
+import hashlib, hmac, json, re, shlex, sys
 import click
 from . import __version__
 from .core.contracts import preview, require_idempotency, secret_warning, source_merge, verify_event
@@ -100,6 +100,22 @@ def auth_contract():
             "missing_permission_behavior":"Stop without mutation and report the missing TA/Webhook Manager access as a blocker."
         }
     })
+def _permission_name(value):
+    if isinstance(value,dict): value=value.get('name') or value.get('code') or value.get('action') or ''
+    return str(value)
+
+def _normalized_permission(value): return re.sub(r'[^a-z0-9]+','_',_permission_name(value).lower()).strip('_')
+def _is_tenant_admin(value): return _normalized_permission(value) in ('ta','tenant_admin','tenantadmin')
+def _policy_allows_webhook_management(actions):
+    names=[_normalized_permission(action) for action in actions if _permission_name(action)]
+    has_manage=any('webhook' in name and any(word in name for word in ('manage','manager','write','admin')) for name in names)
+    has_read=any('webhook' in name and any(word in name for word in ('read','view','list')) for name in names)
+    return has_manage and has_read
+
+def _legacy_permission_allows(values):
+    names=[_permission_name(value) for value in values]
+    return names, any(('webhook' in name.lower() and ('manage' in name.lower() or 'manager' in name.lower())) or _is_tenant_admin(name) for name in names)
+
 @auth.command('onboard')
 @click.option('--tenant-id')
 @click.option('--approve-login',is_flag=True)
@@ -109,24 +125,37 @@ def auth_onboard(state,tenant_id,approve_login):
     """Login, verify identity/tenant/permission, then stop before mutation."""
     if not approve_login: raise ValueError('explicit credential-use and login approval is required')
     identity=api(state,'GET','/api/proxy/auth/me')
-    tenants=identity.get('tenants',[]) if isinstance(identity,dict) else []
+    if not isinstance(identity,dict): identity={}
+    tenants=identity.get('tenants',[])
     if not isinstance(tenants,list): tenants=[]
     normalized=[{"id":str(t.get('id')),"name":t.get('name')} for t in tenants if isinstance(t,dict) and t.get('id')]
+    active_tenant_id=identity.get('activeTenantId')
+    active_tenant_id=active_tenant_id.strip() if isinstance(active_tenant_id,str) and active_tenant_id.strip() else None
     if tenant_id:
         selected=next((t for t in normalized if t['id']==tenant_id),None)
+        if not selected and active_tenant_id==tenant_id: selected={"id":active_tenant_id,"name":None}
         if not selected: raise BackendError('tenant_not_available','approved tenant is not available to this account',False)
     elif len(normalized)==1: selected=normalized[0]
     elif len(normalized)>1:
         emit({'ok':False,'error':{'code':'ambiguous_tenant','message':'multiple tenants are available; approve one tenant id','retry_safe':True},'tenants':normalized,'mutation_attempted':False})
         raise click.exceptions.Exit(2)
+    elif active_tenant_id: selected={"id":active_tenant_id,"name":None}
     else: raise BackendError('tenant_not_available','authenticated identity returned no available tenant',False)
-    permissions=api(state,'GET','/api/proxy/auth/permissions?tenant_id='+selected['id'])
-    raw=permissions.get('items',permissions.get('permissions',[])) if isinstance(permissions,dict) else permissions
-    names=[str(p.get('name') or p.get('code')) if isinstance(p,dict) else str(p) for p in (raw if isinstance(raw,list) else [])]
-    allowed=any(('webhook' in p.lower() and ('manage' in p.lower() or 'manager' in p.lower())) or p.lower() in ('ta','tenant_admin') for p in names)
-    if not allowed: raise BackendError('missing_permission','TA or Webhook Manager permission is required',False,403)
+
+    role_allowed=any(_is_tenant_admin(identity.get(field,'')) for field in ('role','tenantRole'))
+    policy_actions=identity.get('policyActions',[])
+    policy_allowed=_policy_allows_webhook_management(policy_actions if isinstance(policy_actions,list) else [])
+    names=[]
+    permission_source='identity_role' if role_allowed else 'identity_policy_actions' if policy_allowed else 'permissions_endpoint'
+    if not (role_allowed or policy_allowed):
+        permissions=api(state,'GET','/api/proxy/auth/permissions?tenant_id='+selected['id'])
+        raw=permissions.get('items',permissions.get('permissions',[])) if isinstance(permissions,dict) else permissions
+        names,allowed=_legacy_permission_allows(raw if isinstance(raw,list) else [])
+        if not allowed: raise BackendError('missing_permission','TA or Webhook Manager permission is required',False,403)
+    else:
+        names=[_permission_name(action) for action in policy_actions] if policy_allowed else [str(identity.get('tenantRole') or identity.get('role'))]
     local=state.backend.session_status()
-    emit({'ok':True,'connected':True,'identity':identity,'tenant':selected,'permissions':names,'session':{'storage':local['session_storage'],'persistent':False,'sensitive_values_exposed':False},'mutation_attempted':False,'next':'separate approval is required before any mutation','revocation':{'portal':'Revoke account access or change the account password.','local':'End the process; no session is persisted. Run portal logout when available.'}})
+    emit({'ok':True,'connected':True,'identity':identity,'tenant':selected,'permissions':names,'permission_source':permission_source,'session':{'storage':local['session_storage'],'persistent':False,'sensitive_values_exposed':False},'mutation_attempted':False,'next':'separate approval is required before any mutation','revocation':{'portal':'Revoke account access or change the account password.','local':'End the process; no session is persisted. Run portal logout when available.'}})
 @auth.command('status')
 @click.pass_obj
 @guarded
