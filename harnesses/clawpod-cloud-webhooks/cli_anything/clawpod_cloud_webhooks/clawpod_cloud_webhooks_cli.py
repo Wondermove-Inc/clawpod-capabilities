@@ -6,10 +6,12 @@ from .core.safety import digest, redact, validate_body
 from .utils.backend import Backend, BackendError, RSA_CONTRACT
 
 class State:
-    def __init__(self, base_url, timeout, retries, json_mode):
-        self.backend=Backend(base_url,timeout,retries); self.json=json_mode
+    def __init__(self, base_url, timeout, retries, json_mode, ca_cert_path, insecure_skip_tls_verify, insecure_risk_approved):
+        self.backend=Backend(base_url,timeout,retries,ca_cert_path,insecure_skip_tls_verify,insecure_risk_approved); self.json=json_mode
 
+_ACTIVE_TLS_MODE = "strict"
 def emit(obj):
+    if isinstance(obj,dict) and "tls_verification_mode" not in obj: obj={**obj,"tls_verification_mode":_ACTIVE_TLS_MODE}
     click.echo(json.dumps(redact(obj),sort_keys=True,separators=(",",":"),ensure_ascii=False))
 def parse(s,label="JSON"):
     try: return json.loads(s)
@@ -26,14 +28,22 @@ def guarded(fn):
     run.__name__=fn.__name__; return run
 
 @click.group(invoke_without_command=True)
-@click.option('--base-url',envvar='CLAWPOD_WEBHOOKS_BASE_URL',default='http://127.0.0.1:8765',show_default=True)
+@click.option('--base-url',envvar='CLAWPOD_WEBHOOKS_BASE_URL',default='https://127.0.0.1:8765',show_default=True)
 @click.option('--timeout',type=float,default=5.0,show_default=True)
 @click.option('--retries',type=click.IntRange(0,3),default=2,show_default=True)
+@click.option('--ca-cert','ca_cert_path',type=click.Path(path_type=str),help='Readable PEM CA file for this process only.')
+@click.option('--insecure-skip-tls-verify',is_flag=True,help='Disable certificate verification for an approved internal network only.')
+@click.option('--i-understand-insecure-tls-risk','insecure_risk_approved',is_flag=True,help='Required second affirmation accepting insecure TLS risk.')
 @click.option('--json','json_mode',is_flag=True,help='Emit deterministic JSON.')
 @click.pass_context
-def cli(ctx,base_url,timeout,retries,json_mode):
+def cli(ctx,base_url,timeout,retries,ca_cert_path,insecure_skip_tls_verify,insecure_risk_approved,json_mode):
     """ClawPod Cloud Webhooks, safe portal/API CLI."""
-    ctx.obj=State(base_url,timeout,retries,json_mode)
+    global _ACTIVE_TLS_MODE
+    try:
+        ctx.obj=State(base_url,timeout,retries,json_mode,ca_cert_path,insecure_skip_tls_verify,insecure_risk_approved)
+        _ACTIVE_TLS_MODE=ctx.obj.backend.tls_verification_mode
+    except ValueError as e:
+        emit({"ok":False,"error":{"code":"invalid_input","message":str(e),"retry_safe":False}}); raise click.exceptions.Exit(2)
     if ctx.invoked_subcommand is None: ctx.invoke(repl)
 
 @cli.command()
@@ -66,7 +76,8 @@ def auth_contract():
         "user_actions":["Supply the ClawPod Cloud base URL and non-secret account identifier/prerequisite when asked.","Provide password or token only through a protected secret channel.","Approve credential use and login.","Choose or approve a tenant only when more than one is available.","Complete unavoidable MFA or provider UI."],
         "agent_actions":["Search protected secret pointers before requesting credentials.","Store newly supplied credentials in protected secret storage.","Validate the HTTPS base URL and account prerequisite.","Inject secrets only into the approved onboarding process.","Perform RSA-OAEP login, identity, tenant, and permission readback.","Auto-select the sole tenant and stop before every mutation."],
         "protected_credential_contract":{"required_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"plaintext_chat":False,"process_only":True,"gateway_harness_run_injection_supported":False,"approved_execution_lane":"OpenClaw exec.useSecrets environment injection into the installed CLI process","session_persistence":False},
-        "approval_boundaries":{"credential_storage":"explicit approval","credential_use_and_login":"explicit approval","tenant_selection":"user approval only when ambiguous","mutation":"separate preview and execution approvals"},
+        "tls":{"default":"strict","custom_ca":"preferred for internal CA trust; readable PEM used only by this process and never persisted","insecure":"internal networks only; requires both --insecure-skip-tls-verify and --i-understand-insecure-tls-risk","http_rejected":True,"modes":["strict","custom_ca","insecure_approved"]},
+        "approval_boundaries":{"credential_storage":"explicit approval","credential_use_and_login":"explicit approval","insecure_tls":"separate explicit risk acceptance","tenant_selection":"user approval only when ambiguous","mutation":"separate preview and execution approvals"},
         "success_criteria":["authenticated identity read back","exactly one tenant selected or approved","Webhook Manager permission verified","session remains process-memory-only","no mutation attempted"],
         "blockers":{"missing_credential":"Search protected credential pointers, then request protected-channel provision.","ambiguous_tenant":"Return redacted tenant choices and wait for target approval.","mfa_required":"Return mfa_required and wait for unavoidable provider interaction.","missing_permission":"Stop and request TA/Webhook Manager access.","auth_failed":"Stop; verify account or revoke/replace the protected secret.","backend_error":"Stop with retry safety and preserve no session."},
         "onboarding":{

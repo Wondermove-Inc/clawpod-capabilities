@@ -1,13 +1,15 @@
-import json, os, shutil, subprocess, sys, threading, time
+import datetime, ipaddress, json, os, shutil, ssl, subprocess, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import pytest
 from cli_anything.clawpod_cloud_webhooks.utils.backend import Backend, BackendError
+from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.x509.oid import NameOID
 
 PRIVATE_KEY=rsa.generate_private_key(public_exponent=65537,key_size=2048)
 PUBLIC_PEM=PRIVATE_KEY.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo).decode()
-STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0,'tenants':[{'id':'t','name':'Tenant'}],'permissions':['webhook_manager']}
+STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0,'tenants':[{'id':'t','name':'Tenant'}],'permissions':['webhook_manager'],'ca':None}
 class H(BaseHTTPRequestHandler):
     def log_message(self,*a): pass
     def out(self,obj,status=200,headers=None):
@@ -45,8 +47,14 @@ class H(BaseHTTPRequestHandler):
         if STATE['partial']: obj['playbook_id']=None
         STATE['source'].update(obj); self.out({'updated':True})
 @pytest.fixture(scope='module')
-def server():
-    srv=ThreadingHTTPServer(('127.0.0.1',0),H); th=threading.Thread(target=srv.serve_forever,daemon=True); th.start(); yield f'http://127.0.0.1:{srv.server_port}'; srv.shutdown()
+def server(tmp_path_factory):
+    root=tmp_path_factory.mktemp('tls'); key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+    name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'127.0.0.1')]); now=datetime.datetime.now(datetime.timezone.utc)
+    cert=(x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-datetime.timedelta(minutes=1)).not_valid_after(now+datetime.timedelta(days=1)).add_extension(x509.SubjectAlternativeName([x509.IPAddress(ipaddress.ip_address('127.0.0.1'))]),critical=False).add_extension(x509.BasicConstraints(ca=True,path_length=None),critical=True).sign(key,hashes.SHA256()))
+    ca=root/'ca.pem'; cert_file=root/'server.pem'; key_file=root/'server.key'
+    pem=cert.public_bytes(serialization.Encoding.PEM); ca.write_bytes(pem); cert_file.write_bytes(pem); key_file.write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.TraditionalOpenSSL,serialization.NoEncryption()))
+    STATE['ca']=str(ca); srv=ThreadingHTTPServer(('127.0.0.1',0),H); context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); context.load_cert_chain(cert_file,key_file); srv.socket=context.wrap_socket(srv.socket,server_side=True)
+    th=threading.Thread(target=srv.serve_forever,daemon=True); th.start(); yield f'https://127.0.0.1:{srv.server_port}'; srv.shutdown()
 @pytest.fixture(autouse=True)
 def synthetic_auth(monkeypatch):
     monkeypatch.setenv('CLAWPOD_CLOUD_EMAIL','synthetic@example.invalid'); monkeypatch.setenv('CLAWPOD_CLOUD_PASSWORD','synthetic-password')
@@ -57,14 +65,34 @@ def cli_base():
         if p:return [p]
         raise RuntimeError('installed CLI missing')
     return [sys.executable,'-m','cli_anything.clawpod_cloud_webhooks.clawpod_cloud_webhooks_cli']
-def run(server,args): return subprocess.run(cli_base()+['--base-url',server,'--json']+args,text=True,capture_output=True)
+def run(server,args): return subprocess.run(cli_base()+['--base-url',server,'--ca-cert',STATE['ca'],'--json']+args,text=True,capture_output=True)
 
-def test_backend_retries_get(server): STATE['retry']=0; assert Backend(server,retries=2).request('GET','/retry',authenticated=False)['ok'] and STATE['retry']==3
+def test_tls_strict_default_rejects_untrusted_self_signed(server):
+    STATE['paths'].clear()
+    with pytest.raises(BackendError) as e: Backend(server,retries=0).request('GET','/retry',authenticated=False)
+    assert e.value.code=='tls_verification_failed' and STATE['paths']==[]
+def test_tls_custom_ca_and_insecure_approved_succeed(server):
+    STATE['retry']=2; assert Backend(server,retries=0,ca_cert_path=STATE['ca']).request('GET','/retry',authenticated=False)['ok']
+    assert Backend(server,retries=0,insecure_skip_tls_verify=True,insecure_risk_approved=True).request('GET','/retry',authenticated=False)['ok']
+def test_tls_invalid_modes_fail_before_network(server,tmp_path):
+    STATE['paths'].clear()
+    with pytest.raises(ValueError): Backend(server,insecure_skip_tls_verify=True)
+    with pytest.raises(ValueError): Backend(server,ca_cert_path=STATE['ca'],insecure_skip_tls_verify=True,insecure_risk_approved=True)
+    with pytest.raises(ValueError): Backend('http://127.0.0.1:1',insecure_skip_tls_verify=True,insecure_risk_approved=True)
+    bad=tmp_path/'bad.pem'; bad.write_text('not pem')
+    with pytest.raises(ValueError) as e: Backend(server,ca_cert_path=str(bad))
+    assert str(bad) not in str(e.value) and STATE['paths']==[]
+def test_tls_cli_modes_and_no_path_leak(server,tmp_path):
+    p=run(server,['system','version']); assert json.loads(p.stdout)['tls_verification_mode']=='custom_ca' and STATE['ca'] not in p.stdout
+    p=subprocess.run(cli_base()+['--base-url',server,'--insecure-skip-tls-verify','--json','system','version'],text=True,capture_output=True); assert p.returncode==2 and STATE['paths']==[]
+    p=subprocess.run(cli_base()+['--base-url',server,'--insecure-skip-tls-verify','--i-understand-insecure-tls-risk','--json','system','version'],text=True,capture_output=True); assert p.returncode==0 and json.loads(p.stdout)['tls_verification_mode']=='insecure_approved'
+
+def test_backend_retries_get(server): STATE['retry']=0; assert Backend(server,retries=2,ca_cert_path=STATE['ca']).request('GET','/retry',authenticated=False)['ok'] and STATE['retry']==3
 def test_auth_failure_typed_and_no_body_leak(server):
-    with pytest.raises(BackendError) as e: Backend(server,retries=0).request('GET','/authfail',authenticated=False)
+    with pytest.raises(BackendError) as e: Backend(server,retries=0,ca_cert_path=STATE['ca']).request('GET','/authfail',authenticated=False)
     assert e.value.code=='auth_failed' and 'should-never-emit' not in str(e.value)
 def test_bounded_timeout_and_retry_safety(server):
-    with pytest.raises(BackendError) as e: Backend(server,timeout=.03,retries=0).request('GET','/slow',authenticated=False)
+    with pytest.raises(BackendError) as e: Backend(server,timeout=.03,retries=0,ca_cert_path=STATE['ca']).request('GET','/slow',authenticated=False)
     assert e.value.code=='timeout' and e.value.retry_safe
 def test_subprocess_version_from_outside(server,tmp_path):
     p=run(server,['system','version']); d=json.loads(p.stdout); assert p.returncode==0 and d['capability']['name']=='clawpod-cloud-webhooks'
@@ -88,6 +116,8 @@ def test_auth_contract(server):
     assert d['onboarding_prompts']['user_runs_commands'] is False
     assert d['protected_credential_contract']['gateway_harness_run_injection_supported'] is False
     assert 'protected credential pointers' in d['blockers']['missing_credential']
+    assert d['tls']['default']=='strict' and d['tls']['http_rejected']
+    assert 'both --insecure-skip-tls-verify and --i-understand-insecure-tls-risk' in d['tls']['insecure']
 def test_onboard_requires_explicit_login_approval_before_network(server):
     STATE['paths'].clear()
     p=run(server,['auth','onboard']); d=json.loads(p.stdout)
@@ -95,7 +125,7 @@ def test_onboard_requires_explicit_login_approval_before_network(server):
     assert STATE['paths']==[]
 def test_onboard_requires_protected_secret_injection(server):
     env=os.environ.copy(); env.pop('CLAWPOD_CLOUD_EMAIL',None); env.pop('CLAWPOD_CLOUD_PASSWORD',None)
-    p=subprocess.run(cli_base()+['--base-url',server,'--json','auth','onboard','--approve-login'],text=True,capture_output=True,env=env)
+    p=subprocess.run(cli_base()+['--base-url',server,'--ca-cert',STATE['ca'],'--json','auth','onboard','--approve-login'],text=True,capture_output=True,env=env)
     assert p.returncode==2 and json.loads(p.stdout)['error']['code']=='auth_required'
     assert 'synthetic-password' not in p.stdout
 
@@ -120,7 +150,7 @@ def test_rsa_login_and_real_proxy_paths(server):
     assert STATE['paths'][:3]==['/api/auth/public-key','/api/auth/login','/api/proxy/webhook-sources?tenant_id=t']
 def test_missing_protected_env_fails_but_no_auth_commands_work(server):
     env=os.environ.copy(); env.pop('CLAWPOD_CLOUD_EMAIL',None); env.pop('CLAWPOD_CLOUD_PASSWORD',None)
-    p=subprocess.run(cli_base()+['--base-url',server,'--json','source','list','--tenant-id','t'],text=True,capture_output=True,env=env)
+    p=subprocess.run(cli_base()+['--base-url',server,'--ca-cert',STATE['ca'],'--json','source','list','--tenant-id','t'],text=True,capture_output=True,env=env)
     assert p.returncode==2 and json.loads(p.stdout)['error']['code']=='auth_required'
     p=subprocess.run(cli_base()+['--json','system','version'],text=True,capture_output=True,env=env); assert p.returncode==0
     p=subprocess.run(cli_base()+['--json','auth','contract'],text=True,capture_output=True,env=env); assert p.returncode==0
@@ -151,6 +181,13 @@ def test_manifest_adapter_command_parity():
     manifest=json.load(open(os.path.join(root,'harness.json')))
     spec=importlib.util.spec_from_file_location('adapter',os.path.join(root,'clawpod_cloud_webhooks.py')); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     assert set(manifest['commands'])==set(mod.MAP)
+    allowed={'readOnly','writeSafe','modifiesSource','destructive','secretUse','externalSideEffect','authReuse','humanAccountAction'}
     for name,contract in manifest['commands'].items():
         assert contract['inputSchema']['type']=='object' and isinstance(contract['argMap'],list) and contract['outputSchema']['required']==['ok']
+        assert set(contract['safetyClasses']) <= allowed
+        if 'baseUrl' in contract['inputSchema'].get('properties',{}):
+            props=contract['inputSchema']['properties']; args={a['arg']:a for a in contract['argMap']}
+            assert {'caCertPath','insecureSkipTlsVerify','insecureTlsRiskAccepted'} <= set(props)
+            assert args['caCertPath']['valueType']=='path' and args['caCertPath']['pathRole']=='input'
+    assert {'secretUse','humanAccountAction'} <= set(manifest['commands']['auth.onboard']['safetyClasses'])
     assert mod.MAP['secret.rotate-warning'][-1]=='rotate' and mod.MAP['secret.regenerate-warning'][-1]=='regenerate'

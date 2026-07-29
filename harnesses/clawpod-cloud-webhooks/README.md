@@ -24,6 +24,8 @@ cli-anything-clawpod-cloud-webhooks --json system version
 cli-anything-clawpod-cloud-webhooks --base-url https://portal.example --json source list --tenant-id TENANT
 ```
 
+TLS verification is strict by default and HTTP base URLs are rejected. For an internal CA, prefer `--ca-cert /path/to/ca.pem`; the readable regular PEM is used only to construct this process's client SSL context and is never copied, persisted, or emitted. Only for an explicitly approved internal network, use both `--insecure-skip-tls-verify` and `--i-understand-insecure-tls-risk`. The flags disable certificate verification only, never HTTPS, cannot be combined with `--ca-cert`, and do not authorize login or mutation. Mutation preview and execution approvals remain separate.
+
 `system version` and `auth contract` require no authentication. Every portal read or mutation fails clearly unless protected credential environment injection is present. Portal resources use the verified `/api/proxy/auth/*` and `/api/proxy/webhook-*` paths; auth setup uses `/api/auth/public-key`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout`.
 
 OpenClaw platform limitation: Gateway `harness.run` currently has command input plus approval-intent binding but no memory-secret injection field. Therefore authenticated onboarding and every later authenticated one-shot command use the approved `exec.useSecrets` execution lane to inject protected pointers into the installed CLI process. The agent reuses those pointers automatically; the user does not configure environment variables or repeat credentials. Secrets never enter chat, argv, files, or Harness input. This is not session persistence; each command uses a fresh process-memory session.
@@ -36,4 +38,4 @@ Use `mutation-preview` first. Supply its exact effect digest, stable idempotency
 CLI_ANYTHING_FORCE_INSTALLED=1 python3 -m pytest cli_anything/clawpod_cloud_webhooks/tests -v --tb=no
 ```
 
-Tests use only a local mock HTTP server. No live portal or secrets are accessed.
+Tests use only a local mock HTTPS server with synthetic certificates and credentials. No live portal or secrets are accessed.
