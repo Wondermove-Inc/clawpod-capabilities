@@ -9,7 +9,7 @@ from cryptography.x509.oid import NameOID
 
 PRIVATE_KEY=rsa.generate_private_key(public_exponent=65537,key_size=2048)
 PUBLIC_PEM=PRIVATE_KEY.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo).decode()
-STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0,'tenants':[{'id':'t','name':'Tenant'}],'permissions':['webhook_manager'],'ca':None}
+STATE={'source':{'id':'s1','name':'n','description':None,'provider':'custom','auth_type':'none','auth_config':{},'rate_limit_per_minute':10,'is_active':True,'playbook_id':'p1','tenant_id':'t'},'retry':0,'partial':False,'paths':[],'logins':0,'tenants':[{'id':'t','name':'Tenant'}],'identity_extra':{},'permissions':['webhook_manager'],'ca':None}
 class H(BaseHTTPRequestHandler):
     def log_message(self,*a): pass
     def out(self,obj,status=200,headers=None):
@@ -25,7 +25,7 @@ class H(BaseHTTPRequestHandler):
             STATE['retry']+=1
             return self.out({'error':'later'},503) if STATE['retry']<3 else self.out({'ok':True})
         if self.path=='/authfail': return self.out({'authorization':'Bearer should-never-emit'},401)
-        if self.path.startswith('/api/proxy/auth/me'): return self.out({'authenticated':True,'email':'synthetic@example.invalid','tenants':STATE['tenants']})
+        if self.path.startswith('/api/proxy/auth/me'): return self.out({'authenticated':True,'email':'synthetic@example.invalid','tenants':STATE['tenants'],**STATE['identity_extra']})
         if '/webhook-sources/s1' in self.path: return self.out(dict(STATE['source']))
         if '/webhook-events/e1' in self.path: return self.out({'id':'e1','status':'delivered','error_message':'','headers':{'Authorization':'Bearer hidden','Cookie':'sid=hidden'},'request_url':'https://x/incoming/urlTOKEN12345','destination_evidence':{'message_id':'m'}})
         if '/webhook-events/e2' in self.path: return self.out({'id':'e2','status':'delivered','error_message':'tenant isolation violation'})
@@ -60,6 +60,7 @@ def server(tmp_path_factory):
 @pytest.fixture(autouse=True)
 def synthetic_auth(monkeypatch):
     monkeypatch.setenv('CLAWPOD_CLOUD_EMAIL','synthetic@example.invalid'); monkeypatch.setenv('CLAWPOD_CLOUD_PASSWORD','synthetic-password')
+    STATE['tenants']=[{'id':'t','name':'Tenant'}]; STATE['identity_extra']={}; STATE['permissions']=['webhook_manager']; STATE['paths'].clear()
 
 def cli_base():
     if os.getenv('CLI_ANYTHING_FORCE_INSTALLED')=='1':
@@ -134,20 +135,47 @@ def test_onboard_requires_protected_secret_injection(server):
     assert 'synthetic-password' not in p.stdout
 
 def test_onboard_success_auto_selects_and_never_mutates(server):
-    STATE['tenants']=[{'id':'t','name':'Tenant'}]; STATE['permissions']=['webhook_manager']; STATE['paths'].clear()
     p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
     assert p.returncode==0 and d['tenant']['id']=='t' and d['mutation_attempted'] is False
+    assert d['permission_source']=='permissions_endpoint'
     assert not any(path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
-def test_onboard_ambiguous_tenant_stops_without_permission_or_mutation(server):
-    STATE['tenants']=[{'id':'t1','name':'One'},{'id':'t2','name':'Two'}]; STATE['paths'].clear()
+def test_onboard_live_identity_contract_uses_numeric_active_tenant_and_real_policy_actions(server):
+    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':2,'role':'member','tenantRole':'member','policyActions':['webhook:event:read','webhook:source:create','webhook:source:update','webhook:source:delete']}
+    p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==0 and d['tenant']['id']=='2' and d['permission_source']=='identity_policy_actions'
+    assert d['mutation_attempted'] is False and not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
+def test_onboard_live_tenant_admin_role_needs_no_permissions_fallback(server):
+    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':'active-t','tenantRole':'TA','policyActions':[]}
+    p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==0 and d['permission_source']=='identity_role'
+    assert not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
+def test_onboard_explicit_active_tenant_match_and_mismatch(server):
+    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':'active-t','role':'tenant_admin'}
+    p=run(server,['auth','onboard','--approve-login','--tenant-id','active-t']); assert p.returncode==0
+    STATE['paths'].clear(); p=run(server,['auth','onboard','--approve-login','--tenant-id','other']); d=json.loads(p.stdout)
+    assert p.returncode==2 and d['error']['code']=='tenant_not_available'
+    assert not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
+def test_onboard_sole_legacy_tenant_precedes_different_active_context(server):
+    STATE['identity_extra']={'activeTenantId':'active-t','role':'tenant_admin'}
+    p=run(server,['auth','onboard','--approve-login']); assert json.loads(p.stdout)['tenant']['id']=='t'
+def test_onboard_ambiguous_legacy_tenants_stay_blocked_despite_active_context(server):
+    STATE['tenants']=[{'id':'t1','name':'One'},{'id':'t2','name':'Two'}]; STATE['identity_extra']={'activeTenantId':'t1','role':'tenant_admin'}
     p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
     assert p.returncode==2 and d['error']['code']=='ambiguous_tenant' and d['mutation_attempted'] is False
     assert not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
-    STATE['tenants']=[{'id':'t','name':'Tenant'}]
+    STATE['paths'].clear(); p=run(server,['auth','onboard','--approve-login','--tenant-id','t2']); d=json.loads(p.stdout)
+    assert p.returncode==0 and d['tenant']['id']=='t2' and d['mutation_attempted'] is False
+    assert not any('permissions' in path or path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
 def test_onboard_missing_permission_is_typed_and_redacted(server):
     STATE['permissions']=['read']; p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
     assert p.returncode==2 and d['error']['code']=='missing_permission' and 'synthetic-password' not in p.stdout
-    STATE['permissions']=['webhook_manager']
+
+def test_onboard_incomplete_live_policy_actions_fall_back_and_block(server):
+    STATE['tenants']=[]; STATE['identity_extra']={'activeTenantId':'active-t','policyActions':['webhooks.read']}; STATE['permissions']=[]
+    p=run(server,['auth','onboard','--approve-login']); d=json.loads(p.stdout)
+    assert p.returncode==2 and d['error']['code']=='missing_permission'
+    assert '/api/proxy/auth/permissions?tenant_id=active-t' in STATE['paths']
+    assert not any(path.startswith('/api/proxy/webhook-') for path in STATE['paths'])
 def test_rsa_login_and_real_proxy_paths(server):
     STATE['paths'].clear(); STATE['logins']=0
     p=run(server,['source','list','--tenant-id','t']); assert p.returncode==0 and STATE['logins']==1
