@@ -191,3 +191,8 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 - `python3 scripts/sync_registry.py --check` -> synchronized; `python3 scripts/validate.py` -> **16 capability entries validated**; `git diff --check` -> clean.
 
 The local synthetic HTTPS fixture proved strict rejection of an untrusted self-signed certificate, custom-CA success, doubly affirmed insecure-mode success, approval-before-network failure, invalid-combination and HTTP rejection, redacted TLS mode evidence, and all existing synthetic onboarding identity/tenant/permission/no-mutation paths. No live portal, real credential, global TLS setting, local capability installation, publication, or Gateway trust/run lifecycle was used.
+
+
+## Gateway schema compatibility recovery (0.1.6)
+
+The post-install Gateway `harness.run.prepare` gate rejected the 0.1.5 output schema because this runtime does not support `enum` on Harness output properties. Version 0.1.6 removes only that unsupported schema keyword from `tls_verification_mode`; the CLI, documentation, and tests still constrain emitted values to `strict`, `custom_ca`, or `insecure_approved`. Release verification must include real Gateway `harness.run.prepare → harness.run` for `system.version` and `auth.contract` after local installation.

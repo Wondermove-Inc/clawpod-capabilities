@@ -4,7 +4,7 @@
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
   "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
   "execution": {
@@ -120,12 +120,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -225,12 +220,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -361,12 +351,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -531,12 +516,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -692,12 +672,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -860,12 +835,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1028,12 +998,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1201,12 +1166,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1376,12 +1336,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1544,12 +1499,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1717,12 +1667,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -1900,12 +1845,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2082,12 +2022,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2256,12 +2191,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2451,12 +2381,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2641,12 +2566,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2772,12 +2692,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -2889,12 +2804,7 @@
             "type": "string"
           },
           "tls_verification_mode": {
-            "type": "string",
-            "enum": [
-              "strict",
-              "custom_ca",
-              "insecure_approved"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": true

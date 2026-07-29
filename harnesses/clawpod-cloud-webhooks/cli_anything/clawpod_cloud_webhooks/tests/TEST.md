@@ -173,3 +173,8 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 ## Internal-network TLS Results (0.1.5)
 
 The isolated installed candidate's full Harness suite passed **63/63**. Local synthetic HTTPS coverage verifies strict self-signed rejection, custom-CA trust, doubly affirmed insecure TLS, pre-network approval and input failures, HTTP rejection, path/secret redaction, and existing onboarding identity/tenant/permission/no-mutation behavior. Repository and registry verification is recorded in the package-level `TEST.md`. No live portal or real secret was used.
+
+
+## Gateway schema compatibility recovery (0.1.6)
+
+The manifest output schema no longer uses the Gateway-unsupported `enum` keyword for `tls_verification_mode`. Runtime tests continue to assert the exact three allowed emitted values. A real Gateway prepare/run check remains a post-install release gate.
