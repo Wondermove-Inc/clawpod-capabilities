@@ -76,6 +76,10 @@ def test_auth_contract(server):
     assert d['login']['algorithm']=='RSA-OAEP' and d['onboarding_requires_explicit_approval']
     assert d['onboarding']['required_account']=='ClawPod Cloud TA account or an account with Webhook Manager permission'
     assert d['onboarding']['installation_is_connection'] is False
+    handoff=d['onboarding']['post_install_handoff']
+    assert handoff['required'] and handoff['installation_complete_without_handoff'] is False
+    assert 'Immediately after installation' in handoff['timing']
+    assert len(handoff['contents'])==5 and 'Ask whether to start onboarding now.' in handoff['contents']
     assert 'blocker' in d['onboarding']['missing_permission_behavior']
 def test_rsa_login_and_real_proxy_paths(server):
     STATE['paths'].clear(); STATE['logins']=0

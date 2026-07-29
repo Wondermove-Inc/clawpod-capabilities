@@ -65,6 +65,18 @@ def auth_contract():
         "onboarding":{
             "required_account":"ClawPod Cloud TA account or an account with Webhook Manager permission",
             "installation_is_connection":False,
+            "post_install_handoff":{
+                "timing":"Immediately after installation, before waiting for first use.",
+                "required":True,
+                "installation_complete_without_handoff":False,
+                "contents":[
+                    "State that installation succeeded but the capability is not connected.",
+                    "Explain the required TA account or Webhook Manager permission.",
+                    "Explain the approval-gated onboarding sequence and user-versus-agent actions.",
+                    "Explain protected credential and session handling and how access can be revoked.",
+                    "Ask whether to start onboarding now."
+                ]
+            },
             "pre_login_check":"Confirm the account type or Webhook Manager permission before starting login or creating credential state.",
             "post_login_check":"Read back the authenticated identity, selected tenant, and Webhooks permissions before declaring the capability connected.",
             "missing_permission_behavior":"Stop without mutation and report the missing TA/Webhook Manager access as a blocker."
