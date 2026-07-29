@@ -75,7 +75,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -96,7 +96,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.1.6"
+        "version": "0.1.7"
       }
     },
     {
@@ -397,7 +397,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -417,7 +417,7 @@
         },
         {
           "path": "TEST.md",
-          "sha256": "eb2c31b4e7424a6691c8862eb64f8f1379543896ac218ecbf4c1fc84301bcfa0"
+          "sha256": "03686aa25168062e40520b90e57564b5dfc5f9922b670f1bfb8f3818e8e9835e"
         },
         {
           "path": "clawpod_cloud_webhooks.py",
@@ -425,7 +425,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "9f7a0ce81fc4333f7736c4c8d7c34d65dfa32857143f35246c82a3e5514ae689"
+          "sha256": "62928371d57b0aa2fc9f8e6edbaef02adca5a0cd7715255b39daea80d66748b3"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -453,7 +453,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/utils/backend.py",
-          "sha256": "e401687f5f87b347a825669bfa8bbc0f79ee24f18fcc83ba2dbb130bf9912d2d"
+          "sha256": "8bfc681e83e395752df0555f51b3c76c5a1c187a0824f2191c62733aa37f342b"
         },
         {
           "path": "command_contracts.json",
@@ -461,11 +461,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "b2b0fa5223e38e52cbd925928e261d9bf999c0f9044d69d6aca10b3bd30720f2"
+          "sha256": "c7c1042704f5d3a13996c6df1a20f0ed623522a5d4086bda5b6b36c1c3b1b91e"
         },
         {
           "path": "setup.py",
-          "sha256": "9050681fcb94a4826229cdf23a80d990160feaa7fb2e889f4947f95f2ecf1ac0"
+          "sha256": "086025227f9cf2133e5238657c18fda011f722e7e90df7187117b583ccd77eea"
         }
       ]
     },

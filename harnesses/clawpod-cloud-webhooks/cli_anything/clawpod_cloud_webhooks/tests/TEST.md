@@ -178,3 +178,8 @@ The isolated installed candidate's full Harness suite passed **63/63**. Local sy
 ## Gateway schema compatibility recovery (0.1.6)
 
 The manifest output schema no longer uses the Gateway-unsupported `enum` keyword for `tls_verification_mode`. Runtime tests continue to assert the exact three allowed emitted values. A real Gateway prepare/run check remains a post-install release gate.
+
+
+## Live login contract recovery (0.1.7)
+
+The synthetic HTTPS backend now requires the live portal request shape: `email`, encrypted `password`, and `rememberMe=false`. It rejects the stale `encrypted_password` field and decrypts the ciphertext to verify the protected inner password/timestamp payload without exposing secrets.

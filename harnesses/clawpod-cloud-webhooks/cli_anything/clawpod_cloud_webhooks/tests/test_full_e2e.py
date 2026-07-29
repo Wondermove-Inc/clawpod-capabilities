@@ -37,7 +37,9 @@ class H(BaseHTTPRequestHandler):
         STATE['paths'].append(self.path); n=int(self.headers.get('Content-Length','0')); obj=json.loads(self.rfile.read(n))
         if self.path=='/api/auth/login':
             import base64
-            raw=PRIVATE_KEY.decrypt(base64.b64decode(obj['encrypted_password']),padding.OAEP(mgf=padding.MGF1(hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
+            assert set(obj)=={'email','password','rememberMe'} and obj['rememberMe'] is False
+            assert 'encrypted_password' not in obj
+            raw=PRIVATE_KEY.decrypt(base64.b64decode(obj['password']),padding.OAEP(mgf=padding.MGF1(hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
             payload=json.loads(raw); assert payload['password']=='synthetic-password' and isinstance(payload['timestamp'],int) and obj['email']=='synthetic@example.invalid'
             STATE['logins']+=1; return self.out({'ok':True},headers={'Set-Cookie':'session=synthetic; HttpOnly'})
         return self.out({'error':'not found'},404)
@@ -102,6 +104,8 @@ def test_typed_reads(server):
 def test_auth_contract(server):
     d=json.loads(run(server,['auth','contract']).stdout)
     assert d['login']['algorithm']=='RSA-OAEP' and d['onboarding_requires_explicit_approval']
+    assert d['login']['login_request_fields']==['email','password','rememberMe']
+    assert d['login']['encrypted_field']=='password' and d['login']['remember_me'] is False
     assert d['onboarding']['required_account']=='ClawPod Cloud TA account or an account with Webhook Manager permission'
     assert d['onboarding']['installation_is_connection'] is False
     handoff=d['onboarding']['post_install_handoff']
