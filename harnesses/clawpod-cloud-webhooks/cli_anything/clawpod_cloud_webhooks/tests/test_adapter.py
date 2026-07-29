@@ -37,12 +37,16 @@ def test_onboard_gateway_arguments_map_to_protected_cli_command():
         "https://portal.example.invalid",
         "--tenant-id",
         "tenant-1",
+        "--ca-cert",
+        "/tmp/internal-ca.pem",
         "--approve-login",
         "true",
     ]) == [
         "--json",
         "--base-url",
         "https://portal.example.invalid",
+        "--ca-cert",
+        "/tmp/internal-ca.pem",
         "auth",
         "onboard",
         "--tenant-id",
@@ -123,4 +127,4 @@ def test_real_self_contained_adapter_subprocess():
     data = json.loads(result.stdout)
     assert result.returncode == 0
     assert data["ok"] is True
-    assert data["capability"]["version"] == "0.1.4"
+    assert data["capability"]["version"] == "0.1.5"

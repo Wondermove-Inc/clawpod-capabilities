@@ -23,6 +23,21 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 3
+    },
+    "caCertPath": {
+      "type": "path",
+      "role": "input",
+      "required": false,
+      "validation": "readable regular PEM file; never persisted or copied"
+    },
+    "insecureSkipTlsVerify": {
+      "type": "boolean",
+      "required": false
+    },
+    "insecureTlsRiskAccepted": {
+      "type": "boolean",
+      "const": true,
+      "requiredWith": "insecureSkipTlsVerify"
     }
   },
   "readCommands": [
@@ -100,11 +115,31 @@
       "approveLogin"
     ],
     "optional": [
-      "tenantId"
+      "tenantId",
+      "caCertPath",
+      "insecureSkipTlsVerify",
+      "insecureTlsRiskAccepted"
     ],
     "sessionPersistence": false,
     "gatewaySecretInjection": false,
     "protectedExecutionLane": "exec.useSecrets",
     "stopsBeforeMutation": true
+  },
+  "tls": {
+    "default": "strict",
+    "modes": [
+      "strict",
+      "custom_ca",
+      "insecure_approved"
+    ],
+    "customCaPreferred": true,
+    "httpRejected": true,
+    "mutuallyExclusive": [
+      "caCertPath",
+      "insecureSkipTlsVerify"
+    ],
+    "insecureApprovalFlag": "--i-understand-insecure-tls-risk",
+    "scope": "process/client instance only",
+    "environmentBypass": false
   }
 }

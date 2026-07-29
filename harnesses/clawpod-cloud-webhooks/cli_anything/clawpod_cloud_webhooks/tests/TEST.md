@@ -169,3 +169,7 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 ```
 
 40/40 passed (100%) in 2.04 seconds. Added synthetic RSA-OAEP login/decryption, verified proxy path, missing protected environment, no-auth command, manifest schema/argMap, adapter parity, and secret warning mapping coverage. Gateway lifecycle validation/trust and live portal access were intentionally not run; parent owns those steps.
+
+## Internal-network TLS Results (0.1.5)
+
+The isolated installed candidate's full Harness suite passed **63/63**. Local synthetic HTTPS coverage verifies strict self-signed rejection, custom-CA trust, doubly affirmed insecure TLS, pre-network approval and input failures, HTTP rejection, path/secret redaction, and existing onboarding identity/tenant/permission/no-mutation behavior. Repository and registry verification is recorded in the package-level `TEST.md`. No live portal or real secret was used.

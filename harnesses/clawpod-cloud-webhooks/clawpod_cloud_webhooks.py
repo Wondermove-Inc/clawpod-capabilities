@@ -35,7 +35,9 @@ POSITIONAL_FLAGS = {
     "event.verify": "--event-id",
     "source.update": "--source-id",
 }
-BOOLEAN_FLAGS = {"--approve", "--approve-login", "--require-destination-evidence"}
+BOOLEAN_FLAGS = {"--approve", "--approve-login", "--require-destination-evidence", "--insecure-skip-tls-verify", "--i-understand-insecure-tls-risk"}
+GLOBAL_VALUE_FLAGS = {"--base-url", "--ca-cert", "--timeout", "--retries"}
+GLOBAL_BOOLEAN_FLAGS = {"--insecure-skip-tls-verify", "--i-understand-insecure-tls-risk"}
 TRUE_VALUES = {"1", "true", "yes", "on"}
 FALSE_VALUES = {"0", "false", "no", "off"}
 
@@ -65,12 +67,14 @@ def translate(gateway_argv):
         token = options[i]
         if not token.startswith("--"):
             raise ValueError("malformed arguments")
-        if token == "--base-url" or token == POSITIONAL_FLAGS.get(command):
+        if token in GLOBAL_VALUE_FLAGS or token == POSITIONAL_FLAGS.get(command):
             if i + 1 >= len(options) or options[i + 1].startswith("--"):
                 raise ValueError(f"{token} requires a value")
             value = options[i + 1]
             if token == "--base-url":
                 base_url = value
+            elif token in GLOBAL_VALUE_FLAGS:
+                forwarded.extend((token, value))
             else:
                 positional = value
             i += 2
@@ -104,7 +108,13 @@ def translate(gateway_argv):
     ]
     if base_url is not None:
         cli_argv.extend(("--base-url", base_url))
+    global_forwarded=[]; command_forwarded=[]
+    for index,token in enumerate(forwarded):
+        target=global_forwarded if token in GLOBAL_VALUE_FLAGS or token in GLOBAL_BOOLEAN_FLAGS or (index and forwarded[index-1] in GLOBAL_VALUE_FLAGS) else command_forwarded
+        target.append(token)
+    cli_argv.extend(global_forwarded)
     cli_argv.extend(COMMANDS[command])
+    forwarded=command_forwarded
     if positional is not None:
         cli_argv.append(positional)
     cli_argv.extend(forwarded)

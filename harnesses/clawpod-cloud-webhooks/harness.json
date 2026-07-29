@@ -4,7 +4,7 @@
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
   "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
   "execution": {
@@ -118,6 +118,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -215,6 +223,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -240,13 +256,26 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
           },
           "approveLogin": {
+            "type": "boolean",
+            "const": true
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
             "type": "boolean",
             "const": true
           }
@@ -330,6 +359,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -355,6 +392,28 @@
           "flag": "--approve-login",
           "valueType": "boolean",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -375,7 +434,20 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -457,6 +529,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -468,6 +548,28 @@
           "flag": "--base-url",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -489,11 +591,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -575,6 +690,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -593,6 +716,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -614,11 +759,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -700,6 +858,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -718,6 +884,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -739,11 +927,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -825,6 +1026,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -843,6 +1052,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -865,7 +1096,8 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "resourceId": {
             "type": "string",
@@ -874,6 +1106,18 @@
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -955,6 +1199,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -980,6 +1232,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1001,11 +1275,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1087,6 +1374,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1105,6 +1400,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1126,11 +1443,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1212,6 +1542,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1230,6 +1568,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1252,7 +1612,8 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "eventId": {
             "type": "string",
@@ -1261,6 +1622,18 @@
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1342,6 +1715,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1367,6 +1748,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1389,7 +1792,8 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "eventId": {
             "type": "string",
@@ -1401,6 +1805,18 @@
           },
           "requireDestinationEvidence": {
             "type": "boolean"
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1482,6 +1898,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1514,6 +1938,28 @@
           "flag": "--require-destination-evidence",
           "valueType": "boolean",
           "optional": true
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1535,11 +1981,24 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "tenantId": {
             "type": "string",
             "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1621,6 +2080,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1639,6 +2106,28 @@
           "flag": "--tenant-id",
           "valueType": "string",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -1765,6 +2254,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1838,7 +2335,8 @@
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "pattern": "^https://"
           },
           "sourceId": {
             "type": "string"
@@ -1858,6 +2356,18 @@
           },
           "approve": {
             "type": "boolean"
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false
@@ -1939,6 +2449,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -1992,6 +2510,28 @@
           "flag": "--approve",
           "valueType": "boolean",
           "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
         }
       ]
     },
@@ -2099,6 +2639,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -2222,6 +2770,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true
@@ -2331,6 +2887,14 @@
           },
           "kind": {
             "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "custom_ca",
+              "insecure_approved"
+            ]
           }
         },
         "additionalProperties": true

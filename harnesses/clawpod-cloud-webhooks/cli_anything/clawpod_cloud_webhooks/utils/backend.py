@@ -1,13 +1,43 @@
-import base64, json, os, socket, time, urllib.error, urllib.request
+import base64, json, os, socket, ssl, stat, time, urllib.error, urllib.parse, urllib.request
 from http.cookiejar import CookieJar
+
+TLS_RISK_APPROVAL_FLAG = "--i-understand-insecure-tls-risk"
+TLS_MODES = ("strict", "custom_ca", "insecure_approved")
+
 class BackendError(RuntimeError):
     def __init__(self,code,message,retry_safe=False,status=None): super().__init__(message); self.code=code; self.retry_safe=retry_safe; self.status=status
+
+def _tls_context(base_url, ca_cert_path=None, insecure_skip_tls_verify=False, insecure_risk_approved=False):
+    parsed=urllib.parse.urlsplit(base_url)
+    if parsed.scheme.lower() != "https" or not parsed.netloc:
+        raise ValueError("base URL must use HTTPS")
+    if ca_cert_path and insecure_skip_tls_verify:
+        raise ValueError("custom CA and insecure TLS mode cannot be combined")
+    if insecure_skip_tls_verify and not insecure_risk_approved:
+        raise ValueError(f"insecure TLS mode requires explicit risk acceptance with {TLS_RISK_APPROVAL_FLAG}")
+    if insecure_risk_approved and not insecure_skip_tls_verify:
+        raise ValueError(f"{TLS_RISK_APPROVAL_FLAG} is valid only with --insecure-skip-tls-verify")
+    if ca_cert_path:
+        try:
+            info=os.stat(ca_cert_path)
+            if not stat.S_ISREG(info.st_mode) or not os.access(ca_cert_path,os.R_OK): raise OSError
+            context=ssl.create_default_context(cafile=ca_cert_path)
+        except (OSError,ssl.SSLError):
+            raise ValueError("CA certificate must be a readable regular PEM file")
+        return context,"custom_ca"
+    if insecure_skip_tls_verify:
+        context=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname=False; context.verify_mode=ssl.CERT_NONE
+        return context,"insecure_approved"
+    return ssl.create_default_context(),"strict"
+
 class Backend:
-    def __init__(self,base_url,timeout=5.0,retries=2):
-        if not base_url.startswith(("http://","https://")): raise ValueError("base URL must be HTTP(S)")
+    def __init__(self,base_url,timeout=5.0,retries=2,ca_cert_path=None,insecure_skip_tls_verify=False,insecure_risk_approved=False):
         if timeout<=0 or timeout>30: raise ValueError("timeout must be >0 and <=30 seconds")
         if retries<0 or retries>3: raise ValueError("retries must be 0..3")
-        self.base=base_url.rstrip('/'); self.timeout=timeout; self.retries=retries; self.jar=CookieJar(); self.opener=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar)); self.authenticated=False
+        self.ssl_context,self.tls_verification_mode=_tls_context(base_url,ca_cert_path,insecure_skip_tls_verify,insecure_risk_approved)
+        self.base=base_url.rstrip('/'); self.timeout=timeout; self.retries=retries; self.jar=CookieJar()
+        self.opener=urllib.request.build_opener(urllib.request.HTTPSHandler(context=self.ssl_context),urllib.request.HTTPCookieProcessor(self.jar)); self.authenticated=False
     def _raw_request(self,method,path,body=None,headers=None,idempotency=None):
         raw=None if body is None else json.dumps(body,separators=(",",":"),sort_keys=True).encode()
         hs={"Accept":"application/json"}; hs.update(headers or {})
@@ -25,7 +55,12 @@ class Backend:
                 retry=e.code in (429,502,503,504) and method=="GET"
                 if retry and i+1<attempts: time.sleep(min(.05*(2**i),.2)); continue
                 raise BackendError("auth_failed" if e.code in (401,403) else "backend_error",f"backend HTTP {e.code}",retry_safe=method=="GET",status=e.code)
-            except (urllib.error.URLError,socket.timeout,TimeoutError):
+            except urllib.error.URLError as e:
+                if isinstance(e.reason,ssl.SSLCertVerificationError):
+                    raise BackendError("tls_verification_failed","TLS certificate verification failed",retry_safe=True)
+                if method=="GET" and i+1<attempts: time.sleep(min(.05*(2**i),.2)); continue
+                raise BackendError("timeout","backend request timed out",retry_safe=method=="GET")
+            except (socket.timeout,TimeoutError):
                 if method=="GET" and i+1<attempts: time.sleep(min(.05*(2**i),.2)); continue
                 raise BackendError("timeout","backend request timed out",retry_safe=method=="GET")
     def login_from_env(self):
@@ -49,5 +84,5 @@ class Backend:
     def request(self,method,path,body=None,headers=None,idempotency=None,authenticated=True):
         if authenticated and not self.authenticated: self.login_from_env()
         return self._raw_request(method,path,body,headers,idempotency)
-    def session_status(self): return {"connected":self.authenticated and bool(list(self.jar)),"session_storage":"protected in-memory CookieJar","cookie_values_exposed":False}
-RSA_CONTRACT={"algorithm":"RSA-OAEP","hash":"SHA-256","public_key_path":"/api/auth/public-key","login_path":"/api/auth/login","refresh_path":"/api/auth/refresh","logout_path":"/api/auth/logout","credential_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"credential_transport":"encrypt JSON password and millisecond timestamp with portal public key","session":"HttpOnly cookie retained only in protected process-memory CookieJar","plaintext_persistence":False}
+    def session_status(self): return {"connected":self.authenticated and bool(list(self.jar)),"session_storage":"protected in-memory CookieJar","cookie_values_exposed":False,"tls_verification_mode":self.tls_verification_mode}
+RSA_CONTRACT={"algorithm":"RSA-OAEP","hash":"SHA-256","public_key_path":"/api/auth/public-key","login_path":"/api/auth/login","refresh_path":"/api/auth/refresh","logout_path":"/api/auth/logout","credential_environment":["CLAWPOD_CLOUD_EMAIL","CLAWPOD_CLOUD_PASSWORD"],"credential_transport":"encrypt JSON password and millisecond timestamp with portal public key","session":"HttpOnly cookie retained only in protected process-memory CookieJar","plaintext_persistence":False,"tls":{"default":"strict","preferred_internal_network_exception":"custom_ca","insecure_exception":"explicitly approved internal networks only","ca_persisted":False}}

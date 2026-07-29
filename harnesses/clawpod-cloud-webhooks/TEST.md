@@ -1,6 +1,10 @@
 # ClawPod Cloud Webhooks Test Plan
 
-Written before test code and implementation. All backend tests use a local mock HTTP server; live portal access and real secrets are prohibited.
+Written before test code and implementation. All backend tests use a local mock server; live portal access and real secrets are prohibited.
+
+## Internal-network TLS refinement plan (0.1.5, written before implementation/tests)
+
+Use a local HTTPS fixture with a synthetic CA and server certificate. Verify that strict default trust rejects the fixture, `--ca-cert` succeeds without persisting or emitting its path, and `--insecure-skip-tls-verify` succeeds only when paired with the exact `--i-understand-insecure-tls-risk` affirmative flag. Assert insecure mode fails before network without that second flag, custom CA and insecure mode are mutually exclusive, unreadable/non-file/non-PEM CA inputs fail, and HTTP remains rejected in every mode. Verify every network command's Gateway contract exposes typed TLS arguments, the adapter preserves their meaning, all output states only `strict`, `custom_ca`, or `insecure_approved`, and no credential, cookie, key, or unnecessary local path leaks. Re-run existing synthetic RSA-OAEP onboarding identity, sole/ambiguous tenant, permission, approval-before-network, and no-mutation paths over custom-CA TLS. Run the full Harness suite from an isolated installed candidate, then repository tests, registry sync/check, validator, and `git diff --check`.
 
 ## Inventory
 
@@ -177,3 +181,13 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 - Added approval-before-network, missing protected credential, successful sole-tenant selection, ambiguous tenant, missing permission, no-mutation, redaction, and Gateway adapter mapping coverage.
 - Registry synchronization and validation passed for all 16 capability entries; `git diff --check` passed.
 - Tests used only a local mock portal and synthetic credentials. Live login, MFA, and the documented `exec.useSecrets` runtime lane remain unexercised until the user supplies an authorized account and separately approves credential use.
+
+## Internal-network TLS Results (0.1.5)
+
+- Isolated candidate install and full Harness suite: `PATH="$VENV/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 "$VENV/bin/python" -m pytest -q harnesses/clawpod-cloud-webhooks/cli_anything/clawpod_cloud_webhooks/tests` -> **63 passed in 2.26s**.
+- Repository tests: `python3 -m pytest -q tests` -> **29 passed in 0.47s**.
+- Registry Harness unit tests: `python3 harnesses/clawpod-capability-registry/tests/test_core.py` -> **18 passed in 0.010s**.
+- Registry Harness end-to-end tests: `python3 harnesses/clawpod-capability-registry/tests/test_full_e2e.py` -> **4 passed in 0.121s**.
+- `python3 scripts/sync_registry.py --check` -> synchronized; `python3 scripts/validate.py` -> **16 capability entries validated**; `git diff --check` -> clean.
+
+The local synthetic HTTPS fixture proved strict rejection of an untrusted self-signed certificate, custom-CA success, doubly affirmed insecure-mode success, approval-before-network failure, invalid-combination and HTTP rejection, redacted TLS mode evidence, and all existing synthetic onboarding identity/tenant/permission/no-mutation paths. No live portal, real credential, global TLS setting, local capability installation, publication, or Gateway trust/run lifecycle was used.
