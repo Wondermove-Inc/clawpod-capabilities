@@ -2846,6 +2846,122 @@
         },
         "additionalProperties": false
       }
+    },
+    "release.body.update": {
+      "backend": "gh",
+      "mutation": true,
+      "required": [
+        "repo",
+        "tag",
+        "body"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "tag",
+          "body"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

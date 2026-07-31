@@ -1,0 +1,41 @@
+{
+  "url": "https://api.github.com/repos/o/r/releases/41",
+  "assets_url": "https://api.github.com/repos/o/r/releases/41/assets",
+  "upload_url": "https://uploads.github.com/repos/o/r/releases/41/assets{?name,label}",
+  "html_url": "https://github.com/o/r/releases/tag/v1",
+  "id": 41,
+  "author": {
+    "login": "octocat",
+    "id": 1,
+    "node_id": "MDQ6VXNlcjE="
+  },
+  "node_id": "RE_kwDOExample",
+  "tag_name": "v1",
+  "target_commitish": "main",
+  "name": "Version 1",
+  "draft": false,
+  "immutable": false,
+  "prerelease": false,
+  "created_at": "2026-07-30T00:00:00Z",
+  "updated_at": "2026-07-30T00:00:00Z",
+  "published_at": "2026-07-30T00:00:00Z",
+  "body": "old notes\n",
+  "assets": [
+    {
+      "url": "https://api.github.com/repos/o/r/releases/assets/9",
+      "id": 9,
+      "node_id": "RA_kwDOExample",
+      "name": "artifact.tgz",
+      "label": "artifact",
+      "state": "uploaded",
+      "content_type": "application/gzip",
+      "size": 1234,
+      "download_count": 7,
+      "created_at": "2026-07-30T00:00:00Z",
+      "updated_at": "2026-07-30T00:00:00Z",
+      "browser_download_url": "https://github.com/o/r/releases/download/v1/artifact.tgz"
+    }
+  ],
+  "tarball_url": "https://api.github.com/repos/o/r/tarball/v1",
+  "zipball_url": "https://api.github.com/repos/o/r/zipball/v1"
+}
