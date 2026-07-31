@@ -1,13 +1,15 @@
-# GitHub capability final correction evidence
+# GitHub capability validation evidence
 
-Validated locally on 2026-07-23 without live GitHub credential use, installation, or provider mutations. Publication lifecycle actions were performed separately only after explicit approval.
+Validated locally on 2026-08-01 without live GitHub credential use, installation, or provider mutations. Publication lifecycle actions are outside this validation and require separate explicit approval.
+
+The `release.body.update` tests use a local synthetic `gh` executable and a release fixture only. They assert exact-tag inspection, dry-run without PATCH, a single numeric-id PATCH whose stdin object has only the `body` key, independent numeric-id GET readback, exact body verification, protected metadata and complete asset invariants, fail-closed mismatch handling, and mutation non-retry. No test contacts GitHub or changes a real release.
 
 ## Commands and results
 
-- `pytest -q harnesses/github/tests harnesses/clawpod-capability-registry/tests tests/test_registry_sync.py` → `46 passed in 1.63s`
-- `pytest -q` → `211 passed, 151 subtests passed in 10.51s`
+- `pytest -q harnesses/github/tests harnesses/clawpod-capability-registry/tests tests/test_registry_sync.py` → `67 passed`
+- `pytest -q` → collection stopped on two duplicate-module-name errors in the unrelated `clawpod-cloud-webhooks` and `clawpod-capability-registry` test trees; the same two errors reproduce on clean `origin/main` (`fb8bbc6`), so this is a baseline-only full-suite collection issue
 - `python3 scripts/sync_registry.py --check` → synchronized
-- `python3 scripts/validate.py` → `OK: validated 8 capability entries`
+- `python3 scripts/validate.py` → `OK: validated 16 capability entries`
 - `python3 -m py_compile harnesses/github/github.py harnesses/github/scripts/generate_schemas.py harnesses/clawpod-capability-registry/clawpod_capability_registry.py scripts/sync_registry.py scripts/validate.py` → passed
 - secret-pattern scan for GitHub token/Bearer forms → no matches
 - registry Harness unsupported `minLength` scan → no matches

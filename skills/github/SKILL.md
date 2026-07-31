@@ -9,7 +9,7 @@ Use the canonical `github` Harness. It wraps the real `gh` CLI. Do not construct
 
 ## Installation unit
 
-Treat this Skill and its exact linked Harness (`github` / `GitHub`, Harness version 0.1.1) as one transactional unit. Version 0.1 supports Linux and macOS only because bounded subprocess output uses POSIX resource limits; Windows is not declared supported. Registry installation, update, and validation of this Skill must use explicit Skill and Harness roots, verify both manifests and digests, and roll back both on partial failure. The capability is incomplete if either artifact is absent or invalid.
+Treat this Skill and its exact linked Harness (`github` / `GitHub`, Harness version 0.1.2) as one transactional unit. Version 0.1 supports Linux and macOS only because bounded subprocess output uses POSIX resource limits; Windows is not declared supported. Registry installation, update, and validation of this Skill must use explicit Skill and Harness roots, verify both manifests and digests, and roll back both on partial failure. The capability is incomplete if either artifact is absent or invalid.
 
 ## Onboarding prerequisite
 
@@ -22,5 +22,7 @@ Read `references/operations.md` for command selection and `references/onboarding
 ## Operation
 
 Use read commands only after the authentication check. For every mutation, first run `--dry-run`, show the exact target and effect, obtain explicit approval, then use exact `--confirm <command>`. Mutations are never retried because backend commit may be ambiguous. Closing, merging, cancelling, and clobbering release uploads are destructive. Local idempotency keys are not proof of provider-side idempotency.
+
+For an existing release body edit, use only `release.body.update`. Its dry run resolves the exact tag, snapshots every returned release field except `body`, `updated_at`, and `assets`, and separately snapshots the complete assets array. After approval, it sends one JSON object containing only `body` to the numeric release endpoint, then independently reads that numeric release back. Accept success only when the body matches exactly and both protected snapshots remain identical. Treat any missing, malformed, or mismatched readback as a failed, potentially committed mutation. Never substitute `release.create`, an arbitrary `api` call, or an asset command for this workflow.
 
 Keep repository targets explicit. Use `api.get` only for its bounded GET allowlist. Never expose credentials or raw auth/config output.
