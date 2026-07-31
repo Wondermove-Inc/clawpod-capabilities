@@ -1,33 +1,54 @@
 import pathlib
+import re
 import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-WORKFLOW = ROOT / ".github" / "workflows" / "reject-external-prs.yml"
+WORKFLOWS = ROOT / ".github" / "workflows"
+CONTRIBUTING = ROOT / "CONTRIBUTING.md"
+
+
+def workflow_texts():
+    for pattern in ("*.yml", "*.yaml"):
+        for path in WORKFLOWS.glob(pattern):
+            yield path, path.read_text(encoding="utf-8")
 
 
 class ExternalPullRequestPolicyTests(unittest.TestCase):
-    def setUp(self):
-        self.workflow = WORKFLOW.read_text(encoding="utf-8")
+    def test_no_workflow_can_write_to_or_close_pull_requests(self):
+        close_patterns = (
+            r"\bgh\s+pr\s+close\b",
+            r"\bclose-pull-request\b",
+            r"\bclose-pull\b",
+            r"pulls?\.(?:update|close)\s*\(",
+            r"state\s*[:=]\s*['\"]closed['\"]",
+        )
 
-    def test_uses_target_event_without_checking_out_contributor_code(self):
-        self.assertIn("pull_request_target:", self.workflow)
-        self.assertNotIn("actions/checkout", self.workflow)
+        for path, workflow in workflow_texts():
+            with self.subTest(workflow=path.name):
+                self.assertNotRegex(workflow, r"pull-requests:\s*write")
+                for pattern in close_patterns:
+                    self.assertIsNone(
+                        re.search(pattern, workflow, flags=re.IGNORECASE),
+                        f"{path} contains pull-request auto-close behavior: {pattern}",
+                    )
 
-    def test_repository_permission_is_read_from_github_api(self):
-        self.assertIn('gh api "repos/$REPOSITORY/pulls/$PR_NUMBER"', self.workflow)
-        self.assertIn("--jq .user.login", self.workflow)
-        self.assertIn('collaborators/$author/permission', self.workflow)
-        self.assertIn("admin|maintain|write", self.workflow)
+    def test_reject_external_pull_requests_workflow_is_removed(self):
+        self.assertFalse((WORKFLOWS / "reject-external-prs.yml").exists())
+        self.assertFalse((WORKFLOWS / "reject-external-prs.yaml").exists())
 
-    def test_unauthorized_pull_requests_are_closed_and_fail(self):
-        self.assertIn('gh pr close "$PR_NUMBER"', self.workflow)
-        self.assertIn("exit 1", self.workflow)
+    def test_contribution_policy_welcomes_external_review(self):
+        policy = " ".join(CONTRIBUTING.read_text(encoding="utf-8").split())
+        self.assertIn("External contributions are welcome.", policy)
+        self.assertIn(
+            "Pull requests from contributors without repository access may remain open for review",
+            policy,
+        )
 
-    def test_permissions_are_minimal_for_closing_pull_requests(self):
-        self.assertIn("contents: read", self.workflow)
-        self.assertIn("pull-requests: write", self.workflow)
-        self.assertNotIn("contents: write", self.workflow)
+    def test_contribution_policy_reserves_merge_authority_for_admins(self):
+        policy = " ".join(CONTRIBUTING.read_text(encoding="utf-8").split())
+        self.assertIn("only repository administrators may merge pull requests", policy)
+        self.assertIn("Merge authority is enforced through repository branch protection", policy)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,11 @@
 - Never commit plaintext secrets, credentials, private endpoints, or customer data.
 - Submit changes through pull requests after the initial repository bootstrap.
 
+External contributions are welcome. Pull requests from contributors without
+repository access may remain open for review, but only repository administrators
+may merge pull requests. Merge authority is enforced through repository branch
+protection, not by automatically closing pull requests based on their author.
+
 ## AgentSkill Package
 
 Place each Skill under `skills/<name>/`.
