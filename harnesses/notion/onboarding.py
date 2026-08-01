@@ -1,93 +1,102 @@
-"""Secret-free, revisioned Notion onboarding state machine and mock UI adapter."""
+"""Secret-free, revisioned Notion onboarding state machine and desktop task contract."""
 from __future__ import annotations
-import hashlib, json, os, tempfile, time, uuid
+import json,os,re,stat,tempfile,time,uuid
 from pathlib import Path
 from typing import Any
-
 TERMINAL={"ready","cancelled","failed","timed_out"}
 HANDOFFS={"login_required","mfa_required","permission_approval_required","root_approval_required","secret_capture_required","captcha_required"}
 SECRET_WORDS=("token","secret","password","authorization","cookie","otp","mfa_code")
+NAME_RE=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+DEFAULT_STEPS=["navigate","login_required","select_workspace","configure_capabilities","permission_approval_required","connect_roots","root_approval_required","secret_capture_required","complete"]
 
 def _clean(v:Any,key="")->Any:
- if any(x in key.lower() for x in SECRET_WORDS): return "[REDACTED]"
- if isinstance(v,dict): return {k:_clean(x,k) for k,x in v.items() if k.lower() not in {"screenshot","html","dom"}}
- if isinstance(v,list): return [_clean(x,key) for x in v]
- if isinstance(v,str) and (v.startswith("ntn_") or "Bearer " in v): return "[REDACTED]"
+ if any(x in key.lower() for x in SECRET_WORDS):return "[REDACTED]"
+ if isinstance(v,dict):return {k:_clean(x,k) for k,x in v.items() if k.lower() not in {"screenshot","html","dom"}}
+ if isinstance(v,list):return [_clean(x,key) for x in v]
+ if isinstance(v,str) and (v.startswith("ntn_") or "Bearer " in v):return "[REDACTED]"
  return v
+
+def state_path(root_raw:str,session:str,state_name:str)->Path:
+ if not root_raw:raise ValueError("--state-root is required")
+ if not NAME_RE.fullmatch(session or "") or not NAME_RE.fullmatch(state_name or ""):raise ValueError("session and state-name must be bounded relative names")
+ root=Path(root_raw)
+ try:st=root.lstat()
+ except FileNotFoundError:raise ValueError("state root must already exist")
+ if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):raise ValueError("state root must be a real directory, not a symlink")
+ if st.st_mode & 0o077:raise ValueError("state root must be private (owner-only permissions)")
+ resolved=root.resolve(strict=True); child=resolved/session
+ if child.exists() or child.is_symlink():
+  cst=child.lstat()
+  if stat.S_ISLNK(cst.st_mode) or not stat.S_ISDIR(cst.st_mode):raise ValueError("session path must be a real child directory")
+  if cst.st_mode & 0o077:raise ValueError("session directory must be private")
+ else:child.mkdir(mode=0o700)
+ path=child/state_name
+ if path.exists() or path.is_symlink():
+  pst=path.lstat()
+  if stat.S_ISLNK(pst.st_mode) or not stat.S_ISREG(pst.st_mode):raise ValueError("state file must be a regular non-symlink file")
+ if resolved not in path.resolve(strict=False).parents:raise ValueError("state path escapes state root")
+ return path
 
 def _load(path:Path)->dict:
  try:return json.loads(path.read_text())
  except FileNotFoundError:raise ValueError("onboarding session not found")
 
 def _save(path:Path,state:dict)->None:
- path.parent.mkdir(parents=True,exist_ok=True)
- safe=_clean(state)
- raw=json.dumps(safe,sort_keys=True,separators=(",",":"))
- fd,tmp=tempfile.mkstemp(prefix=".notion-onboard-",dir=path.parent)
+ if path.is_symlink():raise ValueError("refusing symlink state file")
+ raw=json.dumps(_clean(state),sort_keys=True,separators=(",",":"));fd,tmp=tempfile.mkstemp(prefix=".notion-onboard-",dir=path.parent)
  try:
+  os.fchmod(fd,0o600)
   with os.fdopen(fd,"w") as f:f.write(raw);f.flush();os.fsync(f.fileno())
-  os.chmod(tmp,0o600);os.replace(tmp,path)
+  if path.is_symlink():raise ValueError("refusing symlink state file")
+  os.replace(tmp,path);os.chmod(path,0o600)
  finally:
   if os.path.exists(tmp):os.unlink(tmp)
 
-def _event(state:dict,kind:str,detail:dict|None=None)->None:
- state["audit"].append(_clean({"seq":len(state["audit"])+1,"at":int(time.time()),"kind":kind,"detail":detail or {}}))
+def _event(s:dict,k:str,d:dict|None=None):s["audit"].append(_clean({"seq":len(s["audit"])+1,"at":int(time.time()),"kind":k,"detail":d or {}}))
+def plan(mode="internal",workspace=None,roots=None,capabilities=None):
+ return {"mode":mode,"workspace":workspace,"roots":roots or [],"minimum_capabilities":sorted(set(capabilities or ["read_content"])),"external_effects_performed":False,"primary_path":"internal_integration","paths":{"internal":"safe automation with exact approval gates","pat":"personal/development only; protected capture required","oauth":"navigation planning only without configured provider client"},"stops":["login/MFA","CAPTCHA or human verification","exact workspace/root approval","final permission confirmation","protected secret capture"],"revocation":"Revoke in Notion, disconnect roots, delete protected pointer, cancel local session."}
 
-def plan(mode="internal",workspace=None,roots=None,capabilities=None)->dict:
- roots=roots or []; caps=sorted(set(capabilities or ["read_content"]))
- return {"mode":mode,"workspace":workspace,"roots":roots,"minimum_capabilities":caps,
-  "external_effects_performed":False,"primary_path":"internal_integration","paths":{
-   "internal":"automate safe form fields; require exact workspace, root, and final permission approval",
-   "pat":"personal/development token; protected capture still required",
-   "oauth":"planning and authorization navigation only; client configuration and token exchange are not automated"},
-  "stops":["login/MFA","CAPTCHA or human verification","exact workspace/root approval","final permission confirmation","protected secret capture"],
-  "revocation":"Revoke the integration/PAT in Notion, remove root connections, then delete the protected secret pointer."}
+def desktop_task(mode="internal",workspace=None,roots=None,capabilities=None):
+ return {"kind":"desktop_task_template","provider":"notion","live_selectors_validated":False,"pure":True,"placeholders":{"workspace":workspace,"integration_name":"<approved integration name>","capabilities":sorted(set(capabilities or ["read_content"])),"roots":roots or []},"rules":{"capture_screenshots":False,"capture_dom":False,"scrape_credentials":False,"submit_without_approval":False,"stop_on":["login","mfa","captcha","human_verification","workspace_mismatch","ui_drift","permission_confirmation","secret_field"]},"steps":[{"action":"navigate","target":"Notion integration settings","verify":"page identity and expected heading; otherwise ui_drift"},{"action":"fill_safe_fields","fields":["integration_name"],"verify":"read back non-secret value"},{"action":"select_workspace","value":"${workspace}","verify":"exact workspace text; handoff workspace approval before continuing"},{"action":"configure_capabilities","value":"${capabilities}","verify":"exact minimum set, no broader capability"},{"action":"gate","reason":"permission_approval_required","position":"before final create/authorize submit"},{"action":"connect_roots","value":"${roots}","verify":"exact root identity before each connection"},{"action":"gate","reason":"root_approval_required","position":"before each root confirmation"},{"action":"gate","reason":"secret_capture_required","instruction":"owner agent captures directly to protected storage; do not inspect field"}],"recovery":{"ui_drift":"stop, report last verified step and visible non-secret labels, update adapter only after review","resume":"feed exact handoff result and current revision to onboard.resume"}}
 
-def _fixture(path:str|None)->dict:
- if not path:return {"steps":["login_required"]}
+def _fixture()->dict:
+ path=os.environ.get("NOTION_ONBOARD_TEST_FIXTURE")
+ if not path:return {"steps":DEFAULT_STEPS}
+ if os.environ.get("NOTION_ONBOARD_TEST_MODE")!="1":raise ValueError("fixture injection is disabled outside explicit test mode")
  obj=json.loads(Path(path).read_text())
- if not isinstance(obj,dict) or not isinstance(obj.get("steps"),list):raise ValueError("adapter fixture requires a steps array")
+ if not isinstance(obj,dict) or not isinstance(obj.get("steps"),list):raise ValueError("test adapter fixture requires steps")
  return obj
 
-def _advance(state:dict,fixture:dict,approved:set[str],credential_present:bool)->None:
- steps=fixture["steps"]; i=state["adapter_cursor"]
+def _advance(s:dict,fixture:dict,approved:set[str],credential:bool):
+ steps=fixture["steps"];i=s["adapter_cursor"]
  while i<len(steps):
-  step=steps[i]; step={"kind":step} if isinstance(step,str) else step; kind=step.get("kind")
-  if kind in {"fill_safe_fields","navigate","select_workspace","configure_capabilities","connect_roots"}:
-   if kind=="select_workspace" and step.get("workspace") not in (None,state["workspace"]):
-    state.update(status="failed",handoff={"reason":"wrong_workspace","expected":state["workspace"],"observed":step.get("workspace")});_event(state,"wrong_workspace",state["handoff"]);return
-   _event(state,"adapter_step",{"kind":kind});i+=1;state["adapter_cursor"]=i;continue
-  reason=kind
-  if reason=="captcha": reason="captcha_required"
+  step=steps[i];step={"kind":step} if isinstance(step,str) else step;k=step.get("kind")
+  if k in {"fill_safe_fields","navigate","select_workspace","configure_capabilities","connect_roots"}:
+   if k=="select_workspace" and step.get("workspace") not in (None,s["workspace"]):s.update(status="failed",handoff={"reason":"wrong_workspace","expected":s["workspace"],"observed":step.get("workspace")});_event(s,"wrong_workspace",s["handoff"]);return
+   _event(s,"adapter_step",{"kind":k,"verified":True});i+=1;s["adapter_cursor"]=i;continue
+  reason="captcha_required" if k=="captcha" else k
   if reason in HANDOFFS:
-   if reason=="secret_capture_required" and credential_present:i+=1;state["adapter_cursor"]=i;_event(state,"credential_injected",{"source":"protected_runtime"});continue
-   if reason in approved:i+=1;state["adapter_cursor"]=i;_event(state,"handoff_resolved",{"reason":reason});continue
-   state.update(status="waiting",handoff={"reason":reason,"checkpoint":i,"instructions":step.get("instructions",reason.replace("_"," "))});_event(state,"handoff_required",state["handoff"]);return
-  if kind=="complete":state.update(status="verification_required",handoff={"reason":"runtime_verification_required"});_event(state,"ui_complete");return
-  raise ValueError(f"unsupported adapter fixture step: {kind}")
- state.update(status="verification_required",handoff={"reason":"runtime_verification_required"})
+   if reason=="secret_capture_required" and credential:i+=1;s["adapter_cursor"]=i;_event(s,"credential_injected",{"source":"protected_runtime"});continue
+   if reason in approved:i+=1;s["adapter_cursor"]=i;_event(s,"handoff_resolved",{"reason":reason});continue
+   s.update(status="waiting",handoff={"reason":reason,"checkpoint":i,"instructions":step.get("instructions",reason.replace("_"," "))});_event(s,"handoff_required",s["handoff"]);return
+  if k=="complete":s.update(status="verification_required",handoff={"reason":"runtime_verification_required"});_event(s,"ui_complete");return
+  raise ValueError(f"unsupported adapter step: {k}")
 
-def command(cmd:str,*,state_path:str,mode="internal",workspace=None,roots=None,capabilities=None,fixture_path=None,expected_revision=None,approve=None,timeout_seconds=900,credential_present=False,now=None)->dict:
- path=Path(state_path);now=int(now or time.time())
+def command(cmd:str,*,state_root:str,session:str,state_name="state.json",mode="internal",workspace=None,roots=None,capabilities=None,expected_revision=None,approve=None,timeout_seconds=900,credential_present=False,now=None):
  if cmd=="onboard.plan":return plan(mode,workspace,roots,capabilities)
+ if cmd in {"onboard.desktop.plan","onboard.desktop.task"}:return desktop_task(mode,workspace,roots,capabilities)
+ path=state_path(state_root,session,state_name);now=int(now or time.time())
  if cmd=="onboard.start":
   if path.exists():
    old=_load(path)
    if old.get("status") not in TERMINAL:return {**old,"idempotent":True}
-  state={"schema_version":1,"session_id":str(uuid.uuid4()),"revision":0,"status":"running","mode":mode,"workspace":workspace,"roots":roots or [],"allowedRoots":roots or [],"minimum_capabilities":sorted(set(capabilities or ["read_content"])),"created_at":now,"updated_at":now,"expires_at":now+timeout_seconds,"adapter_cursor":0,"handoff":None,"audit":[]}
-  _event(state,"started",{"mode":mode,"workspace":workspace});_advance(state,_fixture(fixture_path),set(),credential_present);state["revision"]+=1;_save(path,state);return state
- state=_load(path)
- expired=now>=state["expires_at"] and state["status"] not in TERMINAL
- if cmd in {"onboard.status","onboard.inspect"}:
-  if not expired:return state
-  return {**state,"status":"timed_out","handoff":{"reason":"timeout","recovery":"resume with the current revision or restart after reviewing the saved plan"},"derived":True}
- if expected_revision is None or int(expected_revision)!=state["revision"]:raise ValueError(f"stale revision; expected current revision {state['revision']}")
- if expired:
-  state.update(status="timed_out",handoff={"reason":"timeout","recovery":"restart with onboard.start after reviewing the saved plan"});state["revision"]+=1;_event(state,"timed_out");_save(path,state);return state
- if cmd=="onboard.cancel":
-  state.update(status="cancelled",handoff=None,updated_at=now);state["revision"]+=1;_event(state,"cancelled",{"cleanup":"browser task state discarded; revoke provider integration separately if already approved"});_save(path,state);return state
+  s={"schema_version":1,"session_id":str(uuid.uuid4()),"revision":0,"status":"running","mode":mode,"workspace":workspace,"roots":roots or [],"allowedRoots":roots or [],"minimum_capabilities":sorted(set(capabilities or ["read_content"])),"created_at":now,"updated_at":now,"expires_at":now+timeout_seconds,"adapter_cursor":0,"handoff":None,"audit":[]};_event(s,"started",{"mode":mode,"workspace":workspace});_advance(s,_fixture(),set(),credential_present);s["revision"]+=1;_save(path,s);return s
+ s=_load(path);expired=now>=s["expires_at"] and s["status"] not in TERMINAL
+ if cmd in {"onboard.status","onboard.inspect"}:return s if not expired else {**s,"status":"timed_out","handoff":{"reason":"timeout","recovery":"resume or restart after review"},"derived":True}
+ if expected_revision is None or int(expected_revision)!=s["revision"]:raise ValueError(f"stale revision; expected current revision {s['revision']}")
+ if expired:s.update(status="timed_out",handoff={"reason":"timeout","recovery":"restart after review"});s["revision"]+=1;_event(s,"timed_out");_save(path,s);return s
+ if cmd=="onboard.cancel":s.update(status="cancelled",handoff=None,updated_at=now);s["revision"]+=1;_event(s,"cancelled",{"cleanup":"local task discarded; revoke provider state separately"});_save(path,s);return s
  if cmd=="onboard.resume":
-  if state["status"] in TERMINAL:return {**state,"idempotent":True}
-  approved=set(approve or [])
-  state.update(status="running",handoff=None,updated_at=now);_advance(state,_fixture(fixture_path),approved,credential_present);state["revision"]+=1;_save(path,state);return state
+  if s["status"] in TERMINAL:return {**s,"idempotent":True}
+  s.update(status="running",handoff=None,updated_at=now);_advance(s,_fixture(),set(approve or []),credential_present);s["revision"]+=1;_save(path,s);return s
  raise ValueError("unknown onboarding command")

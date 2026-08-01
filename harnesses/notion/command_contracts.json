@@ -431,6 +431,22 @@
       "verify": null,
       "requiredInputs": []
     },
+    "onboard.desktop.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "onboard.desktop.task": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
     "onboard.start": {
       "method": null,
       "path": null,
@@ -438,6 +454,8 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
+        "stateRoot",
+        "session",
         "workspace"
       ]
     },
@@ -447,7 +465,10 @@
       "safety": "readOnly",
       "paged": false,
       "verify": null,
-      "requiredInputs": []
+      "requiredInputs": [
+        "stateRoot",
+        "session"
+      ]
     },
     "onboard.inspect": {
       "method": null,
@@ -455,7 +476,10 @@
       "safety": "readOnly",
       "paged": false,
       "verify": null,
-      "requiredInputs": []
+      "requiredInputs": [
+        "stateRoot",
+        "session"
+      ]
     },
     "onboard.resume": {
       "method": null,
@@ -464,6 +488,8 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
+        "stateRoot",
+        "session",
         "expectedRevision"
       ]
     },
@@ -474,6 +500,8 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
+        "stateRoot",
+        "session",
         "expectedRevision"
       ]
     }

@@ -22,7 +22,8 @@
     "webhook-verification",
     "resumable-minimal-intervention-onboarding",
     "mockable-browser-desktop-adapter",
-    "protected-secret-capture-handoff"
+    "protected-secret-capture-handoff",
+    "confined-private-onboarding-state"
   ],
   "authModel": {
     "type": "bearer-token-protected-injection",
@@ -7797,7 +7798,7 @@
       ]
     },
     "onboard.plan": {
-      "description": "onboard.plan resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.plan secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.plan"
       ],
@@ -7942,8 +7943,300 @@
         }
       ]
     },
+    "onboard.desktop.plan": {
+      "description": "onboard.desktop.plan secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.desktop.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "internal",
+              "pat",
+              "oauth"
+            ]
+          },
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roots": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "page",
+                    "database",
+                    "data_source",
+                    "block"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F-]{32,36}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capabilities": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "json",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.desktop.task": {
+      "description": "onboard.desktop.task secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.desktop.task"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "internal",
+              "pat",
+              "oauth"
+            ]
+          },
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roots": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "page",
+                    "database",
+                    "data_source",
+                    "block"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F-]{32,36}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capabilities": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "json",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
     "onboard.start": {
-      "description": "onboard.start resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.start secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.start"
       ],
@@ -7953,13 +8246,23 @@
       "inputSchema": {
         "type": "object",
         "required": [
+          "stateRoot",
+          "session",
           "workspace"
         ],
         "properties": {
-          "statePath": {
+          "stateRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
+          },
+          "session": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "stateName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
           },
           "authMode": {
             "type": "string",
@@ -8005,10 +8308,6 @@
           "capabilities": {
             "type": "string",
             "maxLength": 500
-          },
-          "adapterFixture": {
-            "type": "string",
-            "maxLength": 4096
           },
           "sessionTimeout": {
             "type": "integer",
@@ -8079,9 +8378,23 @@
       },
       "argMap": [
         {
-          "arg": "statePath",
+          "arg": "stateRoot",
           "type": "option",
-          "flag": "--state-path",
+          "flag": "--state-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
           "valueType": "string",
           "optional": true
         },
@@ -8114,13 +8427,6 @@
           "optional": true
         },
         {
-          "arg": "adapterFixture",
-          "type": "option",
-          "flag": "--adapter-fixture",
-          "valueType": "string",
-          "optional": true
-        },
-        {
           "arg": "sessionTimeout",
           "type": "option",
           "flag": "--session-timeout",
@@ -8137,7 +8443,7 @@
       ]
     },
     "onboard.status": {
-      "description": "onboard.status resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.status secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.status"
       ],
@@ -8146,12 +8452,23 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [],
+        "required": [
+          "stateRoot",
+          "session"
+        ],
         "properties": {
-          "statePath": {
+          "stateRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
+          },
+          "session": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "stateName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
           }
         },
         "additionalProperties": false
@@ -8213,16 +8530,30 @@
       },
       "argMap": [
         {
-          "arg": "statePath",
+          "arg": "stateRoot",
           "type": "option",
-          "flag": "--state-path",
+          "flag": "--state-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
           "valueType": "string",
           "optional": true
         }
       ]
     },
     "onboard.inspect": {
-      "description": "onboard.inspect resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.inspect secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.inspect"
       ],
@@ -8231,12 +8562,23 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [],
+        "required": [
+          "stateRoot",
+          "session"
+        ],
         "properties": {
-          "statePath": {
+          "stateRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
+          },
+          "session": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "stateName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
           }
         },
         "additionalProperties": false
@@ -8298,16 +8640,30 @@
       },
       "argMap": [
         {
-          "arg": "statePath",
+          "arg": "stateRoot",
           "type": "option",
-          "flag": "--state-path",
+          "flag": "--state-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
           "valueType": "string",
           "optional": true
         }
       ]
     },
     "onboard.resume": {
-      "description": "onboard.resume resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.resume secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.resume"
       ],
@@ -8319,13 +8675,23 @@
       "inputSchema": {
         "type": "object",
         "required": [
+          "stateRoot",
+          "session",
           "expectedRevision"
         ],
         "properties": {
-          "statePath": {
+          "stateRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
+          },
+          "session": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "stateName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
           },
           "expectedRevision": {
             "type": "integer",
@@ -8334,10 +8700,6 @@
           "approveHandoffs": {
             "type": "string",
             "maxLength": 500
-          },
-          "adapterFixture": {
-            "type": "string",
-            "maxLength": 4096
           },
           "now": {
             "type": "integer",
@@ -8403,9 +8765,23 @@
       },
       "argMap": [
         {
-          "arg": "statePath",
+          "arg": "stateRoot",
           "type": "option",
-          "flag": "--state-path",
+          "flag": "--state-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
           "valueType": "string",
           "optional": true
         },
@@ -8424,13 +8800,6 @@
           "optional": true
         },
         {
-          "arg": "adapterFixture",
-          "type": "option",
-          "flag": "--adapter-fixture",
-          "valueType": "string",
-          "optional": true
-        },
-        {
           "arg": "now",
           "type": "option",
           "flag": "--now",
@@ -8440,7 +8809,7 @@
       ]
     },
     "onboard.cancel": {
-      "description": "onboard.cancel resumable secret-free Notion onboarding orchestration.",
+      "description": "onboard.cancel secret-free Notion onboarding contract.",
       "baseArgv": [
         "onboard.cancel"
       ],
@@ -8450,13 +8819,23 @@
       "inputSchema": {
         "type": "object",
         "required": [
+          "stateRoot",
+          "session",
           "expectedRevision"
         ],
         "properties": {
-          "statePath": {
+          "stateRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
+          },
+          "session": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "stateName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
           },
           "expectedRevision": {
             "type": "integer",
@@ -8526,9 +8905,23 @@
       },
       "argMap": [
         {
-          "arg": "statePath",
+          "arg": "stateRoot",
           "type": "option",
-          "flag": "--state-path",
+          "flag": "--state-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
           "valueType": "string",
           "optional": true
         },
