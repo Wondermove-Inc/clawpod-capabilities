@@ -274,7 +274,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "description": "Route Notion work through a new typed Harness with safe onboarding, ambiguity handling, previews, and verification.",
       "path": "skills/notion",
       "compatibility": {
@@ -292,7 +292,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5e520fa1bd470e9730fd6756fcae022781d133b8738f04b3787be33a77a60d34"
+          "sha256": "53e99280972e8624b49cbe2b348bd8e5d6424ae115c7a4daee44133d5bd59304"
         },
         {
           "path": "references/commands.md",
@@ -300,12 +300,12 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "26518acbf4310bac1c674c71a3668bc274a0ef64ba357f22b27ef92cc370e1c1"
+          "sha256": "b85480dfb6fede15c30f650d2721ba357ad401d43633c3b6d51476d2eabea63c"
         }
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.2"
+        "version": "0.1.3"
       }
     },
     {
@@ -776,7 +776,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -802,19 +802,19 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "1246390142d870c0d3e8ab9e34a88e3a14eb50e3fef42e153344e1f863a65ae9"
+          "sha256": "999f64b949a901ad95079821914d73ed8ac291b65f96b1c275e0491514e39b16"
         },
         {
           "path": "harness.json",
-          "sha256": "2de511b0cfef94c3acaf92f8f344d58e02bafe94e5d2ecaa904bee26bdccd7ee"
+          "sha256": "71d23405e64a948675cf60389dec813e76412aa25c4b2aed24112b2e33460f90"
         },
         {
           "path": "notion.py",
-          "sha256": "a74521c5160ed69366dd97c5ac66bc711dc7357efb00faa3fce160f908e139ab"
+          "sha256": "ee4594418c66c73332d6a89523eeac3d8881589cff7743c2144c16ca5b2033db"
         },
         {
           "path": "onboarding.py",
-          "sha256": "7d604e9387cafbfa5638e3de6985a434850d74a9774215db725c66a7f4bf386e"
+          "sha256": "819b0622d59e3e9106d7e2d1dd2847f3993d789c76331dc5088a43b2123c1e6b"
         }
       ]
     },

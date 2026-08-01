@@ -142,7 +142,14 @@
       "safety": "readOnly",
       "paged": false,
       "verify": null,
-      "requiredInputs": []
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "user.retrieve": {
       "method": "GET",
@@ -152,6 +159,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "user.list": {
@@ -160,7 +174,14 @@
       "safety": "readOnly",
       "paged": true,
       "verify": null,
-      "requiredInputs": []
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "search.query": {
       "method": "POST",
@@ -176,7 +197,14 @@
         "body": {
           "type": "object"
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "page.retrieve": {
       "method": "GET",
@@ -186,6 +214,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "page.property.retrieve": {
@@ -197,6 +232,13 @@
       "requiredInputs": [
         "id",
         "propertyId"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "page.retrieve_markdown": {
@@ -207,6 +249,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "block.retrieve": {
@@ -217,6 +266,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "block.children.list": {
@@ -227,6 +283,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "block.tree.retrieve": {
@@ -237,6 +300,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxDepth",
+        "timeoutMs",
+        "retries"
       ]
     },
     "database.retrieve": {
@@ -247,6 +317,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "database.list_data_sources": {
@@ -257,6 +334,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "data_source.retrieve": {
@@ -267,6 +351,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "data_source.query": {
@@ -285,7 +376,14 @@
         "body": {
           "type": "object"
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "data_source.templates.list": {
       "method": "GET",
@@ -295,6 +393,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "comment.list": {
@@ -305,6 +410,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "file_upload.retrieve": {
@@ -315,6 +427,13 @@
       "verify": null,
       "requiredInputs": [
         "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
       ]
     },
     "file_upload.list": {
@@ -323,7 +442,14 @@
       "safety": "readOnly",
       "paged": true,
       "verify": null,
-      "requiredInputs": []
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "page.create": {
       "method": "POST",
@@ -369,7 +495,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "page.properties.update": {
       "method": "PATCH",
@@ -416,7 +549,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "page.archive": {
       "method": "PATCH",
@@ -462,7 +602,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "page.restore": {
       "method": "PATCH",
@@ -508,7 +655,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "block.children.append": {
       "method": "PATCH",
@@ -555,7 +709,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "block.update": {
       "method": "PATCH",
@@ -602,7 +763,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "block.delete": {
       "method": "DELETE",
@@ -648,7 +816,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "markdown.page.create": {
       "method": "POST",
@@ -694,7 +869,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "markdown.page.update": {
       "method": "PATCH",
@@ -741,7 +923,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "data_source.schema.update": {
       "method": "PATCH",
@@ -788,7 +977,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "comment.create_page": {
       "method": "POST",
@@ -834,7 +1030,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "comment.create_discussion": {
       "method": "POST",
@@ -880,7 +1083,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "comment.reply": {
       "method": "POST",
@@ -926,7 +1136,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "file_upload.create": {
       "method": "POST",
@@ -972,7 +1189,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "file_upload.complete": {
       "method": "POST",
@@ -1018,7 +1242,14 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
     },
     "onboard.plan": {
       "method": null,
@@ -1186,7 +1417,11 @@
             "additionalProperties": false
           }
         }
-      }
+      },
+      "integerStringTransport": [
+        "sessionTimeout",
+        "now"
+      ]
     },
     "onboard.status": {
       "method": null,
@@ -1220,6 +1455,10 @@
         "outputRoot",
         "session",
         "expectedRevision"
+      ],
+      "integerStringTransport": [
+        "expectedRevision",
+        "now"
       ]
     },
     "onboard.cancel": {
@@ -1232,6 +1471,10 @@
         "outputRoot",
         "session",
         "expectedRevision"
+      ],
+      "integerStringTransport": [
+        "expectedRevision",
+        "now"
       ]
     }
   }

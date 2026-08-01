@@ -169,7 +169,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.2"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.3"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt
@@ -251,13 +251,13 @@ def block_tree(a):
 def local(a):
  if a.command.startswith("onboard."):
   roots=parse_roots(a.roots) if a.roots else []
-  capabilities=[x for x in (a.capabilities or "read_content").split(",") if x]
+  capabilities=[x for x in (a.capabilities or "read_content,insert_content,update_content,read_comments,insert_comments,read_user_information").split(",") if x]
   approvals=[x for x in (a.approve_handoffs or "").split(",") if x]
   return onboarding.command(a.command,output_root=a.output_root,session=a.session,state_name=a.state_name,mode=a.auth_mode or "internal",workspace=a.workspace,roots=roots,capabilities=capabilities,expected_revision=a.expected_revision,approve=approvals,timeout_seconds=a.session_timeout,credential_present=bool(os.environ.get("NOTION_TOKEN")),now=a.now)
  if a.command=="auth.status":return {"connected":bool(os.environ.get("NOTION_TOKEN")),"credential_source":"protected runtime injection" if os.environ.get("NOTION_TOKEN") else None,"installed_but_not_connected":not bool(os.environ.get("NOTION_TOKEN")),"api_version":API_VERSION}
  if a.command=="auth.onboarding.plan":
   mode=a.auth_mode or "internal"
-  return {"recommended":mode,"modes":{"internal":"team-owned automation; create integration, grant minimum capabilities, share explicit roots","pat":"personal development only; user-scoped and expiring","oauth":"multi-user product; authorization-code flow planned, token exchange intentionally outside v0.1.0"},"human_steps":["choose the exact workspace/account","create or authorize the integration","select minimum capabilities","share only approved root pages/data sources","provide the token through protected secret storage"],"agent_steps_after_approval":["inject credential without exposing it","verify user.me identity and workspace","check required capabilities through bounded probes","retrieve each approved root by exact ID"],"revoke":"revoke the integration/PAT in Notion and delete the protected secret pointer","connected":False}
+  return {"recommended":mode,"modes":{"internal":"simplest default; create an Internal Integration with the owner-approved full capability profile and explicit roots","pat":"personal development only; user-scoped and expiring","oauth":"multi-user product; authorization-code flow planned, token exchange intentionally outside v0.1.0"},"capability_profile":"full","selected_capabilities":["read_content","insert_content","update_content","read_comments","insert_comments","read_user_information"],"human_steps":["login/MFA if required","choose the exact workspace and approve exact roots","approve the full integration capability profile and final permission action","reveal/copy the issued token and hand it directly to the owner agent through protected secret capture"],"token_safety":"Never use chat, files, screenshots, DOM, or logs. A chat-pasted token is exposed and must be revoked/rotated before protected capture.","mutation_boundary":"Broad integration capability grants do not pre-authorize live writes; every mutation still requires Harness preview, exact intent approval, execution, and verification.","agent_steps_after_approval":["inject credential without exposing it","verify user.me identity and workspace","check required capabilities through bounded probes","retrieve each approved root by exact ID and enforce allowedRoots"],"revoke":"revoke the integration/PAT in Notion and delete the protected secret pointer","connected":False}
  if a.command=="operation.plan":
   if not a.operation:raise ValueError("--operation is required")
   spec=SPECS.get(a.operation)
