@@ -1,6 +1,29 @@
 # Minimal-intervention onboarding and recovery
 
-Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Prefer **Internal Integration** as the simplest default for team-owned automation. Explain up front how to create it, choose the exact workspace, select the owner-approved full profile (content read/insert/update, comments read/insert, and user information access as supported by current Notion settings), share only exact approved roots, reveal/copy the token, and hand it directly to the owner agent through protected secret capture. Broad grants never pre-authorize a live write; preview, exact intent approval, and verification remain mandatory. Never accept tokens in chat, files, screenshots, DOM, clipboard logs, or ordinary output. A chat-pasted token is exposed and must be revoked/rotated before protected capture; PAT is personal/development only. OAuth can automate planning and authorization navigation, but provider client registration, redirect configuration, exchange, refresh, and revoke require a separately configured client.
+Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Select PAT, Internal Integration, or OAuth from the user's ownership model before navigating. Broad grants never pre-authorize a live write; preview, exact intent approval, and verification remain mandatory.
+
+## Personal Access Token creation
+
+Use PAT for an owner's personal workspace or direct personal-account automation:
+
+1. In Notion, open **Settings**.
+2. Open **Connections**, then **Discover**.
+3. Click **Go to developer portal**.
+4. In Notion Developers, click **Personal access tokens** in the left navigation.
+5. Click **+ New token**.
+6. Enter a clear name such as `ClawPod`.
+7. Select the exact target workspace. Read the displayed workspace name; never infer it from the account name, organization, prior context, or an unrelated screen.
+8. Select the owner-approved capabilities. For the full profile, enable content read/insert/update, comments read/insert, and user-information read where the portal supports them.
+9. Review and approve the expiry.
+10. Click **Create**.
+11. In the result dialog, click **Copy and close**.
+12. Tell the user: **“생성된 키를 에이전트에게 전달해 주세요.”** Do not prescribe the transport method; the user chooses how to deliver it.
+
+After delivery, handle the credential under the active runtime security policy. Immediately move it into the approved secret store when supported, retain only safe pointer metadata, and never echo the plaintext or include it in files, prompts, logs, reports, or memory Markdown.
+
+## Internal Integration creation
+
+Use Internal Integration for team/service automation. Explain how to open the developer portal, create a connection, choose the exact workspace, select approved capabilities, share exact roots, and review final permission. Do not infer workspace or roots from screenshots. OAuth can automate planning and authorization navigation, but provider client registration, redirect configuration, exchange, refresh, and revoke require a separately configured client.
 
 ## Resumable flow
 
