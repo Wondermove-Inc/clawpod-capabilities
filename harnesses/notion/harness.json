@@ -4,7 +4,7 @@
   "name": "notion",
   "title": "notion",
   "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -115,12 +115,7 @@
         "required": [],
         "properties": {
           "authMode": {
-            "type": "string",
-            "enum": [
-              "internal",
-              "pat",
-              "oauth"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -207,20 +202,13 @@
         ],
         "properties": {
           "roots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "workspace": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -390,63 +378,10 @@
         ],
         "properties": {
           "operation": {
-            "type": "string",
-            "enum": [
-              "auth.onboarding.plan",
-              "auth.onboarding.verify",
-              "auth.status",
-              "block.children.append",
-              "block.children.list",
-              "block.delete",
-              "block.retrieve",
-              "block.tree.retrieve",
-              "block.update",
-              "comment.create_discussion",
-              "comment.create_page",
-              "comment.list",
-              "comment.reply",
-              "data_source.query",
-              "data_source.retrieve",
-              "data_source.schema.update",
-              "data_source.templates.list",
-              "database.list_data_sources",
-              "database.retrieve",
-              "diagnostics.doctor",
-              "file_upload.complete",
-              "file_upload.create",
-              "file_upload.list",
-              "file_upload.retrieve",
-              "markdown.page.create",
-              "markdown.page.update",
-              "markdown.validate",
-              "operation.plan",
-              "page.archive",
-              "page.create",
-              "page.properties.update",
-              "page.property.retrieve",
-              "page.restore",
-              "page.retrieve",
-              "page.retrieve_markdown",
-              "resolve.id",
-              "resolve.url",
-              "search.query",
-              "user.list",
-              "user.me",
-              "user.retrieve",
-              "webhook.event.parse",
-              "webhook.signature.verify"
-            ]
+            "type": "string"
           },
           "targetKind": {
-            "type": "string",
-            "enum": [
-              "page",
-              "block",
-              "database",
-              "data_source",
-              "comment",
-              "file_upload"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -538,8 +473,7 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -624,8 +558,7 @@
         ],
         "properties": {
           "url": {
-            "type": "string",
-            "format": "uri"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -708,8 +641,7 @@
         "required": [],
         "properties": {
           "markdown": {
-            "type": "string",
-            "maxLength": 500000
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -890,10 +822,7 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -978,9 +907,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -989,29 +916,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1147,13 +1064,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -1162,29 +1076,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1325,9 +1229,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -1336,29 +1238,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1492,15 +1384,10 @@
         "required": [],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -1509,29 +1396,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1674,13 +1551,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -1689,29 +1563,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1855,18 +1719,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "propertyId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -1875,29 +1734,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2047,13 +1896,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -2062,29 +1908,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2227,13 +2063,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -2242,29 +2075,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2407,13 +2230,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -2422,29 +2242,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2587,38 +2397,25 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxDepth": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2747,13 +2544,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -2762,29 +2556,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2927,13 +2711,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -2942,29 +2723,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3107,13 +2878,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -3122,29 +2890,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3287,19 +3045,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -3308,29 +3060,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3480,13 +3222,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -3495,29 +3234,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3660,9 +3389,7 @@
         ],
         "properties": {
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -3671,33 +3398,22 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3840,13 +3556,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -3855,29 +3568,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4018,9 +3721,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -4029,29 +3730,19 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4187,15 +3878,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -4204,42 +3890,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4404,19 +4076,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -4425,42 +4091,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4631,19 +4283,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -4652,42 +4298,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4858,19 +4490,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -4879,42 +4505,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5086,19 +4698,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -5107,42 +4713,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5314,19 +4906,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -5335,42 +4921,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5541,19 +5113,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -5562,42 +5128,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5768,15 +5320,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -5785,42 +5332,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5985,19 +5518,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -6006,42 +5533,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6213,19 +5726,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -6234,42 +5741,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6440,15 +5933,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -6457,42 +5945,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6656,15 +6130,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -6673,42 +6142,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6872,15 +6327,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -6889,42 +6339,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7088,15 +6524,10 @@
         ],
         "properties": {
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -7105,42 +6536,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7304,19 +6721,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F-]{32,36}$"
+            "type": "string"
           },
           "body": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded object; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "startCursor": {
             "type": "string"
@@ -7325,42 +6736,28 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
+            "type": "integer"
           },
           "maxPages": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+            "type": "integer"
           },
           "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 60000
+            "type": "integer"
           },
           "retries": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
+            "type": "integer"
           },
           "operationId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "string"
           },
           "allowedRoots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "preview": {
             "type": "boolean"
           },
           "confirm": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7527,27 +6924,16 @@
         "required": [],
         "properties": {
           "authMode": {
-            "type": "string",
-            "enum": [
-              "internal",
-              "pat",
-              "oauth"
-            ]
+            "type": "string"
           },
           "workspace": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           },
           "roots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "capabilities": {
-            "type": "string",
-            "maxLength": 500
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7651,27 +7037,16 @@
         "required": [],
         "properties": {
           "authMode": {
-            "type": "string",
-            "enum": [
-              "internal",
-              "pat",
-              "oauth"
-            ]
+            "type": "string"
           },
           "workspace": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           },
           "roots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "capabilities": {
-            "type": "string",
-            "maxLength": 500
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7775,27 +7150,16 @@
         "required": [],
         "properties": {
           "authMode": {
-            "type": "string",
-            "enum": [
-              "internal",
-              "pat",
-              "oauth"
-            ]
+            "type": "string"
           },
           "workspace": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           },
           "roots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "capabilities": {
-            "type": "string",
-            "maxLength": 500
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7903,49 +7267,31 @@
         ],
         "properties": {
           "outputRoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4096
+            "type": "string"
           },
           "session": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "stateName": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "authMode": {
-            "type": "string",
-            "enum": [
-              "internal",
-              "pat",
-              "oauth"
-            ]
+            "type": "string"
           },
           "workspace": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
+            "type": "string"
           },
           "roots": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 500000,
-            "description": "JSON-encoded array; parsed and revalidated by notion.py"
+            "type": "string"
           },
           "capabilities": {
-            "type": "string",
-            "maxLength": 500
+            "type": "string"
           },
           "sessionTimeout": {
-            "type": "integer",
-            "minimum": 30,
-            "maximum": 86400
+            "type": "integer"
           },
           "now": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           }
         },
         "additionalProperties": false
@@ -8087,17 +7433,13 @@
         ],
         "properties": {
           "outputRoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4096
+            "type": "string"
           },
           "session": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "stateName": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8197,17 +7539,13 @@
         ],
         "properties": {
           "outputRoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4096
+            "type": "string"
           },
           "session": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "stateName": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8310,29 +7648,22 @@
         ],
         "properties": {
           "outputRoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4096
+            "type": "string"
           },
           "session": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "stateName": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "expectedRevision": {
-            "type": "integer",
-            "minimum": 0
+            "type": "integer"
           },
           "approveHandoffs": {
-            "type": "string",
-            "maxLength": 500
+            "type": "string"
           },
           "now": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           }
         },
         "additionalProperties": false
@@ -8454,25 +7785,19 @@
         ],
         "properties": {
           "outputRoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4096
+            "type": "string"
           },
           "session": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "stateName": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+            "type": "string"
           },
           "expectedRevision": {
-            "type": "integer",
-            "minimum": 0
+            "type": "integer"
           },
           "now": {
-            "type": "integer",
-            "minimum": 1
+            "type": "integer"
           }
         },
         "additionalProperties": false

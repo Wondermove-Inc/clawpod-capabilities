@@ -274,7 +274,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Route Notion work through a new typed Harness with safe onboarding, ambiguity handling, previews, and verification.",
       "path": "skills/notion",
       "compatibility": {
@@ -305,7 +305,7 @@
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -776,7 +776,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -806,11 +806,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "0e1b1d5380d9e19d146fe97fe00fdd1dd7dedf853cbb734bed8855228837e94a"
+          "sha256": "2de511b0cfef94c3acaf92f8f344d58e02bafe94e5d2ecaa904bee26bdccd7ee"
         },
         {
           "path": "notion.py",
-          "sha256": "02cac5b737efa9c04f55e5c7aa4654a02af24a9795524c0bcf042fc073550441"
+          "sha256": "a74521c5160ed69366dd97c5ac66bc711dc7357efb00faa3fce160f908e139ab"
         },
         {
           "path": "onboarding.py",
