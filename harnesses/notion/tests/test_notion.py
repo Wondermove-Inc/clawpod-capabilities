@@ -93,20 +93,20 @@ def test_gateway_arg_map_contract_and_structured_transport():
 
 def test_gateway_arg_map_contract_and_structured_transport():
  manifest=json.loads((P.parent/"harness.json").read_text())
+ contracts=json.loads((P.parent/"command_contracts.json").read_text())
  allowed={"string","number","integer","boolean","enum","path"}
  structured=0
  for name,command in manifest["commands"].items():
   properties=command["inputSchema"].get("properties",{})
+  transported=set(contracts["commands"][name].get("jsonStringTransport",[]))
   for entry in command["argMap"]:
    assert entry["valueType"] in allowed,(name,entry)
    if entry["type"]=="booleanFlag":assert entry["valueType"]=="boolean" and entry.get("flag")
    if entry["valueType"]=="path":assert entry.get("pathRole") in {"input","output","inout"}
    else:assert "pathRole" not in entry
-   prop=properties.get(entry["arg"],{})
-   if "JSON-encoded" in prop.get("description",""):
-    structured+=1;assert prop["type"]=="string" and entry["valueType"]=="string"
+   if entry["arg"] in transported:
+    structured+=1;assert properties[entry["arg"]]=={"type":"string"} and entry["valueType"]=="string"
  assert structured==38
- contracts=json.loads((P.parent/"command_contracts.json").read_text())
  assert contracts["commands"]["page.create"]["jsonStringTransport"]==["allowedRoots","body"]
 
 def test_allowlist_rejects_write_outside_root():
@@ -162,3 +162,50 @@ def test_onboarding_verify_403_and_wrong_workspace(monkeypatch):
  monkeypatch.setattr(n,"Transport",Denied)
  a=n.parser().parse_args(["auth.onboarding.verify","--workspace","Expected","--roots",json.dumps([{"type":"page","id":rid}])])
  o=n.onboarding_verify(a);assert not o["ok"] and o["error"]["code"]=="wrong_workspace" and o["data"]["roots"][0]["http_status"]==403 and not o["data"]["allowedRoots"]
+
+
+def test_every_gateway_input_schema_uses_runtime_supported_keywords_only():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ supported={"type","required","properties","additionalProperties"}
+ seen=set()
+ def audit(schema,path):
+  assert isinstance(schema,dict),path
+  assert set(schema)<=supported,(path,set(schema)-supported)
+  seen.update(schema)
+  if "type" in schema:assert schema["type"] in {"object","array","string","number","integer","boolean","null"},path
+  if "required" in schema:assert isinstance(schema["required"],list) and all(isinstance(x,str) for x in schema["required"]),path
+  if "properties" in schema:
+   assert isinstance(schema["properties"],dict),path
+   for key,child in schema["properties"].items():audit(child,f"{path}.properties.{key}")
+  if "additionalProperties" in schema:assert isinstance(schema["additionalProperties"],bool),path
+ for name,command in manifest["commands"].items():audit(command["inputSchema"],name)
+ assert seen==supported
+
+
+def test_every_gateway_arg_map_uses_runtime_supported_contract():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ value_types={"string","enum","integer","number","boolean","path"}
+ entry_types={"positional","option","booleanFlag","repeatableOption"}
+ covered_values=set();covered_entries=set()
+ for name,command in manifest["commands"].items():
+  props=command["inputSchema"].get("properties",{})
+  for entry in command["argMap"]:
+   assert entry["arg"] in props,(name,entry["arg"])
+   assert entry["valueType"] in value_types,(name,entry)
+   assert entry["type"] in entry_types,(name,entry)
+   covered_values.add(entry["valueType"]);covered_entries.add(entry["type"])
+   if entry["type"] in {"option","booleanFlag","repeatableOption"}:assert entry.get("flag"),(name,entry)
+   if entry["valueType"]=="path":assert entry.get("pathRole") in {"input","output","inout"},(name,entry)
+   else:assert "pathRole" not in entry,(name,entry)
+ assert covered_values=={"string","integer","boolean"}
+ assert covered_entries=={"option","booleanFlag"}
+
+
+def test_gateway_simplification_retains_harness_side_revalidation():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ assert manifest["commands"]["onboard.plan"]["inputSchema"]["properties"]["authMode"]=={"type":"string"}
+ assert manifest["commands"]["onboard.status"]["inputSchema"]["properties"]["outputRoot"]=={"type":"string"}
+ invalid=subprocess.run([sys.executable,str(P),"onboard.plan","--auth-mode","invalid"],text=True,capture_output=True)
+ assert invalid.returncode!=0 and "invalid choice" in invalid.stderr
+ rc,o,_=run("onboard.status","--output-root","")
+ assert rc==2 and "--output-root is required" in o["error"]["message"]

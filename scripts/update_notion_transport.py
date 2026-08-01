@@ -23,12 +23,7 @@ def main() -> None:
             schema_type = schema.get("type")
             if schema_type in {"object", "array"}:
                 contract_schema = json.loads(json.dumps(schema))
-                properties[entry["arg"]] = {
-                    "type": "string",
-                    "minLength": 2,
-                    "maxLength": 500000,
-                    "description": f"JSON-encoded {schema_type}; parsed and revalidated by notion.py",
-                }
+                properties[entry["arg"]] = {"type": "string"}
                 entry["valueType"] = "string"
                 structured.append(entry["arg"])
                 contract.setdefault("structuredInputSchemas", {})[entry["arg"]] = contract_schema
@@ -42,6 +37,17 @@ def main() -> None:
         else:
             contract.pop("jsonStringTransport", None)
             contract.pop("structuredInputSchemas", None)
+    allowed_schema_keys = {"type", "required", "properties", "additionalProperties"}
+    def simplify(schema):
+        if not isinstance(schema, dict):
+            return
+        for key in list(schema):
+            if key not in allowed_schema_keys:
+                del schema[key]
+        for child in schema.get("properties", {}).values():
+            simplify(child)
+    for command in manifest["commands"].values():
+        simplify(command["inputSchema"])
     HARNESS.write_text(json.dumps(manifest, indent=2) + "\n")
     CONTRACTS.write_text(json.dumps(contracts, indent=2) + "\n")
 

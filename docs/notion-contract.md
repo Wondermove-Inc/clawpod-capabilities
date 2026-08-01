@@ -1,6 +1,6 @@
 # Notion capability contract
 
-`notion` v0.1.1 is a new, first-principles AgentSkill plus stdlib Python Harness around the official REST API, pinned to `Notion-Version: 2026-03-11`. Classification: **CREATE + COMPOSE** with ClawPod registry, lifecycle approval, and protected-secret infrastructure. The installed built-in Notion Skill was gap evidence only; no built-in file was copied, patched, overlaid, or modified.
+`notion` v0.1.2 is a new, first-principles AgentSkill plus stdlib Python Harness around the official REST API, pinned to `Notion-Version: 2026-03-11`. Classification: **CREATE + COMPOSE** with ClawPod registry, lifecycle approval, and protected-secret infrastructure. The installed built-in Notion Skill was gap evidence only; no built-in file was copied, patched, overlaid, or modified.
 
 ## Stable execution contract
 
