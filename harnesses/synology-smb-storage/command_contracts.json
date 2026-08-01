@@ -95,7 +95,9 @@
       "auth.onboard"
     ],
     "safetyClasses": [
-      "writeSafe"
+      "secretUse",
+      "writeSafe",
+      "externalSideEffect"
     ],
     "inputSchema": {
       "type": "object",
@@ -210,7 +212,8 @@
       "shares.discover"
     ],
     "safetyClasses": [
-      "readOnly"
+      "readOnly",
+      "secretUse"
     ],
     "inputSchema": {
       "type": "object",
@@ -363,6 +366,7 @@
       "mount.apply"
     ],
     "safetyClasses": [
+      "secretUse",
       "writeSafe"
     ],
     "inputSchema": {
@@ -490,7 +494,7 @@
       "mount.unmount"
     ],
     "safetyClasses": [
-      "destructive"
+      "writeSafe"
     ],
     "inputSchema": {
       "type": "object",
@@ -606,6 +610,7 @@
       "layout.ensure"
     ],
     "safetyClasses": [
+      "externalSideEffect",
       "writeSafe"
     ],
     "inputSchema": {
@@ -741,6 +746,11 @@
       "properties": {
         "path": {
           "type": "string"
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
         }
       },
       "additionalProperties": false,
@@ -785,6 +795,13 @@
         "flag": "--path",
         "valueType": "string",
         "optional": false
+      },
+      {
+        "arg": "maxBytes",
+        "type": "option",
+        "flag": "--max-bytes",
+        "valueType": "integer",
+        "optional": true
       }
     ]
   },
@@ -794,6 +811,7 @@
       "file.put"
     ],
     "safetyClasses": [
+      "externalSideEffect",
       "writeSafe"
     ],
     "inputSchema": {
@@ -807,11 +825,20 @@
         },
         "overwrite": {
           "type": "boolean"
+        },
+        "transferRoot": {
+          "type": "string"
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
         }
       },
       "additionalProperties": false,
       "required": [
         "path",
+        "transferRoot",
         "source"
       ]
     },
@@ -854,18 +881,32 @@
         "optional": false
       },
       {
-        "arg": "source",
+        "arg": "transferRoot",
         "type": "option",
-        "flag": "--source",
+        "flag": "--transfer-root",
         "valueType": "path",
         "optional": false,
         "pathRole": "input"
+      },
+      {
+        "arg": "source",
+        "type": "option",
+        "flag": "--source",
+        "valueType": "string",
+        "optional": false
       },
       {
         "arg": "overwrite",
         "type": "option",
         "flag": "--overwrite",
         "valueType": "boolean",
+        "optional": true
+      },
+      {
+        "arg": "maxBytes",
+        "type": "option",
+        "flag": "--max-bytes",
+        "valueType": "integer",
         "optional": true
       }
     ]
@@ -937,7 +978,7 @@
       "workflow.rollback"
     ],
     "safetyClasses": [
-      "destructive"
+      "writeSafe"
     ],
     "inputSchema": {
       "type": "object",
