@@ -8246,12 +8246,12 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "stateRoot",
+          "outputRoot",
           "session",
           "workspace"
         ],
         "properties": {
-          "stateRoot": {
+          "outputRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
@@ -8378,9 +8378,9 @@
       },
       "argMap": [
         {
-          "arg": "stateRoot",
+          "arg": "outputRoot",
           "type": "option",
-          "flag": "--state-root",
+          "flag": "--output-root",
           "valueType": "string",
           "optional": false
         },
@@ -8453,11 +8453,11 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "stateRoot",
+          "outputRoot",
           "session"
         ],
         "properties": {
-          "stateRoot": {
+          "outputRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
@@ -8530,9 +8530,9 @@
       },
       "argMap": [
         {
-          "arg": "stateRoot",
+          "arg": "outputRoot",
           "type": "option",
-          "flag": "--state-root",
+          "flag": "--output-root",
           "valueType": "string",
           "optional": false
         },
@@ -8563,11 +8563,11 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "stateRoot",
+          "outputRoot",
           "session"
         ],
         "properties": {
-          "stateRoot": {
+          "outputRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
@@ -8640,9 +8640,9 @@
       },
       "argMap": [
         {
-          "arg": "stateRoot",
+          "arg": "outputRoot",
           "type": "option",
-          "flag": "--state-root",
+          "flag": "--output-root",
           "valueType": "string",
           "optional": false
         },
@@ -8675,12 +8675,12 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "stateRoot",
+          "outputRoot",
           "session",
           "expectedRevision"
         ],
         "properties": {
-          "stateRoot": {
+          "outputRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
@@ -8765,9 +8765,9 @@
       },
       "argMap": [
         {
-          "arg": "stateRoot",
+          "arg": "outputRoot",
           "type": "option",
-          "flag": "--state-root",
+          "flag": "--output-root",
           "valueType": "string",
           "optional": false
         },
@@ -8819,12 +8819,12 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "stateRoot",
+          "outputRoot",
           "session",
           "expectedRevision"
         ],
         "properties": {
-          "stateRoot": {
+          "outputRoot": {
             "type": "string",
             "minLength": 1,
             "maxLength": 4096
@@ -8905,9 +8905,9 @@
       },
       "argMap": [
         {
-          "arg": "stateRoot",
+          "arg": "outputRoot",
           "type": "option",
-          "flag": "--state-root",
+          "flag": "--output-root",
           "valueType": "string",
           "optional": false
         },

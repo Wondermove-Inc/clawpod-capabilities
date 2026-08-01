@@ -454,7 +454,7 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
-        "stateRoot",
+        "outputRoot",
         "session",
         "workspace"
       ]
@@ -466,7 +466,7 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
-        "stateRoot",
+        "outputRoot",
         "session"
       ]
     },
@@ -477,7 +477,7 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
-        "stateRoot",
+        "outputRoot",
         "session"
       ]
     },
@@ -488,7 +488,7 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
-        "stateRoot",
+        "outputRoot",
         "session",
         "expectedRevision"
       ]
@@ -500,7 +500,7 @@
       "paged": false,
       "verify": null,
       "requiredInputs": [
-        "stateRoot",
+        "outputRoot",
         "session",
         "expectedRevision"
       ]

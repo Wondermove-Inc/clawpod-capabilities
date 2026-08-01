@@ -17,13 +17,13 @@ def _clean(v:Any,key="")->Any:
  return v
 
 def state_path(root_raw:str,session:str,state_name:str)->Path:
- if not root_raw:raise ValueError("--state-root is required")
+ if not root_raw:raise ValueError("--output-root is required")
  if not NAME_RE.fullmatch(session or "") or not NAME_RE.fullmatch(state_name or ""):raise ValueError("session and state-name must be bounded relative names")
  root=Path(root_raw)
  try:st=root.lstat()
- except FileNotFoundError:raise ValueError("state root must already exist")
- if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):raise ValueError("state root must be a real directory, not a symlink")
- if st.st_mode & 0o077:raise ValueError("state root must be private (owner-only permissions)")
+ except FileNotFoundError:raise ValueError("output root must already exist")
+ if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):raise ValueError("output root must be a real directory, not a symlink")
+ if st.st_mode & 0o077:raise ValueError("output root must be private (owner-only permissions)")
  resolved=root.resolve(strict=True); child=resolved/session
  if child.exists() or child.is_symlink():
   cst=child.lstat()
@@ -34,7 +34,7 @@ def state_path(root_raw:str,session:str,state_name:str)->Path:
  if path.exists() or path.is_symlink():
   pst=path.lstat()
   if stat.S_ISLNK(pst.st_mode) or not stat.S_ISREG(pst.st_mode):raise ValueError("state file must be a regular non-symlink file")
- if resolved not in path.resolve(strict=False).parents:raise ValueError("state path escapes state root")
+ if resolved not in path.resolve(strict=False).parents:raise ValueError("state path escapes output root")
  return path
 
 def _load(path:Path)->dict:
@@ -82,10 +82,10 @@ def _advance(s:dict,fixture:dict,approved:set[str],credential:bool):
   if k=="complete":s.update(status="verification_required",handoff={"reason":"runtime_verification_required"});_event(s,"ui_complete");return
   raise ValueError(f"unsupported adapter step: {k}")
 
-def command(cmd:str,*,state_root:str,session:str,state_name="state.json",mode="internal",workspace=None,roots=None,capabilities=None,expected_revision=None,approve=None,timeout_seconds=900,credential_present=False,now=None):
+def command(cmd:str,*,output_root:str,session:str,state_name="state.json",mode="internal",workspace=None,roots=None,capabilities=None,expected_revision=None,approve=None,timeout_seconds=900,credential_present=False,now=None):
  if cmd=="onboard.plan":return plan(mode,workspace,roots,capabilities)
  if cmd in {"onboard.desktop.plan","onboard.desktop.task"}:return desktop_task(mode,workspace,roots,capabilities)
- path=state_path(state_root,session,state_name);now=int(now or time.time())
+ path=state_path(output_root,session,state_name);now=int(now or time.time())
  if cmd=="onboard.start":
   if path.exists():
    old=_load(path)
