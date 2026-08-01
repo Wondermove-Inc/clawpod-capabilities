@@ -142,6 +142,9 @@ def enforce_allowed_roots(a:argparse.Namespace,body:dict)->None:
  roots=parse_roots(a.allowed_roots);allowed={x["id"] for x in roots}
  if not allowed:return
  targets=write_targets(a,body)
+ # Upload allocation/completion is unattached and the API accepts no page/block parent.
+ # Every later content mutation that attaches the upload remains subject to normal root enforcement.
+ if a.command in {"file_upload.create","file_upload.complete"}:return
  if not targets:raise ValueError("write target cannot be proven against configured allowedRoots")
  if not targets.issubset(allowed):raise ValueError("write target is outside configured allowedRoots")
 
@@ -173,7 +176,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.4"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.5"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt
@@ -211,14 +214,23 @@ def execute(a,spec,req):
  effects={"performed":mutation,"created":[],"updated":[],"deleted":[],"unknown":False}
  if mutation:
   rid=result.get("id") if isinstance(result,dict) else None
-  bucket="deleted" if spec.safety=="destructive" and a.command in {"block.delete","page.archive"} else "created" if ".create" in a.command else "updated"
-  if rid:effects[bucket]=[rid]
+  result_items=result if isinstance(result,list) else result.get("results",[]) if isinstance(result,dict) else []
+  result_ids=[x["id"] for x in result_items if isinstance(x,dict) and isinstance(x.get("id"),str)]
+  bucket="deleted" if spec.safety=="destructive" and a.command in {"block.delete","page.archive"} else "created" if ".create" in a.command or a.command in {"block.children.append","comment.reply"} else "updated"
+  ids=([rid] if rid else [])+result_ids
+  if ids:effects[bucket]=list(dict.fromkeys(ids))
  verified=None; verification={"performed":False,"supported":bool(spec.verify),"reason":"command has no safe retrieve verification" if not spec.verify else None}
  if mutation and spec.verify and isinstance(result,dict) and result.get("id"):
   endpoints={"page":"/pages/","block":"/blocks/","data_source":"/data_sources/","file_upload":"/file_uploads/"}
   try:verified,_=t.request("GET",endpoints[spec.verify]+normalized_id(result["id"]),{}, {},False)
   except Exception as e:raise RuntimeError("mutation returned success but source-of-truth verification failed") from e
   verification={"performed":True,"supported":True,"resource_id":verified.get("id"),"last_edited_time":verified.get("last_edited_time"),"status":verified.get("status")}
+  if a.command in {"page.archive","page.restore"}:
+   expected=a.command=="page.archive";actual=verified.get("in_trash")
+   if actual is not expected:raise RuntimeError("mutation returned success but page in_trash verification did not match the requested state")
+   verification.update({"field":"in_trash","expected":expected,"actual":actual})
+ if mutation and a.command=="comment.reply" and isinstance(result,dict):
+  verification={"performed":False,"supported":False,"reason":"Notion has no individual comment retrieve endpoint","response_evidence":{"comment_id":result.get("id"),"discussion_id":result.get("discussion_id") or req["body"].get("discussion_id"),"object":result.get("object")}}
  out=envelope(a.command,True,result,effects=effects,operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest(req),notion_request_id=headers.get("x-request-id"),retry={"attempts":t.attempts,"retryable":False,"retry_after_seconds":None})
  if mutation:out["verification"]=verification
  return out
@@ -321,12 +333,12 @@ def main():
   elif cmd=="block.tree.retrieve":out=block_tree(a)
   elif spec.method is None:out=envelope(cmd,True,local(a),operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"command":cmd,"id":a.id,"url":a.url,"operation":a.operation}))
   else:
-   if cmd=="page.archive":body={**body,"archived":True}
-   if cmd=="page.restore":body={**body,"archived":False}
+   if cmd=="page.archive":body={**body,"in_trash":True}
+   if cmd=="page.restore":body={**body,"in_trash":False}
    if spec.safety!="readOnly":enforce_allowed_roots(a,body)
    req=canonical(spec,a,body);ih=intent_hash(req)
    if spec.safety!="readOnly":
-    preview={"intent_hash":ih,"request_digest":request_digest(req),"operation_id":a.operation_id or str(uuid.uuid4()),"request":redact(req),"safety_class":spec.safety,"expected_effects":{"target":req["path"],"operation":req["method"]},"verification":{"supported":bool(spec.verify),"kind":spec.verify,"reason":None if spec.verify else "no safe retrieve endpoint"},"journal_recommendation":"persist operation_id, request_digest, target IDs, timestamps, and result IDs in caller-owned protected state; never persist token or full sensitive body"}
+    preview={"intent_hash":ih,"request_digest":request_digest(req),"operation_id":a.operation_id or str(uuid.uuid4()),"request":redact(req),"safety_class":spec.safety,"expected_effects":{"target":req["path"],"operation":req["method"]},"verification":{"supported":bool(spec.verify),"kind":spec.verify,"reason":None if spec.verify else "no safe retrieve endpoint"},"root_policy":{"exception":"unattached file-upload allocation/completion has no content target; allowedRoots remains mandatory when content is attached" if cmd in {"file_upload.create","file_upload.complete"} else None},"journal_recommendation":"persist operation_id, request_digest, target IDs, timestamps, and result IDs in caller-owned protected state; never persist token or full sensitive body"}
     if a.preview:out=envelope(cmd,True,{"preview":preview},operation_id=preview["operation_id"],request_digest=preview["request_digest"])
     elif a.confirm!=ih:raise ValueError("write requires --preview, then --confirm with the exact intent_hash")
     else:out=execute(a,spec,req)

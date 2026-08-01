@@ -4,7 +4,7 @@
   "name": "notion",
   "title": "notion",
   "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [

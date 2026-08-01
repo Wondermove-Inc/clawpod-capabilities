@@ -153,6 +153,65 @@ def test_allowlist_rejects_write_outside_root():
  rc,o,_=run("page.properties.update","--id",other,"--body",'{"properties":{}}',"--allowed-roots",json.dumps([{"type":"page","id":root}]),"--preview")
  assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
 
+def test_archive_restore_use_in_trash_and_verify_exact_state(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ for command,expected in (("page.archive",True),("page.restore",False)):
+  calls=[]
+  class T:
+   def __init__(self,a):self.attempts=1
+   def request(self,method,path,query,body,mutation=False):
+    calls.append((method,body.copy()))
+    if method=="PATCH":return {"id":rid},{"x-request-id":"n1"}
+    return {"id":rid,"in_trash":expected,"last_edited_time":"t"},{}
+  monkeypatch.setattr(n,"Transport",T)
+  a=n.parser().parse_args([command,"--id",rid])
+  body={"in_trash":expected};req=n.canonical(n.SPECS[command],a,body);o=n.execute(a,n.SPECS[command],req)
+  assert calls[0][1]=={"in_trash":expected} and "archived" not in calls[0][1]
+  assert o["verification"]|{"field":"in_trash","expected":expected,"actual":expected}==o["verification"]
+
+
+def test_archive_verification_rejects_mismatched_in_trash(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class T:
+  def __init__(self,a):self.attempts=1
+  def request(self,method,path,query,body,mutation=False):
+   return ({"id":rid},{}) if method=="PATCH" else ({"id":rid,"in_trash":False},{})
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["page.archive","--id",rid]);req=n.canonical(n.SPECS[a.command],a,{"in_trash":True})
+ import pytest
+ with pytest.raises(RuntimeError,match="in_trash verification"):n.execute(a,n.SPECS[a.command],req)
+
+
+def test_file_upload_lifecycle_has_narrow_unattached_allowlist_exception():
+ root="123456781234123412341234567890ab";roots=json.dumps([{"type":"page","id":root}])
+ rc,o,_=run("file_upload.create","--body",'{"mode":"single_part"}',"--allowed-roots",roots,"--preview")
+ assert rc==0 and "unattached file-upload" in o["data"]["preview"]["root_policy"]["exception"]
+ upload="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ rc,o,_=run("file_upload.complete","--id",upload,"--allowed-roots",roots,"--preview")
+ assert rc==0 and "unattached file-upload" in o["data"]["preview"]["root_policy"]["exception"]
+ rc,o,_=run("page.create","--body",'{"properties":{}}',"--allowed-roots",roots,"--preview")
+ assert rc==2 and "cannot be proven" in o["error"]["message"]
+ rc,o,_=run("page.properties.update","--id",upload,"--body",'{"properties":{}}',"--allowed-roots",roots,"--preview")
+ assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
+
+
+def test_append_records_created_block_ids_and_reply_is_created_with_response_evidence(monkeypatch):
+ parent="12345678-1234-1234-1234-1234567890ab";b1="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";b2="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+ class AppendT:
+  def __init__(self,a):self.attempts=1
+  def request(self,method,path,query,body,mutation=False):return {"results":[{"id":b1},{"id":b2}]},{"x-request-id":"n1"}
+ monkeypatch.setattr(n,"Transport",AppendT)
+ a=n.parser().parse_args(["block.children.append","--id",parent,"--body",'{"children":[{}]}']);req=n.canonical(n.SPECS[a.command],a,n.parse_body(a));o=n.execute(a,n.SPECS[a.command],req)
+ assert o["effects"]["created"]==[b1,b2] and not o["effects"]["updated"]
+ class ReplyT:
+  def __init__(self,a):self.attempts=1
+  def request(self,method,path,query,body,mutation=False):return {"object":"comment","id":b1,"discussion_id":parent},{"x-request-id":"n2"}
+ monkeypatch.setattr(n,"Transport",ReplyT)
+ a=n.parser().parse_args(["comment.reply","--body",json.dumps({"discussion_id":parent,"rich_text":[]})]);req=n.canonical(n.SPECS[a.command],a,n.parse_body(a));o=n.execute(a,n.SPECS[a.command],req)
+ assert o["effects"]["created"]==[b1] and not o["effects"]["updated"]
+ assert not o["verification"]["supported"] and o["verification"]["response_evidence"]=={"comment_id":b1,"discussion_id":parent,"object":"comment"}
+
+
 def test_operation_plan_and_required_input():
  rc,o,_=run("operation.plan","--operation","page.create","--target-kind","page")
  assert rc==0 and o["data"]["recipe"][0].startswith("resolve") and o["data"]["verification"]=="page"
