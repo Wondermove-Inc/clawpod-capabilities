@@ -292,15 +292,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "68734abdd75e00d6a1de11a512f6905a3ec2ecb49479d584fe1ac28258e958cf"
+          "sha256": "7b0e28cbf3bab21fcd4b6ce6778d4fa315f6f356e9258449115943f8f24c162a"
         },
         {
           "path": "references/commands.md",
-          "sha256": "56783fe941fe1b178ec991b6367a6017f038b0981575b63890a4e3d53ab69448"
+          "sha256": "a2581934518cbf66b1e8048b3f11bc7b0f69b39a3ed6734f4c57961430e38d7b"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "3d5042ce5181a0ec8fe2af407ab973caa08aee00bb6a41a4f252ba3d250ef0ba"
+          "sha256": "3f042db6290db8f34b90da9586742b45ec4df1d8a5aabc37f9797511b651dfab"
         }
       ],
       "linkedHarness": {
@@ -794,7 +794,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "1abebb8a1c3d26f4cc36768472a13df8582ae05c7796c23742283dd586e23e3a"
+          "sha256": "34dc836e8b4a98d7a554b453b321545a19df0e5d44e3b08804cec0b7ba7609fc"
         },
         {
           "path": "TEST.md",
@@ -802,15 +802,15 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "4cbe35e592b608ce952b585b09b2e6de6a1d1aa7e3f21dfcb328a599040b5e59"
+          "sha256": "e0663d22e0b0a075a75712a50e30e6772a3f0205c102775acb70a3155b76662e"
         },
         {
           "path": "harness.json",
-          "sha256": "16fbd3bfcfc9da76890c23736c5dfc2dad5b19ac9df94c46c244f75f07b6676e"
+          "sha256": "5fe861abeb0058233ddd5bfd198036ce42723fae1e43339814d0fcad83a9a1ea"
         },
         {
           "path": "notion.py",
-          "sha256": "0a1f1cf68b89889357a1b3d6386df5e12e68649c3bc9182350898c101a0585c6"
+          "sha256": "38421aed0f88ca2f8f3e209637b7eabcaea5f32af208723badbae3053e30be4a"
         }
       ]
     },

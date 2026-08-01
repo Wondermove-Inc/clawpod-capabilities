@@ -65,3 +65,52 @@ def test_write_verify_and_mutation_error_classification(monkeypatch):
  req=n.canonical(n.SPECS[a.command],a,n.parse_body(a));o=n.execute(a,n.SPECS[a.command],req)
  assert o["effects"]["performed"] and o["verification"]["performed"]
  assert n.category(500,"internal_server_error")=="backend" and n.category(429,"rate_limited")=="rate_limit"
+
+def test_command_specific_manifest_schemas():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ assert manifest["commands"]["page.retrieve"]["inputSchema"]["required"]==["id"]
+ assert "body" not in manifest["commands"]["page.retrieve"]["inputSchema"]["properties"]
+ assert manifest["commands"]["auth.onboarding.verify"]["inputSchema"]["properties"]["roots"]["type"]=="array"
+ assert manifest["commands"]["page.create"]["inputSchema"]["properties"]["allowedRoots"]["items"]["required"]==["type","id"]
+
+def test_allowlist_rejects_write_outside_root():
+ root="123456781234123412341234567890ab";other="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ rc,o,_=run("page.properties.update","--id",other,"--body",'{"properties":{}}',"--allowed-roots",json.dumps([{"type":"page","id":root}]),"--preview")
+ assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
+
+def test_operation_plan_and_required_input():
+ rc,o,_=run("operation.plan","--operation","page.create","--target-kind","page")
+ assert rc==0 and o["data"]["recipe"][0].startswith("resolve") and o["data"]["verification"]=="page"
+ rc,o,_=run("operation.plan");assert rc==2 and "--operation is required" in o["error"]["message"]
+
+def test_payload_element_text_and_url_limits():
+ rc,o,_=run("page.create","--body",json.dumps({"children":[{}]*101}),"--preview");assert rc==2 and "exceeds 100 items" in o["error"]["message"]
+ rc,o,_=run("page.create","--body",json.dumps({"url":"x"*2001}),"--preview");assert rc==2 and "exceeds 2000" in o["error"]["message"]
+
+def test_onboarding_verify_success_and_guidance(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class T:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","name":"Fixture bot","type":"bot","bot":{"workspace_name":"Fixture","workspace_id":"ws"}},{}
+   return {"id":rid,"object":"page"},{}
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert o["ok"] and o["data"]["identity"]["workspace_name"]=="Fixture" and o["data"]["ready"]
+ assert "token" not in json.dumps(o).lower()
+
+def test_onboarding_verify_404_diagnostic(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class T:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","type":"bot","bot":{}},{}
+   raise n.ApiError(404,"object_not_found","not shared",None)
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert not o["ok"] and "not shared" in o["data"]["roots"][0]["diagnostic"]
+
+def test_no_secret_leakage_in_onboarding_error():
+ secret="fixture-sensitive-credential-value"
+ rc,o,err=run("auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":"123456781234123412341234567890ab"}]),env={"NOTION_TOKEN":secret,"NOTION_API_BASE":"http://127.0.0.1:1/v1"})
+ assert rc==2 and secret not in json.dumps(o)+err
