@@ -15,7 +15,7 @@ UUID_RE=re.compile(r"^[0-9a-f]{32}$",re.I)
 
 @dataclass(frozen=True)
 class Spec:
- method:str|None; path:str|None; safety:str="readOnly"; paged:bool=False; verify:str|None=None
+ method:str|None; path:str|None; safety:str="readOnly"; pagination:str|None=None; verify:str|None=None
 
 SPECS={
  "auth.status":Spec(None,None),"auth.onboarding.plan":Spec(None,None),"auth.onboarding.verify":Spec(None,None),"diagnostics.doctor":Spec(None,None),
@@ -23,15 +23,15 @@ SPECS={
  "operation.plan":Spec(None,None),
  "resolve.id":Spec(None,None),"resolve.url":Spec(None,None),"markdown.validate":Spec(None,None),
  "webhook.signature.verify":Spec(None,None),"webhook.event.parse":Spec(None,None),
- "user.me":Spec("GET","/users/me"),"user.retrieve":Spec("GET","/users/{id}"),"user.list":Spec("GET","/users",paged=True),
- "search.query":Spec("POST","/search",paged=True),"page.retrieve":Spec("GET","/pages/{id}"),
- "page.property.retrieve":Spec("GET","/pages/{id}/properties/{property_id}",paged=True),
+ "user.me":Spec("GET","/users/me"),"user.retrieve":Spec("GET","/users/{id}"),"user.list":Spec("GET","/users",pagination="query"),
+ "search.query":Spec("POST","/search",pagination="body"),"page.retrieve":Spec("GET","/pages/{id}"),
+ "page.property.retrieve":Spec("GET","/pages/{id}/properties/{property_id}",pagination="query"),
  "page.retrieve_markdown":Spec("GET","/pages/{id}/markdown"),"block.retrieve":Spec("GET","/blocks/{id}"),
- "block.children.list":Spec("GET","/blocks/{id}/children",paged=True),"block.tree.retrieve":Spec(None,None),"database.retrieve":Spec("GET","/databases/{id}"),
- "database.list_data_sources":Spec("GET","/databases/{id}"),"data_source.retrieve":Spec("GET","/data_sources/{id}"),"data_source.query":Spec("POST","/data_sources/{id}/query",paged=True),
- "data_source.templates.list":Spec("GET","/data_sources/{id}/templates",paged=True),
- "comment.list":Spec("GET","/comments",paged=True),"file_upload.retrieve":Spec("GET","/file_uploads/{id}"),
- "file_upload.list":Spec("GET","/file_uploads",paged=True),
+ "block.children.list":Spec("GET","/blocks/{id}/children",pagination="query"),"block.tree.retrieve":Spec(None,None),"database.retrieve":Spec("GET","/databases/{id}"),
+ "database.list_data_sources":Spec("GET","/databases/{id}"),"data_source.retrieve":Spec("GET","/data_sources/{id}"),"data_source.query":Spec("POST","/data_sources/{id}/query",pagination="body"),
+ "data_source.templates.list":Spec("GET","/data_sources/{id}/templates",pagination="query"),
+ "comment.list":Spec("GET","/comments",pagination="query"),"file_upload.retrieve":Spec("GET","/file_uploads/{id}"),
+ "file_upload.list":Spec("GET","/file_uploads",pagination="query"),
  "page.create":Spec("POST","/pages","externalSideEffect",verify="page"),
  "page.properties.update":Spec("PATCH","/pages/{id}","externalSideEffect",verify="page"),
  "page.archive":Spec("PATCH","/pages/{id}","destructive",verify="page"),
@@ -80,8 +80,12 @@ def canonical(spec:Spec,a:argparse.Namespace,body:dict)->dict:
    if not a.property_id:raise ValueError("--property-id is required")
    path=path.replace("{property_id}",urllib.parse.quote(a.property_id,safe=""))
  q={}
- if a.page_size is not None:q["page_size"]=a.page_size
- if a.start_cursor:q["start_cursor"]=a.start_cursor
+ if spec.pagination:
+  pagination={"page_size":min(a.page_size,a.max_items)}
+  if a.start_cursor:pagination["start_cursor"]=a.start_cursor
+  if spec.pagination=="query":q.update(pagination)
+  elif spec.pagination=="body":body={**body,**pagination}
+  else:raise ValueError("unsupported pagination placement")
  if a.command=="comment.list":
   if not a.id:raise ValueError("comment.list requires --id block/page id")
   q["block_id"]=normalized_id(a.id)
@@ -169,7 +173,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.3"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.4"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt
@@ -194,12 +198,15 @@ def execute(a,spec,req):
  t=Transport(a); mutation=spec.safety!="readOnly"
  result,headers=t.request(req["method"],req["path"],req["query"],req["body"],mutation)
  items=[];pages=1
- if spec.paged and a.all_pages:
+ if spec.pagination and a.all_pages:
   items.extend(result.get("results",[]))
   while result.get("has_more"):
    if pages>=a.max_pages or len(items)>=a.max_items:break
-   cursor=result.get("next_cursor"); q={**req["query"],"start_cursor":cursor}
-   result,_=t.request(req["method"],req["path"],q,req["body"],False);pages+=1;items.extend(result.get("results",[]))
+   cursor=result.get("next_cursor")
+   q={**req["query"]};body={**req["body"]}
+   if spec.pagination=="query":q["start_cursor"]=cursor
+   else:body["start_cursor"]=cursor
+   result,_=t.request(req["method"],req["path"],q,body,False);pages+=1;items.extend(result.get("results",[]))
   result={"results":items[:a.max_items],"has_more":bool(result.get("has_more") or len(items)>a.max_items),"next_cursor":result.get("next_cursor")}
  effects={"performed":mutation,"created":[],"updated":[],"deleted":[],"unknown":False}
  if mutation:

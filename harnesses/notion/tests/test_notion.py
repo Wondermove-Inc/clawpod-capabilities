@@ -54,6 +54,45 @@ def test_retry_permission_not_found_and_pagination():
  rc,o,_=run("search.query","--all-pages","--max-pages","2",env=env);assert rc==0 and o["retry"]["attempts"]==2
  rc,o,_=run("user.list",env=env);assert rc==2 and o["error"]["category"]=="permission"
  rc,o,_=run("block.retrieve","--id","123456781234123412341234567890ab",env=env);assert rc==2 and o["error"]["category"]=="not_found";s.shutdown()
+
+def test_non_paginated_endpoints_omit_pagination_parameters():
+ rid="123456781234123412341234567890ab"
+ for command,args in (("user.me",[]),("user.retrieve",["--id",rid]),("page.retrieve",["--id",rid]),("database.retrieve",["--id",rid]),("data_source.retrieve",["--id",rid])):
+  a=n.parser().parse_args([command,*args,"--page-size","17","--start-cursor","cursor"])
+  req=n.canonical(n.SPECS[command],a,{})
+  assert req["query"]=={},command
+  assert req["body"]=={},command
+
+def test_post_pagination_is_encoded_in_body_and_advances_cursor(monkeypatch):
+ rid="123456781234123412341234567890ab"
+ for command,args in (("search.query",[]),("data_source.query",["--id",rid])):
+  calls=[]
+  class T:
+   def __init__(self,a):self.attempts=1
+   def request(self,method,path,query,body,mutation=False):
+    calls.append((method,path,query,body.copy()))
+    if len(calls)==1:return {"results":[{"id":"1"}],"has_more":True,"next_cursor":"next"},{}
+    return {"results":[{"id":"2"}],"has_more":False,"next_cursor":None},{}
+  monkeypatch.setattr(n,"Transport",T)
+  a=n.parser().parse_args([command,*args,"--body",'{"filter":{"value":"x"}}',"--page-size","25","--all-pages","--max-pages","2"])
+  req=n.canonical(n.SPECS[command],a,n.parse_body(a));out=n.execute(a,n.SPECS[command],req)
+  assert calls[0][2]=={} and calls[0][3]["page_size"]==25 and "start_cursor" not in calls[0][3]
+  assert calls[1][2]=={} and calls[1][3]["start_cursor"]=="next" and calls[1][3]["filter"]=={"value":"x"}
+  assert [x["id"] for x in out["data"]["results"]]==["1","2"]
+
+def test_get_list_pagination_stays_in_query_and_respects_bounds(monkeypatch):
+ calls=[]
+ class T:
+  def __init__(self,a):self.attempts=1
+  def request(self,method,path,query,body,mutation=False):
+   calls.append((query.copy(),body.copy()))
+   if len(calls)==1:return {"results":[{"id":"1"}],"has_more":True,"next_cursor":"next"},{}
+   return {"results":[{"id":"2"}],"has_more":False,"next_cursor":None},{}
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["user.list","--page-size","100","--all-pages","--max-items","2","--max-pages","2"])
+ req=n.canonical(n.SPECS[a.command],a,{});out=n.execute(a,n.SPECS[a.command],req)
+ assert calls==[({"page_size":2},{}),({"page_size":2,"start_cursor":"next"},{})]
+ assert len(out["data"]["results"])==2
 def test_write_verify_and_mutation_error_classification(monkeypatch):
  class T:
   def __init__(self,a):self.attempts=1
