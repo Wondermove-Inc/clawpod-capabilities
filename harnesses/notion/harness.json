@@ -1,0 +1,7195 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "notion",
+  "title": "notion",
+  "description": "Typed guarded Notion REST API operations with protected onboarding, previews, verification, retries, and redaction.",
+  "version": "0.1.0",
+  "entrypoint": "./notion.py",
+  "packageRoot": ".",
+  "whenToUse": [
+    "Operate Notion pages, blocks, data sources, comments, files, users, or webhooks",
+    "Plan and verify a protected Notion connection"
+  ],
+  "capabilities": [
+    "notion-rest-2026-03-11",
+    "internal-integration",
+    "personal-access-token",
+    "oauth-planning",
+    "guarded-writes",
+    "webhook-verification"
+  ],
+  "authModel": {
+    "type": "bearer-token-protected-injection",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "auth.status": {
+      "description": "auth.status through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "auth.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.onboarding.plan": {
+      "description": "auth.onboarding.plan through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "auth.onboarding.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "diagnostics.doctor": {
+      "description": "diagnostics.doctor through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "diagnostics.doctor"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "resolve.id": {
+      "description": "resolve.id through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "resolve.id"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "resolve.url": {
+      "description": "resolve.url through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "resolve.url"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "markdown.validate": {
+      "description": "markdown.validate through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "markdown.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "webhook.signature.verify": {
+      "description": "webhook.signature.verify through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "webhook.signature.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "webhook.event.parse": {
+      "description": "webhook.event.parse through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "webhook.event.parse"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "user.me": {
+      "description": "user.me through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "user.me"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "user.retrieve": {
+      "description": "user.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "user.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "user.list": {
+      "description": "user.list through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "user.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "search.query": {
+      "description": "search.query through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "search.query"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.retrieve": {
+      "description": "page.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.property.retrieve": {
+      "description": "page.property.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.property.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "propertyId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.retrieve_markdown": {
+      "description": "page.retrieve_markdown through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.retrieve_markdown"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.retrieve": {
+      "description": "block.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "block.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.children.list": {
+      "description": "block.children.list through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "block.children.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "database.retrieve": {
+      "description": "database.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "database.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.retrieve": {
+      "description": "data_source.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "data_source.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.query": {
+      "description": "data_source.query through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "data_source.query"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.list": {
+      "description": "comment.list through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "comment.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.retrieve": {
+      "description": "file_upload.retrieve through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "file_upload.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.list": {
+      "description": "file_upload.list through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "file_upload.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.create": {
+      "description": "page.create through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.properties.update": {
+      "description": "page.properties.update through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.properties.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.archive": {
+      "description": "page.archive through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.archive"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.restore": {
+      "description": "page.restore through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "page.restore"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.children.append": {
+      "description": "block.children.append through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "block.children.append"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.update": {
+      "description": "block.update through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "block.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.delete": {
+      "description": "block.delete through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "block.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "markdown.page.create": {
+      "description": "markdown.page.create through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "markdown.page.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "markdown.page.update": {
+      "description": "markdown.page.update through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "markdown.page.update"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.schema.update": {
+      "description": "data_source.schema.update through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "data_source.schema.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.create": {
+      "description": "comment.create through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "comment.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.create": {
+      "description": "file_upload.create through pinned Notion REST API 2026-03-11.",
+      "baseArgv": [
+        "file_upload.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "retries": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry"
+        ],
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  },
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 65000,
+    "requiresJson": true
+  }
+}

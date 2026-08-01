@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": "2026-03-11",
+  "commands": {
+    "auth.status": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "auth.onboarding.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "diagnostics.doctor": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "resolve.id": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "resolve.url": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "markdown.validate": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "webhook.signature.verify": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "webhook.event.parse": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "user.me": {
+      "method": "GET",
+      "path": "/users/me",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "user.retrieve": {
+      "method": "GET",
+      "path": "/users/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "user.list": {
+      "method": "GET",
+      "path": "/users",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "search.query": {
+      "method": "POST",
+      "path": "/search",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "page.retrieve": {
+      "method": "GET",
+      "path": "/pages/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "page.property.retrieve": {
+      "method": "GET",
+      "path": "/pages/{id}/properties/{property_id}",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "page.retrieve_markdown": {
+      "method": "GET",
+      "path": "/pages/{id}/markdown",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "block.retrieve": {
+      "method": "GET",
+      "path": "/blocks/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "block.children.list": {
+      "method": "GET",
+      "path": "/blocks/{id}/children",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "database.retrieve": {
+      "method": "GET",
+      "path": "/databases/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "data_source.retrieve": {
+      "method": "GET",
+      "path": "/data_sources/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "data_source.query": {
+      "method": "POST",
+      "path": "/data_sources/{id}/query",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "comment.list": {
+      "method": "GET",
+      "path": "/comments",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "file_upload.retrieve": {
+      "method": "GET",
+      "path": "/file_uploads/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null
+    },
+    "file_upload.list": {
+      "method": "GET",
+      "path": "/file_uploads",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null
+    },
+    "page.create": {
+      "method": "POST",
+      "path": "/pages",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page"
+    },
+    "page.properties.update": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page"
+    },
+    "page.archive": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "destructive",
+      "paged": false,
+      "verify": "page"
+    },
+    "page.restore": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page"
+    },
+    "block.children.append": {
+      "method": "PATCH",
+      "path": "/blocks/{id}/children",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null
+    },
+    "block.update": {
+      "method": "PATCH",
+      "path": "/blocks/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null
+    },
+    "block.delete": {
+      "method": "DELETE",
+      "path": "/blocks/{id}",
+      "safety": "destructive",
+      "paged": false,
+      "verify": null
+    },
+    "markdown.page.create": {
+      "method": "POST",
+      "path": "/pages",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page"
+    },
+    "markdown.page.update": {
+      "method": "PATCH",
+      "path": "/pages/{id}/markdown",
+      "safety": "destructive",
+      "paged": false,
+      "verify": "page"
+    },
+    "data_source.schema.update": {
+      "method": "PATCH",
+      "path": "/data_sources/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null
+    },
+    "comment.create": {
+      "method": "POST",
+      "path": "/comments",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null
+    },
+    "file_upload.create": {
+      "method": "POST",
+      "path": "/file_uploads",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null
+    }
+  }
+}
