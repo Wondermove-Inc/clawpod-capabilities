@@ -114,3 +114,15 @@ def test_no_secret_leakage_in_onboarding_error():
  secret="fixture-sensitive-credential-value"
  rc,o,err=run("auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":"123456781234123412341234567890ab"}]),env={"NOTION_TOKEN":secret,"NOTION_API_BASE":"http://127.0.0.1:1/v1"})
  assert rc==2 and secret not in json.dumps(o)+err
+
+
+def test_onboarding_verify_403_and_wrong_workspace(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class Denied:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","type":"bot","bot":{"workspace_name":"Other","workspace_id":"other"}},{}
+   raise n.ApiError(403,"restricted_resource","denied",None)
+ monkeypatch.setattr(n,"Transport",Denied)
+ a=n.parser().parse_args(["auth.onboarding.verify","--workspace","Expected","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert not o["ok"] and o["error"]["code"]=="wrong_workspace" and o["data"]["roots"][0]["http_status"]==403 and not o["data"]["allowedRoots"]

@@ -292,7 +292,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7b0e28cbf3bab21fcd4b6ce6778d4fa315f6f356e9258449115943f8f24c162a"
+          "sha256": "2c4dab09410bfc73a099063b2762fcca9e3c2e457cf40fe83488daa6882346b0"
         },
         {
           "path": "references/commands.md",
@@ -300,7 +300,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "3f042db6290db8f34b90da9586742b45ec4df1d8a5aabc37f9797511b651dfab"
+          "sha256": "20758ca8245e27eb58b6bff69dc0037e420c0ea0c9124a37bea37d27c5b1e6e2"
         }
       ],
       "linkedHarness": {
@@ -794,23 +794,27 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "34dc836e8b4a98d7a554b453b321545a19df0e5d44e3b08804cec0b7ba7609fc"
+          "sha256": "74bab7759fe2e9a781066316f769935222160d547aec5c203c7079bbd5d97469"
         },
         {
           "path": "TEST.md",
-          "sha256": "0c66c54373dd57b121f934a8876e2c478561f194c4a922a0d78960015e3b902c"
+          "sha256": "bd7edd85adc64be2c8202c5a4af577606f246113815f6ac6abdfc9577cbc4ade"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "e0663d22e0b0a075a75712a50e30e6772a3f0205c102775acb70a3155b76662e"
+          "sha256": "98d02455492dd31c2bc7630358c006f0a46434bca520ee8f29f6b7b1e3e9629b"
         },
         {
           "path": "harness.json",
-          "sha256": "5fe861abeb0058233ddd5bfd198036ce42723fae1e43339814d0fcad83a9a1ea"
+          "sha256": "6283d7a7bb07493495b9198b67a8324eecbfd832784bc535def79273156c93b8"
         },
         {
           "path": "notion.py",
-          "sha256": "38421aed0f88ca2f8f3e209637b7eabcaea5f32af208723badbae3053e30be4a"
+          "sha256": "f91aa978acf9905d3f023601c8b14fdfc232362eef07b18f8420c6b678fc531c"
+        },
+        {
+          "path": "onboarding.py",
+          "sha256": "699f23cf7772ddf37510de6dba65a988a058eacbe5d969806bf002eaef6d2351"
         }
       ]
     },

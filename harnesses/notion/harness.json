@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "notion",
   "title": "notion",
-  "description": "Typed guarded Notion REST API operations with protected onboarding, allowlisted writes, previews, verification, retries, and redaction.",
+  "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
   "version": "0.1.0",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
@@ -19,7 +19,10 @@
     "protected-onboarding-verification",
     "allowlisted-writes",
     "guarded-writes",
-    "webhook-verification"
+    "webhook-verification",
+    "resumable-minimal-intervention-onboarding",
+    "mockable-browser-desktop-adapter",
+    "protected-secret-capture-handoff"
   ],
   "authModel": {
     "type": "bearer-token-protected-injection",
@@ -234,6 +237,11 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          },
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
           }
         },
         "additionalProperties": false
@@ -305,6 +313,13 @@
           "arg": "operationId",
           "type": "option",
           "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
           "valueType": "string",
           "optional": true
         }
@@ -7777,6 +7792,758 @@
           "type": "option",
           "flag": "--confirm",
           "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.plan": {
+      "description": "onboard.plan resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "internal",
+              "pat",
+              "oauth"
+            ]
+          },
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roots": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "page",
+                    "database",
+                    "data_source",
+                    "block"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F-]{32,36}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capabilities": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "json",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.start": {
+      "description": "onboard.start resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.start"
+      ],
+      "safetyClasses": [
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "workspace"
+        ],
+        "properties": {
+          "statePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "internal",
+              "pat",
+              "oauth"
+            ]
+          },
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roots": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "page",
+                    "database",
+                    "data_source",
+                    "block"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F-]{32,36}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capabilities": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "adapterFixture": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "sessionTimeout": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400
+          },
+          "now": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "statePath",
+          "type": "option",
+          "flag": "--state-path",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "json",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "adapterFixture",
+          "type": "option",
+          "flag": "--adapter-fixture",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sessionTimeout",
+          "type": "option",
+          "flag": "--session-timeout",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.status": {
+      "description": "onboard.status resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "statePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "statePath",
+          "type": "option",
+          "flag": "--state-path",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.inspect": {
+      "description": "onboard.inspect resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "statePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "statePath",
+          "type": "option",
+          "flag": "--state-path",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.resume": {
+      "description": "onboard.resume resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.resume"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "expectedRevision"
+        ],
+        "properties": {
+          "statePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "approveHandoffs": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "adapterFixture": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "now": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "statePath",
+          "type": "option",
+          "flag": "--state-path",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "approveHandoffs",
+          "type": "option",
+          "flag": "--approve-handoffs",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "adapterFixture",
+          "type": "option",
+          "flag": "--adapter-fixture",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.cancel": {
+      "description": "onboard.cancel resumable secret-free Notion onboarding orchestration.",
+      "baseArgv": [
+        "onboard.cancel"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "expectedRevision"
+        ],
+        "properties": {
+          "statePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "now": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "statePath",
+          "type": "option",
+          "flag": "--state-path",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "integer",
           "optional": true
         }
       ]

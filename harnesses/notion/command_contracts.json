@@ -422,6 +422,60 @@
       "requiredInputs": [
         "id"
       ]
+    },
+    "onboard.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "onboard.start": {
+      "method": null,
+      "path": null,
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "workspace"
+      ]
+    },
+    "onboard.status": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "onboard.inspect": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "onboard.resume": {
+      "method": null,
+      "path": null,
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "expectedRevision"
+      ]
+    },
+    "onboard.cancel": {
+      "method": null,
+      "path": null,
+      "safety": "writeSafe",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "expectedRevision"
+      ]
     }
   }
 }

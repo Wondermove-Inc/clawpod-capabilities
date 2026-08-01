@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse, base64, hashlib, hmac, json, os, re, socket, sys, time, urllib.error, urllib.parse, urllib.request, uuid
 from dataclasses import dataclass
 from typing import Any
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import onboarding
 
 API_VERSION="2026-03-11"; SCHEMA_VERSION="1.0"; DEFAULT_BASE="https://api.notion.com/v1"; MAX_BODY=500_000
 MAX_ARRAY=100; MAX_BLOCKS=1000; MAX_TEXT=2000; MAX_ROOTS=50; MAX_TREE_DEPTH=10
@@ -17,6 +19,7 @@ class Spec:
 
 SPECS={
  "auth.status":Spec(None,None),"auth.onboarding.plan":Spec(None,None),"auth.onboarding.verify":Spec(None,None),"diagnostics.doctor":Spec(None,None),
+ "onboard.plan":Spec(None,None),"onboard.start":Spec(None,None,"externalSideEffect"),"onboard.status":Spec(None,None),"onboard.inspect":Spec(None,None),"onboard.resume":Spec(None,None,"externalSideEffect"),"onboard.cancel":Spec(None,None,"writeSafe"),
  "operation.plan":Spec(None,None),
  "resolve.id":Spec(None,None),"resolve.url":Spec(None,None),"markdown.validate":Spec(None,None),
  "webhook.signature.verify":Spec(None,None),"webhook.event.parse":Spec(None,None),
@@ -47,6 +50,7 @@ SPECS={
 def redact(v:Any,key:str="")->Any:
  if key.lower() in TOKEN_KEYS:return "[REDACTED]"
  if isinstance(v,str):
+  if v in onboarding.HANDOFFS:return v
   if "amazonaws.com" in v or "X-Amz-" in v:return urllib.parse.urlsplit(v)._replace(query="").geturl()+"?[REDACTED]"
   return SECRET_RE.sub("[REDACTED]",v)
  if isinstance(v,dict):return {k:redact(x,k) for k,x in v.items()}
@@ -225,8 +229,9 @@ def onboarding_verify(a):
   except ApiError as e:
    diagnostic="resource is missing, belongs to another workspace, or was not shared with this integration" if e.status==404 else "capability or workspace policy blocks access" if e.status==403 else "root verification failed"
    checked.append({**root,"accessible":False,"http_status":e.status,"code":e.code,"diagnostic":diagnostic})
- ok=all(x["accessible"] for x in checked)
- return envelope(a.command,ok,{"connected":True,"identity":identity,"roots":checked,"ready":ok,"capability_guidance":["grant read content for root verification","grant insert/update content only for approved writes","enable comment capability for comment commands","share each internal-integration root explicitly"]},error=None if ok else {"category":"onboarding","http_status":None,"code":"root_verification_failed","message":"one or more roots are unavailable","retryable":False,"details":{}},operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"roots":roots,"command":a.command}))
+ workspace_matches=not a.workspace or a.workspace in {identity.get("workspace_name"),identity.get("workspace_id")}
+ ok=workspace_matches and all(x["accessible"] for x in checked)
+ return envelope(a.command,ok,{"connected":True,"identity":identity,"workspace_matches":workspace_matches,"roots":checked,"allowedRoots":roots if ok else [],"bounded_read_smoke":{"performed":True,"roots_checked":len(checked),"ready":ok},"ready":ok,"capability_guidance":["grant read content for root verification","grant insert/update content only for approved writes","enable comment capability for comment commands","share each internal-integration root explicitly"]},error=None if ok else {"category":"onboarding","http_status":None,"code":"wrong_workspace" if not workspace_matches else "root_verification_failed","message":"user.me does not match the approved workspace" if not workspace_matches else "one or more roots are unavailable","retryable":False,"details":{}},operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"roots":roots,"command":a.command}))
 
 def block_tree(a):
  root=normalized_id(a.id or "");t=Transport(a);count=0
@@ -244,6 +249,11 @@ def block_tree(a):
  return envelope(a.command,True,data,operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"root":root,"max_depth":a.max_depth,"max_items":a.max_items}))
 
 def local(a):
+ if a.command.startswith("onboard."):
+  roots=parse_roots(a.roots) if a.roots else []
+  capabilities=[x for x in (a.capabilities or "read_content").split(",") if x]
+  approvals=[x for x in (a.approve_handoffs or "").split(",") if x]
+  return onboarding.command(a.command,state_path=a.state_path,mode=a.auth_mode or "internal",workspace=a.workspace,roots=roots,capabilities=capabilities,fixture_path=a.adapter_fixture,expected_revision=a.expected_revision,approve=approvals,timeout_seconds=a.session_timeout,credential_present=bool(os.environ.get("NOTION_TOKEN")),now=a.now)
  if a.command=="auth.status":return {"connected":bool(os.environ.get("NOTION_TOKEN")),"credential_source":"protected runtime injection" if os.environ.get("NOTION_TOKEN") else None,"installed_but_not_connected":not bool(os.environ.get("NOTION_TOKEN")),"api_version":API_VERSION}
  if a.command=="auth.onboarding.plan":
   mode=a.auth_mode or "internal"
@@ -270,13 +280,14 @@ def local(a):
  raise ValueError("unknown local command")
 
 def parser():
- p=argparse.ArgumentParser();p.add_argument("command",choices=sorted(SPECS));p.add_argument("--id");p.add_argument("--url");p.add_argument("--property-id");p.add_argument("--body");p.add_argument("--markdown");p.add_argument("--auth-mode",choices=["internal","pat","oauth"]);p.add_argument("--roots");p.add_argument("--allowed-roots");p.add_argument("--operation");p.add_argument("--operation-id");p.add_argument("--target-kind",choices=["page","block","database","data_source","comment","file_upload"]);p.add_argument("--page-size",type=int,default=100);p.add_argument("--start-cursor");p.add_argument("--all-pages",action="store_true");p.add_argument("--max-items",type=int,default=500);p.add_argument("--max-pages",type=int,default=5);p.add_argument("--max-depth",type=int,default=5);p.add_argument("--timeout-ms",type=int,default=20000);p.add_argument("--retries",type=int,default=2);p.add_argument("--max-retry-sleep",type=float,default=.2);p.add_argument("--preview",action="store_true");p.add_argument("--confirm");p.add_argument("--base-url",default=os.environ.get("NOTION_API_BASE",DEFAULT_BASE));p.add_argument("--raw-body-b64");p.add_argument("--signature");return p
+ p=argparse.ArgumentParser();p.add_argument("command",choices=sorted(SPECS));p.add_argument("--id");p.add_argument("--url");p.add_argument("--property-id");p.add_argument("--body");p.add_argument("--markdown");p.add_argument("--auth-mode",choices=["internal","pat","oauth"]);p.add_argument("--roots");p.add_argument("--allowed-roots");p.add_argument("--operation");p.add_argument("--operation-id");p.add_argument("--target-kind",choices=["page","block","database","data_source","comment","file_upload"]);p.add_argument("--page-size",type=int,default=100);p.add_argument("--start-cursor");p.add_argument("--all-pages",action="store_true");p.add_argument("--max-items",type=int,default=500);p.add_argument("--max-pages",type=int,default=5);p.add_argument("--max-depth",type=int,default=5);p.add_argument("--timeout-ms",type=int,default=20000);p.add_argument("--retries",type=int,default=2);p.add_argument("--max-retry-sleep",type=float,default=.2);p.add_argument("--preview",action="store_true");p.add_argument("--confirm");p.add_argument("--base-url",default=os.environ.get("NOTION_API_BASE",DEFAULT_BASE));p.add_argument("--raw-body-b64");p.add_argument("--signature");p.add_argument("--state-path",default=".notion-onboarding.json");p.add_argument("--workspace");p.add_argument("--capabilities");p.add_argument("--adapter-fixture");p.add_argument("--expected-revision",type=int);p.add_argument("--approve-handoffs");p.add_argument("--session-timeout",type=int,default=900);p.add_argument("--now",type=int);return p
 
 def validate(a):
  if not 1<=a.page_size<=100:raise ValueError("--page-size must be 1..100")
  if not 1<=a.max_items<=10000 or not 1<=a.max_pages<=100:raise ValueError("pagination bounds invalid")
  if not 100<=a.timeout_ms<=60000 or not 0<=a.retries<=5 or not 0<=a.max_retry_sleep<=60:raise ValueError("retry/timeout bounds invalid")
  if not 1<=a.max_depth<=MAX_TREE_DEPTH:raise ValueError(f"--max-depth must be 1..{MAX_TREE_DEPTH}")
+ if not 30<=a.session_timeout<=86400:raise ValueError("--session-timeout must be 30..86400")
  u=urllib.parse.urlsplit(a.base_url)
  if u.scheme not in {"http","https"} or not u.netloc:raise ValueError("invalid API base URL")
  if u.scheme!="https" and u.hostname not in {"127.0.0.1","localhost","::1"}:raise ValueError("non-TLS API base is allowed only for loopback tests")
@@ -288,7 +299,7 @@ def validate_command(a,body):
   "data_source.retrieve":["id"],"data_source.query":["id"],"data_source.templates.list":["id"],"comment.list":["id"],"file_upload.retrieve":["id"],
   "page.create":["body"],"page.properties.update":["id","body"],"page.archive":["id"],"page.restore":["id"],"block.children.append":["id","body"],"block.update":["id","body"],"block.delete":["id"],
   "markdown.page.create":["body"],"markdown.page.update":["id","body"],"data_source.schema.update":["id","body"],"comment.create_page":["body"],"comment.create_discussion":["body"],"comment.reply":["body"],
-  "file_upload.create":["body"],"file_upload.complete":["id"],"webhook.signature.verify":["raw_body_b64","signature"],"webhook.event.parse":["body"],"auth.onboarding.verify":["roots"],"operation.plan":["operation"]}
+  "file_upload.create":["body"],"file_upload.complete":["id"],"webhook.signature.verify":["raw_body_b64","signature"],"webhook.event.parse":["body"],"auth.onboarding.verify":["roots"],"operation.plan":["operation"],"onboard.start":["workspace"],"onboard.resume":["expected_revision"],"onboard.cancel":["expected_revision"]}
  for field in required.get(a.command,[]):
   if getattr(a,field,None) in (None,""):raise ValueError(f"--{field.replace('_','-')} is required for {a.command}")
  if a.command=="comment.create_page" and not isinstance(body.get("parent"),dict):raise ValueError("comment.create_page body requires parent.page_id")
