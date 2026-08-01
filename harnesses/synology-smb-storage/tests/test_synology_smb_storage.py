@@ -18,7 +18,7 @@ def test_backend_secret_passwd_only_and_redacted(monkeypatch):
  def fake(argv,**kw):
   seen.update(argv=argv,kw=kw); return SimpleNamespace(args=argv,returncode=1,stdout='secret',stderr='secret')
  monkeypatch.setattr(subprocess,'run',fake)
- cp=smb.run(['tool'],secret='secret')
+ cp=smb.run(['tool'],credential='secret')
  assert seen['kw']['stdin'] is subprocess.DEVNULL and seen['kw']['env']['PASSWD']=='secret'
  assert 'SYNOLOGY_SMB_PASSWORD' not in seen['kw']['env'] and 'secret' not in seen['argv']
  assert cp.stdout==cp.stderr==''
@@ -57,7 +57,7 @@ def test_mount_command_secret_not_argv(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:None); monkeypatch.setattr(smb,'mounted',lambda:{'fstype':'cifs','source':'//nas/team'}); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret'); seen={}
  def fake(argv,**kw): seen.update(argv=argv,kw=kw); return SimpleNamespace(returncode=0)
  monkeypatch.setattr(smb,'run',fake); smb.mount_apply(args(server='nas',share='team',account='u'))
- assert 'secret' not in seen['argv']; assert seen['kw']['secret']=='secret'; assert 'vers=3.1.1' in seen['argv'][-1]
+ assert 'secret' not in seen['argv']; assert seen['kw']['credential']=='secret'; assert 'vers=3.1.1' in seen['argv'][-1]
 
 def test_mount_backend_failure(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:None); monkeypatch.setattr(smb,'mounted',lambda:None); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret')

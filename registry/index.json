@@ -767,7 +767,7 @@
         },
         {
           "path": "synology_smb_storage.py",
-          "sha256": "072e52f0476102170d55f8481e5c46df6b0b710ff9e24519570c9d4a74c025d1"
+          "sha256": "b0829a12e726e6d7abba9a0dcff8e7ed005567560a49599327babba1c16f592d"
         }
       ]
     },

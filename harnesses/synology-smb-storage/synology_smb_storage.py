@@ -51,9 +51,9 @@ def password():
  if not p: raise Fault("AUTH_REQUIRED",f"password required via {PASSWORD_ENV} or harness stdin")
  return p
 
-def run(argv,*,secret=None,timeout=15):
+def run(argv,*,credential=None,timeout=15):
  env=os.environ.copy(); env.pop(PASSWORD_ENV,None)
- if secret is not None: env["PASSWD"]=secret
+ if credential is not None: env["PASSWD"]=credential
  try:
   cp=subprocess.run(argv,stdin=subprocess.DEVNULL,text=True,capture_output=True,env=env,timeout=timeout,check=False)
   # Never return backend diagnostics: a remote endpoint may reflect credentials.
@@ -61,8 +61,8 @@ def run(argv,*,secret=None,timeout=15):
  except subprocess.TimeoutExpired: raise Fault("BACKEND_TIMEOUT","backend timed out")
  except OSError as e: raise Fault("BACKEND_UNAVAILABLE",f"backend unavailable: {e.strerror}")
 
-def smb(server,account,extra,secret):
- return run(["smbclient",*extra,*SMBCLIENT_PROTOCOL,"-U",valid_account(account)],secret=secret)
+def smb(server,account,extra,credential):
+ return run(["smbclient",*extra,*SMBCLIENT_PROTOCOL,"-U",valid_account(account)],credential=credential)
 
 def discover(a):
  s,p=valid_server(a.server),password(); account=valid_account(a.account)
@@ -97,7 +97,7 @@ def mount_apply(a):
  if ROOT.exists() and any(ROOT.iterdir()): raise Fault("MOUNT_CONFLICT","mount target is non-empty")
  created_root=not ROOT.exists(); ROOT.mkdir(parents=True,exist_ok=True)
  opts=",".join((*SAFE_OPTS,f"username={valid_account(a.account)}"))
- cp=run(["mount.cifs",mount_source(a),str(ROOT),"-o",opts],secret=password())
+ cp=run(["mount.cifs",mount_source(a),str(ROOT),"-o",opts],credential=password())
  if cp.returncode:
   if created_root:
    try: ROOT.rmdir()
