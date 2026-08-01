@@ -1,0 +1,995 @@
+{
+  "system.preflight": {
+    "description": "system.preflight operation.",
+    "baseArgv": [
+      "system.preflight"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": []
+  },
+  "auth.contract": {
+    "description": "auth.contract operation.",
+    "baseArgv": [
+      "auth.contract"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": []
+  },
+  "auth.onboard": {
+    "description": "auth.onboard operation.",
+    "baseArgv": [
+      "auth.onboard"
+    ],
+    "safetyClasses": [
+      "writeSafe"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "orgId": {
+          "type": "string"
+        },
+        "agentId": {
+          "type": "string"
+        },
+        "share": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "server",
+        "account",
+        "workflow",
+        "orgId",
+        "agentId"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "server",
+        "type": "option",
+        "flag": "--server",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "account",
+        "type": "option",
+        "flag": "--account",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "workflow",
+        "type": "option",
+        "flag": "--workflow",
+        "valueType": "path",
+        "optional": false,
+        "pathRole": "input"
+      },
+      {
+        "arg": "orgId",
+        "type": "option",
+        "flag": "--org-id",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "agentId",
+        "type": "option",
+        "flag": "--agent-id",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "share",
+        "type": "option",
+        "flag": "--share",
+        "valueType": "string",
+        "optional": true
+      }
+    ]
+  },
+  "shares.discover": {
+    "description": "shares.discover operation.",
+    "baseArgv": [
+      "shares.discover"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "server",
+        "account"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "server",
+        "type": "option",
+        "flag": "--server",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "account",
+        "type": "option",
+        "flag": "--account",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "mount.preview": {
+    "description": "mount.preview operation.",
+    "baseArgv": [
+      "mount.preview"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "share": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "server",
+        "account",
+        "share"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "server",
+        "type": "option",
+        "flag": "--server",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "account",
+        "type": "option",
+        "flag": "--account",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "share",
+        "type": "option",
+        "flag": "--share",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "mount.apply": {
+    "description": "mount.apply operation.",
+    "baseArgv": [
+      "mount.apply"
+    ],
+    "safetyClasses": [
+      "writeSafe"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "share": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "server",
+        "account",
+        "share"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "server",
+        "type": "option",
+        "flag": "--server",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "account",
+        "type": "option",
+        "flag": "--account",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "share",
+        "type": "option",
+        "flag": "--share",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "mount.status": {
+    "description": "mount.status operation.",
+    "baseArgv": [
+      "mount.status"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": []
+  },
+  "mount.unmount": {
+    "description": "mount.unmount operation.",
+    "baseArgv": [
+      "mount.unmount"
+    ],
+    "safetyClasses": [
+      "destructive"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": []
+  },
+  "layout.inspect": {
+    "description": "layout.inspect operation.",
+    "baseArgv": [
+      "layout.inspect"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "orgId": {
+          "type": "string"
+        },
+        "agentId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "orgId",
+        "agentId"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "orgId",
+        "type": "option",
+        "flag": "--org-id",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "agentId",
+        "type": "option",
+        "flag": "--agent-id",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "layout.ensure": {
+    "description": "layout.ensure operation.",
+    "baseArgv": [
+      "layout.ensure"
+    ],
+    "safetyClasses": [
+      "writeSafe"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "orgId": {
+          "type": "string"
+        },
+        "agentId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "orgId",
+        "agentId"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "orgId",
+        "type": "option",
+        "flag": "--org-id",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "agentId",
+        "type": "option",
+        "flag": "--agent-id",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "file.list": {
+    "description": "file.list operation.",
+    "baseArgv": [
+      "file.list"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "path",
+        "type": "option",
+        "flag": "--path",
+        "valueType": "string",
+        "optional": true
+      }
+    ]
+  },
+  "file.get": {
+    "description": "file.get operation.",
+    "baseArgv": [
+      "file.get"
+    ],
+    "safetyClasses": [
+      "readOnly"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "path",
+        "type": "option",
+        "flag": "--path",
+        "valueType": "string",
+        "optional": false
+      }
+    ]
+  },
+  "file.put": {
+    "description": "file.put operation.",
+    "baseArgv": [
+      "file.put"
+    ],
+    "safetyClasses": [
+      "writeSafe"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "overwrite": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "source"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "path",
+        "type": "option",
+        "flag": "--path",
+        "valueType": "string",
+        "optional": false
+      },
+      {
+        "arg": "source",
+        "type": "option",
+        "flag": "--source",
+        "valueType": "path",
+        "optional": false,
+        "pathRole": "input"
+      },
+      {
+        "arg": "overwrite",
+        "type": "option",
+        "flag": "--overwrite",
+        "valueType": "boolean",
+        "optional": true
+      }
+    ]
+  },
+  "workflow.install": {
+    "description": "workflow.install operation.",
+    "baseArgv": [
+      "workflow.install"
+    ],
+    "safetyClasses": [
+      "writeSafe"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "workflow": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "workflow"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "workflow",
+        "type": "option",
+        "flag": "--workflow",
+        "valueType": "path",
+        "optional": false,
+        "pathRole": "input"
+      }
+    ]
+  },
+  "workflow.rollback": {
+    "description": "workflow.rollback operation.",
+    "baseArgv": [
+      "workflow.rollback"
+    ],
+    "safetyClasses": [
+      "destructive"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "workflow": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "workflow"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "data": {},
+        "effects": {
+          "type": "array"
+        },
+        "error": {}
+      },
+      "additionalProperties": false
+    },
+    "argMap": [
+      {
+        "arg": "workflow",
+        "type": "option",
+        "flag": "--workflow",
+        "valueType": "path",
+        "optional": false,
+        "pathRole": "input"
+      }
+    ]
+  }
+}

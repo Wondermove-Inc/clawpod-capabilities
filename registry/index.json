@@ -272,6 +272,37 @@
       }
     },
     {
+      "id": "synology-smb-storage",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Connect Synology SMB3 storage and enforce a safe shared-storage-first durable artifact policy.",
+      "path": "skills/synology-smb-storage",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "1b2c53df666095688b3566658e566a541defd18dd7a92124573e8ede0e19c4ac"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "41c9eb205c954ecd13dac5d4719c0743f44bc69118c5aaa446609d717017127f"
+        }
+      ],
+      "linkedHarness": {
+        "id": "synology-smb-storage",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "verified-research",
       "type": "skill",
       "version": "0.1.2",
@@ -702,6 +733,41 @@
         {
           "path": "scripts/generate_schemas.py",
           "sha256": "12696f6ac8bcfe271b6950adf4cb653d8b3266da53095ac39285882d0c24078e"
+        }
+      ]
+    },
+    {
+      "id": "synology-smb-storage",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Deterministic SMB3 discovery, mounting, layout, policy, and file operations for Synology NAS storage.",
+      "path": "harnesses/synology-smb-storage",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "d74514d60ea7531fc53680cd0946943c9f84dc23b2848c0fbe1d30fc210f0081"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "70f50934a4f1267d995f70826093f14017aa0e4756f4c364482e3b400e02fd09"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "34be85756722c2575eced26548830ed9e874e0c1416715c1654d8350a990c074"
+        },
+        {
+          "path": "synology_smb_storage.py",
+          "sha256": "fdd0bd3065d75cd870e64af6179f366b6ebd6eeaf7fe5b76f35594760d0096fa"
         }
       ]
     },
