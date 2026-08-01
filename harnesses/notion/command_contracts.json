@@ -1476,6 +1476,57 @@
         "expectedRevision",
         "now"
       ]
+    },
+    "file_upload.send": {
+      "method": "POST",
+      "path": "/file_uploads/{id}/send",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "file_upload",
+      "requiredInputs": [
+        "id",
+        "transferRoot",
+        "sourcePath"
+      ],
+      "constraints": {
+        "transferRoot": "absolute trusted directory",
+        "sourcePath": "relative regular file; no traversal or symlinks",
+        "maxBytes": 20000000,
+        "retriesAfterTransmission": 0,
+        "authentication": "Bearer NOTION_TOKEN and Notion-Version to validated API base"
+      },
+      "jsonStringTransport": [
+        "allowedRoots"
+      ],
+      "structuredInputSchemas": {
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
     }
   }
 }

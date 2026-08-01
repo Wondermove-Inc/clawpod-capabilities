@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Typed, guarded Notion REST API harness. Stdlib-only and stdout is one JSON object."""
 from __future__ import annotations
-import argparse, base64, hashlib, hmac, json, os, re, socket, sys, time, urllib.error, urllib.parse, urllib.request, uuid
+import argparse, base64, hashlib, hmac, json, mimetypes, os, re, socket, stat, sys, time, urllib.error, urllib.parse, urllib.request, uuid
 from dataclasses import dataclass
 from typing import Any
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import onboarding
 
 API_VERSION="2026-03-11"; SCHEMA_VERSION="1.0"; DEFAULT_BASE="https://api.notion.com/v1"; MAX_BODY=500_000
-MAX_ARRAY=100; MAX_BLOCKS=1000; MAX_TEXT=2000; MAX_ROOTS=50; MAX_TREE_DEPTH=10
+MAX_ARRAY=100; MAX_BLOCKS=1000; MAX_TEXT=2000; MAX_ROOTS=50; MAX_TREE_DEPTH=10; MAX_UPLOAD=20_000_000
 TOKEN_KEYS={"authorization","token","access_token","refresh_token","client_secret","authorization_code","verification_token","signature"}
 SECRET_RE=re.compile(r"(?i)(bearer\s+\S+|(?:secret|ntn)_[A-Za-z0-9_-]{8,}|(?:access|refresh)[_-]?token[=:]\s*\S+)")
 UUID_RE=re.compile(r"^[0-9a-f]{32}$",re.I)
@@ -44,6 +44,7 @@ SPECS={
  "comment.create_page":Spec("POST","/comments","externalSideEffect"),"comment.create_discussion":Spec("POST","/comments","externalSideEffect"),
  "comment.reply":Spec("POST","/comments","externalSideEffect"),
  "file_upload.create":Spec("POST","/file_uploads","externalSideEffect",verify="file_upload"),
+ "file_upload.send":Spec(None,None,"externalSideEffect"),
  "file_upload.complete":Spec("POST","/file_uploads/{id}/complete","externalSideEffect",verify="file_upload"),
 }
 
@@ -144,7 +145,7 @@ def enforce_allowed_roots(a:argparse.Namespace,body:dict)->None:
  targets=write_targets(a,body)
  # Upload allocation/completion is unattached and the API accepts no page/block parent.
  # Every later content mutation that attaches the upload remains subject to normal root enforcement.
- if a.command in {"file_upload.create","file_upload.complete"}:return
+ if a.command in {"file_upload.create","file_upload.send","file_upload.complete"}:return
  if not targets:raise ValueError("write target cannot be proven against configured allowedRoots")
  if not targets.issubset(allowed):raise ValueError("write target is outside configured allowedRoots")
 
@@ -176,7 +177,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.5"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.6"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt
@@ -252,6 +253,72 @@ def onboarding_verify(a):
  ok=workspace_matches and all(x["accessible"] for x in checked)
  return envelope(a.command,ok,{"connected":True,"identity":identity,"workspace_matches":workspace_matches,"roots":checked,"allowedRoots":roots if ok else [],"bounded_read_smoke":{"performed":True,"roots_checked":len(checked),"ready":ok},"ready":ok,"capability_guidance":["grant read content for root verification","grant insert/update content only for approved writes","enable comment capability for comment commands","share each internal-integration root explicitly"]},error=None if ok else {"category":"onboarding","http_status":None,"code":"wrong_workspace" if not workspace_matches else "root_verification_failed","message":"user.me does not match the approved workspace" if not workspace_matches else "one or more roots are unavailable","retryable":False,"details":{}},operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"roots":roots,"command":a.command}))
 
+class TransferError(RuntimeError):
+ def __init__(self,message:str,status:int|None=None,unknown:bool=True):super().__init__(message);self.status=status;self.unknown=unknown
+
+def upload_source(a)->dict:
+ root=os.path.abspath(a.transfer_root or "")
+ if not os.path.isabs(a.transfer_root or ""):raise ValueError("--transfer-root must be an absolute trusted directory")
+ if os.path.islink(root) or not os.path.isdir(root):raise ValueError("--transfer-root must be a real directory, not a symlink")
+ rel=a.source_path or ""
+ if not rel or os.path.isabs(rel) or ".." in rel.replace("\\","/").split("/"):raise ValueError("--source-path must be a traversal-free relative path")
+ current=root
+ for part in rel.replace("\\","/").split("/"):
+  if part in {"","."}:raise ValueError("--source-path contains an invalid component")
+  current=os.path.join(current,part)
+  try:mode=os.lstat(current).st_mode
+  except FileNotFoundError:raise ValueError("source file does not exist")
+  if stat.S_ISLNK(mode):raise ValueError("source path must not contain symlinks")
+ if os.path.commonpath((root,os.path.abspath(current)))!=root:raise ValueError("source path escapes transfer root")
+ mode=os.stat(current,follow_symlinks=False).st_mode
+ if not stat.S_ISREG(mode):raise ValueError("source must be a regular file")
+ limit=min(a.max_upload_bytes,MAX_UPLOAD)
+ flags=os.O_RDONLY|getattr(os,"O_NOFOLLOW",0)
+ fd=os.open(current,flags)
+ try:
+  opened=os.fstat(fd)
+  if not stat.S_ISREG(opened.st_mode):raise ValueError("source must be a regular file")
+  size=opened.st_size
+  if size>limit:raise ValueError(f"source exceeds upload limit of {limit} bytes")
+  data=os.read(fd,limit+1)
+  if len(data)!=size:raise ValueError("source changed while being read")
+ finally:os.close(fd)
+ digest=hashlib.sha256(data).hexdigest();filename=a.filename or os.path.basename(current)
+ if filename!=os.path.basename(filename) or filename in {"",".",".."} or any(x in filename for x in "\r\n\0"):raise ValueError("--filename must be a safe basename")
+ content_type=a.content_type or mimetypes.guess_type(filename)[0] or "application/octet-stream"
+ if not re.fullmatch(r"[A-Za-z0-9!#$&^_.+\-]+/[A-Za-z0-9!#$&^_.+\-]+",content_type):raise ValueError("invalid --content-type")
+ return {"path":current,"data":data,"size":size,"sha256":digest,"filename":filename,"content_type":content_type}
+
+def upload_intent(a,source:dict)->dict:
+ upload_id=normalized_id(a.id or "")
+ return {"command":"file_upload.send","method":"POST","endpoint":f"/file_uploads/{upload_id}/send","file_upload_id":upload_id,"source_sha256":source["sha256"],"source_size":source["size"],"filename":source["filename"],"content_type":source["content_type"],"timeout_ms":a.timeout_ms}
+
+def send_upload(a,source:dict,intent:dict)->dict:
+ boundary="clawpod-"+source["sha256"][:24]
+ disposition=f'Content-Disposition: form-data; name="file"; filename="{source["filename"]}"\r\n'
+ prefix=(f"--{boundary}\r\n"+disposition+f"Content-Type: {source['content_type']}\r\n\r\n").encode()
+ body=prefix+source["data"]+f"\r\n--{boundary}--\r\n".encode()
+ token=os.environ.get("NOTION_TOKEN")
+ if not token:raise ValueError("credential unavailable; inject NOTION_TOKEN only through protected runtime secret handling")
+ headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":f"multipart/form-data; boundary={boundary}","Content-Length":str(len(body)),"User-Agent":"clawpod-notion/0.1.6"}
+ url=a.base_url.rstrip("/")+intent["endpoint"]
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,body,headers,method="POST"),timeout=a.timeout_ms/1000) as r:
+   raw=r.read(256_001)
+   if len(raw)>256_000:raise TransferError("upload response exceeded 256000 bytes")
+   status=r.status;result=json.loads(raw or b"{}")
+ except urllib.error.HTTPError as e:
+  raise TransferError(f"Notion upload endpoint returned HTTP {e.code}",e.code,unknown=e.code>=500) from None
+ except (urllib.error.URLError,TimeoutError,socket.timeout) as e:
+  raise TransferError("Notion upload timed out or transport failed after transmission may have started",unknown=True) from None
+ try:
+  verified,_=Transport(a).request("GET",f"/file_uploads/{intent['file_upload_id']}",{}, {},False)
+ except Exception as e:raise TransferError("upload returned success but file_upload.retrieve verification failed",status,unknown=True) from e
+ observed=verified.get("status") or verified.get("file",{}).get("status")
+ if observed!="uploaded":raise TransferError("file upload verification did not report uploaded status",status,unknown=False)
+ evidence={"file_upload":result,"file_upload_id":intent["file_upload_id"],"source_sha256":source["sha256"],"source_size":source["size"],"filename":source["filename"],"content_type":source["content_type"],"http_status":status}
+ return envelope(a.command,True,evidence,effects={"performed":True,"created":[],"updated":[intent["file_upload_id"]],"deleted":[],"unknown":False},operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest(intent),retry={"attempts":1,"retryable":False,"retry_after_seconds":None},verification={"performed":True,"supported":True,"kind":"file_upload.retrieve","resource_id":intent["file_upload_id"],"status":observed})
+
 def block_tree(a):
  root=normalized_id(a.id or "");t=Transport(a);count=0
  def visit(block_id:str,depth:int):
@@ -299,7 +366,7 @@ def local(a):
  raise ValueError("unknown local command")
 
 def parser():
- p=argparse.ArgumentParser();p.add_argument("command",choices=sorted(SPECS));p.add_argument("--id");p.add_argument("--url");p.add_argument("--property-id");p.add_argument("--body");p.add_argument("--markdown");p.add_argument("--auth-mode",choices=["internal","pat","oauth"]);p.add_argument("--roots");p.add_argument("--allowed-roots");p.add_argument("--operation");p.add_argument("--operation-id");p.add_argument("--target-kind",choices=["page","block","database","data_source","comment","file_upload"]);p.add_argument("--page-size",type=int,default=100);p.add_argument("--start-cursor");p.add_argument("--all-pages",action="store_true");p.add_argument("--max-items",type=int,default=500);p.add_argument("--max-pages",type=int,default=5);p.add_argument("--max-depth",type=int,default=5);p.add_argument("--timeout-ms",type=int,default=20000);p.add_argument("--retries",type=int,default=2);p.add_argument("--max-retry-sleep",type=float,default=.2);p.add_argument("--preview",action="store_true");p.add_argument("--confirm");p.add_argument("--base-url",default=os.environ.get("NOTION_API_BASE",DEFAULT_BASE));p.add_argument("--raw-body-b64");p.add_argument("--signature");p.add_argument("--output-root");p.add_argument("--session");p.add_argument("--state-name",default="state.json");p.add_argument("--workspace");p.add_argument("--capabilities");p.add_argument("--expected-revision",type=int);p.add_argument("--approve-handoffs");p.add_argument("--session-timeout",type=int,default=900);p.add_argument("--now",type=int);return p
+ p=argparse.ArgumentParser();p.add_argument("command",choices=sorted(SPECS));p.add_argument("--id");p.add_argument("--url");p.add_argument("--property-id");p.add_argument("--body");p.add_argument("--markdown");p.add_argument("--auth-mode",choices=["internal","pat","oauth"]);p.add_argument("--roots");p.add_argument("--allowed-roots");p.add_argument("--operation");p.add_argument("--operation-id");p.add_argument("--target-kind",choices=["page","block","database","data_source","comment","file_upload"]);p.add_argument("--page-size",type=int,default=100);p.add_argument("--start-cursor");p.add_argument("--all-pages",action="store_true");p.add_argument("--max-items",type=int,default=500);p.add_argument("--max-pages",type=int,default=5);p.add_argument("--max-depth",type=int,default=5);p.add_argument("--timeout-ms",type=int,default=20000);p.add_argument("--retries",type=int,default=2);p.add_argument("--max-retry-sleep",type=float,default=.2);p.add_argument("--preview",action="store_true");p.add_argument("--confirm");p.add_argument("--base-url",default=os.environ.get("NOTION_API_BASE",DEFAULT_BASE));p.add_argument("--transfer-root");p.add_argument("--source-path");p.add_argument("--filename");p.add_argument("--content-type");p.add_argument("--max-upload-bytes",type=int,default=MAX_UPLOAD);p.add_argument("--raw-body-b64");p.add_argument("--signature");p.add_argument("--output-root");p.add_argument("--session");p.add_argument("--state-name",default="state.json");p.add_argument("--workspace");p.add_argument("--capabilities");p.add_argument("--expected-revision",type=int);p.add_argument("--approve-handoffs");p.add_argument("--session-timeout",type=int,default=900);p.add_argument("--now",type=int);return p
 
 def validate(a):
  if not 1<=a.page_size<=100:raise ValueError("--page-size must be 1..100")
@@ -307,6 +374,7 @@ def validate(a):
  if not 100<=a.timeout_ms<=60000 or not 0<=a.retries<=5 or not 0<=a.max_retry_sleep<=60:raise ValueError("retry/timeout bounds invalid")
  if not 1<=a.max_depth<=MAX_TREE_DEPTH:raise ValueError(f"--max-depth must be 1..{MAX_TREE_DEPTH}")
  if not 30<=a.session_timeout<=86400:raise ValueError("--session-timeout must be 30..86400")
+ if not 1<=a.max_upload_bytes<=MAX_UPLOAD:raise ValueError(f"--max-upload-bytes must be 1..{MAX_UPLOAD}")
  u=urllib.parse.urlsplit(a.base_url)
  if u.scheme not in {"http","https"} or not u.netloc:raise ValueError("invalid API base URL")
  if u.scheme!="https" and u.hostname not in {"127.0.0.1","localhost","::1"}:raise ValueError("non-TLS API base is allowed only for loopback tests")
@@ -318,7 +386,7 @@ def validate_command(a,body):
   "data_source.retrieve":["id"],"data_source.query":["id"],"data_source.templates.list":["id"],"comment.list":["id"],"file_upload.retrieve":["id"],
   "page.create":["body"],"page.properties.update":["id","body"],"page.archive":["id"],"page.restore":["id"],"block.children.append":["id","body"],"block.update":["id","body"],"block.delete":["id"],
   "markdown.page.create":["body"],"markdown.page.update":["id","body"],"data_source.schema.update":["id","body"],"comment.create_page":["body"],"comment.create_discussion":["body"],"comment.reply":["body"],
-  "file_upload.create":["body"],"file_upload.complete":["id"],"webhook.signature.verify":["raw_body_b64","signature"],"webhook.event.parse":["body"],"auth.onboarding.verify":["roots"],"operation.plan":["operation"],"onboard.start":["output_root","session","workspace"],"onboard.status":["output_root","session"],"onboard.inspect":["output_root","session"],"onboard.resume":["output_root","session","expected_revision"],"onboard.cancel":["output_root","session","expected_revision"]}
+  "file_upload.create":["body"],"file_upload.send":["id","transfer_root","source_path"],"file_upload.complete":["id"],"webhook.signature.verify":["raw_body_b64","signature"],"webhook.event.parse":["body"],"auth.onboarding.verify":["roots"],"operation.plan":["operation"],"onboard.start":["output_root","session","workspace"],"onboard.status":["output_root","session"],"onboard.inspect":["output_root","session"],"onboard.resume":["output_root","session","expected_revision"],"onboard.cancel":["output_root","session","expected_revision"]}
  for field in required.get(a.command,[]):
   if getattr(a,field,None) in (None,""):raise ValueError(f"--{field.replace('_','-')} is required for {a.command}")
  if a.command=="comment.create_page" and not isinstance(body.get("parent"),dict):raise ValueError("comment.create_page body requires parent.page_id")
@@ -329,7 +397,13 @@ def main():
  a=parser().parse_args();cmd=a.command
  try:
   validate(a);spec=SPECS[cmd];body=parse_body(a);validate_command(a,body)
-  if cmd=="auth.onboarding.verify":out=onboarding_verify(a)
+  if cmd=="file_upload.send":
+   enforce_allowed_roots(a,body);source=upload_source(a);intent=upload_intent(a,source);ih=intent_hash(intent)
+   preview={"intent_hash":ih,"request_digest":request_digest(intent),"operation_id":a.operation_id or str(uuid.uuid4()),"request":intent,"safety_class":"externalSideEffect","expected_effects":{"target":intent["endpoint"],"operation":"single-part multipart/form-data upload"},"verification":{"supported":True,"kind":"file_upload.retrieve","expected_status":"uploaded"},"root_policy":{"exception":"unattached file-upload transfer has no content target; allowedRoots remains mandatory when content is attached"},"retry_policy":"mutation is attempted once; reconcile ambiguous effects before retry"}
+   if a.preview:out=envelope(cmd,True,{"preview":preview},operation_id=preview["operation_id"],request_digest=preview["request_digest"])
+   elif a.confirm!=ih:raise ValueError("write requires --preview, then --confirm with the exact intent_hash")
+   else:out=send_upload(a,source,intent)
+  elif cmd=="auth.onboarding.verify":out=onboarding_verify(a)
   elif cmd=="block.tree.retrieve":out=block_tree(a)
   elif spec.method is None:out=envelope(cmd,True,local(a),operation_id=a.operation_id or str(uuid.uuid4()),request_digest=request_digest({"command":cmd,"id":a.id,"url":a.url,"operation":a.operation}))
   else:
@@ -346,6 +420,8 @@ def main():
  except ApiError as e:
   mutation=SPECS.get(cmd,Spec(None,None)).safety!="readOnly"; uncertain=mutation and e.status in (409,500,502,503,504,529)
   out=envelope(cmd,False,error={"category":category(e.status,e.code),"http_status":e.status,"code":e.code,"message":str(e),"retryable":False if mutation else e.status in (409,429,500,502,503,504,529),"details":{}},effects={"performed":False,"created":[],"updated":[],"deleted":[],"unknown":uncertain},notion_request_id=e.request_id,retry={"attempts":0,"retryable":False if mutation else e.status in (409,429,500,502,503,504,529),"retry_after_seconds":e.retry_after})
+ except TransferError as e:
+  out=envelope(cmd,False,error={"category":"backend" if e.status else "transport","http_status":e.status,"code":"upload_failed","message":str(e),"retryable":False,"details":{}},effects={"performed":False,"created":[],"updated":[],"deleted":[],"unknown":e.unknown},retry={"attempts":1,"retryable":False,"retry_after_seconds":None})
  except (ValueError,RuntimeError,OSError) as e:
   mutation=SPECS.get(cmd,Spec(None,None)).safety!="readOnly";unknown=mutation and "timed out or transport" in str(e)
   out=envelope(cmd,False,error={"category":"validation" if isinstance(e,ValueError) else "transport","http_status":None,"code":"invalid_input" if isinstance(e,ValueError) else "transport_error","message":str(e),"retryable":False,"details":{}},effects={"performed":False,"created":[],"updated":[],"deleted":[],"unknown":unknown})
