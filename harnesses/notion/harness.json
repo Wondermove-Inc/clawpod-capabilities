@@ -4,7 +4,7 @@
   "name": "notion",
   "title": "notion",
   "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -907,7 +907,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -916,16 +916,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -993,7 +993,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1014,28 +1014,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1067,7 +1067,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1076,16 +1076,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1160,7 +1160,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1181,28 +1181,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1229,7 +1229,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1238,16 +1238,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1315,7 +1315,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1336,28 +1336,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1387,7 +1387,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1396,16 +1396,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1480,7 +1480,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1501,28 +1501,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1554,7 +1554,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1563,16 +1563,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1647,7 +1647,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1668,28 +1668,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1725,7 +1725,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1734,16 +1734,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1825,7 +1825,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1846,28 +1846,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -1899,7 +1899,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -1908,16 +1908,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -1992,7 +1992,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2013,28 +2013,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2066,7 +2066,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -2075,16 +2075,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2159,7 +2159,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2180,28 +2180,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2233,7 +2233,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -2242,16 +2242,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2326,7 +2326,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2347,28 +2347,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2400,19 +2400,19 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxDepth": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2487,35 +2487,35 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxDepth",
           "type": "option",
           "flag": "--max-depth",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2547,7 +2547,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -2556,16 +2556,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2640,7 +2640,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2661,28 +2661,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2714,7 +2714,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -2723,16 +2723,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2807,7 +2807,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2828,28 +2828,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2881,7 +2881,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -2890,16 +2890,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -2974,7 +2974,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2995,28 +2995,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3051,7 +3051,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3060,16 +3060,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3151,7 +3151,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3172,28 +3172,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3225,7 +3225,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3234,16 +3234,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3318,7 +3318,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3339,28 +3339,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3389,7 +3389,7 @@
         ],
         "properties": {
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3398,16 +3398,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3478,7 +3478,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3499,28 +3499,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3559,7 +3559,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3568,16 +3568,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3652,7 +3652,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3673,28 +3673,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3721,7 +3721,7 @@
         "required": [],
         "properties": {
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3730,16 +3730,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3807,7 +3807,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3828,28 +3828,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3881,7 +3881,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -3890,16 +3890,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -3983,7 +3983,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4004,28 +4004,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4082,7 +4082,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -4091,16 +4091,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -4191,7 +4191,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4212,28 +4212,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4289,7 +4289,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -4298,16 +4298,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -4398,7 +4398,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4419,28 +4419,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4496,7 +4496,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -4505,16 +4505,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -4605,7 +4605,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4626,28 +4626,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4704,7 +4704,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -4713,16 +4713,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -4813,7 +4813,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4834,28 +4834,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4912,7 +4912,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -4921,16 +4921,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -5021,7 +5021,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5042,28 +5042,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5119,7 +5119,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -5128,16 +5128,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -5228,7 +5228,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5249,28 +5249,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5323,7 +5323,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -5332,16 +5332,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -5425,7 +5425,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5446,28 +5446,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5524,7 +5524,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -5533,16 +5533,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -5633,7 +5633,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5654,28 +5654,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5732,7 +5732,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -5741,16 +5741,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -5841,7 +5841,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5862,28 +5862,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5936,7 +5936,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -5945,16 +5945,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -6038,7 +6038,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6059,28 +6059,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6133,7 +6133,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -6142,16 +6142,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -6235,7 +6235,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6256,28 +6256,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6330,7 +6330,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -6339,16 +6339,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -6432,7 +6432,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6453,28 +6453,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6527,7 +6527,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -6536,16 +6536,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -6629,7 +6629,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6650,28 +6650,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6727,7 +6727,7 @@
             "type": "string"
           },
           "pageSize": {
-            "type": "integer"
+            "type": "string"
           },
           "startCursor": {
             "type": "string"
@@ -6736,16 +6736,16 @@
             "type": "boolean"
           },
           "maxItems": {
-            "type": "integer"
+            "type": "string"
           },
           "maxPages": {
-            "type": "integer"
+            "type": "string"
           },
           "timeoutMs": {
-            "type": "integer"
+            "type": "string"
           },
           "retries": {
-            "type": "integer"
+            "type": "string"
           },
           "operationId": {
             "type": "string"
@@ -6836,7 +6836,7 @@
           "arg": "pageSize",
           "type": "option",
           "flag": "--page-size",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6857,28 +6857,28 @@
           "arg": "maxItems",
           "type": "option",
           "flag": "--max-items",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "maxPages",
           "type": "option",
           "flag": "--max-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "timeoutMs",
           "type": "option",
           "flag": "--timeout-ms",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "retries",
           "type": "option",
           "flag": "--retries",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7288,10 +7288,10 @@
             "type": "string"
           },
           "sessionTimeout": {
-            "type": "integer"
+            "type": "string"
           },
           "now": {
-            "type": "integer"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7405,14 +7405,14 @@
           "arg": "sessionTimeout",
           "type": "option",
           "flag": "--session-timeout",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
           "arg": "now",
           "type": "option",
           "flag": "--now",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7657,13 +7657,13 @@
             "type": "string"
           },
           "expectedRevision": {
-            "type": "integer"
+            "type": "string"
           },
           "approveHandoffs": {
             "type": "string"
           },
           "now": {
-            "type": "integer"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7749,7 +7749,7 @@
           "arg": "expectedRevision",
           "type": "option",
           "flag": "--expected-revision",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -7763,7 +7763,7 @@
           "arg": "now",
           "type": "option",
           "flag": "--now",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7794,10 +7794,10 @@
             "type": "string"
           },
           "expectedRevision": {
-            "type": "integer"
+            "type": "string"
           },
           "now": {
-            "type": "integer"
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7883,14 +7883,14 @@
           "arg": "expectedRevision",
           "type": "option",
           "flag": "--expected-revision",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": false
         },
         {
           "arg": "now",
           "type": "option",
           "flag": "--now",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         }
       ]

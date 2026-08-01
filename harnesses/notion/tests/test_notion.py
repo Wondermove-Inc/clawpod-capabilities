@@ -197,7 +197,7 @@ def test_every_gateway_arg_map_uses_runtime_supported_contract():
    if entry["type"] in {"option","booleanFlag","repeatableOption"}:assert entry.get("flag"),(name,entry)
    if entry["valueType"]=="path":assert entry.get("pathRole") in {"input","output","inout"},(name,entry)
    else:assert "pathRole" not in entry,(name,entry)
- assert covered_values=={"string","integer","boolean"}
+ assert covered_values=={"string","boolean"}
  assert covered_entries=={"option","booleanFlag"}
 
 

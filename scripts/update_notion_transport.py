@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HARNESS = ROOT / "harnesses/notion/harness.json"
 CONTRACTS = ROOT / "harnesses/notion/command_contracts.json"
 ALLOWED = {"string", "number", "integer", "boolean", "enum", "path"}
+INTEGER_ARGS = {"pageSize", "maxItems", "maxPages", "maxDepth", "timeoutMs", "retries", "sessionTimeout", "now", "expectedRevision"}
 
 
 def main() -> None:
@@ -18,6 +19,8 @@ def main() -> None:
         properties = command["inputSchema"].get("properties", {})
         contract = contracts["commands"][name]
         known_structured = contract.get("structuredInputSchemas", {})
+        known_integers = set(contract.get("integerStringTransport", []))
+        contract.pop("integerStringTransport", None)
         for entry in command["argMap"]:
             schema = properties.get(entry["arg"], {})
             schema_type = schema.get("type")
@@ -27,6 +30,12 @@ def main() -> None:
                 entry["valueType"] = "string"
                 structured.append(entry["arg"])
                 contract.setdefault("structuredInputSchemas", {})[entry["arg"]] = contract_schema
+            elif schema_type == "integer" or entry["arg"] in known_integers or entry["arg"] in INTEGER_ARGS:
+                # Gateway transports input values as scalar strings before schema validation.
+                # Keep transport string-compatible; argparse type=int is authoritative.
+                properties[entry["arg"]] = {"type": "string"}
+                entry["valueType"] = "string"
+                contract.setdefault("integerStringTransport", []).append(entry["arg"])
             elif entry["arg"] in known_structured:
                 entry["valueType"] = "string"
                 structured.append(entry["arg"])

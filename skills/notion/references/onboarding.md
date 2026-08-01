@@ -1,6 +1,6 @@
 # Minimal-intervention onboarding and recovery
 
-Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Prefer **Internal Integration** for team-owned automation; PAT is personal/development only. OAuth can automate planning and authorization navigation, but provider client registration, redirect configuration, exchange, refresh, and revoke require a separately configured client.
+Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Prefer **Internal Integration** as the simplest default for team-owned automation. Explain up front how to create it, choose the exact workspace, select the owner-approved full profile (content read/insert/update, comments read/insert, and user information access as supported by current Notion settings), share only exact approved roots, reveal/copy the token, and hand it directly to the owner agent through protected secret capture. Broad grants never pre-authorize a live write; preview, exact intent approval, and verification remain mandatory. Never accept tokens in chat, files, screenshots, DOM, clipboard logs, or ordinary output. A chat-pasted token is exposed and must be revoked/rotated before protected capture; PAT is personal/development only. OAuth can automate planning and authorization navigation, but provider client registration, redirect configuration, exchange, refresh, and revoke require a separately configured client.
 
 ## Resumable flow
 
