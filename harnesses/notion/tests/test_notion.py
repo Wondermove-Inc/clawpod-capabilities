@@ -126,7 +126,7 @@ def test_gateway_arg_map_contract_and_structured_transport():
    else:assert "pathRole" not in entry
    if entry["arg"] in json.loads((P.parent/"command_contracts.json").read_text())["commands"][name].get("jsonStringTransport",[]):
     structured+=1;assert entry["valueType"]=="string" and properties[entry["arg"]]["type"]=="string"
- assert structured==38
+ assert structured==39
  contracts=json.loads((P.parent/"command_contracts.json").read_text())
  assert contracts["commands"]["page.create"]["jsonStringTransport"]==["allowedRoots","body"]
 
@@ -145,7 +145,7 @@ def test_gateway_arg_map_contract_and_structured_transport():
    else:assert "pathRole" not in entry
    if entry["arg"] in transported:
     structured+=1;assert properties[entry["arg"]]=={"type":"string"} and entry["valueType"]=="string"
- assert structured==38
+ assert structured==39
  assert contracts["commands"]["page.create"]["jsonStringTransport"]==["allowedRoots","body"]
 
 def test_allowlist_rejects_write_outside_root():
@@ -194,6 +194,62 @@ def test_file_upload_lifecycle_has_narrow_unattached_allowlist_exception():
  rc,o,_=run("page.properties.update","--id",upload,"--body",'{"properties":{}}',"--allowed-roots",roots,"--preview")
  assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
 
+def test_file_upload_send_preview_and_authenticated_multipart(tmp_path,monkeypatch):
+ root=tmp_path/"root";root.mkdir();(root/"a.txt").write_bytes(b"hello")
+ uid="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+ a=n.parser().parse_args(["file_upload.send","--id",uid,"--transfer-root",str(root),"--source-path","a.txt","--preview"])
+ n.validate(a);source=n.upload_source(a);intent=n.upload_intent(a,source)
+ assert intent["endpoint"]==f"/file_uploads/{uid}/send" and "data" not in intent
+ seen={}
+ class R:
+  status=200
+  def __enter__(self):return self
+  def __exit__(self,*x):pass
+  def read(self,n):return json.dumps({"id":uid,"status":"uploaded"}).encode()
+ def fake(req,timeout):seen.update(headers=dict(req.header_items()),body=req.data,url=req.full_url);return R()
+ class T:
+  def __init__(self,a):self.attempts=1
+  def request(self,*x,**y):return {"id":uid,"status":"uploaded"},{}
+ monkeypatch.setattr(n.urllib.request,"urlopen",fake);monkeypatch.setattr(n,"Transport",T);monkeypatch.setenv("NOTION_TOKEN","fixture-token")
+ out=n.send_upload(a,source,intent)
+ assert out["ok"] and out["verification"]["status"]=="uploaded" and out["data"]["source_size"]==5
+ assert seen["url"].endswith(f"/v1/file_uploads/{uid}/send")
+ assert b'name="file"; filename="a.txt"' in seen["body"] and b"hello" in seen["body"]
+ assert seen["headers"]["Authorization"]=="Bearer fixture-token" and seen["headers"]["Notion-version"]==n.API_VERSION
+ assert "fixture-token" not in json.dumps(out)
+
+
+def test_file_upload_send_rejects_paths_size_and_bad_id(tmp_path):
+ import pytest
+ root=tmp_path/"root";root.mkdir();outside=tmp_path/"outside";outside.write_bytes(b"x")
+ (root/"big").write_bytes(b"xx");(root/"link").symlink_to(outside)
+ uid="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+ def args(path="big",limit="1",ident=uid,transfer=None):
+  return n.parser().parse_args(["file_upload.send","--id",ident,"--transfer-root",str(transfer or root),"--source-path",path,"--max-upload-bytes",limit])
+ with pytest.raises(ValueError,match="exceeds upload limit"):n.upload_source(args())
+ with pytest.raises(ValueError,match="traversal-free"):n.upload_source(args("../outside",limit="20"))
+ with pytest.raises(ValueError,match="symlinks"):n.upload_source(args("link",limit="20"))
+ source=n.upload_source(args("big",limit="20"))
+ with pytest.raises(ValueError,match="Notion UUID"):n.upload_intent(args("big","20","bad"),source)
+
+
+def test_file_upload_send_failure_is_ambiguous(tmp_path,monkeypatch):
+ import pytest
+ root=tmp_path/"root";root.mkdir();(root/"a").write_bytes(b"x");uid="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+ a=n.parser().parse_args(["file_upload.send","--id",uid,"--transfer-root",str(root),"--source-path","a"])
+ source=n.upload_source(a);intent=n.upload_intent(a,source);monkeypatch.setenv("NOTION_TOKEN","fixture")
+ def fail(*x,**y):raise n.urllib.error.URLError("timeout")
+ monkeypatch.setattr(n.urllib.request,"urlopen",fail)
+ with pytest.raises(n.TransferError) as exc:n.send_upload(a,source,intent)
+ assert exc.value.unknown
+
+
+def test_file_upload_send_manifest_contract():
+ manifest=json.loads((P.parent/"harness.json").read_text());cmd=manifest["commands"]["file_upload.send"]
+ assert cmd["safetyClasses"]==["externalSideEffect","secretUse","authReuse"]
+ assert cmd["inputSchema"]["required"]==["id","transferRoot","sourcePath"]
+ contract=json.loads((P.parent/"command_contracts.json").read_text())["commands"]["file_upload.send"]
+ assert contract["path"]=="/file_uploads/{id}/send" and contract["verify"]=="file_upload"
 
 def test_append_records_created_block_ids_and_reply_is_created_with_response_evidence(monkeypatch):
  parent="12345678-1234-1234-1234-1234567890ab";b1="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";b2="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
