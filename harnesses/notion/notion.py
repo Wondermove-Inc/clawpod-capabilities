@@ -169,7 +169,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.0"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.1"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt

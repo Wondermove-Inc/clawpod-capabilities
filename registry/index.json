@@ -274,7 +274,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Route Notion work through a new typed Harness with safe onboarding, ambiguity handling, previews, and verification.",
       "path": "skills/notion",
       "compatibility": {
@@ -305,7 +305,7 @@
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.0"
+        "version": "0.1.1"
       }
     },
     {
@@ -776,7 +776,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -794,23 +794,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "bedd749ceb87249f102f807fc0c929192a14d2fd33e4a3b30ef30e26335e9785"
+          "sha256": "551f58eac3a87c441eda2b89f9c6c3cd5eeed80eab1a19b81c26594d7838a886"
         },
         {
           "path": "TEST.md",
-          "sha256": "bd7edd85adc64be2c8202c5a4af577606f246113815f6ac6abdfc9577cbc4ade"
+          "sha256": "f7e7680c2cfc5f3a086661737457c401a766ee3d9c6909994766283baf359a8d"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "ca5244f47420bac4874d412ba143744ee563e3fd91bb58c0c698429de9945f63"
+          "sha256": "1246390142d870c0d3e8ab9e34a88e3a14eb50e3fef42e153344e1f863a65ae9"
         },
         {
           "path": "harness.json",
-          "sha256": "dd27400638cbd5207778d9d5e694143aa76b972529ebe4cccab33d37ebe50cf0"
+          "sha256": "0e1b1d5380d9e19d146fe97fe00fdd1dd7dedf853cbb734bed8855228837e94a"
         },
         {
           "path": "notion.py",
-          "sha256": "e747e26244d6bfda7fdab073fb4affb98b19cf47e3e1f1b547ea8afa856aa63f"
+          "sha256": "02cac5b737efa9c04f55e5c7aa4654a02af24a9795524c0bcf042fc073550441"
         },
         {
           "path": "onboarding.py",

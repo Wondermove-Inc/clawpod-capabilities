@@ -70,8 +70,44 @@ def test_command_specific_manifest_schemas():
  manifest=json.loads((P.parent/"harness.json").read_text())
  assert manifest["commands"]["page.retrieve"]["inputSchema"]["required"]==["id"]
  assert "body" not in manifest["commands"]["page.retrieve"]["inputSchema"]["properties"]
- assert manifest["commands"]["auth.onboarding.verify"]["inputSchema"]["properties"]["roots"]["type"]=="array"
- assert manifest["commands"]["page.create"]["inputSchema"]["properties"]["allowedRoots"]["items"]["required"]==["type","id"]
+ assert manifest["commands"]["auth.onboarding.verify"]["inputSchema"]["properties"]["roots"]["type"]=="string"
+ contracts=json.loads((P.parent/"command_contracts.json").read_text())
+ assert contracts["commands"]["page.create"]["structuredInputSchemas"]["allowedRoots"]["items"]["required"]==["type","id"]
+
+def test_gateway_arg_map_contract_and_structured_transport():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ allowed={"string","number","integer","boolean","enum","path"}
+ structured=0
+ for name,command in manifest["commands"].items():
+  properties=command["inputSchema"].get("properties",{})
+  for entry in command["argMap"]:
+   assert entry["valueType"] in allowed,(name,entry)
+   if entry["type"]=="booleanFlag":assert entry["valueType"]=="boolean" and entry.get("flag")
+   if entry["valueType"]=="path":assert entry.get("pathRole") in {"input","output","inout"}
+   else:assert "pathRole" not in entry
+   if entry["arg"] in json.loads((P.parent/"command_contracts.json").read_text())["commands"][name].get("jsonStringTransport",[]):
+    structured+=1;assert entry["valueType"]=="string" and properties[entry["arg"]]["type"]=="string"
+ assert structured==38
+ contracts=json.loads((P.parent/"command_contracts.json").read_text())
+ assert contracts["commands"]["page.create"]["jsonStringTransport"]==["allowedRoots","body"]
+
+def test_gateway_arg_map_contract_and_structured_transport():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ allowed={"string","number","integer","boolean","enum","path"}
+ structured=0
+ for name,command in manifest["commands"].items():
+  properties=command["inputSchema"].get("properties",{})
+  for entry in command["argMap"]:
+   assert entry["valueType"] in allowed,(name,entry)
+   if entry["type"]=="booleanFlag":assert entry["valueType"]=="boolean" and entry.get("flag")
+   if entry["valueType"]=="path":assert entry.get("pathRole") in {"input","output","inout"}
+   else:assert "pathRole" not in entry
+   prop=properties.get(entry["arg"],{})
+   if "JSON-encoded" in prop.get("description",""):
+    structured+=1;assert prop["type"]=="string" and entry["valueType"]=="string"
+ assert structured==38
+ contracts=json.loads((P.parent/"command_contracts.json").read_text())
+ assert contracts["commands"]["page.create"]["jsonStringTransport"]==["allowedRoots","body"]
 
 def test_allowlist_rejects_write_outside_root():
  root="123456781234123412341234567890ab";other="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"

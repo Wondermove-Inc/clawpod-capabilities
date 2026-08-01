@@ -1,5 +1,7 @@
 # Test
 
+The focused suite rejects unsupported `argMap.valueType` values, invalid boolean flags/path roles, and structured inputs that are not mapped through scalar string transport.
+
 Run:
 
 ```text

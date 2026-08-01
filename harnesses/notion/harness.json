@@ -4,7 +4,7 @@
   "name": "notion",
   "title": "notion",
   "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -207,32 +207,10 @@
         ],
         "properties": {
           "roots": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "operationId": {
             "type": "string",
@@ -307,7 +285,7 @@
           "arg": "roots",
           "type": "option",
           "flag": "--roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -912,7 +890,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           }
         },
         "additionalProperties": false
@@ -977,7 +958,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         }
       ]
@@ -1511,7 +1492,10 @@
         "required": [],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -1612,7 +1596,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -3307,7 +3291,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -3415,7 +3402,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4200,7 +4187,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -4239,31 +4229,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -4335,7 +4304,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -4398,7 +4367,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4439,7 +4408,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -4478,31 +4450,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -4581,7 +4532,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -4644,7 +4595,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4684,7 +4635,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -4723,31 +4677,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -4826,7 +4759,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4889,7 +4822,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -4929,7 +4862,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -4968,31 +4904,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -5071,7 +4986,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5134,7 +5049,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5175,7 +5090,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -5214,31 +5132,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -5317,7 +5214,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -5380,7 +5277,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5421,7 +5318,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -5460,31 +5360,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -5563,7 +5442,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -5626,7 +5505,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5666,7 +5545,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -5705,31 +5587,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -5808,7 +5669,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5871,7 +5732,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -5907,7 +5768,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -5946,31 +5810,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -6042,7 +5885,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -6105,7 +5948,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6146,7 +5989,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -6185,31 +6031,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -6288,7 +6113,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -6351,7 +6176,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6392,7 +6217,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -6431,31 +6259,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -6534,7 +6341,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -6597,7 +6404,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6633,7 +6440,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -6672,31 +6482,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -6768,7 +6557,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -6831,7 +6620,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -6867,7 +6656,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -6906,31 +6698,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -7002,7 +6773,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -7065,7 +6836,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7101,7 +6872,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -7140,31 +6914,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -7236,7 +6989,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -7299,7 +7052,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7335,7 +7088,10 @@
         ],
         "properties": {
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -7374,31 +7130,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -7470,7 +7205,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": false
         },
         {
@@ -7533,7 +7268,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7573,7 +7308,10 @@
             "pattern": "^[0-9a-fA-F-]{32,36}$"
           },
           "body": {
-            "type": "object"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded object; parsed and revalidated by notion.py"
           },
           "pageSize": {
             "type": "integer",
@@ -7612,31 +7350,10 @@
             "maxLength": 128
           },
           "allowedRoots": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "preview": {
             "type": "boolean"
@@ -7715,7 +7432,7 @@
           "arg": "body",
           "type": "option",
           "flag": "--body",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7778,7 +7495,7 @@
           "arg": "allowedRoots",
           "type": "option",
           "flag": "--allowed-roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7823,32 +7540,10 @@
             "maxLength": 200
           },
           "roots": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "capabilities": {
             "type": "string",
@@ -7931,7 +7626,7 @@
           "arg": "roots",
           "type": "option",
           "flag": "--roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -7969,32 +7664,10 @@
             "maxLength": 200
           },
           "roots": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "capabilities": {
             "type": "string",
@@ -8077,7 +7750,7 @@
           "arg": "roots",
           "type": "option",
           "flag": "--roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -8115,32 +7788,10 @@
             "maxLength": 200
           },
           "roots": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "capabilities": {
             "type": "string",
@@ -8223,7 +7874,7 @@
           "arg": "roots",
           "type": "option",
           "flag": "--roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -8278,32 +7929,10 @@
             "maxLength": 200
           },
           "roots": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "id"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "page",
-                    "database",
-                    "data_source",
-                    "block"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F-]{32,36}$"
-                }
-              },
-              "additionalProperties": false
-            }
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500000,
+            "description": "JSON-encoded array; parsed and revalidated by notion.py"
           },
           "capabilities": {
             "type": "string",
@@ -8416,7 +8045,7 @@
           "arg": "roots",
           "type": "option",
           "flag": "--roots",
-          "valueType": "json",
+          "valueType": "string",
           "optional": true
         },
         {

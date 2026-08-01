@@ -1,8 +1,12 @@
 # Notion capability contract
 
-`notion` v0.1.0 is a new, first-principles AgentSkill plus stdlib Python Harness around the official REST API, pinned to `Notion-Version: 2026-03-11`. Classification: **CREATE + COMPOSE** with ClawPod registry, lifecycle approval, and protected-secret infrastructure. The installed built-in Notion Skill was gap evidence only; no built-in file was copied, patched, overlaid, or modified.
+`notion` v0.1.1 is a new, first-principles AgentSkill plus stdlib Python Harness around the official REST API, pinned to `Notion-Version: 2026-03-11`. Classification: **CREATE + COMPOSE** with ClawPod registry, lifecycle approval, and protected-secret infrastructure. The installed built-in Notion Skill was gap evidence only; no built-in file was copied, patched, overlaid, or modified.
 
 ## Stable execution contract
+
+The current Gateway serializer requires `valueType: string` inputs to already be strings; it does not JSON-encode object/array values. The public Harness schema therefore accepts structured bodies and root lists as JSON strings, while `command_contracts.json` retains their full object/array schemas. `notion.py` parses and revalidates them before use. `scripts/update_notion_transport.py` regenerates both layers and rejects value types outside `string`, `number`, `integer`, `boolean`, `enum`, and `path`.
+
+Gateway command inputs retain their typed object/array JSON Schemas. The scalar-only Gateway `argMap` contract transports those structured values as canonical JSON strings to `notion.py`, which parses and revalidates bodies and root lists before use. `scripts/update_notion_transport.py` regenerates this mapping and rejects value types outside `string`, `number`, `integer`, `boolean`, `enum`, and `path`.
 
 The Harness emits one JSON object on stdout. Every envelope includes `operation_id`, canonical `request_digest`, effects, retry state, warnings, and redacted errors. It centralizes command-specific validation, protected credential injection, bounded pagination/retries/timeouts, 500 KB request limits, 100-item arrays, 1,000 block elements, 2,000-character text/URL fields, presigned-URL redaction, and no automatic mutation retries.
 
