@@ -290,11 +290,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4e40f69b10ace56d7ae59c882e5bf9f0ce27470edd459bfd64feeff4855333dd"
+          "sha256": "5d99c4eaabb2fcfd71060ebcf1a657ed791ede83f87939e301c6c39819e3a2e8"
         },
         {
           "path": "references/operations.md",
-          "sha256": "c1a15301c98cdcdceb83fee04d3a5c3faf8de36e1e9b86ddc9d8c91b96a360f1"
+          "sha256": "9e6c0c647c7460e6315e5d0c74f79820b70f12657d02cbe1eb639f641470c88f"
         }
       ],
       "linkedHarness": {
@@ -767,7 +767,7 @@
         },
         {
           "path": "synology_smb_storage.py",
-          "sha256": "3a4fcfb0183f370317fdd4a657150754836138151b94ee61724690a7493b60ae"
+          "sha256": "072e52f0476102170d55f8481e5c46df6b0b710ff9e24519570c9d4a74c025d1"
         }
       ]
     },

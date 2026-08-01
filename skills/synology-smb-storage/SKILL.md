@@ -21,7 +21,7 @@ Explain that the password goes directly to protected secret storage, enters the 
 
 1. Run `system.preflight` and `auth.contract`.
 2. Route the password to approved protected storage. Never place it in prompts, argv, files, logs, artifacts, examples, or output.
-3. Invoke `auth.onboard` with password environment/stdin injection. Auto-select a share only when discovery returns exactly one eligible disk share. Otherwise ask the user to choose from the returned names.
+3. Gateway cannot inject protected memory secrets. Invoke credential-bearing `shares.discover`, `mount.apply`, or `auth.onboard` only through the approved `exec.useSecrets` lane with the protected pointer injected as `SYNOLOGY_SMB_PASSWORD`; never resolve or paste plaintext into a prompt or command. Use Gateway `prepare → run` for non-secret commands and release validation. Auto-select a share only when discovery returns exactly one eligible disk share. Otherwise ask the user to choose from the returned names.
 4. Verify `mount.status`, `layout.inspect`, and the policy result. Do not report operational readiness before all succeed.
 5. Use `file.list`, bounded `file.get`, and bounded `file.put` for file operations. For put, provide an explicit trusted `transferRoot` and a source path relative to it. Reject traversal and all symlinks.
 6. Use local workspace for scratch, cache, builds, Git, and SQLite. Put durable artifacts under shared `common`, organization common, or organization/agent paths.

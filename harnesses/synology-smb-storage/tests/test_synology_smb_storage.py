@@ -49,21 +49,27 @@ def test_backend_failure_and_reflected_secret_not_returned(monkeypatch):
 def test_validation_traversal_and_mount_conflict(monkeypatch,tmp_path):
  with pytest.raises(smb.Fault): smb.valid_server('nas/x')
  with pytest.raises(smb.Fault): smb.relpath('../secret')
- monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mounted',lambda:'existing')
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:{'fstype':'tmpfs','source':'tmpfs'})
  with pytest.raises(smb.Fault) as e:smb.mount_apply(args(server='nas',share='x',account='u'))
  assert e.value.code=='MOUNT_CONFLICT'
 
 def test_mount_command_secret_not_argv(monkeypatch,tmp_path):
- monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mounted',lambda:None); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret'); seen={}
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:None); monkeypatch.setattr(smb,'mounted',lambda:{'fstype':'cifs','source':'//nas/team'}); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret'); seen={}
  def fake(argv,**kw): seen.update(argv=argv,kw=kw); return SimpleNamespace(returncode=0)
  monkeypatch.setattr(smb,'run',fake); smb.mount_apply(args(server='nas',share='team',account='u'))
  assert 'secret' not in seen['argv']; assert seen['kw']['secret']=='secret'; assert 'vers=3.1.1' in seen['argv'][-1]
 
 def test_mount_backend_failure(monkeypatch,tmp_path):
- monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mounted',lambda:None); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret')
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:None); monkeypatch.setattr(smb,'mounted',lambda:None); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret')
  monkeypatch.setattr(smb,'run',lambda *a,**k:SimpleNamespace(returncode=32))
  with pytest.raises(smb.Fault) as e:smb.mount_apply(args(server='nas',share='team',account='u'))
  assert e.value.code=='MOUNT_FAILED' and e.value.details['retrySafe']
+
+def test_mount_success_requires_source_verification(monkeypatch,tmp_path):
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:None); monkeypatch.setattr(smb,'mounted',lambda:None); monkeypatch.setenv('SYNOLOGY_SMB_PASSWORD','secret')
+ monkeypatch.setattr(smb,'run',lambda *a,**k:SimpleNamespace(returncode=0))
+ with pytest.raises(smb.Fault) as e:smb.mount_apply(args(server='nas',share='team',account='u'))
+ assert e.value.code=='MOUNT_VERIFY_FAILED' and not e.value.details['retrySafe']
 
 def test_layout_permission_denial(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); (tmp_path/'shared').mkdir(); monkeypatch.setattr(smb,'mounted',lambda:'mount')

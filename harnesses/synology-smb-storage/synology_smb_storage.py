@@ -78,24 +78,41 @@ def discover(a):
  return {"server":s,"shares":shares,"selectedShare":shares[0] if len(shares)==1 else None,"ambiguous":len(shares)!=1}
 
 def mount_source(a): return f"//{valid_server(a.server)}/{valid_name(a.share,'share')}"
-def mounted():
+def mount_record():
  try:
   for ln in Path("/proc/self/mountinfo").read_text().splitlines():
-   if str(ROOT) in ln.split() and " - cifs " in ln: return ln
+   parts=ln.split()
+   if len(parts)>6 and parts[4]==str(ROOT) and "-" in parts:
+    sep=parts.index("-")
+    if len(parts)>sep+2: return {"line":ln,"fstype":parts[sep+1],"source":parts[sep+2]}
  except OSError: pass
  return None
+def mounted():
+ record=mount_record()
+ return record if record and record["fstype"]=="cifs" else None
 
 def preview(a): return {"source":mount_source(a),"target":str(ROOT),"fstype":"cifs","options":list(SAFE_OPTS),"passwordTransport":"PASSWD-environment-to-backend"}
 def mount_apply(a):
- if mounted(): raise Fault("MOUNT_CONFLICT","mount target already contains a CIFS mount")
+ if mount_record(): raise Fault("MOUNT_CONFLICT","mount target is already a mountpoint")
  if ROOT.exists() and any(ROOT.iterdir()): raise Fault("MOUNT_CONFLICT","mount target is non-empty")
- ROOT.mkdir(parents=True,exist_ok=True)
+ created_root=not ROOT.exists(); ROOT.mkdir(parents=True,exist_ok=True)
  opts=",".join((*SAFE_OPTS,f"username={valid_account(a.account)}"))
  cp=run(["mount.cifs",mount_source(a),str(ROOT),"-o",opts],secret=password())
- if cp.returncode: raise Fault("MOUNT_FAILED","mount.cifs failed",{"exitCode":cp.returncode,"retrySafe":True})
+ if cp.returncode:
+  if created_root:
+   try: ROOT.rmdir()
+   except OSError: pass
+  raise Fault("MOUNT_FAILED","mount.cifs failed",{"exitCode":cp.returncode,"retrySafe":True})
+ record=mounted()
+ if not record or record["source"]!=mount_source(a):
+  if mount_record(): run(["umount",str(ROOT)])
+  if created_root:
+   try: ROOT.rmdir()
+   except OSError: pass
+  raise Fault("MOUNT_VERIFY_FAILED","mount command succeeded but the expected CIFS source was not verified",{"retrySafe":False})
  return {"mounted":True,"target":str(ROOT),"options":list(SAFE_OPTS)}
 def status(a):
- line=mounted(); return {"mounted":bool(line),"target":str(ROOT),"source":None if not line else line.split(" - cifs ",1)[1].split()[0]}
+ record=mounted(); return {"mounted":bool(record),"target":str(ROOT),"source":None if not record else record["source"]}
 def unmount(a):
  if not mounted(): return {"mounted":False,"changed":False}
  cp=run(["umount",str(ROOT)])
@@ -251,8 +268,8 @@ def cap_sys_admin():
  except (OSError,ValueError,IndexError): pass
  return False
 def preflight():
- line=mounted(); exists=ROOT.exists(); nonempty=exists and any(ROOT.iterdir())
- return {"tools":{"smbclient":bool(shutil.which("smbclient")),"mountCifs":bool(shutil.which("mount.cifs")),"umount":bool(shutil.which("umount"))},"privilege":{"effectiveUid":os.geteuid(),"capSysAdmin":cap_sys_admin(),"mountLikelyPermitted":os.geteuid()==0 or cap_sys_admin()},"mountRoot":{"path":str(ROOT),"exists":exists,"nonEmpty":nonempty,"cifsMounted":bool(line),"conflict":nonempty and not bool(line)},"protocol":{"dialect":"SMB3.1.1","mountOption":"vers=3.1.1","smbclientMin":"SMB3_11","smbclientMax":"SMB3_11"}}
+ record=mount_record(); exists=ROOT.exists(); nonempty=exists and any(ROOT.iterdir())
+ return {"tools":{"smbclient":bool(shutil.which("smbclient")),"mountCifs":bool(shutil.which("mount.cifs")),"umount":bool(shutil.which("umount"))},"privilege":{"effectiveUid":os.geteuid(),"capSysAdmin":cap_sys_admin(),"mountLikelyPermitted":os.geteuid()==0 or cap_sys_admin()},"mountRoot":{"path":str(ROOT),"exists":exists,"nonEmpty":nonempty,"cifsMounted":bool(record and record["fstype"]=="cifs"),"conflict":bool(record and record["fstype"]!="cifs") or (nonempty and not bool(record))},"protocol":{"dialect":"SMB3.1.1","mountOption":"vers=3.1.1","smbclientMin":"SMB3_11","smbclientMax":"SMB3_11"}}
 
 class JsonParser(argparse.ArgumentParser):
  def error(self,message): emit("invalid",error={"code":"INVALID_INPUT","message":message,"details":{}},ok=False); raise SystemExit(2)
