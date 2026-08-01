@@ -1,0 +1,1 @@
+{"steps":[{"kind":"navigate"},{"kind":"login_required"},{"kind":"select_workspace","workspace":"Acme"},{"kind":"configure_capabilities"},{"kind":"permission_approval_required"},{"kind":"connect_roots"},{"kind":"root_approval_required"},{"kind":"secret_capture_required"},{"kind":"complete"}]}

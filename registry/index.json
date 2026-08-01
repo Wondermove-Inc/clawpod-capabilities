@@ -272,6 +272,43 @@
       }
     },
     {
+      "id": "notion",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route Notion work through a new typed Harness with safe onboarding, ambiguity handling, previews, and verification.",
+      "path": "skills/notion",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "5e520fa1bd470e9730fd6756fcae022781d133b8738f04b3787be33a77a60d34"
+        },
+        {
+          "path": "references/commands.md",
+          "sha256": "a2581934518cbf66b1e8048b3f11bc7b0f69b39a3ed6734f4c57961430e38d7b"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "26518acbf4310bac1c674c71a3668bc274a0ef64ba357f22b27ef92cc370e1c1"
+        }
+      ],
+      "linkedHarness": {
+        "id": "notion",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "synology-smb-storage",
       "type": "skill",
       "version": "0.1.0",
@@ -733,6 +770,51 @@
         {
           "path": "scripts/generate_schemas.py",
           "sha256": "12696f6ac8bcfe271b6950adf4cb653d8b3266da53095ac39285882d0c24078e"
+        }
+      ]
+    },
+    {
+      "id": "notion",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
+      "path": "harnesses/notion",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "bedd749ceb87249f102f807fc0c929192a14d2fd33e4a3b30ef30e26335e9785"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "bd7edd85adc64be2c8202c5a4af577606f246113815f6ac6abdfc9577cbc4ade"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "ca5244f47420bac4874d412ba143744ee563e3fd91bb58c0c698429de9945f63"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "dd27400638cbd5207778d9d5e694143aa76b972529ebe4cccab33d37ebe50cf0"
+        },
+        {
+          "path": "notion.py",
+          "sha256": "e747e26244d6bfda7fdab073fb4affb98b19cf47e3e1f1b547ea8afa856aa63f"
+        },
+        {
+          "path": "onboarding.py",
+          "sha256": "7d604e9387cafbfa5638e3de6985a434850d74a9774215db725c66a7f4bf386e"
         }
       ]
     },

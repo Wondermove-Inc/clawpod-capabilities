@@ -1,0 +1,128 @@
+import base64, hashlib, hmac, json, os, subprocess, sys, threading
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from pathlib import Path
+import importlib.util
+P=Path(__file__).parents[1]/"notion.py"
+spec=importlib.util.spec_from_file_location("notion",P);n=importlib.util.module_from_spec(spec);sys.modules["notion"]=n;spec.loader.exec_module(n)
+
+def run(*args,env=None):
+ e={**os.environ,**(env or {})};p=subprocess.run([sys.executable,str(P),*args],text=True,capture_output=True,env=e);return p.returncode,json.loads(p.stdout),p.stderr
+
+def test_resolve_and_invalid():
+ rc,o,_=run("resolve.url","--url","https://notion.so/Page-123456781234123412341234567890ab?pvs=4");assert rc==0 and o["data"]["id"]=="12345678-1234-1234-1234-1234567890ab"
+ rc,o,_=run("resolve.id","--id","bad");assert rc==2 and o["error"]["category"]=="validation"
+def test_onboarding_disconnected():
+ rc,o,_=run("auth.onboarding.plan");assert rc==0 and not o["data"]["connected"] and "internal" in o["data"]["modes"]
+def test_redaction():
+ x=n.redact({"Authorization":"Bearer fake_secret_value","url":"https://x.amazonaws.com/a?X-Amz-Signature=fake"});assert x["Authorization"]=="[REDACTED]" and "fake" not in json.dumps(x)
+def test_markdown_choice():
+ _,o,_=run("markdown.validate","--markdown","hello");assert o["data"]["recommendation"]=="markdown"
+ _,o,_=run("markdown.validate","--markdown","<unknown block_id=x>");assert o["data"]["recommendation"]=="blocks"
+def test_webhook_signature():
+ raw=b'{"id":"e1"}';secret="fake-webhook-test-key";sig=hmac.new(secret.encode(),raw,hashlib.sha256).hexdigest();_,o,_=run("webhook.signature.verify","--raw-body-b64",base64.b64encode(raw).decode(),"--signature",sig,env={"NOTION_WEBHOOK_SECRET":secret});assert o["data"]["valid"]
+ _,o,_=run("webhook.signature.verify","--raw-body-b64",base64.b64encode(raw+b"x").decode(),"--signature",sig,env={"NOTION_WEBHOOK_SECRET":secret});assert not o["data"]["valid"]
+def test_preview_and_stale_hash():
+ rid="123456781234123412341234567890ab";_,o,_=run("page.properties.update","--id",rid,"--body",'{"properties":{}}',"--preview");h=o["data"]["preview"]["intent_hash"]
+ rc,o,_=run("page.properties.update","--id",rid,"--body",'{"properties":{"x":1}}',"--confirm",h,env={"NOTION_TOKEN":"fake-token"});assert rc==2 and "exact intent_hash" in o["error"]["message"]
+
+class H(BaseHTTPRequestHandler):
+ counts={}
+ def log_message(self,*a):pass
+ def out(self,status,obj,headers=None):
+  b=json.dumps(obj).encode();self.send_response(status);[self.send_header(k,v) for k,v in (headers or {}).items()];self.send_header("Content-Length",str(len(b)));self.end_headers();self.wfile.write(b)
+ def do_GET(self):
+  H.counts[self.path]=H.counts.get(self.path,0)+1
+  if self.path.startswith("/v1/pages/"):self.out(200,{"object":"page","id":self.path.split("/")[-1],"last_edited_time":"t"},{"x-request-id":"nr"})
+  elif self.path.startswith("/v1/users"):self.out(403,{"code":"restricted_resource","message":"missing capability"})
+  else:self.out(404,{"code":"object_not_found","message":"not shared"})
+ def do_POST(self):
+  self.rfile.read(int(self.headers.get("Content-Length","0")))
+  H.counts[self.path]=H.counts.get(self.path,0)+1
+  if self.path.startswith("/v1/search"):
+   if H.counts[self.path]==1:self.out(429,{"code":"rate_limited","message":"slow"},{"Retry-After":"0"})
+   else:self.out(200,{"results":[{"id":"1"}],"has_more":False,"next_cursor":None})
+  elif self.path=="/v1/pages":self.out(200,{"id":"12345678-1234-1234-1234-1234567890ab"})
+ def do_PATCH(self):
+  self.rfile.read(int(self.headers.get("Content-Length","0")))
+  self.out(500,{"code":"internal_server_error","message":"uncertain"})
+
+def server():
+ s=HTTPServer(("127.0.0.1",0),H);threading.Thread(target=s.serve_forever,daemon=True).start();return s
+
+def test_retry_permission_not_found_and_pagination():
+ s=server();base=f"http://127.0.0.1:{s.server_port}/v1";env={"NOTION_TOKEN":"fake-token","NOTION_API_BASE":base};H.counts={}
+ rc,o,_=run("search.query","--all-pages","--max-pages","2",env=env);assert rc==0 and o["retry"]["attempts"]==2
+ rc,o,_=run("user.list",env=env);assert rc==2 and o["error"]["category"]=="permission"
+ rc,o,_=run("block.retrieve","--id","123456781234123412341234567890ab",env=env);assert rc==2 and o["error"]["category"]=="not_found";s.shutdown()
+def test_write_verify_and_mutation_error_classification(monkeypatch):
+ class T:
+  def __init__(self,a):self.attempts=1
+  def request(self,method,path,query,body,mutation=False):
+   if method=="POST":return {"id":"12345678-1234-1234-1234-1234567890ab"},{"x-request-id":"n1"}
+   return {"id":"12345678-1234-1234-1234-1234567890ab","last_edited_time":"t"},{}
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["page.create","--body",'{"parent":{"page_id":"x"},"properties":{}}'])
+ req=n.canonical(n.SPECS[a.command],a,n.parse_body(a));o=n.execute(a,n.SPECS[a.command],req)
+ assert o["effects"]["performed"] and o["verification"]["performed"]
+ assert n.category(500,"internal_server_error")=="backend" and n.category(429,"rate_limited")=="rate_limit"
+
+def test_command_specific_manifest_schemas():
+ manifest=json.loads((P.parent/"harness.json").read_text())
+ assert manifest["commands"]["page.retrieve"]["inputSchema"]["required"]==["id"]
+ assert "body" not in manifest["commands"]["page.retrieve"]["inputSchema"]["properties"]
+ assert manifest["commands"]["auth.onboarding.verify"]["inputSchema"]["properties"]["roots"]["type"]=="array"
+ assert manifest["commands"]["page.create"]["inputSchema"]["properties"]["allowedRoots"]["items"]["required"]==["type","id"]
+
+def test_allowlist_rejects_write_outside_root():
+ root="123456781234123412341234567890ab";other="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ rc,o,_=run("page.properties.update","--id",other,"--body",'{"properties":{}}',"--allowed-roots",json.dumps([{"type":"page","id":root}]),"--preview")
+ assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
+
+def test_operation_plan_and_required_input():
+ rc,o,_=run("operation.plan","--operation","page.create","--target-kind","page")
+ assert rc==0 and o["data"]["recipe"][0].startswith("resolve") and o["data"]["verification"]=="page"
+ rc,o,_=run("operation.plan");assert rc==2 and "--operation is required" in o["error"]["message"]
+
+def test_payload_element_text_and_url_limits():
+ rc,o,_=run("page.create","--body",json.dumps({"children":[{}]*101}),"--preview");assert rc==2 and "exceeds 100 items" in o["error"]["message"]
+ rc,o,_=run("page.create","--body",json.dumps({"url":"x"*2001}),"--preview");assert rc==2 and "exceeds 2000" in o["error"]["message"]
+
+def test_onboarding_verify_success_and_guidance(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class T:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","name":"Fixture bot","type":"bot","bot":{"workspace_name":"Fixture","workspace_id":"ws"}},{}
+   return {"id":rid,"object":"page"},{}
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert o["ok"] and o["data"]["identity"]["workspace_name"]=="Fixture" and o["data"]["ready"]
+ assert "token" not in json.dumps(o).lower()
+
+def test_onboarding_verify_404_diagnostic(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class T:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","type":"bot","bot":{}},{}
+   raise n.ApiError(404,"object_not_found","not shared",None)
+ monkeypatch.setattr(n,"Transport",T)
+ a=n.parser().parse_args(["auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert not o["ok"] and "not shared" in o["data"]["roots"][0]["diagnostic"]
+
+def test_no_secret_leakage_in_onboarding_error():
+ secret="fixture-sensitive-credential-value"
+ rc,o,err=run("auth.onboarding.verify","--roots",json.dumps([{"type":"page","id":"123456781234123412341234567890ab"}]),env={"NOTION_TOKEN":secret,"NOTION_API_BASE":"http://127.0.0.1:1/v1"})
+ assert rc==2 and secret not in json.dumps(o)+err
+
+
+def test_onboarding_verify_403_and_wrong_workspace(monkeypatch):
+ rid="12345678-1234-1234-1234-1234567890ab"
+ class Denied:
+  def __init__(self,a):pass
+  def request(self,method,path,query,body,mutation=False):
+   if path=="/users/me":return {"id":"bot","type":"bot","bot":{"workspace_name":"Other","workspace_id":"other"}},{}
+   raise n.ApiError(403,"restricted_resource","denied",None)
+ monkeypatch.setattr(n,"Transport",Denied)
+ a=n.parser().parse_args(["auth.onboarding.verify","--workspace","Expected","--roots",json.dumps([{"type":"page","id":rid}])])
+ o=n.onboarding_verify(a);assert not o["ok"] and o["error"]["code"]=="wrong_workspace" and o["data"]["roots"][0]["http_status"]==403 and not o["data"]["allowedRoots"]
