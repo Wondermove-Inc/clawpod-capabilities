@@ -153,6 +153,18 @@ def test_allowlist_rejects_write_outside_root():
  rc,o,_=run("page.properties.update","--id",other,"--body",'{"properties":{}}',"--allowed-roots",json.dumps([{"type":"page","id":root}]),"--preview")
  assert rc==2 and "outside configured allowedRoots" in o["error"]["message"]
 
+def test_markdown_bodies_are_validated_before_preview():
+ root="123456781234123412341234567890ab";roots=json.dumps([{"type":"page","id":root}])
+ rc,o,_=run("markdown.page.update","--id",root,"--body",'{"markdown":"invalid"}',"--allowed-roots",roots,"--preview")
+ assert rc==2 and o["effects"]["performed"] is False and "body.type" in o["error"]["message"]
+ rc,o,_=run("markdown.page.update","--id",root,"--body",'{"type":"replace_content","replace_content":{"new_str":"# Valid"}}',"--allowed-roots",roots,"--preview")
+ assert rc==0 and o["data"]["preview"]["safety_class"]=="destructive"
+ parent={"type":"page_id","page_id":root}
+ rc,o,_=run("markdown.page.create","--body",json.dumps({"parent":parent,"markdown":42}),"--allowed-roots",roots,"--preview")
+ assert rc==2 and "string markdown" in o["error"]["message"]
+ rc,o,_=run("markdown.page.create","--body",json.dumps({"parent":parent,"markdown":"# Valid"}),"--allowed-roots",roots,"--preview")
+ assert rc==0 and o["data"]["preview"]["safety_class"]=="externalSideEffect"
+
 def test_archive_restore_use_in_trash_and_verify_exact_state(monkeypatch):
  rid="12345678-1234-1234-1234-1234567890ab"
  for command,expected in (("page.archive",True),("page.restore",False)):

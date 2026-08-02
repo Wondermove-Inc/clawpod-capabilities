@@ -274,7 +274,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Route guarded Notion API work and guide exact PAT/Internal Integration onboarding through the typed notion Harness.",
       "path": "skills/notion",
       "compatibility": {
@@ -296,7 +296,7 @@
         },
         {
           "path": "references/commands.md",
-          "sha256": "b7ff7e10f2a51b0530623b5d405fe427cf7f4535a32ed4ab5ba1abc23a5b7b23"
+          "sha256": "e948c23a331a43d40b3f46e3c35cc0f50dd0a0af2295436e78f25d5191622cdd"
         },
         {
           "path": "references/onboarding.md",
@@ -305,7 +305,7 @@
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.6"
+        "version": "0.1.7"
       }
     },
     {
@@ -776,7 +776,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -806,11 +806,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "8e6eda768c925e42a6f2920f1e8bdc138dc728bc867b795c510ddec7ce1565ac"
+          "sha256": "bc03da316349e55d0d902ed0b505fb4b32f9aef416cf026ff678b62f6ca6c685"
         },
         {
           "path": "notion.py",
-          "sha256": "d5476ac24b8a86ba8010b4f05e2b051b124a844ab1182eeccb5c548e1f892827"
+          "sha256": "7ecf1b0a5ddc3ec9fdad6a11914b94df095c1337d3f27b6af8a756ce06852ad8"
         },
         {
           "path": "onboarding.py",

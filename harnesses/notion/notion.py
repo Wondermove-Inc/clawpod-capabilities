@@ -177,7 +177,7 @@ class Transport:
   url=self.a.base_url.rstrip("/")+path
   if query:url+="?"+urllib.parse.urlencode(query)
   payload=None if method=="GET" else json.dumps(body,separators=(",",":")).encode()
-  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.6"}
+  headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":"application/json","User-Agent":"clawpod-notion/0.1.7"}
   max_attempts=1 if mutation else self.a.retries+1
   for attempt in range(1,max_attempts+1):
    self.attempts=attempt
@@ -300,7 +300,7 @@ def send_upload(a,source:dict,intent:dict)->dict:
  body=prefix+source["data"]+f"\r\n--{boundary}--\r\n".encode()
  token=os.environ.get("NOTION_TOKEN")
  if not token:raise ValueError("credential unavailable; inject NOTION_TOKEN only through protected runtime secret handling")
- headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":f"multipart/form-data; boundary={boundary}","Content-Length":str(len(body)),"User-Agent":"clawpod-notion/0.1.6"}
+ headers={"Authorization":"Bearer "+token,"Notion-Version":API_VERSION,"Content-Type":f"multipart/form-data; boundary={boundary}","Content-Length":str(len(body)),"User-Agent":"clawpod-notion/0.1.7"}
  url=a.base_url.rstrip("/")+intent["endpoint"]
  try:
   with urllib.request.urlopen(urllib.request.Request(url,body,headers,method="POST"),timeout=a.timeout_ms/1000) as r:
@@ -392,6 +392,17 @@ def validate_command(a,body):
  if a.command=="comment.create_page" and not isinstance(body.get("parent"),dict):raise ValueError("comment.create_page body requires parent.page_id")
  if a.command=="comment.create_discussion" and not isinstance(body.get("parent"),dict):raise ValueError("comment.create_discussion body requires parent.page_id or block_id")
  if a.command=="comment.reply" and not body.get("discussion_id"):raise ValueError("comment.reply body requires discussion_id")
+ if a.command=="markdown.page.create" and not isinstance(body.get("markdown"),str):raise ValueError("markdown.page.create body requires string markdown")
+ if a.command=="markdown.page.update":
+  kind=body.get("type");allowed={"insert_content","replace_content","update_content","replace_content_range"}
+  if kind not in allowed:raise ValueError("markdown.page.update body.type must be insert_content, replace_content, update_content, or replace_content_range")
+  operation=body.get(kind)
+  if not isinstance(operation,dict):raise ValueError(f"markdown.page.update body requires object {kind}")
+  if kind in {"insert_content","replace_content"} and not isinstance(operation.get("content" if kind=="insert_content" else "new_str"),str):raise ValueError(f"markdown.page.update {kind} requires string {'content' if kind=='insert_content' else 'new_str'}")
+  if kind=="replace_content_range" and (not isinstance(operation.get("content_range"),str) or not isinstance(operation.get("new_str"),str)):raise ValueError("markdown.page.update replace_content_range requires string content_range and new_str")
+  if kind=="update_content":
+   updates=operation.get("content_updates")
+   if not isinstance(updates,list) or not updates or any(not isinstance(x,dict) or not isinstance(x.get("old_str"),str) or not isinstance(x.get("new_str"),str) for x in updates):raise ValueError("markdown.page.update update_content requires non-empty content_updates with string old_str and new_str")
 
 def main():
  a=parser().parse_args();cmd=a.command
