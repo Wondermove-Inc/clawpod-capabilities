@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.3.1",
+  "description": "Delegate standalone Workboard execution cards with exact plans, scoped tools, idempotency, and reconciliation.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": ["linux", "macos"]
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "workboard-delegation",
+    "version": "0.3.1"
+  }
+}
