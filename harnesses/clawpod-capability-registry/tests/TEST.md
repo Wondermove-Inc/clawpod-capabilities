@@ -4,7 +4,8 @@ Validated locally without network, installation into live roots, publication, or
 
 ## Coverage
 
-- Explicit type selection and same-id ambiguity rejection.
+- Optional type selection for inspect/install/update/validate, with same-id ambiguity rejection before filesystem mutation.
+- Backward-compatible omitted-type routing for single Skill or Harness candidates, including type-specific destination and provenance evidence.
 - Standalone Skill and Harness install, validation, update, and rollback.
 - Typed linked Harness metadata with independent exact Harness version.
 - Linked Skill plus Harness transactional install and validation using explicit roots.

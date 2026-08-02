@@ -313,6 +313,7 @@ def install_entry(entry: dict[str, Any], target_root: str, *, replace: bool, bac
 
     return {
         "id": entry["id"],
+        "type": entry["type"],
         "version": entry["version"],
         "destination": str(destination),
         "backup": str(backup_path) if backup_path else None,
@@ -439,7 +440,7 @@ def validate_installation(entry: dict[str, Any], target_root: str) -> dict[str, 
             checked.append(relative.as_posix())
     if mismatches:
         raise CapabilityError("validation_failed", "missing or modified files: " + ", ".join(mismatches))
-    return {"id": entry["id"], "version": entry["version"], "destination": str(destination), "checked": checked}
+    return {"id": entry["id"], "type": entry["type"], "version": entry["version"], "destination": str(destination), "checked": checked}
 
 
 def rollback_installation(capability_id: str, target_root: str, backup_value: str | None) -> dict[str, Any]:
@@ -494,7 +495,7 @@ def build_parser() -> argparse.ArgumentParser:
         command = sub.add_parser(name, help=f"{name.title()} a capability")
         command.add_argument("--id", required=True)
         command.add_argument("--version")
-        command.add_argument("--type", choices=("skill", "harness"), required=True)
+        command.add_argument("--type", choices=("skill", "harness"))
         command.add_argument("--target-root")
         command.add_argument("--skills-root")
         command.add_argument("--harnesses-root")
@@ -531,8 +532,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         return activate_workflow_policy(args.workflow_path)
     if args.command in {"install", "update", "validate"}:
         entry=choose(args.id,args.version,args.type)
-        skills_root=args.skills_root or (args.target_root if args.type=="skill" else None)
-        harnesses_root=args.harnesses_root or (args.target_root if args.type=="harness" else None)
+        selected_type=entry["type"]
+        skills_root=args.skills_root or (args.target_root if selected_type=="skill" else None)
+        harnesses_root=args.harnesses_root or (args.target_root if selected_type=="harness" else None)
         if args.command=="install":
             return install_unit_with_onboarding(entry,skills_root,harnesses_root,replace=False,workflow=args.workflow_path)
         if args.command=="update":

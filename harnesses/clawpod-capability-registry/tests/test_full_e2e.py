@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = ROOT.parents[1]
 CLI = ROOT / "clawpod_capability_registry.py"
 SPEC=importlib.util.spec_from_file_location("registry_e2e",CLI);assert SPEC and SPEC.loader
 cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
@@ -65,6 +66,44 @@ class EndToEndTests(unittest.TestCase):
             with self.assertRaises(cap.CapabilityError) as raised:
                 cap.run(args)
         self.assertEqual(raised.exception.code,"not_found")
+
+    def test_same_version_skill_and_harness_install_validate_to_typed_roots(self) -> None:
+        registry=json.loads((REPOSITORY_ROOT/"registry/index.json").read_text(encoding="utf-8"))
+        entries=[entry for entry in registry["capabilities"] if entry["id"]=="synology-smb-storage" and entry["version"]=="0.1.0"]
+        self.assertEqual({entry["type"] for entry in entries},{"skill","harness"})
+
+        def fetch_local(url:str,**_:object)->bytes:
+            relative=url.removeprefix(cap.RAW_BASE+"/")
+            return (REPOSITORY_ROOT/relative).read_bytes()
+
+        parser=cap.build_parser()
+        with tempfile.TemporaryDirectory() as directory,patch.object(cap,"entries",return_value=entries),patch.object(cap,"fetch_bytes",side_effect=fetch_local):
+            base=Path(directory)
+            ambiguous=parser.parse_args(["install","--id","synology-smb-storage","--version","0.1.0","--target-root",str(base/"ambiguous")])
+            with self.assertRaises(cap.CapabilityError) as raised:cap.run(ambiguous)
+            self.assertEqual(raised.exception.code,"ambiguous_type")
+            self.assertFalse((base/"ambiguous").exists())
+
+            harness_root=base/"standalone-harnesses"
+            harness_args=parser.parse_args(["install","--id","synology-smb-storage","--version","0.1.0","--type","harness","--target-root",str(harness_root)])
+            harness_result=cap.run(harness_args)["unit"][0]
+            self.assertEqual(harness_result["type"],"harness")
+            self.assertEqual(Path(harness_result["destination"]),harness_root/"synology-smb-storage")
+            harness_provenance=json.loads((Path(harness_result["destination"])/cap.PROVENANCE_FILE).read_text())
+            self.assertEqual(harness_provenance["type"],"harness")
+            harness_validation=cap.run(parser.parse_args(["validate","--id","synology-smb-storage","--version","0.1.0","--type","harness","--target-root",str(harness_root)]))["unit"][0]
+            self.assertEqual(harness_validation["type"],"harness")
+            self.assertEqual(Path(harness_validation["destination"]),harness_root/"synology-smb-storage")
+
+            skill_root=base/"skills";linked_harness_root=base/"linked-harnesses"
+            skill_args=parser.parse_args(["install","--id","synology-smb-storage","--version","0.1.0","--type","skill","--skills-root",str(skill_root),"--harnesses-root",str(linked_harness_root)])
+            skill_result=cap.run(skill_args)
+            self.assertEqual({item["type"] for item in skill_result["unit"]},{"skill","harness"})
+            destinations={item["type"]:Path(item["destination"]) for item in skill_result["unit"]}
+            self.assertEqual(destinations["skill"],skill_root/"synology-smb-storage")
+            self.assertEqual(destinations["harness"],linked_harness_root/"synology-smb-storage")
+            skill_validation=cap.run(parser.parse_args(["validate","--id","synology-smb-storage","--version","0.1.0","--type","skill","--skills-root",str(skill_root),"--harnesses-root",str(linked_harness_root)]))
+            self.assertEqual({item["type"] for item in skill_validation["unit"]},{"skill","harness"})
 
 
 if __name__ == "__main__":

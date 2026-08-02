@@ -167,6 +167,32 @@ class CoreTests(unittest.TestCase):
                 cap.choose("example-skill")
             self.assertEqual(cap.choose("example-skill",capability_type="harness")["type"],"harness")
 
+    def test_lifecycle_type_is_optional_but_ambiguity_fails_closed(self) -> None:
+        parser=cap.build_parser()
+        for command in ("install","update","validate"):
+            args=parser.parse_args([command,"--id","example-skill","--target-root","/tmp/target"])
+            self.assertIsNone(args.type)
+        skill=fixture_entry("0.1.0",b"skill")
+        harness={**skill,"type":"harness","path":"harnesses/example-skill"}
+        with patch.object(cap,"entries",return_value=[skill,harness]):
+            for command in ("inspect","install","update","validate"):
+                argv=[command,"--id","example-skill"]
+                if command in {"install","update","validate"}:argv += ["--target-root","/tmp/target"]
+                with self.assertRaises(cap.CapabilityError) as raised:cap.run(parser.parse_args(argv))
+                self.assertEqual(raised.exception.code,"ambiguous_type")
+
+    def test_single_candidate_omitted_type_routes_target_root_from_selected_entry(self) -> None:
+        parser=cap.build_parser();skill=fixture_entry("0.1.0",b"skill")
+        args=parser.parse_args(["install","--id","example-skill","--target-root","/tmp/skill-root"])
+        with patch.object(cap,"entries",return_value=[skill]),patch.object(cap,"install_unit_with_onboarding",return_value={"unit":[]}) as install:
+            cap.run(args)
+        install.assert_called_once_with(skill,"/tmp/skill-root",None,replace=False,workflow=None)
+        harness={**skill,"type":"harness","path":"harnesses/example-skill"}
+        args=parser.parse_args(["install","--id","example-skill","--target-root","/tmp/harness-root"])
+        with patch.object(cap,"entries",return_value=[harness]),patch.object(cap,"install_unit_with_onboarding",return_value={"unit":[]}) as install:
+            cap.run(args)
+        install.assert_called_once_with(harness,None,"/tmp/harness-root",replace=False,workflow=None)
+
     def test_linked_unit_install_validate_and_partial_rollback(self) -> None:
         skill_payload=b"skill"; harness_manifest=json.dumps({"entrypoint":"run.py"}).encode(); run=b"#!/usr/bin/env python3\n"
         skill={**fixture_entry("0.1.0",skill_payload),"linkedHarness":{"id":"example-skill","version":"0.2.0"}}
@@ -211,8 +237,11 @@ class CoreTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with patch.object(cap, "fetch_bytes", side_effect=fetch_old):
                 installed = cap.install_entry(old_entry, directory, replace=False, backup=False)
+            self.assertEqual(installed["type"],"skill")
             self.assertEqual(installed["verifiedFiles"], 1)
-            self.assertEqual(cap.validate_installation(old_entry, directory)["checked"], ["SKILL.md"])
+            validation=cap.validate_installation(old_entry, directory)
+            self.assertEqual(validation["type"],"skill")
+            self.assertEqual(validation["checked"], ["SKILL.md"])
 
             with self.assertRaisesRegex(cap.CapabilityError, "already exists"):
                 with patch.object(cap, "fetch_bytes", side_effect=fetch_old):

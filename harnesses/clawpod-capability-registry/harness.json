@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, assess, install, validate, update, and roll back capabilities, with deterministic registry-first WORKFLOW onboarding.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -119,7 +119,11 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "skill",
+              "harness"
+            ]
           }
         }
       },
@@ -166,8 +170,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "id",
-          "type"
+          "id"
         ],
         "properties": {
           "id": {
@@ -180,7 +183,11 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "skill",
+              "harness"
+            ]
           },
           "skillsRoot": {
             "type": "string"
@@ -220,7 +227,7 @@
           "type": "option",
           "flag": "--type",
           "valueType": "string",
-          "optional": false
+          "optional": true
         },
         {
           "arg": "targetRoot",
@@ -268,8 +275,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "id",
-          "type"
+          "id"
         ],
         "properties": {
           "id": {
@@ -282,7 +288,11 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "skill",
+              "harness"
+            ]
           },
           "skillsRoot": {
             "type": "string"
@@ -319,7 +329,7 @@
           "type": "option",
           "flag": "--type",
           "valueType": "string",
-          "optional": false
+          "optional": true
         },
         {
           "arg": "targetRoot",
@@ -359,8 +369,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "id",
-          "type"
+          "id"
         ],
         "properties": {
           "id": {
@@ -373,7 +382,11 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "skill",
+              "harness"
+            ]
           },
           "skillsRoot": {
             "type": "string"
@@ -413,7 +426,7 @@
           "type": "option",
           "flag": "--type",
           "valueType": "string",
-          "optional": false
+          "optional": true
         },
         {
           "arg": "targetRoot",
