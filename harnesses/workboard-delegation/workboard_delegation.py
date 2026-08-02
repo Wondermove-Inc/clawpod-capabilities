@@ -8,6 +8,22 @@ MAX_SNAPSHOT_BYTES=65536; MAX_PLAN_BYTES=65536; MAX_TEXT=12000; MAX_LABELS=32
 GATEWAY_STDOUT_PREVIEW_BYTES=2000; MAX_STDOUT_BYTES=1900
 SENSITIVE=re.compile(r"(?i)(token|secret|password|authorization|api[-_]?key)")
 SAFE_ERROR_MESSAGES={
+ "invalid_input":"A required input is missing or outside its allowed bound",
+ "input_too_large":"A JSON input exceeds its allowed byte bound",
+ "malformed_json":"A JSON input is malformed",
+ "invalid_snapshot":"A snapshot must be a JSON object",
+ "plan_integrity_mismatch":"The plan hash does not match the supplied plan contents",
+ "plan_hash_mismatch":"The supplied plan hash does not match the approved plan",
+ "invalid_plan":"The plan is missing required fields",
+ "leader_id_mismatch":"The leader snapshot does not match the approved leader",
+ "dependency_mode_rejected":"Dependency-linked cards are not valid for this delegation mode",
+ "expected_owner_mismatch":"The expected owner does not match the approved plan",
+ "expected_owner_required":"A claimed leader requires an expected owner",
+ "foreign_claim":"The leader is claimed by another owner",
+ "owner_mismatch":"The leader claim state does not match the expected owner",
+ "execution_mismatch":"The execution card does not match the approved plan",
+ "comment_missing":"The leader cross-reference comment is missing",
+ "duplicate_comment":"Multiple matching cross-reference comments require human review",
  "output_too_large":f"Output exceeds the {MAX_STDOUT_BYTES}-byte stdout budget; shorten delegation text and re-plan",
  "internal_error":"Unexpected harness failure",
 }

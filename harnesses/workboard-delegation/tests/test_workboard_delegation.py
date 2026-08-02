@@ -178,4 +178,11 @@ def test_harness_error_message_never_echoes_caller_input(monkeypatch):
  secret='TOPSECRET-'+'z'*12000
  monkeypatch.setattr(w,'make_plan',lambda _a: (_ for _ in ()).throw(w.HarnessError('invalid_input',secret)))
  rc,o=run(pargs())
- assert rc == 2 and secret not in w.stable(o) and o['error']['message'] == 'Harness request failed'
+ assert rc == 2 and secret not in w.stable(o)
+ assert o['error']['message'] == w.SAFE_ERROR_MESSAGES['invalid_input']
+
+def test_every_known_error_has_actionable_bounded_safe_message():
+ for code,message in w.SAFE_ERROR_MESSAGES.items():
+  line=w.output_line(w.error_value('plan',code,message))
+  assert message != 'Harness request failed'
+  assert len(line.encode('utf-8')) <= w.MAX_STDOUT_BYTES
