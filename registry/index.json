@@ -379,7 +379,7 @@
     {
       "id": "workboard-delegation",
       "type": "skill",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "description": "Delegate standalone Workboard execution cards with exact plans, scoped tools, idempotency, and reconciliation.",
       "path": "skills/workboard-delegation",
       "compatibility": {
@@ -396,12 +396,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d7c74499f9353184523036201833d6043a88b5e9e13f3dd1cfff32a2472f5071"
+          "sha256": "155401175967584a51ad504f569acd47ec87d4636f2e6487ce83540f558c8cc1"
         }
       ],
       "linkedHarness": {
         "id": "workboard-delegation",
-        "version": "0.3.1"
+        "version": "0.3.2"
       }
     },
     {
@@ -933,7 +933,7 @@
     {
       "id": "workboard-delegation",
       "type": "harness",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "description": "Pure deterministic planning, snapshot validation, and reconciliation planning for scoped Workboard delegation.",
       "path": "harnesses/workboard-delegation",
       "compatibility": {
@@ -950,15 +950,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "70b805a3ad2ee5828a69dbea1a16c53e05f5b9018741742c224534011b0ca8b4"
+          "sha256": "df2c1ac15c0321a9fa699f385d8ebed4746420c8a444d4b37858f3274e181e15"
         },
         {
           "path": "harness.json",
-          "sha256": "8c195f6c0aec1bafe06fe3ee210c0fad9e46781a8105e9fdd938913385374f12"
+          "sha256": "6be89b3e58bbfa98e0804720556976ac978b2a792c87240eea3c9c894777188b"
         },
         {
           "path": "workboard_delegation.py",
-          "sha256": "aead845993a79081ddf49b6869dc2dd9d3e7975022404f56588bf5b8066c3519"
+          "sha256": "c8c95feb568a4a47cc6699815cb0d868451a6c3773ff089c0520f1743802cb3f"
         }
       ]
     }

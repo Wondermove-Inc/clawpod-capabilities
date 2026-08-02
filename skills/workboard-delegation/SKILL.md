@@ -9,7 +9,7 @@ Use the paired Harness for pure planning and validation. Perform every read and 
 
 ## Required workflow
 
-1. Run Harness `plan` with leader id, expected leader owner when claimed, practitioner, scope, optional non-goals, done-when, evidence requirement, report-back target, tenant, board, and labels.
+1. Run Harness `plan` with leader id, expected leader owner when claimed, practitioner, scope, optional non-goals, done-when, evidence requirement, report-back target, tenant, board, and labels. Every stdout envelope is limited to 1,900 UTF-8 bytes including its newline, below the Gateway 2,000-byte preview ceiling. If `plan` returns `output_too_large`, shorten the delegation packet without dropping required meaning, then re-plan and approve the new exact packet.
 2. Show the exact packet and stable `planHash`; obtain explicit human approval for that exact intent.
 3. Call `workboard_read` for the leader. Keep any returned claim token outside Harness input.
 4. Run Harness `validate-leader` with approved plan JSON/hash, bounded leader snapshot JSON, and expected owner. Stop on dependencies, owner mismatch, or malformed state.

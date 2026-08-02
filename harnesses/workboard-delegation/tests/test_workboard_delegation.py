@@ -42,7 +42,7 @@ def test_plan_output_preview():assert run(pargs())[1]['data']['preview']==plan()
 def test_plan_output_fits_gateway_preview():assert len(w.stable(run(pargs())[1]).encode()) <= w.MAX_STDOUT_BYTES
 def test_oversized_plan_output_rejected():
  a=pargs();a[a.index('--scope')+1]='x'*1800
- assert run(a)[1]['error']['code']=='plan_output_too_large'
+ assert run(a)[1]['error']['code']=='output_too_large'
 def test_status_pure():
  o=run(['status'])[1];assert o['data']['pure'] and not o['data']['gatewayCalls'] and not o['data']['mutates'] and not o['performed']
 def test_parse_snapshot_object():assert w.parse_json_arg('{"id":"L"}','x',100)=={'id':'L'}
@@ -104,3 +104,85 @@ def test_subprocess_plan_invocation():
  exe=str(Path(__file__).parents[1]/'workboard_delegation.py');cp=subprocess.run([sys.executable,exe,*pargs()],capture_output=True,text=True);assert cp.returncode==0 and json.loads(cp.stdout)['data']['preview']['planHash']==plan()['planHash']
 def test_error_envelope_never_performed():
  rc,o=run(['validate-leader','--plan-json','{}','--plan-hash','x','--leader-snapshot','{}']);assert rc==2 and not o['performed'] and o['effects']==[] and not o['error']['performed']
+
+def test_transport_contract_and_conservative_budget():
+ assert w.GATEWAY_STDOUT_PREVIEW_BYTES == 2000
+ assert w.MAX_STDOUT_BYTES == 1900
+ assert w.MAX_STDOUT_BYTES < w.GATEWAY_STDOUT_PREVIEW_BYTES
+
+def _padding_for_exact_budget(character='x'):
+ base=len(w.output_line(w.envelope(True,'boundary',data={'padding':''})).encode('utf-8'))
+ unit=len(character.encode('utf-8'))
+ return character*((w.MAX_STDOUT_BYTES-base)//unit),base
+
+def test_stdout_budget_exact_boundary_includes_newline():
+ padding,base=_padding_for_exact_budget()
+ line=w.bounded_success('boundary',{'padding':padding})
+ assert len(line.encode('utf-8')) == w.MAX_STDOUT_BYTES
+ assert line.endswith('\n')
+
+def test_stdout_budget_one_byte_over_rejected():
+ padding,_=_padding_for_exact_budget()
+ with pytest.raises(w.HarnessError) as e:w.bounded_success('boundary',{'padding':padding+'x'})
+ assert e.value.code == 'output_too_large'
+
+def test_stdout_budget_counts_multibyte_utf8():
+ padding,base=_padding_for_exact_budget('한')
+ line=w.bounded_success('boundary',{'padding':padding})
+ assert len(line.encode('utf-8')) <= w.MAX_STDOUT_BYTES
+ with pytest.raises(w.HarnessError) as e:w.bounded_success('boundary',{'padding':padding+'한'})
+ assert e.value.code == 'output_too_large'
+
+@pytest.mark.parametrize('flag', ['--scope','--non-goals','--done-when','--evidence-required','--report-back-target'])
+def test_each_long_delegation_text_field_rejected_without_truncation(flag):
+ a=pargs(non_goals='bounded')
+ a[a.index(flag)+1]='한'*1000
+ rc,o=run(a)
+ expected='invalid_input' if flag == '--report-back-target' else 'output_too_large'
+ assert rc == 2 and o['error']['code'] == expected
+ assert '한' not in w.stable(o)
+
+def test_oversized_rejection_is_stable_and_bounded():
+ a=pargs();a[a.index('--scope')+1]='x'*12000
+ first=run(a);second=run(a)
+ assert first == second
+ assert len(w.output_line(first[1]).encode('utf-8')) <= w.MAX_STDOUT_BYTES
+ assert first[1]['performed'] is False and first[1]['effects'] == []
+
+def test_error_never_echoes_long_secret_input(monkeypatch):
+ secret='Bearer TOPSECRET-'+'z'*12000
+ monkeypatch.setattr(w,'make_plan',lambda _a: (_ for _ in ()).throw(RuntimeError(secret)))
+ rc,o=run(pargs())
+ encoded=w.stable(o)
+ assert rc == 3 and 'TOPSECRET' not in encoded and 'Bearer' not in encoded
+ assert len((encoded+'\n').encode('utf-8')) <= w.MAX_STDOUT_BYTES
+
+def test_all_ordinary_success_outputs_fit_declared_budget():
+ p=plan();cases=[['status'],pargs(),vargs('validate-leader',p=p),vargs('validate-result',p=p,l=leader(comments=[comment(p)]),e=child(p)),vargs('reconcile-plan',p=p)]
+ for args in cases:
+  rc,o=run(args)
+  assert rc == 0, o
+  assert len(w.output_line(o).encode('utf-8')) <= w.MAX_STDOUT_BYTES
+
+def test_subprocess_stdout_byte_contract_success_and_rejection():
+ exe=str(Path(__file__).parents[1]/'workboard_delegation.py')
+ for args,expected_rc in [(['status'],0),(pargs(),0),(pargs()[:],0)]:
+  cp=subprocess.run([sys.executable,exe,*args],capture_output=True)
+  assert cp.returncode == expected_rc and len(cp.stdout) <= w.MAX_STDOUT_BYTES and cp.stdout.endswith(b'\n')
+ oversized=pargs();oversized[oversized.index('--scope')+1]='한'*1000
+ cp=subprocess.run([sys.executable,exe,*oversized],capture_output=True)
+ assert cp.returncode == 2 and len(cp.stdout) <= w.MAX_STDOUT_BYTES
+ assert json.loads(cp.stdout)['error']['code'] == 'output_too_large'
+
+def test_harness_error_message_never_echoes_caller_input(monkeypatch):
+ secret='TOPSECRET-'+'z'*12000
+ monkeypatch.setattr(w,'make_plan',lambda _a: (_ for _ in ()).throw(w.HarnessError('invalid_input',secret)))
+ rc,o=run(pargs())
+ assert rc == 2 and secret not in w.stable(o)
+ assert o['error']['message'] == w.SAFE_ERROR_MESSAGES['invalid_input']
+
+def test_every_known_error_has_actionable_bounded_safe_message():
+ for code,message in w.SAFE_ERROR_MESSAGES.items():
+  line=w.output_line(w.error_value('plan',code,message))
+  assert message != 'Harness request failed'
+  assert len(line.encode('utf-8')) <= w.MAX_STDOUT_BYTES
