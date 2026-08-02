@@ -21,7 +21,7 @@ All Harness commands are `readOnly`. Mutations are performed only by the paired 
 5. The paired Skill performs the approved first-class Workboard mutations.
 6. Read both cards and pass their bounded snapshots to `validate-result`.
 
-Each snapshot and plan JSON string is limited to 65,536 bytes. Inputs and outputs are stable JSON. Error values are redacted, and `performed` is always false because the Harness cannot mutate.
+Each snapshot and plan JSON string is limited to 65,536 bytes. Every stdout JSON envelope, including its trailing newline, has a conservative 1,900-byte UTF-8 budget below the Gateway `stdoutPreview` 2,000-byte transport ceiling. The Harness rejects a would-be successful response with stable `output_too_large` instead of truncating delegation semantics. Shorten the delegation packet and run `plan` again. Inputs and outputs are stable JSON. Error envelopes are bounded and never echo caller input; `performed` is always false because the Harness cannot mutate.
 
 ## Partial failure
 

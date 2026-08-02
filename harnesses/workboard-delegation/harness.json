@@ -4,7 +4,7 @@
   "name": "workboard-delegation",
   "title": "Workboard Delegation",
   "description": "Pure deterministic planning and snapshot validation for scoped Workboard delegation.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "entrypoint": "./workboard_delegation.py",
   "packageRoot": ".",
   "execution": {
