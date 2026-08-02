@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Search, assess, install, validate, update, and roll back capabilities, with deterministic registry-first WORKFLOW onboarding.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -119,11 +119,7 @@
             "type": "string"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "skill",
-              "harness"
-            ]
+            "type": "string"
           }
         }
       },
@@ -183,11 +179,7 @@
             "type": "string"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "skill",
-              "harness"
-            ]
+            "type": "string"
           },
           "skillsRoot": {
             "type": "string"
@@ -288,11 +280,7 @@
             "type": "string"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "skill",
-              "harness"
-            ]
+            "type": "string"
           },
           "skillsRoot": {
             "type": "string"
@@ -382,11 +370,7 @@
             "type": "string"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "skill",
-              "harness"
-            ]
+            "type": "string"
           },
           "skillsRoot": {
             "type": "string"
