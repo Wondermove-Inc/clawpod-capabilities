@@ -3,6 +3,50 @@
   "schemaVersion": 1,
   "capabilities": [
     {
+      "id": "acp-project-continuity",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Pure-local project ACP continuity with mandatory onboarding, separate agent lineages, leases, and fail-closed state validation.",
+      "path": "skills/acp-project-continuity",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2ae8bfe0bed85791a260a5197955548ea3143234508285e56261950b107ee28d"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "25dd4a51da2770176de99c40d8e16f158059e5364dcd813036777d3a6e9bc0dc"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "356e22ec6d92e0d17f9e9eaf68c2b08e08bdb695f05220f4cc5d32b183e47c5d"
+        },
+        {
+          "path": "references/safety.md",
+          "sha256": "586d9cd0f45f5d451ce7e08a699301312e110889d764f6264ec81ca31b3242fd"
+        },
+        {
+          "path": "references/shared-storage.md",
+          "sha256": "2d273e64a945b2729d0495be5bf1d7b17f5613c0f4cb5521d14d2aa3dc08453a"
+        }
+      ],
+      "linkedHarness": {
+        "id": "acp-project-continuity",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "atlassian",
       "type": "skill",
       "version": "0.2.0",
@@ -403,6 +447,38 @@
         "id": "workboard-delegation",
         "version": "0.3.2"
       }
+    },
+    {
+      "id": "acp-project-continuity",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Maintain separate local Codex and Claude ACP resume lineages with validated project context, leases, and revision guards.",
+      "path": "harnesses/acp-project-continuity",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "9b4815acd071524d4d5808d8698dac6c09408fc2411602f2db5614aa00b9ef60"
+        },
+        {
+          "path": "acp_project_continuity.py",
+          "sha256": "42e508aecc97ecdea9f9103e47ca718fb961921e2c7f210bc9ac361458404346"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "393be20990b08d82deaed4551ef7e220aeea66012d0994db326d141ef9d37612"
+        }
+      ]
     },
     {
       "id": "atlassian",

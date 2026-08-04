@@ -1,0 +1,1310 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "acp-project-continuity",
+  "title": "ACP Project Continuity",
+  "description": "Pure-local fail-closed registry for separate project-level Codex and Claude ACP session lineages.",
+  "version": "0.1.0",
+  "entrypoint": "./acp_project_continuity.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 5000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "After installation, onboard Codex, Claude, or both before registering or resuming project sessions",
+    "Validate project context, coordinate concurrent local agents, rotate or close ACP session lineages"
+  ],
+  "capabilities": [
+    "mandatory-onboarding",
+    "local-registry",
+    "compare-and-swap",
+    "leases",
+    "separate-agent-lineages",
+    "secret-rejection",
+    "no-backend-calls"
+  ],
+  "authModel": {
+    "type": "none",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "status": {
+      "description": "Report the pure-local execution boundary.",
+      "baseArgv": [
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "argMap": []
+    },
+    "onboard": {
+      "description": "Record mandatory post-install onboarding for Codex, Claude, or both.",
+      "baseArgv": [
+        "onboard"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "agent",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "project-list": {
+      "description": "List registered project bindings after onboarding.",
+      "baseArgv": [
+        "project-list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        }
+      ]
+    },
+    "project-register": {
+      "description": "Bind a project id to one exact repo, cwd, and branch.",
+      "baseArgv": [
+        "project-register"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "project-inspect": {
+      "description": "Inspect one exact agent lineage and lease.",
+      "baseArgv": [
+        "project-inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "session-attach": {
+      "description": "Attach the bounded first-run session id.",
+      "baseArgv": [
+        "session-attach"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "sessionId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sessionId",
+          "type": "option",
+          "flag": "--session-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "session-resolve": {
+      "description": "Resolve the active resume session id or fail closed.",
+      "baseArgv": [
+        "session-resolve"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "session-validate": {
+      "description": "Validate an observed id against the active lineage.",
+      "baseArgv": [
+        "session-validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "sessionId"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sessionId",
+          "type": "option",
+          "flag": "--session-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "session-rotate": {
+      "description": "Replace an active lineage and increment its generation.",
+      "baseArgv": [
+        "session-rotate"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "sessionId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sessionId",
+          "type": "option",
+          "flag": "--session-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "session-close": {
+      "description": "Close a lineage and release its lease without deleting evidence.",
+      "baseArgv": [
+        "session-close"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "lease-acquire": {
+      "description": "Acquire or renew an exact bounded local lease.",
+      "baseArgv": [
+        "lease-acquire"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "leaseToken",
+          "now",
+          "expiresAt",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "leaseToken": {
+            "type": "string"
+          },
+          "now": {
+            "type": "integer"
+          },
+          "expiresAt": {
+            "type": "integer"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "leaseToken",
+          "type": "option",
+          "flag": "--lease-token",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "expiresAt",
+          "type": "option",
+          "flag": "--expires-at",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    },
+    "lease-release": {
+      "description": "Release an exact active local lease.",
+      "baseArgv": [
+        "lease-release"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stateFile",
+          "stateRoot",
+          "projectId",
+          "agent",
+          "workspaceRoot",
+          "repo",
+          "cwd",
+          "branch",
+          "leaseToken",
+          "now",
+          "expectedRevision"
+        ],
+        "properties": {
+          "stateFile": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "leaseToken": {
+            "type": "string"
+          },
+          "now": {
+            "type": "integer"
+          },
+          "expectedRevision": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateFile",
+          "type": "option",
+          "flag": "--state-file",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": false
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "agent",
+          "type": "option",
+          "flag": "--agent",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "cwd",
+          "type": "option",
+          "flag": "--cwd",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "branch",
+          "type": "option",
+          "flag": "--branch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "leaseToken",
+          "type": "option",
+          "flag": "--lease-token",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "integer",
+          "optional": false
+        }
+      ]
+    }
+  }
+}

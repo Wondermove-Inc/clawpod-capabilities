@@ -1,0 +1,8 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Maintain separate local Codex and Claude ACP resume lineages with validated project context, leases, and revision guards.",
+  "compatibility": {"openclaw": ">=2026.4.0", "platforms": ["linux", "macos"]},
+  "safety": {"risk": "write-safe", "approvalRequired": false}
+}
