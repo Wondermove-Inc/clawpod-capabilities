@@ -197,7 +197,7 @@
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
       "path": "skills/cloudflare-quick-tunnel-preview",
       "compatibility": {
@@ -218,7 +218,7 @@
       ],
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -750,7 +750,7 @@
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
       "path": "harnesses/cloudflare-quick-tunnel-preview",
       "compatibility": {
@@ -766,11 +766,11 @@
       "files": [
         {
           "path": "cloudflare_quick_tunnel_preview.py",
-          "sha256": "bbc00c8061e4c71f7ac71b43f4b22500dcd097bf2da25d44f0103df1d41392e7"
+          "sha256": "e16021b5ccd3b02aae22e8876d2d3cad7815b622ad0920c139d66a48e6665cdf"
         },
         {
           "path": "harness.json",
-          "sha256": "32820d9a424aae6a387e2f2e73cb8706e8ddfacc01c8658256dc527bf503d333"
+          "sha256": "cbe46a512c504476eb02076ca2c142243cc0ed45e6067eb155fe058bd5bb2875"
         }
       ]
     },

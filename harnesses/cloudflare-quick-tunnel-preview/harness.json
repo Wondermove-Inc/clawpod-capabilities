@@ -4,7 +4,7 @@
   "name": "cloudflare-quick-tunnel-preview",
   "title": "Cloudflare Quick Tunnel Preview",
   "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./cloudflare_quick_tunnel_preview.py",
   "packageRoot": ".",
   "execution": {
@@ -101,7 +101,7 @@
             "type": "string"
           },
           "port": {
-            "type": "integer"
+            "type": "number"
           },
           "skipConnect": {
             "type": "boolean"
@@ -198,10 +198,10 @@
             "type": "string"
           },
           "port": {
-            "type": "integer"
+            "type": "number"
           },
           "ttl": {
-            "type": "integer"
+            "type": "number"
           },
           "discoveryTimeout": {
             "type": "number"
