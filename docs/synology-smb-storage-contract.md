@@ -1,8 +1,10 @@
 # Synology SMB Storage contract
 
-Registry-first classification: **create**. The installed and canonical registry inventory contained no Synology/SMB storage capability with this backend and policy boundary.
+Registry-first classification: **REFINE**. Canonical search found exactly this existing Skill and linked Harness, with no competing capability.
 
-Version 0.1.0 pairs the `synology-smb-storage` AgentSkill and CLI Harness under the title **Synology SMB Storage**.
+Version 0.1.1 adds the bounded, idempotent `mount.restore` manual recovery path to the existing pair.
+
+Repeated outages restore first, then perform deeper layout and policy verification. The refinement excludes startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restart, and direct live mount/unmount actions.
 
 The Harness wraps installed `smbclient` and `mount.cifs`, requires exact SMB 3.1.1, fixes the target at `/workspace/shared`, and exposes no arbitrary command, target, dialect, or mount-option input. Passwords enter the Harness only through `SYNOLOGY_SMB_PASSWORD` or stdin. Child tools receive them only through `PASSWD`; inherited `SYNOLOGY_SMB_PASSWORD` is removed, stdin is `/dev/null`, and backend stdout/stderr are not surfaced. Secrets are excluded from argv, files, logs, and JSON output.
 

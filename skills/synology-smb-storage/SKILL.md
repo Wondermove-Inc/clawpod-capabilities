@@ -19,11 +19,14 @@ Explain that the password goes directly to protected secret storage, enters the 
 
 ## Procedure
 
-1. Run `system.preflight` and `auth.contract`.
-2. Route the password to approved protected storage. Never place it in prompts, argv, files, logs, artifacts, examples, or output.
-3. Gateway cannot inject protected memory secrets. Invoke credential-bearing `shares.discover`, `mount.apply`, or `auth.onboard` only through the approved `exec.useSecrets` lane with the protected pointer injected as `SYNOLOGY_SMB_PASSWORD`; never resolve or paste plaintext into a prompt or command. Use Gateway `prepare → run` for non-secret commands and release validation. Auto-select a share only when discovery returns exactly one eligible disk share. Otherwise ask the user to choose from the returned names.
-4. Verify `mount.status`, `layout.inspect`, and the policy result. Do not report operational readiness before all succeed.
-5. Use `file.list`, bounded `file.get`, and bounded `file.put` for file operations. For put, provide an explicit trusted `transferRoot` and a source path relative to it. Reject traversal and all symlinks.
-6. Use local workspace for scratch, cache, builds, Git, and SQLite. Put durable artifacts under shared `common`, organization common, or organization/agent paths.
+1. For a repeated outage, run `mount.restore` first with the approved server, account, and share. It is the one-command manual recovery path: an exact existing mount succeeds without a password; otherwise it performs bounded local checks, consumes `SYNOLOGY_SMB_PASSWORD`, mounts, and verifies the exact source at `/workspace/shared`.
+2. After restore succeeds, perform deeper `layout.inspect` and policy verification. Do not delay storage recovery for layout diagnosis.
+3. For initial onboarding, run `system.preflight` and `auth.contract`.
+4. Route the password to approved protected storage. Never place it in prompts, argv, files, logs, artifacts, examples, or output.
+5. Invoke credential-bearing commands only through the approved secret-injection lane with the protected pointer injected as `SYNOLOGY_SMB_PASSWORD`; never resolve or paste plaintext into a prompt or command.
+6. Verify `mount.status`, `layout.inspect`, and the policy result. Do not report operational readiness before all succeed.
+7. Use `file.list`, bounded `file.get`, and bounded `file.put` for file operations.
+
+Do not add startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restarts, or direct live mount/unmount actions. `mount.restore` is manual and Harness-mediated.
 
 Read `references/operations.md` for command and recovery details.

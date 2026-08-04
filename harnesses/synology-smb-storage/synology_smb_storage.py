@@ -51,6 +51,11 @@ def password():
  if not p: raise Fault("AUTH_REQUIRED",f"password required via {PASSWORD_ENV} or harness stdin")
  return p
 
+def restore_password():
+ p=os.environ.get(PASSWORD_ENV)
+ if not p: raise Fault("AUTH_REQUIRED",f"password required via {PASSWORD_ENV}")
+ return p
+
 def run(argv,*,credential=None,timeout=15):
  env=os.environ.copy(); env.pop(PASSWORD_ENV,None)
  if credential is not None: env["PASSWD"]=credential
@@ -111,6 +116,29 @@ def mount_apply(a):
    except OSError: pass
   raise Fault("MOUNT_VERIFY_FAILED","mount command succeeded but the expected CIFS source was not verified",{"retrySafe":False})
  return {"mounted":True,"target":str(ROOT),"options":list(SAFE_OPTS)}
+def mount_restore(a):
+ source=mount_source(a); account=valid_account(a.account); record=mount_record()
+ if record:
+  if record["fstype"]=="cifs" and record["source"]==source:
+   return {"mounted":True,"changed":False,"source":source,"target":str(ROOT),"secretUsed":False,"externalSideEffect":False,"options":list(SAFE_OPTS)}
+  raise Fault("MOUNT_CONFLICT","mount target is already mounted from a different source")
+ if ROOT.exists() and any(ROOT.iterdir()): raise Fault("MOUNT_CONFLICT","mount target is non-empty")
+ if not shutil.which("mount.cifs"): raise Fault("PREREQUISITE_MISSING","mount.cifs is unavailable")
+ if os.geteuid()!=0 and not cap_sys_admin(): raise Fault("PREREQUISITE_MISSING","mount privilege is unavailable")
+ credential=restore_password(); created_root=not ROOT.exists(); ROOT.mkdir(parents=True,exist_ok=True)
+ opts=",".join((*SAFE_OPTS,f"username={account}"))
+ cp=run(["mount.cifs",source,str(ROOT),"-o",opts],credential=credential)
+ if cp.returncode:
+  if created_root:
+   try: ROOT.rmdir()
+   except OSError: pass
+  raise Fault("MOUNT_FAILED","mount.cifs failed",{"exitCode":cp.returncode,"retrySafe":True})
+ verified=mount_record()
+ if not verified or verified["fstype"]!="cifs" or verified["source"]!=source:
+  # Do not perform a live rollback here: restoration is fail-closed and live
+  # unmounting is outside this command's contract.
+  raise Fault("MOUNT_VERIFY_FAILED","expected CIFS source and target were not verified",{"retrySafe":False})
+ return {"mounted":True,"changed":True,"source":source,"target":str(ROOT),"secretUsed":True,"externalSideEffect":True,"options":list(SAFE_OPTS)}
 def status(a):
  record=mounted(); return {"mounted":bool(record),"target":str(ROOT),"source":None if not record else record["source"]}
 def unmount(a):
@@ -279,6 +307,7 @@ def parser():
  q=sp.add_parser("auth.onboard"); q.add_argument("--server",required=True); q.add_argument("--account",required=True); q.add_argument("--workflow",required=True); q.add_argument("--org-id",required=True); q.add_argument("--agent-id",required=True); q.add_argument("--share")
  for c in ("shares.discover","mount.preview","mount.apply"):
   q=sp.add_parser(c); q.add_argument("--server",required=True); q.add_argument("--account",required=True); q.add_argument("--share",required=c!="shares.discover")
+ q=sp.add_parser("mount.restore"); q.add_argument("--server",required=True); q.add_argument("--account",required=True); q.add_argument("--share",required=True)
  sp.add_parser("mount.status"); sp.add_parser("mount.unmount")
  for c in ("layout.inspect","layout.ensure"):
   q=sp.add_parser(c); q.add_argument("--org-id",required=True); q.add_argument("--agent-id",required=True)
@@ -296,6 +325,7 @@ def main():
   elif c=="shares.discover": d=discover(a)
   elif c=="mount.preview": d=preview(a)
   elif c=="mount.apply": d=mount_apply(a)
+  elif c=="mount.restore": d=mount_restore(a)
   elif c=="mount.status": d=status(a)
   elif c=="mount.unmount": d=unmount(a)
   elif c=="layout.inspect": d=layout(a)
@@ -306,7 +336,8 @@ def main():
   elif c=="workflow.install": d=workflow(a)
   elif c=="workflow.rollback": d=workflow(a,True)
   elif c=="auth.onboard": d=onboard(a)
-  return emit(c,d)
+  effects=[{"type":"mount","target":str(ROOT)}] if c=="mount.restore" and d["changed"] else []
+  return emit(c,d,effects)
  except Fault as e: return emit(c,error={"code":e.code,"message":e.msg,"details":e.details},ok=False)
  except PermissionError: return emit(c,error={"code":"PERMISSION_DENIED","message":"permission denied","details":{}},ok=False)
  except OSError as e: return emit(c,error={"code":"IO_FAILURE","message":e.strerror or "I/O failure","details":{"retrySafe":False}},ok=False)

@@ -71,6 +71,71 @@ def test_mount_success_requires_source_verification(monkeypatch,tmp_path):
  with pytest.raises(smb.Fault) as e:smb.mount_apply(args(server='nas',share='team',account='u'))
  assert e.value.code=='MOUNT_VERIFY_FAILED' and not e.value.details['retrySafe']
 
+def restore_args(): return args(server='nas.local',share='team',account='user')
+
+def restore_ready(monkeypatch,tmp_path):
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared')
+ monkeypatch.setattr(smb.shutil,'which',lambda name:'/sbin/mount.cifs' if name=='mount.cifs' else None)
+ monkeypatch.setattr(smb.os,'geteuid',lambda:0)
+
+def test_restore_success_and_fixed_contract(monkeypatch,tmp_path):
+ restore_ready(monkeypatch,tmp_path); monkeypatch.setenv(smb.PASSWORD_ENV,'secret'); records=[None,{'fstype':'cifs','source':'//nas.local/team'}]; seen={}
+ monkeypatch.setattr(smb,'mount_record',lambda:records.pop(0))
+ def fake(argv,**kw): seen.update(argv=argv,kw=kw); return SimpleNamespace(returncode=0)
+ monkeypatch.setattr(smb,'run',fake)
+ d=smb.mount_restore(restore_args())
+ assert d['mounted'] and d['changed'] and d['secretUsed'] and d['externalSideEffect']
+ assert d['source']=='//nas.local/team' and d['target']==str(tmp_path/'shared')
+ assert seen['kw']['credential']=='secret' and 'secret' not in seen['argv']
+ assert seen['argv'][-1]=='vers=3.1.1,nosuid,nodev,noexec,cache=strict,username=user'
+
+def test_restore_already_mounted_noop_without_secret(monkeypatch,tmp_path):
+ restore_ready(monkeypatch,tmp_path); monkeypatch.delenv(smb.PASSWORD_ENV,raising=False)
+ monkeypatch.setattr(smb,'mount_record',lambda:{'fstype':'cifs','source':'//nas.local/team'})
+ monkeypatch.setattr(smb,'run',lambda *a,**k:pytest.fail('backend must not run'))
+ d=smb.mount_restore(restore_args())
+ assert d['mounted'] and not d['changed'] and not d['secretUsed'] and not d['externalSideEffect']
+
+def test_restore_missing_secret_and_conflicts(monkeypatch,tmp_path):
+ restore_ready(monkeypatch,tmp_path); monkeypatch.delenv(smb.PASSWORD_ENV,raising=False); monkeypatch.setattr(smb,'mount_record',lambda:None)
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(restore_args())
+ assert e.value.code=='AUTH_REQUIRED'
+ monkeypatch.setattr(smb,'mount_record',lambda:{'fstype':'cifs','source':'//other/share'})
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(restore_args())
+ assert e.value.code=='MOUNT_CONFLICT'
+ monkeypatch.setattr(smb,'mount_record',lambda:None); smb.ROOT.mkdir(); (smb.ROOT/'local').write_text('x')
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(restore_args())
+ assert e.value.code=='MOUNT_CONFLICT'
+
+@pytest.mark.parametrize('values',[
+ {'server':'bad/server','share':'team','account':'user'},
+ {'server':'nas.local','share':'bad/share','account':'user'},
+ {'server':'nas.local','share':'team','account':'bad account'},
+])
+def test_restore_rejects_malformed_identifiers(monkeypatch,tmp_path,values):
+ restore_ready(monkeypatch,tmp_path); monkeypatch.setenv(smb.PASSWORD_ENV,'secret')
+ monkeypatch.setattr(smb,'run',lambda *a,**k:pytest.fail('backend must not run'))
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(args(**values))
+ assert e.value.code=='INVALID_INPUT'
+
+def test_restore_backend_and_verification_failures(monkeypatch,tmp_path):
+ restore_ready(monkeypatch,tmp_path); monkeypatch.setenv(smb.PASSWORD_ENV,'secret'); monkeypatch.setattr(smb,'mount_record',lambda:None)
+ monkeypatch.setattr(smb,'run',lambda *a,**k:SimpleNamespace(returncode=32))
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(restore_args())
+ assert e.value.code=='MOUNT_FAILED'
+ monkeypatch.setattr(smb,'run',lambda *a,**k:SimpleNamespace(returncode=0))
+ with pytest.raises(smb.Fault) as e:smb.mount_restore(restore_args())
+ assert e.value.code=='MOUNT_VERIFY_FAILED'
+
+def test_restore_repeated_invocation_and_secret_redaction(monkeypatch,tmp_path,capsys):
+ restore_ready(monkeypatch,tmp_path); secret='never-print-this'; monkeypatch.setenv(smb.PASSWORD_ENV,secret); state={'record':None,'calls':0}
+ monkeypatch.setattr(smb,'mount_record',lambda:state['record'])
+ def fake(argv,**kw): state['calls']+=1; state['record']={'fstype':'cifs','source':'//nas.local/team'}; return SimpleNamespace(returncode=0)
+ monkeypatch.setattr(smb,'run',fake)
+ first=smb.mount_restore(restore_args()); second=smb.mount_restore(restore_args())
+ assert first['changed'] and not second['changed'] and state['calls']==1
+ smb.emit('mount.restore',second); assert secret not in capsys.readouterr().out
+
 def test_layout_permission_denial(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); (tmp_path/'shared').mkdir(); monkeypatch.setattr(smb,'mounted',lambda:'mount')
  monkeypatch.setattr(Path,'mkdir',lambda *a,**k: (_ for _ in ()).throw(PermissionError()))
@@ -123,7 +188,7 @@ def test_preflight_contract(monkeypatch,tmp_path):
 
 def test_manifest_safety_and_transfer_contracts():
  h=json.loads((HERE/'harness.json').read_text())['commands']; cc=json.loads((HERE/'command_contracts.json').read_text())
- expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'file.put':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
+ expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'mount.restore':['secretUse','externalSideEffect'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'file.put':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
  for name,classes in expected.items(): assert h[name]['safetyClasses']==classes and cc[name]['safetyClasses']==classes
  assert 'transferRoot' in h['file.put']['inputSchema']['required']; assert h['file.get']['inputSchema']['properties']['maxBytes']['maximum']==smb.HARD_MAX_BYTES
 

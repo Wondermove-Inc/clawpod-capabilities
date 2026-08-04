@@ -4,7 +4,7 @@
   "name": "synology-smb-storage",
   "title": "Synology SMB Storage",
   "description": "Guarded deterministic Synology SMB 3.1.1 storage operations.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./synology_smb_storage.py",
   "packageRoot": ".",
   "execution": {
@@ -20,7 +20,8 @@
     "fixed-safe-mount",
     "shared-layout",
     "managed-workflow-policy",
-    "bounded-file-operations"
+    "bounded-file-operations",
+    "idempotent-manual-restore"
   ],
   "authModel": {
     "type": "environment-or-stdin",
@@ -1059,6 +1060,89 @@
           "valueType": "path",
           "optional": false,
           "pathRole": "input"
+        }
+      ]
+    },
+    "mount.restore": {
+      "description": "Idempotently restore the fixed SMB mount and verify it.",
+      "baseArgv": [
+        "mount.restore"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "server",
+          "account",
+          "share"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "server",
+          "type": "option",
+          "flag": "--server",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "share",
+          "type": "option",
+          "flag": "--share",
+          "valueType": "string",
+          "optional": false
         }
       ]
     }
