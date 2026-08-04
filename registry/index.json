@@ -197,7 +197,7 @@
     {
       "id": "codex-claude-project-development",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
       "path": "skills/codex-claude-project-development",
       "compatibility": {
@@ -235,7 +235,7 @@
       ],
       "linkedHarness": {
         "id": "codex-claude-project-development",
-        "version": "0.2.0"
+        "version": "0.2.1"
       }
     },
     {
@@ -723,7 +723,7 @@
     {
       "id": "codex-claude-project-development",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
       "path": "harnesses/codex-claude-project-development",
       "compatibility": {
@@ -740,15 +740,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "df9d894583f8f654d729e30c8bf7d95402409060504e36f74ed72aabc6ff21f0"
+          "sha256": "5775e4423ca503a7d54fca52acb9c56d2956b03effdbff402af72d05eadb36c7"
         },
         {
           "path": "codex_claude_project_development.py",
-          "sha256": "f8ee71ab8fc8d1d3522cc2638e0662f9d7234603b61f97f62f29c0298f63619c"
+          "sha256": "fa785e25476b0086db29568358599d64a514dcc40881201a7b6342cf7f0d62bf"
         },
         {
           "path": "harness.json",
-          "sha256": "9d853f6c7157a427dd9ddec0ee1e6c7b3588886fe63b40c5c842e8d725791f81"
+          "sha256": "924988303a3e51b239c98e48a5f917d49a9c873f687118b9c31f8d7e09cc1a0a"
         }
       ]
     },
