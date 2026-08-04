@@ -175,6 +175,25 @@ class UnitTests(unittest.TestCase):
         qt.cleanup_spawned(process, "1")
         process.terminate.assert_called_once(); process.kill.assert_called_once()
 
+    def test_internal_supervisor_revalidates_target_and_log_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            base = {
+                "state_root": str(root),
+                "cloudflared": qt.SUPERVISOR_EXECUTABLE,
+                "target": "http://127.0.0.1:8000",
+                "log_name": "cloudflared-" + "a" * 32 + ".log",
+            }
+            with mock.patch.object(qt.Path, "home", return_value=Path("/nonexistent")), mock.patch.object(qt.subprocess, "Popen") as popen:
+                with self.assertRaises(qt.Fail) as caught:
+                    qt.command_supervise(argparse.Namespace(**{**base, "target": "http://0.0.0.0:8000"}))
+                self.assertEqual(caught.exception.code, "UNSAFE_TARGET")
+                with self.assertRaises(qt.Fail) as caught:
+                    qt.command_supervise(argparse.Namespace(**{**base, "log_name": "../escape.log"}))
+                self.assertEqual(caught.exception.code, "UNSAFE_STATE")
+                popen.assert_not_called()
+
 
 class IntegrationTests(unittest.TestCase):
     @classmethod

@@ -766,7 +766,7 @@
       "files": [
         {
           "path": "cloudflare_quick_tunnel_preview.py",
-          "sha256": "a472b9b74e6b2bfb1fc01b7e73352481ab1fb0f495c01181ad685361912bae43"
+          "sha256": "177e84b2e35fd0c4f4fe8c35d74403d56388aabe090e9b017f575bde9bdd9c77"
         },
         {
           "path": "harness.json",

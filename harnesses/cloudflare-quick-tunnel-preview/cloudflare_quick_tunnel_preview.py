@@ -507,7 +507,15 @@ def _write_bounded_log(path: Path, tail: bytes) -> None:
 
 def command_supervise(args) -> dict:
     root = secure_root(args.state_root)
+    binary = inspect_binary(args.cloudflared)
+    reject_auth_state()
+    if not validate_target_string(args.target):
+        raise Fail("UNSAFE_TARGET", "supervisor target must be a loopback HTTP URL")
+    if re.fullmatch(r"cloudflared-[0-9a-f]{32}\.log", args.log_name) is None:
+        raise Fail("UNSAFE_STATE", "supervisor log identity is invalid")
     log_path = root / args.log_name
+    if log_path.exists():
+        secure_regular(log_path, "tunnel log")
     stop_requested = False
     def request_stop(_signum, _frame):
         nonlocal stop_requested
@@ -515,7 +523,7 @@ def command_supervise(args) -> dict:
     signal.signal(signal.SIGTERM, request_stop)
     signal.signal(signal.SIGINT, request_stop)
     child = subprocess.Popen(
-        [args.cloudflared, "tunnel", "--no-autoupdate", "--config", "/dev/null", "--url", args.target],
+        [binary["path"], "tunnel", "--no-autoupdate", "--config", "/dev/null", "--url", args.target],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
