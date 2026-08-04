@@ -39,8 +39,8 @@ class RegistrySyncTests(unittest.TestCase):
             self.assertEqual(set(linked or {}),{"id","version"})
             self.assertIn(("harness",linked["id"],linked["version"]),entries)
         registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
-        self.assertEqual(registry_skill["version"],"0.3.1")
-        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.1")
+        self.assertEqual(registry_skill["version"],"0.3.3")
+        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.3")
         atlassian=next(e for e in skills if e["id"]=="atlassian")
         self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
 
@@ -48,7 +48,7 @@ class RegistrySyncTests(unittest.TestCase):
         manifest = json.loads(
             (ROOT / "harnesses" / "clawpod-capability-registry" / "harness.json").read_text(encoding="utf-8")
         )
-        unsupported = {"minimum", "maximum"}
+        unsupported = {"minimum", "maximum", "enum"}
         for command_name, command in manifest["commands"].items():
             properties = command["inputSchema"].get("properties", {})
             for argument_name, schema in properties.items():
@@ -56,6 +56,12 @@ class RegistrySyncTests(unittest.TestCase):
                     unsupported.isdisjoint(schema),
                     f"{command_name}.{argument_name} uses unsupported Gateway schema keywords",
                 )
+        for command_name in ("inspect","install","update","validate"):
+            command=manifest["commands"][command_name]
+            self.assertNotIn("type",command["inputSchema"].get("required",[]))
+            self.assertEqual(command["inputSchema"]["properties"]["type"],{"type":"string"})
+            type_mapping=next(item for item in command["argMap"] if item["arg"]=="type")
+            self.assertTrue(type_mapping["optional"])
 
     def test_changed_package_file_makes_registry_stale(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

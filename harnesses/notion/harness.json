@@ -1,0 +1,8094 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "notion",
+  "title": "notion",
+  "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
+  "version": "0.1.7",
+  "entrypoint": "./notion.py",
+  "packageRoot": ".",
+  "whenToUse": [
+    "Operate Notion pages, blocks, data sources, comments, files, users, or webhooks",
+    "Plan and verify a protected Notion connection"
+  ],
+  "capabilities": [
+    "notion-rest-2026-03-11",
+    "internal-integration",
+    "personal-access-token",
+    "oauth-planning",
+    "protected-onboarding-verification",
+    "allowlisted-writes",
+    "guarded-writes",
+    "webhook-verification",
+    "resumable-minimal-intervention-onboarding",
+    "mockable-browser-desktop-adapter",
+    "protected-secret-capture-handoff",
+    "confined-private-onboarding-state",
+    "guarded-single-part-file-transfer"
+  ],
+  "authModel": {
+    "type": "bearer-token-protected-injection",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "auth.status": {
+      "description": "auth.status through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "auth.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.onboarding.plan": {
+      "description": "auth.onboarding.plan through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "auth.onboarding.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.onboarding.verify": {
+      "description": "auth.onboarding.verify through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "auth.onboarding.verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "roots"
+        ],
+        "properties": {
+          "roots": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "diagnostics.doctor": {
+      "description": "diagnostics.doctor through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "diagnostics.doctor"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "operation.plan": {
+      "description": "operation.plan through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "operation.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string"
+          },
+          "targetKind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "operation",
+          "type": "option",
+          "flag": "--operation",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "targetKind",
+          "type": "option",
+          "flag": "--target-kind",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "resolve.id": {
+      "description": "resolve.id through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "resolve.id"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "resolve.url": {
+      "description": "resolve.url through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "resolve.url"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "url",
+          "type": "option",
+          "flag": "--url",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "markdown.validate": {
+      "description": "markdown.validate through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "markdown.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "markdown": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "markdown",
+          "type": "option",
+          "flag": "--markdown",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "webhook.signature.verify": {
+      "description": "webhook.signature.verify through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "webhook.signature.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "rawBodyB64",
+          "signature"
+        ],
+        "properties": {
+          "rawBodyB64": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "rawBodyB64",
+          "type": "option",
+          "flag": "--raw-body-b64",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "signature",
+          "type": "option",
+          "flag": "--signature",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "webhook.event.parse": {
+      "description": "webhook.event.parse through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "webhook.event.parse"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "user.me": {
+      "description": "user.me through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "user.me"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "user.retrieve": {
+      "description": "user.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "user.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "user.list": {
+      "description": "user.list through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "user.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "search.query": {
+      "description": "search.query through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "search.query"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.retrieve": {
+      "description": "page.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.property.retrieve": {
+      "description": "page.property.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.property.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "propertyId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "propertyId",
+          "type": "option",
+          "flag": "--property-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.retrieve_markdown": {
+      "description": "page.retrieve_markdown through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.retrieve_markdown"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.retrieve": {
+      "description": "block.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.children.list": {
+      "description": "block.children.list through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.children.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.tree.retrieve": {
+      "description": "block.tree.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.tree.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxDepth": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxDepth",
+          "type": "option",
+          "flag": "--max-depth",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "database.retrieve": {
+      "description": "database.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "database.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "database.list_data_sources": {
+      "description": "database.list_data_sources through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "database.list_data_sources"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.retrieve": {
+      "description": "data_source.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "data_source.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.query": {
+      "description": "data_source.query through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "data_source.query"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.templates.list": {
+      "description": "data_source.templates.list through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "data_source.templates.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.list": {
+      "description": "comment.list through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "comment.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "file_upload.retrieve": {
+      "description": "file_upload.retrieve through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "file_upload.retrieve"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.list": {
+      "description": "file_upload.list through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "file_upload.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.create": {
+      "description": "page.create through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.properties.update": {
+      "description": "page.properties.update through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.properties.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.archive": {
+      "description": "page.archive through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.archive"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "page.restore": {
+      "description": "page.restore through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "page.restore"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.children.append": {
+      "description": "block.children.append through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.children.append"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.update": {
+      "description": "block.update through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "block.delete": {
+      "description": "block.delete through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "block.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "markdown.page.create": {
+      "description": "markdown.page.create through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "markdown.page.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "markdown.page.update": {
+      "description": "markdown.page.update through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "markdown.page.update"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "data_source.schema.update": {
+      "description": "data_source.schema.update through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "data_source.schema.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.create_page": {
+      "description": "comment.create_page through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "comment.create_page"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.create_discussion": {
+      "description": "comment.create_discussion through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "comment.create_discussion"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "comment.reply": {
+      "description": "comment.reply through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "comment.reply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.create": {
+      "description": "file_upload.create through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "file_upload.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.complete": {
+      "description": "file_upload.complete through the pinned Notion 2026-03-11 contract.",
+      "baseArgv": [
+        "file_upload.complete"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "string"
+          },
+          "startCursor": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "string"
+          },
+          "maxPages": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "startCursor",
+          "type": "option",
+          "flag": "--start-cursor",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.plan": {
+      "description": "onboard.plan secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "roots": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.desktop.plan": {
+      "description": "onboard.desktop.plan secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.desktop.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "roots": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.desktop.task": {
+      "description": "onboard.desktop.task secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.desktop.task"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "authMode": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "roots": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.start": {
+      "description": "onboard.start secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.start"
+      ],
+      "safetyClasses": [
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "outputRoot",
+          "session",
+          "workspace"
+        ],
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "stateName": {
+            "type": "string"
+          },
+          "authMode": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "roots": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "string"
+          },
+          "sessionTimeout": {
+            "type": "string"
+          },
+          "now": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "authMode",
+          "type": "option",
+          "flag": "--auth-mode",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "workspace",
+          "type": "option",
+          "flag": "--workspace",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "roots",
+          "type": "option",
+          "flag": "--roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "capabilities",
+          "type": "option",
+          "flag": "--capabilities",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sessionTimeout",
+          "type": "option",
+          "flag": "--session-timeout",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.status": {
+      "description": "onboard.status secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "outputRoot",
+          "session"
+        ],
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "stateName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.inspect": {
+      "description": "onboard.inspect secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "outputRoot",
+          "session"
+        ],
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "stateName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.resume": {
+      "description": "onboard.resume secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.resume"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "outputRoot",
+          "session",
+          "expectedRevision"
+        ],
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "stateName": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "string"
+          },
+          "approveHandoffs": {
+            "type": "string"
+          },
+          "now": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approveHandoffs",
+          "type": "option",
+          "flag": "--approve-handoffs",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "onboard.cancel": {
+      "description": "onboard.cancel secret-free Notion onboarding contract.",
+      "baseArgv": [
+        "onboard.cancel"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "outputRoot",
+          "session",
+          "expectedRevision"
+        ],
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "stateName": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "string"
+          },
+          "now": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "session",
+          "type": "option",
+          "flag": "--session",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "stateName",
+          "type": "option",
+          "flag": "--state-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRevision",
+          "type": "option",
+          "flag": "--expected-revision",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "now",
+          "type": "option",
+          "flag": "--now",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "file_upload.send": {
+      "description": "Guarded authenticated single-part multipart/form-data transfer to /file_uploads/{id}/send.",
+      "baseArgv": [
+        "file_upload.send"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "transferRoot",
+          "sourcePath"
+        ],
+        "properties": {
+          "transferRoot": {
+            "type": "string"
+          },
+          "sourcePath": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "maxUploadBytes": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "allowedRoots": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "api_version",
+          "effects",
+          "warnings",
+          "retry",
+          "operation_id",
+          "request_digest"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "string"
+          },
+          "request_digest": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "verification": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "id",
+          "type": "option",
+          "flag": "--id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "sourcePath",
+          "type": "option",
+          "flag": "--source-path",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "filename",
+          "type": "option",
+          "flag": "--filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "contentType",
+          "type": "option",
+          "flag": "--content-type",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxUploadBytes",
+          "type": "option",
+          "flag": "--max-upload-bytes",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "operationId",
+          "type": "option",
+          "flag": "--operation-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allowedRoots",
+          "type": "option",
+          "flag": "--allowed-roots",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  },
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 65000,
+    "requiresJson": true
+  }
+}

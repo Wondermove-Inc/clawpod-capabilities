@@ -1,0 +1,1532 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": "2026-03-11",
+  "commands": {
+    "auth.status": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "auth.onboarding.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "auth.onboarding.verify": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "roots"
+      ],
+      "jsonStringTransport": [
+        "roots"
+      ],
+      "structuredInputSchemas": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "diagnostics.doctor": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "operation.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "operation"
+      ]
+    },
+    "resolve.id": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ]
+    },
+    "resolve.url": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "url"
+      ]
+    },
+    "markdown.validate": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": []
+    },
+    "webhook.signature.verify": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "rawBodyB64",
+        "signature"
+      ]
+    },
+    "webhook.event.parse": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        }
+      }
+    },
+    "user.me": {
+      "method": "GET",
+      "path": "/users/me",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "user.retrieve": {
+      "method": "GET",
+      "path": "/users/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "user.list": {
+      "method": "GET",
+      "path": "/users",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "search.query": {
+      "method": "POST",
+      "path": "/search",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [],
+      "jsonStringTransport": [
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.retrieve": {
+      "method": "GET",
+      "path": "/pages/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.property.retrieve": {
+      "method": "GET",
+      "path": "/pages/{id}/properties/{property_id}",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [
+        "id",
+        "propertyId"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.retrieve_markdown": {
+      "method": "GET",
+      "path": "/pages/{id}/markdown",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.retrieve": {
+      "method": "GET",
+      "path": "/blocks/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.children.list": {
+      "method": "GET",
+      "path": "/blocks/{id}/children",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.tree.retrieve": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxDepth",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "database.retrieve": {
+      "method": "GET",
+      "path": "/databases/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "database.list_data_sources": {
+      "method": "GET",
+      "path": "/databases/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "data_source.retrieve": {
+      "method": "GET",
+      "path": "/data_sources/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "data_source.query": {
+      "method": "POST",
+      "path": "/data_sources/{id}/query",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "jsonStringTransport": [
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "data_source.templates.list": {
+      "method": "GET",
+      "path": "/data_sources/{id}/templates",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "comment.list": {
+      "method": "GET",
+      "path": "/comments",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "file_upload.retrieve": {
+      "method": "GET",
+      "path": "/file_uploads/{id}",
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "id"
+      ],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "file_upload.list": {
+      "method": "GET",
+      "path": "/file_uploads",
+      "safety": "readOnly",
+      "paged": true,
+      "verify": null,
+      "requiredInputs": [],
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.create": {
+      "method": "POST",
+      "path": "/pages",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.properties.update": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "id",
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.archive": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "destructive",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "id"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "page.restore": {
+      "method": "PATCH",
+      "path": "/pages/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "id"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.children.append": {
+      "method": "PATCH",
+      "path": "/blocks/{id}/children",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "block",
+      "requiredInputs": [
+        "id",
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.update": {
+      "method": "PATCH",
+      "path": "/blocks/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "block",
+      "requiredInputs": [
+        "id",
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "block.delete": {
+      "method": "DELETE",
+      "path": "/blocks/{id}",
+      "safety": "destructive",
+      "paged": false,
+      "verify": "block",
+      "requiredInputs": [
+        "id"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "markdown.page.create": {
+      "method": "POST",
+      "path": "/pages",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "markdown.page.update": {
+      "method": "PATCH",
+      "path": "/pages/{id}/markdown",
+      "safety": "destructive",
+      "paged": false,
+      "verify": "page",
+      "requiredInputs": [
+        "id",
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "data_source.schema.update": {
+      "method": "PATCH",
+      "path": "/data_sources/{id}",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "data_source",
+      "requiredInputs": [
+        "id",
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "comment.create_page": {
+      "method": "POST",
+      "path": "/comments",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "comment.create_discussion": {
+      "method": "POST",
+      "path": "/comments",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "comment.reply": {
+      "method": "POST",
+      "path": "/comments",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "file_upload.create": {
+      "method": "POST",
+      "path": "/file_uploads",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "file_upload",
+      "requiredInputs": [
+        "body"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "file_upload.complete": {
+      "method": "POST",
+      "path": "/file_uploads/{id}/complete",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "file_upload",
+      "requiredInputs": [
+        "id"
+      ],
+      "jsonStringTransport": [
+        "allowedRoots",
+        "body"
+      ],
+      "structuredInputSchemas": {
+        "body": {
+          "type": "object"
+        },
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "pageSize",
+        "maxItems",
+        "maxPages",
+        "timeoutMs",
+        "retries"
+      ]
+    },
+    "onboard.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [],
+      "jsonStringTransport": [
+        "roots"
+      ],
+      "structuredInputSchemas": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "onboard.desktop.plan": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [],
+      "jsonStringTransport": [
+        "roots"
+      ],
+      "structuredInputSchemas": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "onboard.desktop.task": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [],
+      "jsonStringTransport": [
+        "roots"
+      ],
+      "structuredInputSchemas": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "onboard.start": {
+      "method": null,
+      "path": null,
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "outputRoot",
+        "session",
+        "workspace"
+      ],
+      "jsonStringTransport": [
+        "roots"
+      ],
+      "structuredInputSchemas": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "integerStringTransport": [
+        "sessionTimeout",
+        "now"
+      ]
+    },
+    "onboard.status": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "outputRoot",
+        "session"
+      ]
+    },
+    "onboard.inspect": {
+      "method": null,
+      "path": null,
+      "safety": "readOnly",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "outputRoot",
+        "session"
+      ]
+    },
+    "onboard.resume": {
+      "method": null,
+      "path": null,
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "outputRoot",
+        "session",
+        "expectedRevision"
+      ],
+      "integerStringTransport": [
+        "expectedRevision",
+        "now"
+      ]
+    },
+    "onboard.cancel": {
+      "method": null,
+      "path": null,
+      "safety": "writeSafe",
+      "paged": false,
+      "verify": null,
+      "requiredInputs": [
+        "outputRoot",
+        "session",
+        "expectedRevision"
+      ],
+      "integerStringTransport": [
+        "expectedRevision",
+        "now"
+      ]
+    },
+    "file_upload.send": {
+      "method": "POST",
+      "path": "/file_uploads/{id}/send",
+      "safety": "externalSideEffect",
+      "paged": false,
+      "verify": "file_upload",
+      "requiredInputs": [
+        "id",
+        "transferRoot",
+        "sourcePath"
+      ],
+      "constraints": {
+        "transferRoot": "absolute trusted directory",
+        "sourcePath": "relative regular file; no traversal or symlinks",
+        "maxBytes": 20000000,
+        "retriesAfterTransmission": 0,
+        "authentication": "Bearer NOTION_TOKEN and Notion-Version to validated API base"
+      },
+      "jsonStringTransport": [
+        "allowedRoots"
+      ],
+      "structuredInputSchemas": {
+        "allowedRoots": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "page",
+                  "database",
+                  "data_source",
+                  "block"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F-]{32,36}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}

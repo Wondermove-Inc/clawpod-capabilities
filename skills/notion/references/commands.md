@@ -1,0 +1,12 @@
+# Command routing
+
+- Local/no credential: `auth.status`, `auth.onboarding.plan`, `diagnostics.doctor`, `operation.plan`, `resolve.id`, `resolve.url`, `markdown.validate`.
+- Approved credential verification: `auth.onboarding.verify` normalizes identity/workspace and checks 1-50 typed roots with actionable sharing/capability diagnostics.
+- Discovery/read: `search.query`, page/property/Markdown retrieval, bounded block trees, database/data-source/template retrieval, comments, users, and file-upload status.
+- Guarded writes: page create/update/archive/restore, Markdown create/update, block append/update/delete, schema update, typed page/discussion/reply comments, and the file-upload sequence `file_upload.create` → `file_upload.send` → `file_upload.complete`.
+- Webhooks: verify HMAC against the raw body before parsing; dedupe by event id in the caller's durable store.
+
+Enhanced Markdown is preferred for normal prose. `markdown.page.create` requires a string `markdown` field. `markdown.page.update` requires an official operation discriminator (`replace_content`, `update_content`, `insert_content`, or `replace_content_range`) and its matching nested payload; invalid shapes must fail before preview. Use blocks when exact nesting, unsupported content, or block identity matters. Database IDs are containers; data-source IDs are query/schema targets. Supply `allowedRoots` for writes; configured roots are enforced before preview and execution. Preserve `operation_id` and `request_digest` in caller-owned protected journal state, never the token or an unredacted sensitive body.
+
+
+For `file_upload.send`, pass the normalized file-upload ID, an absolute trusted `transferRoot`, and a traversal-free relative `sourcePath`. The Harness accepts only regular files, rejects symlinks, caps transfers at 20,000,000 bytes, and sends multipart field `file` to the authenticated Notion endpoint `/v1/file_uploads/{id}/send`. It emits digest/size/name/content-type and response evidence, requires preview plus the exact confirm hash, and verifies `uploaded` status with `file_upload.retrieve` before `file_upload.complete`. Mutations are attempted once. A timeout or 5xx after transmission may have started is reported with unknown effects and must be reconciled before retry. Multi-part uploads, resumable/chunked transfer, directories, pipes, devices, and files above the hard cap are not supported.

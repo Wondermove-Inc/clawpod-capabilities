@@ -21,7 +21,7 @@ Use direct execution for genuinely one-off work. Choose a Skill for reusable jud
 
 ## Install and update
 
-Select packages with explicit `type`. Verify canonical identity, paths, declared SHA-256 digests, compatibility, and safety metadata. Treat a Skill and its exact linked Harness as one transactional installation unit with explicit Skill and Harness roots.
+Select packages with explicit `type` when the same id/version exists as both a Skill and Harness. `inspect`, `install`, `update`, and `validate` may omit `type` only when registry selection is unambiguous; ambiguous selection must fail closed instead of choosing by sort order. Verify canonical identity, selected type, paths, declared SHA-256 digests, compatibility, safety metadata, destination, and provenance. Treat a Skill and its exact linked Harness as one transactional installation unit with explicit Skill and Harness roots.
 
 When installing or updating `clawpod-capability-registry`, pass an explicit path to the agent-owned, existing `WORKFLOW.md`. Installation must transactionally activate the versioned registry-first managed block. It must append the block when absent or replace only that exact block when outdated. It must never overwrite or regenerate the whole file, and it must preserve every byte outside the exact begin/end markers. Write atomically and stop without mutation on missing, duplicate, nested, reversed, or unclosed markers. Never silently create a missing `WORKFLOW.md`.
 

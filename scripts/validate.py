@@ -16,6 +16,7 @@ SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9
 SHA256 = re.compile(r"^[a-f0-9]{64}$")
 RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "credential-related"}
 HARNESS_SAFETY_CLASSES = {"readOnly", "writeSafe", "modifiesSource", "destructive", "secretUse", "externalSideEffect", "authReuse", "humanAccountAction"}
+HARNESS_ARG_VALUE_TYPES = {"string", "number", "integer", "boolean", "enum", "path"}
 HARNESS_COMMAND_FIELDS = {"description", "baseArgv", "safetyClasses", "inputSchema", "outputSchema", "argMap"}
 ALLOWED_KEYS = {"id", "type", "version", "description", "path", "sha256", "compatibility", "safety", "files", "linkedHarness"}
 
@@ -139,8 +140,15 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
             for arg_position, arg in enumerate(arg_map):
                 if not isinstance(arg, dict):
                     fail(f"{label} harness command {command_name} argMap[{arg_position}] must be an object")
-                if arg.get("valueType") == "path" and arg.get("pathRole") not in {"input", "output", "inout"}:
+                value_type = arg.get("valueType")
+                if value_type not in HARNESS_ARG_VALUE_TYPES:
+                    fail(f"{label} harness command {command_name} argMap[{arg_position}] has unsupported valueType")
+                if arg.get("type") == "booleanFlag" and (value_type != "boolean" or not arg.get("flag")):
+                    fail(f"{label} harness command {command_name} argMap[{arg_position}] booleanFlag requires flag and boolean valueType")
+                if value_type == "path" and arg.get("pathRole") not in {"input", "output", "inout"}:
                     fail(f"{label} harness command {command_name} argMap[{arg_position}] path args require pathRole")
+                if value_type != "path" and "pathRole" in arg:
+                    fail(f"{label} harness command {command_name} argMap[{arg_position}] pathRole is only valid for path args")
 
     files = entry["files"]
     if not isinstance(files, list) or not files:

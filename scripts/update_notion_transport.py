@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Normalize Notion structured arguments for the Gateway scalar argMap contract."""
+from __future__ import annotations
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+HARNESS = ROOT / "harnesses/notion/harness.json"
+CONTRACTS = ROOT / "harnesses/notion/command_contracts.json"
+ALLOWED = {"string", "number", "integer", "boolean", "enum", "path"}
+INTEGER_ARGS = {"pageSize", "maxItems", "maxPages", "maxDepth", "timeoutMs", "retries", "sessionTimeout", "now", "expectedRevision"}
+
+
+def main() -> None:
+    manifest = json.loads(HARNESS.read_text())
+    contracts = json.loads(CONTRACTS.read_text())
+    for name, command in manifest["commands"].items():
+        structured = []
+        properties = command["inputSchema"].get("properties", {})
+        contract = contracts["commands"][name]
+        known_structured = contract.get("structuredInputSchemas", {})
+        known_integers = set(contract.get("integerStringTransport", []))
+        contract.pop("integerStringTransport", None)
+        for entry in command["argMap"]:
+            schema = properties.get(entry["arg"], {})
+            schema_type = schema.get("type")
+            if schema_type in {"object", "array"}:
+                contract_schema = json.loads(json.dumps(schema))
+                properties[entry["arg"]] = {"type": "string"}
+                entry["valueType"] = "string"
+                structured.append(entry["arg"])
+                contract.setdefault("structuredInputSchemas", {})[entry["arg"]] = contract_schema
+            elif schema_type == "integer" or entry["arg"] in known_integers or entry["arg"] in INTEGER_ARGS:
+                # Gateway transports input values as scalar strings before schema validation.
+                # Keep transport string-compatible; argparse type=int is authoritative.
+                properties[entry["arg"]] = {"type": "string"}
+                entry["valueType"] = "string"
+                contract.setdefault("integerStringTransport", []).append(entry["arg"])
+            elif entry["arg"] in known_structured:
+                entry["valueType"] = "string"
+                structured.append(entry["arg"])
+            if entry["valueType"] not in ALLOWED:
+                raise ValueError(f"{name}.{entry['arg']} has unsupported valueType {entry['valueType']}")
+        if structured:
+            contract["jsonStringTransport"] = sorted(structured)
+        else:
+            contract.pop("jsonStringTransport", None)
+            contract.pop("structuredInputSchemas", None)
+    allowed_schema_keys = {"type", "required", "properties", "additionalProperties"}
+    def simplify(schema):
+        if not isinstance(schema, dict):
+            return
+        for key in list(schema):
+            if key not in allowed_schema_keys:
+                del schema[key]
+        for child in schema.get("properties", {}).values():
+            simplify(child)
+    for command in manifest["commands"].values():
+        simplify(command["inputSchema"])
+    HARNESS.write_text(json.dumps(manifest, indent=2) + "\n")
+    CONTRACTS.write_text(json.dumps(contracts, indent=2) + "\n")
+
+if __name__ == "__main__":
+    main()
