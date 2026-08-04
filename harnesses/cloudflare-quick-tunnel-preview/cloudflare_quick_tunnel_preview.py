@@ -24,7 +24,7 @@ import uuid
 from pathlib import Path
 from urllib.parse import urlsplit
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SUPERVISOR_EXECUTABLE = os.path.realpath(sys.executable)
 STATE_VERSION = 1
 MAX_READ_LOG = 16_384
@@ -88,9 +88,9 @@ def secure_root(value: str | Path, create: bool = False) -> Path:
         stat.S_ISLNK(metadata.st_mode)
         or not stat.S_ISDIR(metadata.st_mode)
         or metadata.st_uid != os.getuid()
-        or stat.S_IMODE(metadata.st_mode) != 0o700
+        or stat.S_IMODE(metadata.st_mode) & 0o777 != 0o700
     ):
-        raise Fail("UNSAFE_STATE", "state root must be owner-owned mode 0700")
+        raise Fail("UNSAFE_STATE", "state root must be owner-owned with mode 0700 access bits")
     return path
 
 
