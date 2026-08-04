@@ -1,0 +1,515 @@
+{
+  "schemaVersion": 1,
+  "commands": {
+    "status": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [],
+      "rootPathArgs": [],
+      "relativeChildArgs": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "preflight": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [],
+      "rootPathArgs": [],
+      "relativeChildArgs": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "video.normalize": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "video"
+      ],
+      "rootPathArgs": [],
+      "relativeChildArgs": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "video"
+        ],
+        "properties": {
+          "video": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata.oembed": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "video"
+      ],
+      "rootPathArgs": [],
+      "relativeChildArgs": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "video"
+        ],
+        "properties": {
+          "video": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "maxBytes": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "caption.fallback": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "video"
+      ],
+      "rootPathArgs": [],
+      "relativeChildArgs": [],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "video"
+        ],
+        "properties": {
+          "video": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "transcript.import": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "inputRoot",
+        "input",
+        "video",
+        "language",
+        "sourceKind"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "input",
+        "output"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input",
+          "video",
+          "language",
+          "sourceKind"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "video": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "sourceKind": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "description.links": {
+      "backend": "python-stdlib",
+      "mutation": true,
+      "required": [
+        "inputRoot",
+        "input"
+      ],
+      "rootPathArgs": [
+        "inputRoot",
+        "outputRoot"
+      ],
+      "relativeChildArgs": [
+        "input",
+        "output"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "bundle.validate": {
+      "backend": "python-stdlib",
+      "mutation": false,
+      "required": [
+        "inputRoot",
+        "input"
+      ],
+      "rootPathArgs": [
+        "inputRoot"
+      ],
+      "relativeChildArgs": [
+        "input"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "integer"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.0","description":"Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos","windows"]},"safety":{"risk":"write-safe","approvalRequired":false}}
