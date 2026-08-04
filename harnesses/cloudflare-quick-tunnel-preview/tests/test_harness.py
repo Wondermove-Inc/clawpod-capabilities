@@ -121,6 +121,11 @@ class UnitTests(unittest.TestCase):
             root = Path(directory); root.chmod(0o755)
             with self.assertRaises(qt.Fail):
                 qt.secure_root(root)
+            root.chmod(0o2700)
+            self.assertEqual(qt.secure_root(root), root)
+            root.chmod(0o2750)
+            with self.assertRaises(qt.Fail):
+                qt.secure_root(root)
             root.chmod(0o700)
             with qt.state_lock(root):
                 self.assertEqual((root / "lock").stat().st_mode & 0o777, 0o600)

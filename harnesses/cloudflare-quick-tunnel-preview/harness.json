@@ -4,7 +4,7 @@
   "name": "cloudflare-quick-tunnel-preview",
   "title": "Cloudflare Quick Tunnel Preview",
   "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./cloudflare_quick_tunnel_preview.py",
   "packageRoot": ".",
   "execution": {
