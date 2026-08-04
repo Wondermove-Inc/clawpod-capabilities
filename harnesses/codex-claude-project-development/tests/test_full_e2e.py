@@ -22,7 +22,7 @@ class InstalledPackageE2ETests(unittest.TestCase):
         self.assertFalse((ROOT / "harnesses" / old_name).exists())
         skill = entries[("skill", "codex-claude-project-development")]
         harness = entries[("harness", "codex-claude-project-development")]
-        self.assertEqual(skill["linkedHarness"], {"id": "codex-claude-project-development", "version": "0.2.0"})
+        self.assertEqual(skill["linkedHarness"], {"id": "codex-claude-project-development", "version": "0.2.1"})
         self.assertEqual(skill["id"], harness["id"])
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
@@ -61,6 +61,10 @@ class InstalledPackageE2ETests(unittest.TestCase):
             manifest = json.loads((installed_harness / "harness.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["name"], status_data["name"])
             self.assertEqual(manifest["title"], "Codex & Claude Project Development")
+            self.assertEqual(set(manifest["authModel"]), {"type", "storesSecrets", "requiresHumanAccount"})
+            supported_arg_types = {"positional", "option", "booleanFlag", "repeatableOption"}
+            for command in manifest["commands"].values():
+                self.assertTrue(all(item["type"] in supported_arg_types for item in command["argMap"]))
             self.assertEqual(status_data["backend"], "bundled-acpx-named-sessions")
             self.assertFalse(status_data["gatewayCalls"])
             state_root = base / "state"

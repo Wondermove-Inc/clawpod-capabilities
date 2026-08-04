@@ -4,7 +4,7 @@
   "name": "codex-claude-project-development",
   "title": "Codex & Claude Project Development",
   "description": "Fail-closed orchestration for developing software projects with Codex and/or Claude across separate processes.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entrypoint": "./codex_claude_project_development.py",
   "packageRoot": ".",
   "execution": {
@@ -30,8 +30,7 @@
   "authModel": {
     "type": "runtime",
     "storesSecrets": false,
-    "requiresHumanAccount": true,
-    "protectedExecutionLane": "exec.useSecrets for Claude when required"
+    "requiresHumanAccount": true
   },
   "commands": {
     "status": {
@@ -1474,7 +1473,7 @@
         },
         {
           "arg": "rotate",
-          "type": "flag",
+          "type": "booleanFlag",
           "flag": "--rotate",
           "valueType": "boolean",
           "optional": true
