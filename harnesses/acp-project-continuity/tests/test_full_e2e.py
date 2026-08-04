@@ -17,7 +17,7 @@ class InstalledPackageE2ETests(unittest.TestCase):
         entries = {(item["type"], item["id"]): item for item in registry["capabilities"]}
         skill = entries[("skill", "acp-project-continuity")]
         harness = entries[("harness", "acp-project-continuity")]
-        self.assertEqual(skill["linkedHarness"], {"id": "acp-project-continuity", "version": "0.1.0"})
+        self.assertEqual(skill["linkedHarness"], {"id": "acp-project-continuity", "version": "0.2.0"})
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             installed_skill = base / "skills" / skill["id"]
@@ -35,10 +35,10 @@ class InstalledPackageE2ETests(unittest.TestCase):
             self.assertIn("Immediately after installing", skill_text)
             self.assertIn("Codex", skill_text)
             self.assertIn("Claude", skill_text)
-            self.assertIn('resumeSessionId', skill_text)
+            self.assertIn('sessions ensure --name', skill_text)
             self.assertIn("installed but not connected", onboarding_text)
             self.assertIn("CLAUDE_CODE_OAUTH_TOKEN", onboarding_text)
-            self.assertIn("protected memory-secret", onboarding_text)
+            self.assertIn("exec.useSecrets", onboarding_text)
             self.assertIn("connected", onboarding_text)
             self.assertIn("verified", onboarding_text)
             self.assertIn("resume ACP Project Continuity onboarding", onboarding_text)
@@ -48,7 +48,9 @@ class InstalledPackageE2ETests(unittest.TestCase):
             executable = installed_harness / "acp_project_continuity.py"
             status = subprocess.run([str(executable), "status"], text=True, capture_output=True, check=False)
             self.assertEqual(status.returncode, 0, status.stderr)
-            self.assertTrue(json.loads(status.stdout)["data"]["pureLocal"])
+            status_data = json.loads(status.stdout)["data"]
+            self.assertEqual(status_data["backend"], "bundled-acpx-named-sessions")
+            self.assertFalse(status_data["gatewayCalls"])
             state_root = base / "state"
             state_root.mkdir()
             state = state_root / "state.json"

@@ -1,22 +1,21 @@
 ---
 name: acp-project-continuity
-description: Maintain pure-local, project-level ACP session continuity for Codex, Claude, or both with mandatory onboarding, exact repo/cwd/branch validation, separate lineages, leases, rotation, close, and fail-closed state defenses. Use when an agent must safely attach, resume, validate, rotate, or close a local ACP session without network or Gateway calls.
+description: Maintain project-level Codex or Claude continuity with bundled ACPX named persistent sessions, canonical git validation, leases, rotation, protected secrets, and fail-closed recovery. Use when work must continue across separate OS processes without OpenClaw runtime changes.
 ---
 
 # ACP Project Continuity
 
-Use the paired Harness as the only writer for continuity state. Invoke it through the approved Gateway `prepare → run` lifecycle; the Harness backend itself remains pure local and never calls Gateway, ACP, a vendor, or the network.
+Use the paired Harness as the only continuity-state writer and bundled ACPX named sessions as the only continuity backend. There is no Gateway callback and no `sessions_spawn` dependency.
 
 ## Required workflow
 
-1. Immediately after installing the pair, read [onboarding.md](references/onboarding.md). Ask the user to choose **Codex**, **Claude**, or **both**, complete provider connection and protected credential setup, then run Harness `onboard` for the same selection. Distinguish `installed`, `connected`, and `verified`; do not claim readiness before a bounded first-run and resume test passes.
-2. Derive an explicit absolute workspace root, repository, cwd, current branch, state root, and state file. Run `project-register` with the current revision. Never infer a different project when validation fails.
-3. Before starting first-run work, acquire a bounded lease. Start the provider only with first-class `sessions_spawn(runtime:"acp", mode:"run", thread:false)`. After it starts, attach only its non-secret upstream session id. Keep Codex and Claude in separate lineages.
-4. Before resuming, run `session-resolve` with the same project, repo, cwd, branch, and agent. Pass `resumeSessionId` only to a new first-class one-shot ACP spawn. Run `session-validate` on the observed id. Missing, failed, or mismatched resume is a stop condition; never silently create or select another session.
-5. Use compare-and-swap `expectedRevision` for every write. Re-read after `stale_revision`; do not replay an obsolete decision. Use `session-rotate` only after an explicit recovery decision and `session-close` when finished. Release leases promptly; close also removes that agent's lease.
+1. Immediately after installing, read [onboarding.md](references/onboarding.md). Obtain explicit approval for provider connection, protected credential use, and requested file/tool side effects. `onboard` records selection, not authentication.
+2. Resolve the canonical git top-level, current branch, and full `HEAD`; register their exact absolute repo/cwd context. Stop on detached HEAD, cwd/root mismatch, or drift.
+3. Run `acpx-preflight` against the bundled executable. Require ACPX 0.3.1 or newer and adapter `loadSession`, `resume`, `list`, and `close` support.
+4. Invoke `session-run` directly in a bounded exec, supplying the prompt only on stdin. It leases, derives the project-agent-generation name, runs strict-JSON `sessions ensure --name`, then a separate `prompt --session ... --file -`, returns the assembled agent response, records only identifiers/completion metadata, and releases. Repeats reuse the name; `--rotate` advances generation.
+5. For Claude, use approved `exec.useSecrets` injection for `CLAUDE_CODE_OAUTH_TOKEN` when required. Never resolve, persist, print, or put it in argv, a prompt, Harness input, state, or logs.
+6. Re-read after `stale_revision`. Never bypass an active lease. Use `session-close` only with explicit approval because it terminates the named ACPX session.
 
-Read [safety.md](references/safety.md) before choosing state paths or handling runtime values. Read [shared-storage.md](references/shared-storage.md) only when optional cross-machine handoff is requested.
+Read [safety.md](references/safety.md) before execution. Read [shared-storage.md](references/shared-storage.md) only for an explicitly requested non-sensitive handoff.
 
-## Failure handling
-
-Stop on corruption, secret-like material, unsafe permissions, symlinks, context mismatch, lease conflict, stale revision, missing onboarding, or missing lineage. Preserve the evidence and ask for explicit recovery direction. Never edit the JSON state manually.
+Stop on missing/old ACPX, missing capability, auth failure, timeout, malformed JSON, incomplete identifiers, context drift, corruption, unsafe permissions, secret-like state, lease conflict, or stale revision. Never copy ACPX output/prompts into state or silently choose another session.

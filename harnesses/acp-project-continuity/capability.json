@@ -1,8 +1,17 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
-  "description": "Maintain separate local Codex and Claude ACP resume lineages with validated project context, leases, and revision guards.",
-  "compatibility": {"openclaw": ">=2026.4.0", "platforms": ["linux", "macos"]},
-  "safety": {"risk": "write-safe", "approvalRequired": false}
+  "version": "0.2.0",
+  "description": "ACPX-backed project continuity with canonical git context, leases, protected secrets, and fail-closed state.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  }
 }

@@ -1,5 +1,5 @@
 # ACP Project Continuity Harness
 
-Version 0.1.0 is a Python-standard-library, pure-local JSON CLI. It stores separate Codex and Claude project session lineages behind mandatory onboarding, exact path/context checks, filesystem locking, leases, and compare-and-swap revisions. It makes no Gateway, ACP, network, or vendor calls and stores no secrets.
+Version 0.2.0 is a standard-library, fail-closed continuity orchestrator using bundled ACPX named persistent sessions across OS processes. It binds project ids to canonical git root/cwd/branch/full HEAD and maintains separate Codex and Claude lineages, CAS revisions, leases, rotation, and close.
 
-Run `./acp_project_continuity.py status` for the execution boundary. See the paired Skill for onboarding, runtime injection, and optional non-sensitive handoff guidance.
+`session-run` validates and leases, preflights ACPX/version/session discovery, calls strict-JSON `sessions ensure --name`, calls a separate bounded named prompt with stdin, returns the assembled agent response, records only identifiers/completion metadata, and releases. It stores neither prompts, responses, nor raw protocol output. Claude credentials come only from the caller's approved `exec.useSecrets` lane. There is no Gateway callback or OpenClaw runtime change.

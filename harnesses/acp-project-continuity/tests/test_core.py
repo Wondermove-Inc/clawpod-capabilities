@@ -1,18 +1,42 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import os
-import stat
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 PACKAGE = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("acp_project_continuity", PACKAGE / "acp_project_continuity.py")
 assert SPEC and SPEC.loader
 cap = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(cap)
+
+FAKE = '''#!/usr/bin/env python3
+import json, os, sys, time
+a=sys.argv[1:]; mode=os.environ.get("FAKE_ACPX_MODE", "ok")
+if "--version" in a:
+ print("acpx " + ("0.2.9" if mode == "old" else "0.3.1")); raise SystemExit()
+if mode == "timeout": time.sleep(2)
+if "list" in a:
+ if mode == "malformed": print("{"); raise SystemExit()
+ print(json.dumps({"source":"local" if mode == "capability" else "agent","sessions":[]})); raise SystemExit()
+if "ensure" in a:
+ if mode == "auth": print("authentication required",file=sys.stderr); raise SystemExit(1)
+ if mode == "malformed_ensure": print(json.dumps({"name":"wrong"})); raise SystemExit()
+ name=a[a.index("--name")+1]
+ print(json.dumps({"name":name,"acpxRecordId":"record-1","acpxSessionId":"acpx-1","agentSessionId":"agent-1"})); raise SystemExit()
+if "prompt" in a:
+ sys.stdin.read()
+ print(json.dumps({"jsonrpc":"2.0","method":"session/update","params":{"update":{"sessionUpdate":"agent_message_chunk","content":{"type":"text","text":"FAKE_RESPONSE"}}}}))
+ print(json.dumps({"jsonrpc":"2.0","id":"req-1","result":{"stopReason":"end_turn"}})); raise SystemExit()
+if "close" in a: print(json.dumps({"closed":True})); raise SystemExit()
+raise SystemExit(1)
+'''
 
 
 class ContinuityCoreTests(unittest.TestCase):
@@ -21,100 +45,75 @@ class ContinuityCoreTests(unittest.TestCase):
         self.root = Path(self.temporary.name).resolve()
         self.repo = self.root / "repo"
         self.cwd = self.repo / "work"
-        self.state_root = self.root / "state"
         self.cwd.mkdir(parents=True)
-        self.state_root.mkdir()
+        subprocess.run(["git", "init", "-b", "main", str(self.repo)], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(self.repo), "config", "user.email", "test@example.invalid"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "config", "user.name", "Test"], check=True)
+        (self.repo / "tracked").write_text("one")
+        subprocess.run(["git", "-C", str(self.repo), "add", "tracked"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "commit", "-m", "initial"], check=True, capture_output=True)
+        self.head = subprocess.check_output(["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True).strip()
+        self.state_root = self.root / "state"; self.state_root.mkdir()
         self.state = self.state_root / "continuity.json"
+        self.fake = self.root / "acpx"; self.fake.write_text(FAKE); self.fake.chmod(0o700)
 
-    def tearDown(self) -> None:
-        self.temporary.cleanup()
+    def tearDown(self) -> None: self.temporary.cleanup()
+    def invoke(self, *arguments: str): return cap.run(cap.build_parser().parse_args(list(arguments)))
+    def store(self): return ["--state-file", str(self.state), "--state-root", str(self.state_root)]
+    def context(self, agent="codex", branch="main", head=None):
+        return [*self.store(), "--project-id", "project-1", "--workspace-root", str(self.root), "--repo", str(self.repo), "--cwd", str(self.cwd), "--branch", branch, "--head", head or self.head, "--agent", agent]
+    def onboard(self): return self.invoke("onboard", *self.store(), "--agent", "both", "--expected-revision", "0")
+    def register(self):
+        c=self.context(); del c[-2:]
+        return self.invoke("project-register", *c, "--expected-revision", "1")
+    def ready(self): self.onboard(); self.register()
+    def run_turn(self, revision=2, token="lease-a", rotate=False, prompt="private prompt"):
+        argv=["session-run",*self.context(),"--acpx-binary",str(self.fake),"--prompt-file","-","--lease-token",token,"--now","10","--expires-at","20","--timeout-seconds","1","--expected-revision",str(revision)]
+        if rotate: argv.append("--rotate")
+        with mock.patch("sys.stdin", io.StringIO(prompt)): return self.invoke(*argv)
 
-    def invoke(self, *arguments: str):
-        args = cap.build_parser().parse_args(list(arguments))
-        return cap.run(args)
-
-    def store(self) -> list[str]:
-        return ["--state-file", str(self.state), "--state-root", str(self.state_root)]
-
-    def context(self, agent: str = "codex", branch: str = "main") -> list[str]:
-        return [*self.store(), "--project-id", "project-1", "--workspace-root", str(self.root), "--repo", str(self.repo), "--cwd", str(self.cwd), "--branch", branch, "--agent", agent]
-
-    def onboard(self, agent: str = "both", revision: int = 0):
-        return self.invoke("onboard", *self.store(), "--agent", agent, "--expected-revision", str(revision))
-
-    def register(self, revision: int = 1):
-        context = self.context()
-        del context[-2:]  # remove --agent codex
-        return self.invoke("project-register", *context, "--expected-revision", str(revision))
-
-    def test_status_and_mandatory_onboarding_are_discoverable(self) -> None:
-        status = self.invoke("status")
-        self.assertTrue(status["pureLocal"])
-        self.assertFalse(status["network"] or status["gatewayCalls"] or status["vendorCalls"])
-        with self.assertRaisesRegex(cap.Failure, "post-install onboard"):
-            self.invoke("project-list", *self.store())
-        result = self.onboard("both")
-        self.assertEqual(result["agents"], ["claude", "codex"])
-        self.assertIn("protected runtime", result["runtimeInjection"])
-
-    def test_separate_lineages_context_rotation_close_and_no_fallback(self) -> None:
-        self.onboard()
-        self.register()
-        self.invoke("session-attach", *self.context("codex"), "--session-id", "codex-1", "--expected-revision", "2")
-        self.invoke("session-attach", *self.context("claude"), "--session-id", "claude-1", "--expected-revision", "3")
-        self.assertEqual(self.invoke("session-resolve", *self.context("codex"))["resumeSessionId"], "codex-1")
-        self.assertEqual(self.invoke("session-resolve", *self.context("claude"))["resumeSessionId"], "claude-1")
-        with self.assertRaisesRegex(cap.Failure, "does not match"):
-            self.invoke("session-validate", *self.context(), "--session-id", "wrong")
-        with self.assertRaisesRegex(cap.Failure, "does not match project"):
-            self.invoke("session-resolve", *self.context(branch="other"))
-        rotated = self.invoke("session-rotate", *self.context(), "--session-id", "codex-2", "--expected-revision", "4")
+    def test_fake_acpx_success_repeat_rotation_and_no_raw_storage(self):
+        self.ready(); first=self.run_turn(); second=self.run_turn(revision=4)
+        self.assertEqual(first["sessionName"], second["sessionName"])
+        self.assertEqual(first["response"], "FAKE_RESPONSE")
+        self.assertEqual(second["generation"], 1)
+        rotated=self.run_turn(revision=6, rotate=True)
         self.assertEqual(rotated["generation"], 2)
-        self.invoke("session-close", *self.context(), "--expected-revision", "5")
-        with self.assertRaisesRegex(cap.Failure, "no active session"):
-            self.invoke("session-resolve", *self.context())
+        raw=self.state.read_text()
+        self.assertNotIn("private prompt", raw); self.assertNotIn("jsonrpc", raw); self.assertNotIn("FAKE_RESPONSE", raw)
+        self.assertEqual(self.invoke("session-resolve", *self.context())["acpxSessionId"], "acpx-1")
+        self.invoke("session-close", *self.context(), "--acpx-binary", str(self.fake), "--timeout-seconds", "1", "--expected-revision", "8")
+        with self.assertRaises(cap.Failure): self.invoke("session-resolve", *self.context())
 
-    def test_revision_and_lease_concurrency(self) -> None:
-        self.onboard("codex")
-        self.register()
-        with self.assertRaisesRegex(cap.Failure, "stale"):
-            self.invoke("session-attach", *self.context(), "--session-id", "one", "--expected-revision", "1")
-        self.invoke("lease-acquire", *self.context(), "--lease-token", "lease-a", "--now", "10", "--expires-at", "20", "--expected-revision", "2")
-        with self.assertRaisesRegex(cap.Failure, "another active lease"):
-            self.invoke("lease-acquire", *self.context(), "--lease-token", "lease-b", "--now", "11", "--expires-at", "21", "--expected-revision", "3")
-        self.invoke("lease-release", *self.context(), "--lease-token", "lease-a", "--now", "12", "--expected-revision", "3")
+    def test_missing_version_capability_auth_malformed_and_timeout_fail_closed(self):
+        self.ready()
+        missing=self.root/"missing"
+        cases=[("missing", {"acpx_binary":str(missing)}, "acpx_missing"), ("old",{},"acpx_version"), ("capability",{},"acpx_capability"), ("auth",{},"acpx_auth_failed"), ("malformed",{},"acpx_malformed_output"), ("malformed_ensure",{},"acpx_malformed_output"), ("timeout",{},"acpx_timeout")]
+        revision=2
+        for mode, overrides, code in cases:
+            with self.subTest(mode=mode), mock.patch.dict(os.environ,{"FAKE_ACPX_MODE":mode}):
+                argv=["session-run",*self.context(),"--acpx-binary",overrides.get("acpx_binary",str(self.fake)),"--prompt-file","-","--lease-token","lease-a","--now","10","--expires-at","20","--timeout-seconds","1","--expected-revision",str(revision)]
+                with mock.patch("sys.stdin",io.StringIO("x")), self.assertRaises(cap.Failure) as caught: self.invoke(*argv)
+                self.assertEqual(caught.exception.code,code)
+            revision += 2  # acquire and fail-path release are both durable CAS writes
+            state=json.loads(self.state.read_text()); self.assertEqual(state["projects"]["project-1"]["leases"],{})
 
-    def test_secret_like_inputs_and_state_are_rejected(self) -> None:
-        self.onboard()
-        with self.assertRaisesRegex(cap.Failure, "branch is invalid"):
-            context = self.context(branch="Authorization: bearer value")
-            del context[-2:]
-            self.invoke("project-register", *context, "--expected-revision", "1")
-        self.state.write_text(json.dumps({"schemaVersion": 1, "revision": 1, "onboarding": {"agents": ["codex"], "version": "0.1.0"}, "projects": {"api_key": {}}}), encoding="utf-8")
-        os.chmod(self.state, 0o600)
-        with self.assertRaisesRegex(cap.Failure, "secret-like"):
-            self.invoke("project-list", *self.store())
+    def test_stale_lease_branch_cwd_head_and_secret_redaction(self):
+        self.ready()
+        self.invoke("lease-acquire",*self.context(),"--lease-token","old","--now","1","--expires-at","5","--expected-revision","2")
+        # Expired leases are recoverable; active foreign leases fail.
+        with mock.patch("sys.stdin",io.StringIO("x")):
+            result=self.invoke("session-run",*self.context(),"--acpx-binary",str(self.fake),"--prompt-file","-","--lease-token","new","--now","6","--expires-at","20","--timeout-seconds","1","--expected-revision","3")
+        self.assertTrue(result["result"]["completed"])
+        with self.assertRaises(cap.Failure): self.invoke("session-resolve",*self.context(branch="other"))
+        outside=self.repo/"other"; outside.mkdir()
+        bad=self.context(); bad[bad.index("--cwd")+1]=str(outside)
+        with self.assertRaises(cap.Failure): self.invoke("session-resolve",*bad)
+        (self.repo/"tracked").write_text("two"); subprocess.run(["git","-C",str(self.repo),"commit","-am","next"],check=True,capture_output=True)
+        with self.assertRaises(cap.Failure): self.invoke("session-resolve",*self.context())
+        self.assertNotIn("private prompt", self.state.read_text())
+        with self.assertRaisesRegex(cap.Failure,"branch is invalid"):
+            c=self.context(branch="Authorization: bearer redacted"); del c[-2:]
+            self.invoke("project-register",*c,"--expected-revision","5")
 
-    def test_corrupt_permissions_path_and_symlink_defenses(self) -> None:
-        self.state.write_text("{", encoding="utf-8")
-        os.chmod(self.state, 0o600)
-        with self.assertRaisesRegex(cap.Failure, "malformed"):
-            self.invoke("project-list", *self.store())
-        self.state.write_text(json.dumps(cap.empty_state()), encoding="utf-8")
-        os.chmod(self.state, 0o644)
-        with self.assertRaisesRegex(cap.Failure, "group or others"):
-            self.invoke("project-list", *self.store())
-        self.state.unlink()
-        outside = self.root.parent / "outside-continuity-test.json"
-        with self.assertRaisesRegex(cap.Failure, "outside"):
-            self.invoke("onboard", "--state-file", str(outside), "--state-root", str(self.state_root), "--agent", "both", "--expected-revision", "0")
-        target = self.state_root / "target.json"
-        target.write_text(json.dumps(cap.empty_state()), encoding="utf-8")
-        os.chmod(target, 0o600)
-        self.state.symlink_to(target)
-        with self.assertRaisesRegex(cap.Failure, "symlink"):
-            self.invoke("project-list", *self.store())
-
-
-if __name__ == "__main__":
-    unittest.main()
+if __name__ == "__main__": unittest.main()

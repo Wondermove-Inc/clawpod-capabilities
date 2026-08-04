@@ -3,21 +3,29 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import fcntl
 import json
 import os
 import re
+import subprocess
 import stat
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
 
-VERSION = "0.1.0"
-SCHEMA_VERSION = 1
+VERSION = "0.2.0"
+SCHEMA_VERSION = 2
 AGENTS = ("claude", "codex")
 MAX_STATE_BYTES = 1_048_576
 IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+GIT_OID = re.compile(r"^[0-9a-f]{40,64}$")
+VERSION_NUMBER = re.compile(r"(?:^|\s)v?(\d+)\.(\d+)\.(\d+)(?:\s|$)")
+MIN_ACPX_VERSION = (0, 3, 1)
+MAX_PROMPT_BYTES = 65_536
+MAX_ACPX_OUTPUT_BYTES = 4_194_304
+REQUIRED_SESSION_CAPABILITIES = ("loadSession", "resume", "list", "close")
 SECRET_LIKE = re.compile(
     r"(?i)(authorization|bearer\s+|oauth|api[_-]?key|access[_-]?token|refresh[_-]?token|"
     r"client[_-]?secret|password|passwd|private[_-]?key|secret(?:\s|_|-)*[:=]|"
@@ -107,18 +115,28 @@ def validate_state(data: Any) -> dict[str, Any]:
         fail("malformed_state", "projects must be an object")
     for project_id, project in projects.items():
         text(project_id, "stored project id", identifier=True)
-        if not isinstance(project, dict) or set(project) != {"repo", "cwd", "branch", "sessions", "leases"}:
+        if not isinstance(project, dict) or set(project) != {"repo", "cwd", "branch", "head", "sessions", "leases"}:
             fail("malformed_state", "stored project is invalid")
-        for key in ("repo", "cwd", "branch"):
+        for key in ("repo", "cwd", "branch", "head"):
             text(project.get(key), f"stored {key}")
+        if not GIT_OID.fullmatch(project["head"]):
+            fail("malformed_state", "stored git head is invalid")
         if not isinstance(project["sessions"], dict) or set(project["sessions"]) - set(AGENTS):
             fail("malformed_state", "stored sessions are invalid")
         if not isinstance(project["leases"], dict) or set(project["leases"]) - set(AGENTS):
             fail("malformed_state", "stored leases are invalid")
         for session in project["sessions"].values():
-            if not isinstance(session, dict) or set(session) != {"sessionId", "generation", "closed"}:
+            if not isinstance(session, dict) or set(session) != {"sessionName", "acpxRecordId", "acpxSessionId", "agentSessionId", "generation", "closed", "lastResult"}:
                 fail("malformed_state", "stored session is invalid")
-            text(session.get("sessionId"), "stored session id", identifier=True)
+            for field in ("sessionName", "acpxRecordId", "acpxSessionId"):
+                text(session.get(field), f"stored {field}", identifier=True)
+            if session.get("agentSessionId") is not None:
+                text(session["agentSessionId"], "stored agent session id", identifier=True)
+            result = session.get("lastResult")
+            if not isinstance(result, dict) or set(result) != {"stopReason", "completed"} or not isinstance(result.get("completed"), bool):
+                fail("malformed_state", "stored result metadata is invalid")
+            if result.get("stopReason") is not None:
+                text(result["stopReason"], "stored stop reason", identifier=True)
             if not isinstance(session.get("generation"), int) or isinstance(session["generation"], bool) or session["generation"] < 1 or not isinstance(session.get("closed"), bool):
                 fail("malformed_state", "stored session values are invalid")
         for lease in project["leases"].values():
@@ -218,7 +236,7 @@ def onboarded(state: dict[str, Any], agent: str | None = None) -> None:
         fail("agent_not_onboarded", "requested agent was not included in onboarding")
 
 
-def project_context(args: argparse.Namespace, *, with_agent: bool) -> tuple[str, str | None, str, str, str]:
+def project_context(args: argparse.Namespace, *, with_agent: bool) -> tuple[str, str | None, str, str, str, str]:
     project_id = text(args.project_id, "project id", identifier=True)
     agent = text(args.agent, "agent", identifier=True).lower() if with_agent else None
     if agent is not None and agent not in AGENTS:
@@ -228,24 +246,156 @@ def project_context(args: argparse.Namespace, *, with_agent: bool) -> tuple[str,
     cwd = safe_path(args.cwd, args.workspace_root, "cwd")
     if repo != cwd and repo not in cwd.parents:
         fail("path_contract", "cwd must be inside repo")
-    return project_id, agent, str(repo), str(cwd), text(args.branch, "branch")
+    branch = text(args.branch, "branch")
+    head = text(args.head, "head").lower()
+    if not GIT_OID.fullmatch(head):
+        fail("invalid_input", "head must be a full git object id")
+    verify_git_context(repo, cwd, branch, head)
+    return project_id, agent, str(repo), str(cwd), branch, head
+
+
+def git_value(repo: Path, *arguments: str) -> str:
+    try:
+        result = subprocess.run(["git", "-C", str(repo), *arguments], text=True, capture_output=True, timeout=5, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        fail("git_context", "canonical git context cannot be verified")
+    if result.returncode or not result.stdout.strip():
+        fail("git_context", "canonical git context cannot be verified")
+    return result.stdout.strip()
+
+
+def verify_git_context(repo: Path, cwd: Path, branch: str, head: str) -> None:
+    if Path(git_value(cwd, "rev-parse", "--show-toplevel")).resolve() != repo:
+        fail("git_context", "repo is not the canonical git root for cwd")
+    if git_value(repo, "branch", "--show-current") != branch or git_value(repo, "rev-parse", "HEAD").lower() != head:
+        fail("context_mismatch", "canonical git branch or head drifted")
 
 
 def checked_project(state: dict[str, Any], args: argparse.Namespace) -> tuple[str, str, dict[str, Any]]:
-    project_id, agent, repo, cwd, branch = project_context(args, with_agent=True)
+    project_id, agent, repo, cwd, branch, head = project_context(args, with_agent=True)
     assert agent is not None
     onboarded(state, agent)
     project = state["projects"].get(project_id)
     if project is None:
         fail("project_missing", "project is not registered")
-    if (project["repo"], project["cwd"], project["branch"]) != (repo, cwd, branch):
-        fail("context_mismatch", "repo, cwd, or branch does not match project")
+    if (project["repo"], project["cwd"], project["branch"], project["head"]) != (repo, cwd, branch, head):
+        fail("context_mismatch", "repo, cwd, branch, or head does not match project")
     return project_id, agent, project
+
+
+def acpx_call(binary: str, argv: list[str], *, cwd: str, timeout: int, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
+    binary_path = Path(binary)
+    if not binary_path.is_absolute() or binary_path.is_symlink() or not binary_path.is_file() or not os.access(binary_path, os.X_OK):
+        fail("acpx_missing", "bundled ACPX binary is unavailable")
+    if timeout < 1 or timeout > 600:
+        fail("invalid_input", "ACPX timeout must be between 1 and 600 seconds")
+    try:
+        result = subprocess.run([binary, *argv], cwd=cwd, input=stdin, text=True, capture_output=True, timeout=timeout, check=False)
+    except FileNotFoundError:
+        fail("acpx_missing", "bundled ACPX binary is unavailable")
+    except subprocess.TimeoutExpired:
+        fail("acpx_timeout", "bounded ACPX command timed out")
+    except OSError:
+        fail("acpx_unavailable", "bundled ACPX could not be executed")
+    if len(result.stdout.encode()) > MAX_ACPX_OUTPUT_BYTES or len(result.stderr.encode()) > MAX_ACPX_OUTPUT_BYTES:
+        fail("acpx_output_too_large", "ACPX output exceeded the safety bound")
+    if result.returncode:
+        combined = (result.stderr + "\n" + result.stdout).lower()
+        code = "acpx_auth_failed" if any(word in combined for word in ("auth", "login", "credential", "unauthorized")) else "acpx_failed"
+        fail(code, "ACPX authentication failed" if code == "acpx_auth_failed" else "ACPX command failed")
+    return result
+
+
+def json_documents(raw: str) -> list[Any]:
+    documents = []
+    try:
+        for line in raw.splitlines():
+            if line.strip():
+                documents.append(json.loads(line))
+    except json.JSONDecodeError:
+        fail("acpx_malformed_output", "ACPX returned malformed JSON")
+    if not documents:
+        fail("acpx_malformed_output", "ACPX returned no JSON")
+    return documents
+
+
+def walk(value: Any):
+    yield value
+    if isinstance(value, dict):
+        for item in value.values():
+            yield from walk(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from walk(item)
+
+
+def find_string(documents: list[Any], keys: tuple[str, ...]) -> str | None:
+    for value in walk(documents):
+        if isinstance(value, dict):
+            for key in keys:
+                item = value.get(key)
+                if isinstance(item, str) and item and IDENTIFIER.fullmatch(item):
+                    return item
+    return None
+
+
+def preflight_acpx(binary: str, agent: str, cwd: str, timeout: int) -> str:
+    version_result = acpx_call(binary, ["--version"], cwd=cwd, timeout=min(timeout, 10))
+    match = VERSION_NUMBER.search(version_result.stdout + " " + version_result.stderr)
+    if not match or tuple(map(int, match.groups())) < MIN_ACPX_VERSION:
+        fail("acpx_version", "ACPX version is missing, malformed, or unsupported")
+    # A successful agent-backed session listing proves that ACPX initialized the
+    # selected adapter and that protocol session discovery is available. ACPX's
+    # stable JSON result intentionally omits transient initialize metadata, so
+    # ensure/load and close are verified by their actual bounded operations.
+    probe = acpx_call(binary, ["--format", "json", "--json-strict", "--cwd", cwd, agent, "sessions", "list"], cwd=cwd, timeout=timeout)
+    documents = json_documents(probe.stdout)
+    if not any(isinstance(value, dict) and value.get("source") == "agent" and isinstance(value.get("sessions"), list) for value in documents):
+        fail("acpx_capability", "agent-backed ACP session listing is unavailable")
+    return ".".join(match.groups())
+
+
+def deterministic_name(project_id: str, agent: str, project: dict[str, Any], generation: int) -> str:
+    material = "\0".join((project_id, agent, project["repo"], project["cwd"], project["branch"], project["head"], str(generation)))
+    suffix = hashlib.sha256(material.encode()).hexdigest()[:12]
+    return f"acpc-{project_id}-{agent}-g{generation}-{suffix}"[:128]
+
+
+def parse_ensure(raw: str, expected_name: str) -> dict[str, str | None]:
+    docs = json_documents(raw)
+    record_id = find_string(docs, ("acpxRecordId", "recordId"))
+    acpx_session_id = find_string(docs, ("acpxSessionId", "sessionId"))
+    agent_session_id = find_string(docs, ("agentSessionId",))
+    observed_name = find_string(docs, ("name", "sessionName"))
+    if not record_id or not acpx_session_id or (observed_name and observed_name != expected_name):
+        fail("acpx_malformed_output", "ACPX ensure output lacks matching session identifiers")
+    return {"acpxRecordId": record_id, "acpxSessionId": acpx_session_id, "agentSessionId": agent_session_id}
+
+
+def parse_prompt(raw: str) -> tuple[dict[str, Any], str]:
+    docs = json_documents(raw)
+    stop_reason = find_string(docs, ("stopReason",))
+    if not stop_reason:
+        fail("acpx_malformed_output", "ACPX prompt did not report completion")
+    chunks: list[str] = []
+    for document in docs:
+        if not isinstance(document, dict) or document.get("method") != "session/update":
+            continue
+        update = document.get("params", {}).get("update", {})
+        if update.get("sessionUpdate") != "agent_message_chunk":
+            continue
+        content = update.get("content", {})
+        if isinstance(content, dict) and isinstance(content.get("text"), str):
+            chunks.append(content["text"])
+    response = "".join(chunks)
+    if not response:
+        fail("acpx_malformed_output", "ACPX prompt completed without an agent response")
+    return {"stopReason": stop_reason, "completed": True}, response
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if args.command == "status":
-        return {"name": "acp-project-continuity", "version": VERSION, "pureLocal": True, "network": False, "gatewayCalls": False, "acpCalls": False, "vendorCalls": False, "storesSecrets": False, "agents": list(AGENTS)}
+        return {"name": "acp-project-continuity", "version": VERSION, "backend": "bundled-acpx-named-sessions", "gatewayCalls": False, "storesSecrets": False, "storesPrompts": False, "storesProtocolOutput": False, "agents": list(AGENTS), "minimumAcpxVersion": ".".join(map(str, MIN_ACPX_VERSION)), "requiredAdapterCapabilities": list(REQUIRED_SESSION_CAPABILITIES)}
     store = Store(args)
     if args.command == "onboard":
         def operation(state: dict[str, Any]) -> dict[str, Any]:
@@ -259,60 +409,109 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if args.command == "project-list":
         def operation(state: dict[str, Any]) -> dict[str, Any]:
             onboarded(state)
-            return {"revision": state["revision"], "projects": [{"projectId": key, **{field: value[field] for field in ("repo", "cwd", "branch")}} for key, value in sorted(state["projects"].items())]}
+            return {"revision": state["revision"], "projects": [{"projectId": key, **{field: value[field] for field in ("repo", "cwd", "branch", "head")}} for key, value in sorted(state["projects"].items())]}
         return store.transact(False, operation)
     if args.command == "project-register":
         def operation(state: dict[str, Any]) -> dict[str, Any]:
             compare_revision(state, args)
             onboarded(state)
-            project_id, _, repo, cwd, branch = project_context(args, with_agent=False)
+            project_id, _, repo, cwd, branch, head = project_context(args, with_agent=False)
             old = state["projects"].get(project_id)
-            if old and (old["repo"], old["cwd"], old["branch"]) != (repo, cwd, branch):
+            if old and (old["repo"], old["cwd"], old["branch"], old["head"]) != (repo, cwd, branch, head):
                 fail("context_mismatch", "project id is bound to another context")
             if old is None:
-                state["projects"][project_id] = {"repo": repo, "cwd": cwd, "branch": branch, "sessions": {}, "leases": {}}
+                state["projects"][project_id] = {"repo": repo, "cwd": cwd, "branch": branch, "head": head, "sessions": {}, "leases": {}}
             return {"projectId": project_id, "created": old is None, "revision": state["revision"] + 1}
         return store.transact(True, operation)
     if args.command == "project-inspect":
         def operation(state: dict[str, Any]) -> dict[str, Any]:
             project_id, agent, project = checked_project(state, args)
-            return {"projectId": project_id, "agent": agent, "repo": project["repo"], "cwd": project["cwd"], "branch": project["branch"], "session": project["sessions"].get(agent), "lease": project["leases"].get(agent), "revision": state["revision"]}
+            return {"projectId": project_id, "agent": agent, "repo": project["repo"], "cwd": project["cwd"], "branch": project["branch"], "head": project["head"], "session": project["sessions"].get(agent), "lease": project["leases"].get(agent), "revision": state["revision"]}
         return store.transact(False, operation)
+    if args.command == "acpx-preflight":
+        def operation(state: dict[str, Any]) -> tuple[str, str, dict[str, Any]]:
+            return checked_project(state, args)
+        project_id, agent, project = store.transact(False, operation)
+        version = preflight_acpx(args.acpx_binary, agent, project["cwd"], args.timeout_seconds)
+        return {"projectId": project_id, "agent": agent, "backend": "acpx", "acpxVersion": version, "capabilities": list(REQUIRED_SESSION_CAPABILITIES)}
+    if args.command == "session-run":
+        if args.prompt_file != "-":
+            fail("invalid_input", "prompt must be supplied on standard input")
+        prompt = sys.stdin.read(MAX_PROMPT_BYTES + 1)
+        if not isinstance(prompt, str) or not prompt.strip() or "\x00" in prompt or len(prompt.encode()) > MAX_PROMPT_BYTES:
+            fail("invalid_prompt", "prompt must be non-empty and within the byte bound")
+        def acquire(state: dict[str, Any]) -> dict[str, Any]:
+            compare_revision(state, args)
+            project_id, agent, project = checked_project(state, args)
+            lease = project["leases"].get(agent)
+            if args.expires_at <= args.now:
+                fail("invalid_input", "lease expiry must be after now")
+            if lease and lease["expiresAt"] > args.now and lease["token"] != args.lease_token:
+                fail("lease_conflict", "another active lease exists")
+            generation = (project["sessions"].get(agent) or {}).get("generation", 1)
+            if args.rotate:
+                generation += 1
+            name = deterministic_name(project_id, agent, project, generation)
+            project["leases"][agent] = {"token": text(args.lease_token, "lease token", identifier=True), "expiresAt": args.expires_at}
+            return {"projectId": project_id, "agent": agent, "project": dict(project), "generation": generation, "sessionName": name, "revision": state["revision"] + 1}
+        acquired = store.transact(True, acquire)
+        try:
+            version = preflight_acpx(args.acpx_binary, acquired["agent"], acquired["project"]["cwd"], args.timeout_seconds)
+            base = ["--format", "json", "--json-strict", "--cwd", acquired["project"]["cwd"], acquired["agent"]]
+            ensured = acpx_call(args.acpx_binary, [*base, "sessions", "ensure", "--name", acquired["sessionName"]], cwd=acquired["project"]["cwd"], timeout=args.timeout_seconds)
+            ids = parse_ensure(ensured.stdout, acquired["sessionName"])
+            prompted = acpx_call(args.acpx_binary, [*base, "prompt", "--session", acquired["sessionName"], "--file", "-"], cwd=acquired["project"]["cwd"], timeout=args.timeout_seconds, stdin=prompt)
+            result, response = parse_prompt(prompted.stdout)
+            previous = acquired["project"]["sessions"].get(acquired["agent"])
+            if args.rotate and previous and not previous["closed"] and previous["sessionName"] != acquired["sessionName"]:
+                acpx_call(args.acpx_binary, [*base, "sessions", "close", previous["sessionName"]], cwd=acquired["project"]["cwd"], timeout=args.timeout_seconds)
+            def record(state: dict[str, Any]) -> dict[str, Any]:
+                project_id, agent, project = checked_project(state, args)
+                lease = project["leases"].get(agent)
+                if not lease or lease["token"] != args.lease_token:
+                    fail("lease_conflict", "lease ownership changed before result recording")
+                project["sessions"][agent] = {"sessionName": acquired["sessionName"], **ids, "generation": acquired["generation"], "closed": False, "lastResult": result}
+                del project["leases"][agent]
+                return {"projectId": project_id, "agent": agent, "sessionName": acquired["sessionName"], **ids, "generation": acquired["generation"], "result": result, "response": response, "acpxVersion": version, "revision": state["revision"] + 1}
+            return store.transact(True, record)
+        except Exception:
+            def release_failed(state: dict[str, Any]) -> dict[str, Any]:
+                project = state["projects"].get(acquired["projectId"])
+                lease = project and project["leases"].get(acquired["agent"])
+                if lease and lease["token"] == args.lease_token:
+                    del project["leases"][acquired["agent"]]
+                return {}
+            store.transact(True, release_failed)
+            raise
     if args.command in {"session-resolve", "session-validate"}:
         def operation(state: dict[str, Any]) -> dict[str, Any]:
             project_id, agent, project = checked_project(state, args)
             session = project["sessions"].get(agent)
             if not session or session["closed"]:
                 fail("session_missing", "no active session is attached; no fallback is permitted")
-            if args.command == "session-validate" and text(args.session_id, "session id", identifier=True) != session["sessionId"]:
+            if args.command == "session-validate" and text(args.session_id, "session id", identifier=True) not in {session["acpxRecordId"], session["acpxSessionId"], session.get("agentSessionId")}:
                 fail("session_mismatch", "session id does not match")
-            return {"projectId": project_id, "agent": agent, "resumeSessionId": session["sessionId"], "generation": session["generation"], "revision": state["revision"]}
+            return {"projectId": project_id, "agent": agent, "sessionName": session["sessionName"], "acpxRecordId": session["acpxRecordId"], "acpxSessionId": session["acpxSessionId"], "agentSessionId": session.get("agentSessionId"), "generation": session["generation"], "revision": state["revision"]}
         return store.transact(False, operation)
-    if args.command.startswith("session-"):
+    if args.command == "session-close":
+        def resolve_close(state: dict[str, Any]) -> tuple[str, str, str]:
+            compare_revision(state, args)
+            project_id, agent, project = checked_project(state, args)
+            current = project["sessions"].get(agent)
+            if not current or current["closed"]:
+                fail("session_missing", "no active session to close")
+            return project_id, agent, current["sessionName"]
+        project_id, agent, name = store.transact(False, resolve_close)
+        preflight_acpx(args.acpx_binary, agent, args.cwd, args.timeout_seconds)
+        acpx_call(args.acpx_binary, ["--format", "json", "--json-strict", "--cwd", args.cwd, agent, "sessions", "close", name], cwd=args.cwd, timeout=args.timeout_seconds)
         def operation(state: dict[str, Any]) -> dict[str, Any]:
             compare_revision(state, args)
             project_id, agent, project = checked_project(state, args)
             current = project["sessions"].get(agent)
-            if args.command == "session-attach":
-                session_id = text(args.session_id, "session id", identifier=True)
-                if current and not current["closed"] and current["sessionId"] != session_id:
-                    fail("session_conflict", "an active session is already attached")
-                if current and current["closed"]:
-                    fail("session_closed", "rotate explicitly instead of reopening")
-                if current is None:
-                    project["sessions"][agent] = {"sessionId": session_id, "generation": 1, "closed": False}
-            elif args.command == "session-rotate":
-                if not current or current["closed"]:
-                    fail("session_missing", "no active session to rotate")
-                session_id = text(args.session_id, "session id", identifier=True)
-                if session_id == current["sessionId"]:
-                    fail("invalid_input", "rotation requires a different session id")
-                project["sessions"][agent] = {"sessionId": session_id, "generation": current["generation"] + 1, "closed": False}
-            else:
-                if not current or current["closed"]:
-                    fail("session_missing", "no active session to close")
-                current["closed"] = True
-                project["leases"].pop(agent, None)
+            if not current or current["closed"] or current["sessionName"] != name:
+                fail("session_conflict", "lineage changed while ACPX close was running")
+            current["closed"] = True
+            project["leases"].pop(agent, None)
             result = project["sessions"][agent]
             return {"projectId": project_id, "agent": agent, **result, "revision": state["revision"] + 1}
         return store.transact(True, operation)
@@ -346,7 +545,7 @@ def add_store(parser: argparse.ArgumentParser) -> None:
 
 def add_context(parser: argparse.ArgumentParser, *, agent: bool = True) -> None:
     add_store(parser)
-    for flag in ("project-id", "workspace-root", "repo", "cwd", "branch"):
+    for flag in ("project-id", "workspace-root", "repo", "cwd", "branch", "head"):
         parser.add_argument("--" + flag, required=True)
     if agent:
         parser.add_argument("--agent", required=True, choices=AGENTS)
@@ -370,13 +569,25 @@ def build_parser() -> argparse.ArgumentParser:
     command = sub.add_parser("session-validate")
     add_context(command)
     command.add_argument("--session-id", required=True)
-    for name in ("session-attach", "session-rotate"):
+    for name in ("acpx-preflight",):
         command = sub.add_parser(name)
         add_context(command)
-        command.add_argument("--session-id", required=True)
-        command.add_argument("--expected-revision", required=True, type=int)
+        command.add_argument("--acpx-binary", required=True)
+        command.add_argument("--timeout-seconds", type=int, default=30)
+    command = sub.add_parser("session-run")
+    add_context(command)
+    command.add_argument("--acpx-binary", required=True)
+    command.add_argument("--prompt-file", required=True, choices=("-",))
+    command.add_argument("--lease-token", required=True)
+    command.add_argument("--now", required=True, type=int)
+    command.add_argument("--expires-at", required=True, type=int)
+    command.add_argument("--timeout-seconds", type=int, default=120)
+    command.add_argument("--rotate", action="store_true")
+    command.add_argument("--expected-revision", required=True, type=int)
     command = sub.add_parser("session-close")
     add_context(command)
+    command.add_argument("--acpx-binary", required=True)
+    command.add_argument("--timeout-seconds", type=int, default=30)
     command.add_argument("--expected-revision", required=True, type=int)
     command = sub.add_parser("lease-acquire")
     add_context(command)

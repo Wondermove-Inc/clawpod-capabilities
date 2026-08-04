@@ -1,9 +1,9 @@
-# Local state and runtime safety
+# State, execution, and approval safety
 
-Keep the state root on a trusted local filesystem with owner-only access. Supply absolute paths beneath one explicit workspace root. The Harness rejects path escape, symlink components, non-regular state, group/world-accessible state, oversized state, malformed structure, and stale revisions.
+Keep state on a trusted owner-only local filesystem. The Harness rejects escape, symlinks, non-regular files, unsafe modes, oversized/malformed state, stale revisions, non-canonical git roots, and branch/HEAD/cwd drift.
 
-The registry stores only project ids, normalized paths, branch names, opaque non-secret session ids, lease tokens, expiry integers, and lineage metadata. Never pass credentials, authorization headers, environment dumps, prompts, task content, model output, or customer data. Secret-like input or persisted state is rejected.
+State is limited to project identity, ACPX session name/non-secret identifiers, generation, lease, and completion metadata. Prompts travel only on stdin to a bounded run; raw ACPX JSON, assistant output, prompts, environment, and credentials are never persisted or logged. If a session identifier is bearer-sensitive, stop.
 
-Inject credentials and sensitive runtime configuration only through the agent/runtime's protected process environment or its approved secret facility. Keep those values out of Harness argv, stdout, state, handoff files, shell history, logs, and version control. A session id or lease token must be an opaque non-secret identifier; if a vendor treats one as a bearer credential, do not use this capability for it.
+Read/search approval does not authorize writes, commands, network, rotation, or close. Ask separately before expanded effects. Non-interactive permission requests fail closed. Failure releases only the owned lease and leaves an existing lineage unchanged.
 
-The Harness performs no Gateway, network, ACP, or vendor call. The Skill may instruct a first-class session runtime separately, but it must never send continuity state or secrets to an unapproved backend.
+Claude secrets require protected `exec.useSecrets` process injection and never enter chat, argv, Harness/Gateway input, files, handoffs, reports, or logs. The Harness never calls Gateway and requires no OpenClaw runtime changes.
