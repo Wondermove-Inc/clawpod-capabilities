@@ -2,7 +2,7 @@
 
 Registry-first classification: **REFINE**. Canonical search found exactly this existing Skill and linked Harness, with no competing capability.
 
-Version 0.1.1 adds the bounded, idempotent `mount.restore` manual recovery path to the existing pair.
+Version 0.1.2 keeps the bounded, idempotent `mount.restore` recovery path and makes `file.get` and `file.put` compatible with Gateway schema preparation. The manifest exposes `maxBytes` as an integer without unsupported `minimum`/`maximum` keywords; the Harness runtime still rejects values outside 1 byte through 64 MiB.
 
 Repeated outages restore first, then perform deeper layout and policy verification. The refinement excludes startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restart, and direct live mount/unmount actions.
 

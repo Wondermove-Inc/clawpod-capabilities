@@ -4,7 +4,7 @@
   "name": "synology-smb-storage",
   "title": "Synology SMB Storage",
   "description": "Guarded deterministic Synology SMB 3.1.1 storage operations.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./synology_smb_storage.py",
   "packageRoot": ".",
   "execution": {
@@ -778,9 +778,7 @@
             "type": "string"
           },
           "maxBytes": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 67108864
+            "type": "integer"
           }
         },
         "additionalProperties": false,
@@ -860,9 +858,7 @@
             "type": "string"
           },
           "maxBytes": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 67108864
+            "type": "integer"
           }
         },
         "additionalProperties": false,
