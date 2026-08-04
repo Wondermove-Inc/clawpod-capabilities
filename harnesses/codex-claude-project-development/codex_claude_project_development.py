@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pure-local, fail-closed ACP project/session continuity registry."""
+"""Pure-local, fail-closed Codex and Claude project development registry."""
 from __future__ import annotations
 
 import argparse
@@ -395,7 +395,7 @@ def parse_prompt(raw: str) -> tuple[dict[str, Any], str]:
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if args.command == "status":
-        return {"name": "acp-project-continuity", "version": VERSION, "backend": "bundled-acpx-named-sessions", "gatewayCalls": False, "storesSecrets": False, "storesPrompts": False, "storesProtocolOutput": False, "agents": list(AGENTS), "minimumAcpxVersion": ".".join(map(str, MIN_ACPX_VERSION)), "requiredAdapterCapabilities": list(REQUIRED_SESSION_CAPABILITIES)}
+        return {"name": "codex-claude-project-development", "version": VERSION, "backend": "bundled-acpx-named-sessions", "gatewayCalls": False, "storesSecrets": False, "storesPrompts": False, "storesProtocolOutput": False, "agents": list(AGENTS), "minimumAcpxVersion": ".".join(map(str, MIN_ACPX_VERSION)), "requiredAdapterCapabilities": list(REQUIRED_SESSION_CAPABILITIES)}
     store = Store(args)
     if args.command == "onboard":
         def operation(state: dict[str, Any]) -> dict[str, Any]:
@@ -552,7 +552,7 @@ def add_context(parser: argparse.ArgumentParser, *, agent: bool = True) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    root = SafeArgumentParser(prog="acp-project-continuity")
+    root = SafeArgumentParser(prog="codex-claude-project-development")
     sub = root.add_subparsers(dest="command", required=True, parser_class=SafeArgumentParser)
     sub.add_parser("status")
     command = sub.add_parser("onboard")

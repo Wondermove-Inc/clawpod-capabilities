@@ -1,4 +1,4 @@
-# ACP Project Continuity Harness
+# Codex & Claude Project Development Harness
 
 Version 0.2.0 is a standard-library, fail-closed continuity orchestrator using bundled ACPX named persistent sessions across OS processes. It binds project ids to canonical git root/cwd/branch/full HEAD and maintains separate Codex and Claude lineages, CAS revisions, leases, rotation, and close.
 

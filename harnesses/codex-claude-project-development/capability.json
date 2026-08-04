@@ -2,17 +2,13 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.2.0",
-  "description": "ACPX-backed project continuity with canonical git context, leases, protected secrets, and fail-closed state.",
+  "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
       "linux",
       "macos"
     ]
-  },
-  "linkedHarness": {
-    "id": "acp-project-continuity",
-    "version": "0.2.0"
   },
   "safety": {
     "risk": "write-safe",

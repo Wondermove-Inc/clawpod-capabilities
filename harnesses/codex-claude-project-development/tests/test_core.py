@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest import mock
 
 PACKAGE = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location("acp_project_continuity", PACKAGE / "acp_project_continuity.py")
+SPEC = importlib.util.spec_from_file_location("codex_claude_project_development", PACKAGE / "codex_claude_project_development.py")
 assert SPEC and SPEC.loader
 cap = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(cap)
