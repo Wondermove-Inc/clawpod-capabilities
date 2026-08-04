@@ -336,6 +336,13 @@ int main(int argc,char**argv){char p[4096];signal(SIGTERM,h);snprintf(p,sizeof(p
         allowed = {"readOnly", "writeSafe", "destructive", "externalSideEffect"}
         for command in manifest["commands"].values():
             self.assertTrue(set(command["safetyClasses"]) <= allowed)
+        # Gateway's simple JSON-schema validator represents all JSON numbers as
+        # type "number"; integer-only enforcement belongs to the argMap.
+        for command_name, argument in (("preflight", "port"), ("start", "port"), ("start", "ttl")):
+            command = manifest["commands"][command_name]
+            self.assertEqual(command["inputSchema"]["properties"][argument]["type"], "number")
+            mapping = next(item for item in command["argMap"] if item["arg"] == argument)
+            self.assertEqual(mapping["valueType"], "integer")
 
 
 if __name__ == "__main__":
