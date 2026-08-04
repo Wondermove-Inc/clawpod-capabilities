@@ -3,50 +3,6 @@
   "schemaVersion": 1,
   "capabilities": [
     {
-      "id": "acp-project-continuity",
-      "type": "skill",
-      "version": "0.2.0",
-      "description": "ACPX-backed project continuity with canonical git context, leases, protected secrets, and fail-closed state.",
-      "path": "skills/acp-project-continuity",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "558e270ba0fc7a11da853a968fafbcccbe2804e63bdc8cdeb5fe9ddfa1952ed7"
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "25dd4a51da2770176de99c40d8e16f158059e5364dcd813036777d3a6e9bc0dc"
-        },
-        {
-          "path": "references/onboarding.md",
-          "sha256": "a3ec6043f318c6cb6c3fc890f677a609d200b830ffd46a22fb4ace92c64417f6"
-        },
-        {
-          "path": "references/safety.md",
-          "sha256": "09bc103751cbcd387299c78364b26891fd451a6f577ab1d599b6becaa4eb79c1"
-        },
-        {
-          "path": "references/shared-storage.md",
-          "sha256": "e854327ce5418cb68fc174cbd9c44910facc1d70e31733f826b8b69ba16669fd"
-        }
-      ],
-      "linkedHarness": {
-        "id": "acp-project-continuity",
-        "version": "0.2.0"
-      }
-    },
-    {
       "id": "atlassian",
       "type": "skill",
       "version": "0.2.0",
@@ -235,6 +191,50 @@
       ],
       "linkedHarness": {
         "id": "clawpod-video-studio",
+        "version": "0.2.0"
+      }
+    },
+    {
+      "id": "codex-claude-project-development",
+      "type": "skill",
+      "version": "0.2.0",
+      "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
+      "path": "skills/codex-claude-project-development",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2867df7d62a7647410b5311dc99cfbc451c145f12bcafab28cdf2f5fc86b9e1a"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "daf5d82edb7c194d7d8e89dda95c26950ffe4e681c330447234baadd506964e2"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "ba61c0ec21c70bcab676e037a971b716407c9ad486a97822c7271654eb463a24"
+        },
+        {
+          "path": "references/safety.md",
+          "sha256": "09bc103751cbcd387299c78364b26891fd451a6f577ab1d599b6becaa4eb79c1"
+        },
+        {
+          "path": "references/shared-storage.md",
+          "sha256": "e854327ce5418cb68fc174cbd9c44910facc1d70e31733f826b8b69ba16669fd"
+        }
+      ],
+      "linkedHarness": {
+        "id": "codex-claude-project-development",
         "version": "0.2.0"
       }
     },
@@ -447,38 +447,6 @@
         "id": "workboard-delegation",
         "version": "0.3.2"
       }
-    },
-    {
-      "id": "acp-project-continuity",
-      "type": "harness",
-      "version": "0.2.0",
-      "description": "ACPX-backed project continuity with canonical git context, leases, protected secrets, and fail-closed state.",
-      "path": "harnesses/acp-project-continuity",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "99c5c1402836628f255f97b2edf5d7c3f3e1f6389d4e52f3954c7751c3fd1084"
-        },
-        {
-          "path": "acp_project_continuity.py",
-          "sha256": "a4dd9dcaf5694d00430dd6b4a36e6da059ecd238d6706718743095b61991c97e"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "44f2fe9565ad5dc316a673f2dfc83661438f0f9cfb005b8012ffe46fbdc1c984"
-        }
-      ]
     },
     {
       "id": "atlassian",
@@ -749,6 +717,38 @@
         {
           "path": "upstream.lock.json",
           "sha256": "4298a5eb08c3efcedb440f8c3141a65b6fe98d1a46095b7884bd143c3589a9f2"
+        }
+      ]
+    },
+    {
+      "id": "codex-claude-project-development",
+      "type": "harness",
+      "version": "0.2.0",
+      "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
+      "path": "harnesses/codex-claude-project-development",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "df9d894583f8f654d729e30c8bf7d95402409060504e36f74ed72aabc6ff21f0"
+        },
+        {
+          "path": "codex_claude_project_development.py",
+          "sha256": "f8ee71ab8fc8d1d3522cc2638e0662f9d7234603b61f97f62f29c0298f63619c"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "9d853f6c7157a427dd9ddec0ee1e6c7b3588886fe63b40c5c842e8d725791f81"
         }
       ]
     },

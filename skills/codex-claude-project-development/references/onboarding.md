@@ -1,6 +1,6 @@
 # Mandatory post-install onboarding
 
-Immediately after installation, report **installed but not connected** and ask for **Codex**, **Claude**, or **both**. If deferred, say “resume ACP Project Continuity onboarding” and do not claim readiness.
+Immediately after installation, report **installed but not connected** and ask for **Codex**, **Claude**, or **both**. If deferred, say “resume Codex & Claude Project Development onboarding” and do not claim readiness.
 
 Explain which provider receives prompts, exact repository/cwd and permissions, likely side effects, revocation, and ACPX local named-session records. Obtain explicit approval before login/OAuth, credential use, provider prompting, mutation, rotation, or close. A read-only preflight may start an adapter to inspect capabilities.
 

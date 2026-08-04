@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "kind": "openclaw.harness.v1",
-  "name": "acp-project-continuity",
-  "title": "ACP Project Continuity",
-  "description": "Fail-closed project continuity orchestrator using bundled ACPX named persistent sessions.",
+  "name": "codex-claude-project-development",
+  "title": "Codex & Claude Project Development",
+  "description": "Fail-closed orchestration for developing software projects with Codex and/or Claude across separate processes.",
   "version": "0.2.0",
-  "entrypoint": "./acp_project_continuity.py",
+  "entrypoint": "./codex_claude_project_development.py",
   "packageRoot": ".",
   "execution": {
     "cwd": ".",
@@ -14,7 +14,7 @@
   },
   "whenToUse": [
     "After installation, onboard Codex, Claude, or both before registering or resuming project sessions",
-    "Validate project context, coordinate concurrent local agents, rotate or close ACP session lineages"
+    "Develop software projects with Codex and/or Claude across separate processes while validating project context and coordinating session lineages"
   ],
   "capabilities": [
     "mandatory-onboarding",

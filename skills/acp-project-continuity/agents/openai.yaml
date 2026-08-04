@@ -1,4 +1,0 @@
-interface:
-  display_name: "ACP Project Continuity"
-  short_description: "Resume local ACP sessions without fallback"
-  default_prompt: "Use $acp-project-continuity to safely resume this project's local agent session."

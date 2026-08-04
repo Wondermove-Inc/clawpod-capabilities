@@ -1,9 +1,9 @@
 ---
-name: acp-project-continuity
-description: Maintain project-level Codex or Claude continuity with bundled ACPX named persistent sessions, canonical git validation, leases, rotation, protected secrets, and fail-closed recovery. Use when work must continue across separate OS processes without OpenClaw runtime changes.
+name: codex-claude-project-development
+description: Develop software projects with Codex and/or Claude across separate processes, with canonical git validation, leases, rotation, protected secrets, and fail-closed recovery. Uses ACPX named sessions as an internal implementation detail and requires no OpenClaw runtime changes.
 ---
 
-# ACP Project Continuity
+# Codex & Claude Project Development
 
 Use the paired Harness as the only continuity-state writer and bundled ACPX named sessions as the only continuity backend. There is no Gateway callback and no `sessions_spawn` dependency.
 

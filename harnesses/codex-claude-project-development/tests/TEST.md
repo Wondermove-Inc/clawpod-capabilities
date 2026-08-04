@@ -1,4 +1,4 @@
-# ACP Project Continuity test evidence
+# Codex & Claude Project Development test evidence
 
 The core suite uses a deterministic fake ACPX executable and real temporary git repositories. It covers successful named-session ensure/prompt, repeat reuse, rotation, stable identifier/result recording, missing and old binaries, missing adapter capabilities, authentication failure, timeout, malformed JSON and identifiers, stale-lease recovery, branch/cwd/HEAD drift, and prompt/protocol/secret non-persistence. Existing state, permission, symlink, CAS, onboarding, and lineage validation remains fail closed.
 
