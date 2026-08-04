@@ -766,15 +766,11 @@
       "files": [
         {
           "path": "cloudflare_quick_tunnel_preview.py",
-          "sha256": "4f9745e68f7f01f8456722ead66bbe739297b7ee32d6d6df4c6528dfdb3eaba4"
+          "sha256": "a472b9b74e6b2bfb1fc01b7e73352481ab1fb0f495c01181ad685361912bae43"
         },
         {
           "path": "harness.json",
           "sha256": "b7e3405a5ba8bf8cc1f4728be6f1357007cdde61d75eeb19516beecb8173e08d"
-        },
-        {
-          "path": "make_metadata.py",
-          "sha256": "556564d36fd1d0d21109daf12ffc9e87eb8b2da7b5a1917bf23e663eeb90cf66"
         }
       ]
     },
