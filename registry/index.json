@@ -476,6 +476,39 @@
       }
     },
     {
+      "id": "youtube-evidence-analysis",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
+      "path": "skills/youtube-evidence-analysis",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "read-only",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "b95ad5e89da958ee25f549bf87f8d3d1df511a7f7388ce57ea83147801226b62"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "a1a6e633a452076e00ebca47eb653709fc5cbb648ea6ceab2b39460c6352b35b"
+        }
+      ],
+      "linkedHarness": {
+        "id": "youtube-evidence-analysis",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "atlassian",
       "type": "harness",
       "version": "0.3.0",
@@ -1089,6 +1122,51 @@
         {
           "path": "workboard_delegation.py",
           "sha256": "c8c95feb568a4a47cc6699815cb0d868451a6c3773ff089c0520f1743802cb3f"
+        }
+      ]
+    },
+    {
+      "id": "youtube-evidence-analysis",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
+      "path": "harnesses/youtube-evidence-analysis",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "a3f6cb8ea0954b2572c27702d24ab8d7c1ef76e6f78c54659f04636c78263b1d"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "4edbfab9f3d9e3b0bac961fcd89d3c786fbe63c4165bc354a57e552cc0a6fc03"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "e84dca5d438e425c9dad48e52230c954a9283882e1bd7f344bbcd7073eeff6d2"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "a435762fdfe4f05d1749a7b2e934a9680a9a1f9866c8c775001bfdb008500eae"
+        },
+        {
+          "path": "scripts/generate_schemas.py",
+          "sha256": "b34c58744927fcd0d96732ccc00b4e6f7971ae206ea268d3d5dcaeff47748596"
+        },
+        {
+          "path": "youtube_evidence_analysis.py",
+          "sha256": "6bc7c07fd2b7bbdd5f2b99cbf0cccc979c8da4fd456f22b3cc01dd22adea1085"
         }
       ]
     }
