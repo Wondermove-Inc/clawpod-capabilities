@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "cloudflare-quick-tunnel-preview",
+  "title": "Cloudflare Quick Tunnel Preview",
+  "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
+  "version": "0.1.0",
+  "entrypoint": "./cloudflare_quick_tunnel_preview.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 35000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Temporarily expose a loopback-only local preview through an accountless public URL"
+  ],
+  "capabilities": [
+    "quick-tunnel-preview",
+    "ttl-process-control"
+  ],
+  "authModel": {
+    "type": "none",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "status": {
+      "description": "status Quick Tunnel operation.",
+      "baseArgv": [
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        }
+      ]
+    },
+    "preflight": {
+      "description": "preflight Quick Tunnel operation.",
+      "baseArgv": [
+        "preflight"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "cloudflared": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          },
+          "skipConnect": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "cloudflared",
+          "type": "option",
+          "flag": "--cloudflared",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "port",
+          "type": "option",
+          "flag": "--port",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "skipConnect",
+          "type": "booleanFlag",
+          "flag": "--skip-connect",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "start": {
+      "description": "start Quick Tunnel operation.",
+      "baseArgv": [
+        "start"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "cloudflared": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          },
+          "ttl": {
+            "type": "integer"
+          },
+          "discoveryTimeout": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "cloudflared",
+          "type": "option",
+          "flag": "--cloudflared",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "port",
+          "type": "option",
+          "flag": "--port",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "ttl",
+          "type": "option",
+          "flag": "--ttl",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "discoveryTimeout",
+          "type": "option",
+          "flag": "--discovery-timeout",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
+    },
+    "inspect": {
+      "description": "inspect Quick Tunnel operation.",
+      "baseArgv": [
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        }
+      ]
+    },
+    "stop": {
+      "description": "stop Quick Tunnel operation.",
+      "baseArgv": [
+        "stop"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        }
+      ]
+    }
+  }
+}
