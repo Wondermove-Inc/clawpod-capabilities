@@ -69,7 +69,7 @@ def test_secret_redaction_and_no_network_surface(tmp_path):
     src=private(tmp_path/"src"); write(src,"in.json",document()); code,out=run("release.prepare","--input-root",src,"--input","in.json","--recipients",'["bad"]',"--approved-content-digest","api_key=SUPERSECRET","--output-root",private(tmp_path/"out")); assert code and "SUPERSECRET" not in json.dumps(out)
     assert MODULE.clean_message("authorization: Bearer SUPERSECRET") == "[REDACTED]"
     manifest=json.loads((HERE/"harness.json").read_text()); assert all("externalSideEffect" not in c["safetyClasses"] for c in manifest["commands"].values()); assert manifest["authModel"]["type"]=="none"
-    assert manifest["definitions"]["output"]["properties"]["schemaVersion"]["type"]=="number"
+    assert all(command["outputSchema"]["properties"]["schemaVersion"]["type"] == "number" for command in manifest["commands"].values())
 
 def test_complete_schema_parity_helper_unicode_and_limits(tmp_path):
     schema=MODULE.schema(); assert schema["additionalProperties"] is False and schema["properties"]["brand"]["additionalProperties"] is False
@@ -90,3 +90,13 @@ def test_output_name_recipients_and_schema_output(tmp_path):
     assert run("release.prepare","--input-root",src,"--input","in.json","--recipients",too_many,"--approved-content-digest",v["data"]["contentDigest"],"--output-root",out)[1]["error"]["code"]=="invalid_recipients"
     schema_root=private(tmp_path/"schema"); code,res=run("schema","--output-root",schema_root); assert code==0
     written=json.loads((schema_root/"newsletter.schema.json").read_text()); assert written["properties"]["schemaVersion"]["type"]=="number" and stat.S_IMODE((schema_root/"newsletter.schema.json").stat().st_mode)==0o600
+
+
+def test_gateway_manifest_has_no_unsupported_definitions_or_refs():
+    manifest=json.loads((HERE/"harness.json").read_text())
+    assert "definitions" not in manifest
+    assert manifest["version"] == "0.1.1"
+    assert "$ref" not in json.dumps(manifest)
+    for command in manifest["commands"].values():
+        assert isinstance(command["inputSchema"],dict)
+        assert isinstance(command["outputSchema"],dict)

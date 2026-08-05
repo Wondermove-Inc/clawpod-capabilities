@@ -5,7 +5,7 @@ description: Compose and review topic-neutral, customer-isolated enterprise brie
 
 # Enterprise Newsletter
 
-Use the paired `enterprise-newsletter` Harness v0.1.0 for validation, rendering, inspection, and release binding. Treat audience, purpose, brand, tone, source material, recipients, and customer identity as explicit inputs. Never reuse one customer's facts, voice, assets, recipients, approvals, or outputs for another.
+Use the paired `enterprise-newsletter` Harness v0.1.1 for validation, rendering, inspection, and release binding. Treat audience, purpose, brand, tone, source material, recipients, and customer identity as explicit inputs. Never reuse one customer's facts, voice, assets, recipients, approvals, or outputs for another.
 
 ## Editorial workflow
 

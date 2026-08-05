@@ -268,7 +268,7 @@
     {
       "id": "enterprise-newsletter",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Compose bounded, brand-token enterprise newsletters with computed HTML/text parity and bind reviewed content and private recipient sets to deterministic release manifests.",
       "path": "skills/enterprise-newsletter",
       "compatibility": {
@@ -285,7 +285,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "02e0efba928154e8af123df5ecbaafe4a9109208796cb1372b96ad91857264df"
+          "sha256": "5207ac2947e13affbf5c9f880bda244a4fc231eacee694f47e44e7092e99eb7e"
         },
         {
           "path": "agents/openai.yaml",
@@ -310,7 +310,7 @@
       ],
       "linkedHarness": {
         "id": "enterprise-newsletter",
-        "version": "0.1.0"
+        "version": "0.1.1"
       }
     },
     {
@@ -918,7 +918,7 @@
     {
       "id": "enterprise-newsletter",
       "type": "harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
       "path": "harnesses/enterprise-newsletter",
       "compatibility": {
@@ -935,11 +935,11 @@
       "files": [
         {
           "path": "enterprise_newsletter.py",
-          "sha256": "af9ce4c8ee6c53529370142ee419fcde16289da7d3d872504b2aecc666564999"
+          "sha256": "6e086ea1ecf4cfcae350a9bc249a6eacc1b076957bc2fa77c72626b94dcadd55"
         },
         {
           "path": "harness.json",
-          "sha256": "d0442ff396252a4c1570ebe9e90df1c42afa77eb2cd25ccf2294c15b825be9d2"
+          "sha256": "3337e2661dda02b5811cf57004215a4914827f752c4a8476adde2b1a4af3d69f"
         }
       ]
     },
