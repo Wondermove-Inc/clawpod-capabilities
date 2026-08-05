@@ -4,7 +4,7 @@
   "name": "enterprise-newsletter",
   "title": "Enterprise Newsletter",
   "description": "Credential-free complete-schema validation, bounded brand-token rendering, computed HTML/text parity, inspection, and digest-bound release verification.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./enterprise_newsletter.py",
   "packageRoot": ".",
   "execution": {
@@ -251,10 +251,7 @@
             "type": "string"
           },
           "template": {
-            "type": "string",
-            "enum": [
-              "enterprise-dark-v1"
-            ]
+            "type": "string"
           }
         },
         "additionalProperties": false
