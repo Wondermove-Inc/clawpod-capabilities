@@ -15,6 +15,18 @@ if mode=="rate":
 if mode=="secret":print(json.dumps({"token":"gh"+"p_"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"}));sys.exit(0)
 if args[:2]==["api","--hostname"] and "user" in args:
  print(json.dumps({"login":os.getenv("FAKE_ACCOUNT","octocat"),"token":"must-not-pass-through"}));sys.exit(0)
+if args[:2]==["repo","create"]:
+ if mode=="repo-create-rate":print("rate limit",file=sys.stderr);sys.exit(75)
+ print(json.dumps({"created":True}));sys.exit(0)
+if args[:2]==["repo","view"] and "--json" in args:
+ target=args[2];branch=os.getenv("FAKE_SOURCE_BRANCH","main");visibility=os.getenv("FAKE_VISIBILITY","PRIVATE")
+ if mode=="repo-target-mismatch":target="other/repo"
+ if mode=="repo-branch-mismatch":branch="other"
+ print(json.dumps({"nameWithOwner":target,"visibility":visibility,"defaultBranchRef":{"name":branch},"url":"https://github.com/"+target}));sys.exit(0)
+if "/git/ref/heads/" in " ".join(args):
+ sha=os.getenv("FAKE_SOURCE_HEAD","")
+ if mode=="repo-sha-mismatch":sha="0"*40
+ print(json.dumps({"sha":sha}));sys.exit(0)
 endpoint=next((x for x in args if x.startswith("repos/") and "/releases/" in x),"")
 method=args[args.index("--method")+1] if "--method" in args else ""
 state_path=os.getenv("FAKE_RELEASE_STATE")
@@ -42,6 +54,16 @@ def env(tmp_path):
 def run(args,env):return subprocess.run([sys.executable,str(CLI)]+args,text=True,capture_output=True,env=env,cwd='/tmp')
 def data(r):return json.loads(r.stdout)
 def argv_log(env):return [json.loads(x) for x in Path(env['ARGV_LOG']).read_text().splitlines()]
+def make_repo(tmp_path,branch='main'):
+ source=tmp_path/'source';source.mkdir()
+ subprocess.run(['git','init','-b',branch,str(source)],check=True,capture_output=True)
+ subprocess.run(['git','-C',str(source),'config','user.email','test@example.invalid'],check=True)
+ subprocess.run(['git','-C',str(source),'config','user.name','Test'],check=True)
+ (source/'README.md').write_text('hello\n')
+ subprocess.run(['git','-C',str(source),'add','README.md'],check=True)
+ subprocess.run(['git','-C',str(source),'commit','-m','initial'],check=True,capture_output=True)
+ head=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
+ return source,branch,head
 @pytest.mark.parametrize('cmd,args',[('repo.view',['--repo','o/r']),('issue.list',['--repo','o/r']),('issue.get',['--repo','o/r','--number','1']),('pr.list',['--repo','o/r']),('pr.view',['--repo','o/r','--number','2']),('pr.checks',['--repo','o/r','--number','2']),('run.list',['--repo','o/r']),('run.view',['--repo','o/r','--run-id','3']),('release.list',['--repo','o/r']),('release.view',['--repo','o/r','--tag','v1']),('api.get',['--endpoint','repos/o/r'])])
 def test_read_commands(env,cmd,args):assert data(run([cmd]+args,env))['ok']
 def test_auth_status_is_bounded_allowlisted_and_exact(env):
@@ -65,6 +87,47 @@ def test_mutation_preview_confirmation_and_ambiguity(env):
  base=['issue.create','--repo','o/r','--title','x'];pre=data(run(base,env));assert pre['error']['ambiguousCommit'] is False
  p=data(run(base+['--dry-run'],env));assert p['data']['preview']['idempotency'].startswith('best-effort')
  bad=data(run(base+['--confirm','issue.create'],{**env,'FAKE_GH_MODE':'fail'}));assert bad['error']['retryable'] is False and bad['error']['ambiguousCommit'] is True
+def test_repo_create_preview_is_bounded_and_omits_source_path(env,tmp_path):
+ source,branch,head=make_repo(tmp_path)
+ r=run(['repo.create','--repo','Wondermove-Inc/clawpod-tech-blog','--source',str(source),'--visibility','private','--description','Tech blog','--homepage','https://example.com/blog','--dry-run'],env);d=data(r);p=d['data']['preview']
+ assert r.returncode==0 and p['target']=='Wondermove-Inc/clawpod-tech-blog' and p['visibility']=='private'
+ assert p['source']=={'branch':branch,'head':head,'clean':True} and str(source) not in r.stdout
+ assert not Path(env['ARGV_LOG']).exists()
+
+def test_repo_create_success_uses_exact_guarded_argv_and_verified_readback(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);e={**env,'FAKE_SOURCE_BRANCH':branch,'FAKE_SOURCE_HEAD':head}
+ args=['repo.create','--repo','Wondermove-Inc/clawpod-tech-blog','--source',str(source),'--visibility','private','--description','Tech blog','--homepage','https://example.com','--confirm','repo.create']
+ r=run(args,e);d=data(r);calls=argv_log(e)
+ assert r.returncode==0 and d['data']['verified'] and d['data']['remoteCommitSha']==head
+ assert calls[0]==['repo','create','Wondermove-Inc/clawpod-tech-blog','--private','--description','Tech blog','--source',str(source),'--remote','origin','--push','--homepage','https://example.com']
+ assert calls[1][:3]==['repo','view','Wondermove-Inc/clawpod-tech-blog'] and calls[2][-2:]==['--jq','{sha:.object.sha}']
+ assert all('token' not in ' '.join(call).lower() for call in calls)
+
+def test_repo_create_validation_paths_and_git_state(env,tmp_path):
+ source,_,_=make_repo(tmp_path)
+ base=['repo.create','--repo','o/r','--visibility','private','--description','x','--dry-run']
+ assert run(base+['--source','relative'],env).returncode==2
+ link=tmp_path/'link';link.symlink_to(source,target_is_directory=True);assert run(base+['--source',str(link)],env).returncode==2
+ (source/'dirty').write_text('x');assert run(base+['--source',str(source)],env).returncode==2;(source/'dirty').unlink()
+ subprocess.run(['git','-C',str(source),'checkout','--detach'],check=True,capture_output=True);assert run(base+['--source',str(source)],env).returncode==2
+
+def test_repo_create_rejects_invalid_visibility_homepage_and_description(env,tmp_path):
+ source,_,_=make_repo(tmp_path);base=['repo.create','--repo','o/r','--source',str(source),'--description','x','--dry-run']
+ assert run(base+['--visibility','Private'],env).returncode==2
+ assert run(base+['--visibility','private','--homepage','http://example.com'],env).returncode==2
+ assert run(['repo.create','--repo','o/r','--source',str(source),'--visibility','private','--description','x'*351,'--dry-run'],env).returncode==2
+
+def test_repo_create_backend_failure_is_ambiguous_and_never_retried(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);e={**env,'FAKE_GH_MODE':'repo-create-rate','FAKE_SOURCE_BRANCH':branch,'FAKE_SOURCE_HEAD':head}
+ r=run(['repo.create','--repo','o/r','--source',str(source),'--visibility','private','--description','x','--confirm','repo.create','--retries','3'],e);d=data(r)
+ assert r.returncode==2 and d['error']['ambiguousCommit'] is True and d['error']['retryable'] is False and len(argv_log(e))==1
+
+@pytest.mark.parametrize('mode,fragment',[('repo-target-mismatch','target mismatch'),('repo-branch-mismatch','default branch mismatch'),('repo-sha-mismatch','remote commit mismatch')])
+def test_repo_create_readback_mismatch_fails_closed(env,tmp_path,mode,fragment):
+ source,branch,head=make_repo(tmp_path);e={**env,'FAKE_GH_MODE':mode,'FAKE_SOURCE_BRANCH':branch,'FAKE_SOURCE_HEAD':head}
+ r=run(['repo.create','--repo','o/r','--source',str(source),'--visibility','private','--description','x','--confirm','repo.create'],e);d=data(r)
+ assert r.returncode==2 and fragment in d['error']['message'] and d['error']['ambiguousCommit'] is True and len(argv_log(e))==3
+
 def test_release_preview_discloses_clobber(env,tmp_path):
  f=tmp_path/'x';f.write_text('x');d=data(run(['release.upload','--repo','o/r','--tag','v1','--file',str(f),'--dry-run'],env));assert d['data']['preview']['clobbersExistingAsset'] is True
 def test_release_body_update_dry_run_inspects_exact_tag_without_patch(env):

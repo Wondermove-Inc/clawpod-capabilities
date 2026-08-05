@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.2",
-  "description": "Route GitHub work through the guarded Harness, including verified release body-only updates.",
+  "version": "0.2.0",
+  "description": "Route GitHub work through the guarded Harness, including verified local repository bootstrap.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
@@ -16,6 +16,6 @@
   },
   "linkedHarness": {
     "id": "github",
-    "version": "0.1.2"
+    "version": "0.2.0"
   }
 }

@@ -1,1 +1,17 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.2","description":"Execute guarded GitHub operations, including verified release body-only updates, through the real gh CLI.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"credential-related","approvalRequired":true}}
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.2.0",
+  "description": "Execute guarded GitHub operations, including verified repository bootstrap and release body-only updates, through the real gh CLI.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  }
+}

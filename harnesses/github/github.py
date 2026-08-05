@@ -5,7 +5,7 @@ import argparse, hashlib, json, os, pwd, re, resource, shutil, subprocess, sys, 
 from pathlib import Path
 from urllib.parse import quote
 
-MAX_OUTPUT=262144; MAX_TITLE=256; MAX_BODY=65536; MAX_UPLOAD=100*1024*1024
+MAX_OUTPUT=262144; MAX_TITLE=256; MAX_BODY=65536; MAX_UPLOAD=100*1024*1024; MAX_DESCRIPTION=350; MAX_HOMEPAGE=2048
 READ={
  "repo.view":["repo","view","{repo}","--json","nameWithOwner,description,url,visibility,defaultBranchRef"],
  "issue.list":["issue","list","--repo","{repo}","--state","{state}","--limit","{limit}","--json","number,title,state,url,author,labels,updatedAt"],
@@ -21,13 +21,14 @@ READ={
  "api.get":["api","--method","GET","{endpoint}"],
 }
 MUTATE={
+ "repo.create":[],
  "issue.create":["issue","create","--repo","{repo}","--title","{title}","--body","{body}"],"issue.comment":["issue","comment","{number}","--repo","{repo}","--body","{body}"],"issue.close":["issue","close","{number}","--repo","{repo}"],"issue.reopen":["issue","reopen","{number}","--repo","{repo}"],
  "pr.create":["pr","create","--repo","{repo}","--title","{title}","--body","{body}","--head","{head}","--base","{base}"],"pr.comment":["pr","comment","{number}","--repo","{repo}","--body","{body}"],"pr.review":["pr","review","{number}","--repo","{repo}","--{review}","--body","{body}"],"pr.merge":["pr","merge","{number}","--repo","{repo}","--{merge_method}"],
  "run.rerun":["run","rerun","{run_id}","--repo","{repo}"],"run.cancel":["run","cancel","{run_id}","--repo","{repo}"],"release.create":["release","create","{tag}","--repo","{repo}","--title","{title}","--notes","{body}"],"release.upload":["release","upload","{tag}","{file}","--repo","{repo}","--clobber"],
  "release.body.update":[],
 }
 DESTRUCTIVE={"issue.close","pr.merge","run.cancel","release.upload"}
-REQUIRED={"repo.view":["repo"],"issue.list":["repo"],"issue.get":["repo","number"],"issue.create":["repo","title"],"issue.comment":["repo","number","body"],"issue.close":["repo","number"],"issue.reopen":["repo","number"],"pr.list":["repo"],"pr.view":["repo","number"],"pr.checks":["repo","number"],"pr.create":["repo","title","head","base"],"pr.comment":["repo","number","body"],"pr.review":["repo","number","review"],"pr.merge":["repo","number"],"run.list":["repo"],"run.view":["repo","run_id"],"run.logs":["repo","run_id"],"run.rerun":["repo","run_id"],"run.cancel":["repo","run_id"],"release.list":["repo"],"release.view":["repo","tag"],"release.create":["repo","tag","title"],"release.upload":["repo","tag","file"],"release.body.update":["repo","tag","body"],"api.get":["endpoint"]}
+REQUIRED={"repo.create":["repo","source","visibility","description"],"repo.view":["repo"],"issue.list":["repo"],"issue.get":["repo","number"],"issue.create":["repo","title"],"issue.comment":["repo","number","body"],"issue.close":["repo","number"],"issue.reopen":["repo","number"],"pr.list":["repo"],"pr.view":["repo","number"],"pr.checks":["repo","number"],"pr.create":["repo","title","head","base"],"pr.comment":["repo","number","body"],"pr.review":["repo","number","review"],"pr.merge":["repo","number"],"run.list":["repo"],"run.view":["repo","run_id"],"run.logs":["repo","run_id"],"run.rerun":["repo","run_id"],"run.cancel":["repo","run_id"],"release.list":["repo"],"release.view":["repo","tag"],"release.create":["repo","tag","title"],"release.upload":["repo","tag","file"],"release.body.update":["repo","tag","body"],"api.get":["endpoint"]}
 REDACTION_PATTERN=re.compile(r"(?i)(gh[pousr]_[A-Za-z0-9_]{10,}|github_pat_[A-Za-z0-9_]{10,}|bearer\s+\S+|(?:token|secret|password|authorization)[=:]\s*\S+|AKIA[0-9A-Z]{16})")
 HOST=re.compile(r"(?=.{1,253}\Z)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)(?:\.(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?))*")
 ENDPOINT=re.compile(r"(?:repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.~!$&'()*+,;=:@%/-]+)?|user|rate_limit)(?:\?[A-Za-z0-9_.~!$&'()*+,;=:@%/?=-]+)?")
@@ -39,7 +40,7 @@ def envelope(command,ok,data=None,error=None,effects=None):
  return d
 def parser():
  p=argparse.ArgumentParser();p.add_argument("command")
- for n in ("host","expected-account","repo","state","number","run-id","title","body","head","base","review","merge-method","tag","file","endpoint","confirm"):p.add_argument("--"+n)
+ for n in ("host","expected-account","repo","source","visibility","description","homepage","state","number","run-id","title","body","head","base","review","merge-method","tag","file","endpoint","confirm"):p.add_argument("--"+n)
  p.add_argument("--limit",type=int,default=20);p.add_argument("--timeout-ms",type=int,default=20000);p.add_argument("--retries",type=int,default=1);p.add_argument("--dry-run",action="store_true");p.set_defaults(host="github.com",state="open",body=None,review="comment",merge_method="squash");return p
 def validate(a):
  if a.command not in READ and a.command not in MUTATE and a.command!="auth.status":raise ValueError("unknown command")
@@ -48,7 +49,14 @@ def validate(a):
   if value is None or (value=="" and not (a.command=="release.body.update" and key=="body")):raise ValueError(f"missing --{key.replace('_','-')}")
  if not HOST.fullmatch(a.host):raise ValueError("host must be an exact DNS hostname")
  if a.expected_account and not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})",a.expected_account):raise ValueError("invalid expected account")
- if a.repo and not re.fullmatch(r"[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}",a.repo):raise ValueError("repo must be owner/name")
+ if a.repo and not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,99})/[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,99})",a.repo):raise ValueError("repo must be exact owner/name")
+ if a.command=="repo.create":
+  if a.visibility not in {"private","public","internal"}:raise ValueError("visibility must be exactly private, public, or internal")
+  if len(a.description)>MAX_DESCRIPTION or any(ord(c)<32 or ord(c)==127 for c in a.description):raise ValueError("description contains control characters or exceeds 350 characters")
+  if a.homepage is not None:
+   if len(a.homepage)>MAX_HOMEPAGE or not re.fullmatch(r"https://[^\s/?#]+(?:[/?#][^\s]*)?",a.homepage):raise ValueError("homepage must be an HTTPS URL of at most 2048 characters")
+  source=Path(a.source)
+  if not source.is_absolute() or source.is_symlink() or not source.is_dir():raise ValueError("source must be an absolute non-symlink directory")
  allowed_states={"issue.list":{"open","closed","all"},"pr.list":{"open","closed","merged","all"}}
  if a.command in allowed_states and a.state not in allowed_states[a.command]:raise ValueError(f"invalid state for {a.command}")
  for value,name in ((a.number,"number"),(a.run_id,"run-id")):
@@ -134,11 +142,58 @@ def release_body_update(a,mutate):
  if after_snapshot["assets"]!=snapshot["assets"]:mismatches.append("assets")
  if mismatches:raise RuntimeError("release body-only verification failed: "+", ".join(mismatches)+" mismatch")
  return {"releaseId":release_id,"tag":a.tag,"endpoint":endpoint,"bodyMatched":True,"protectedMetadataMatched":True,"assetsMatched":True,"protectedSnapshotDigest":digest,"readback":"independent GET by numeric release id"}
+def _run_local_git(source,args,a):
+ exe=shutil.which("git")
+ if not exe:raise RuntimeError("git is not installed")
+ try:r=subprocess.run([exe,"-C",str(source)]+args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=a.timeout_ms/1000,env={**os.environ,"GIT_TERMINAL_PROMPT":"0"},preexec_fn=_limit_filesize)
+ except subprocess.TimeoutExpired as e:raise RuntimeError("git inspection timed out") from e
+ if len(r.stdout)>MAX_OUTPUT or len(r.stderr)>MAX_OUTPUT:raise RuntimeError("git output exceeded 262144-byte limit")
+ out=redact(r.stdout.decode("utf-8","replace")).strip();err=redact(r.stderr.decode("utf-8","replace")).strip()
+ if r.returncode:raise RuntimeError(err or f"git exited {r.returncode}")
+ return out
+
+def _inspect_source(a):
+ source=Path(a.source)
+ if _run_local_git(source,["rev-parse","--is-inside-work-tree"],a)!="true":raise ValueError("source is not a git work tree")
+ if _run_local_git(source,["rev-parse","--is-bare-repository"],a)!="false":raise ValueError("source must be non-bare")
+ branch=_run_local_git(source,["symbolic-ref","--quiet","--short","HEAD"],a)
+ if not branch or len(branch)>255 or any(ord(c)<32 or ord(c)==127 for c in branch):raise ValueError("source HEAD must be attached to a bounded branch")
+ head=_run_local_git(source,["rev-parse","--verify","HEAD"],a)
+ if not re.fullmatch(r"[0-9a-fA-F]{40}|[0-9a-fA-F]{64}",head):raise ValueError("source must have a full HEAD commit")
+ if _run_local_git(source,["status","--porcelain=v1","--untracked-files=all"],a):raise ValueError("source git work tree must be clean")
+ return source,branch,head.lower()
+
+def repo_create(a,mutate):
+ source,branch,head=_inspect_source(a)
+ preview={"backend":"gh","operation":a.command,"target":a.repo,"visibility":a.visibility,"source":{"branch":branch,"head":head,"clean":True},"descriptionLength":len(a.description),"homepage":a.homepage,"idempotency":"mutation is never retried; repository creation or push may be ambiguous once started; independent provider readback is required"}
+ if not mutate:return {"preview":preview}
+ argv=["repo","create",a.repo,"--"+a.visibility,"--description",a.description,"--source",str(source),"--remote","origin","--push"]
+ if a.homepage is not None:argv.extend(["--homepage",a.homepage])
+ run_gh(argv,a,retryable=False)
+ repo=run_gh(["repo","view",a.repo,"--json","nameWithOwner,visibility,defaultBranchRef,url"],a,True)
+ ref=run_gh(["api","--hostname",a.host,"--method","GET",f"repos/{a.repo}/git/ref/heads/{quote(branch,safe='')}","--jq","{sha:.object.sha}"],a,True)
+ default=(repo.get("defaultBranchRef") or {}).get("name") if isinstance(repo,dict) else None
+ remote_sha=ref.get("sha") if isinstance(ref,dict) else None
+ visibility=repo.get("visibility","").lower() if isinstance(repo,dict) and isinstance(repo.get("visibility"),str) else None
+ mismatches=[]
+ if not isinstance(repo,dict) or repo.get("nameWithOwner")!=a.repo:mismatches.append("target")
+ if visibility!=a.visibility:mismatches.append("visibility")
+ if default!=branch:mismatches.append("default branch")
+ if not isinstance(repo.get("url") if isinstance(repo,dict) else None,str) or not repo["url"].startswith("https://"):mismatches.append("URL")
+ if not isinstance(remote_sha,str) or remote_sha.lower()!=head:mismatches.append("remote commit")
+ if mismatches:raise RuntimeError("repository creation verification failed: "+", ".join(mismatches)+" mismatch")
+ return {"nameWithOwner":a.repo,"visibility":a.visibility,"defaultBranch":branch,"url":repo["url"],"sourceHead":head,"remoteCommitSha":remote_sha.lower(),"verified":True,"readback":"independent repository metadata and branch ref queries"}
+
 def main():
  a=parser().parse_args();a.mutation_backend_started=False;effects=[]
  try:
   validate(a)
-  if a.command=="release.body.update":
+  if a.command=="repo.create":
+   if a.dry_run:data=repo_create(a,False)
+   elif a.confirm!=a.command:raise ValueError(f"mutation requires --confirm {a.command}; preview first with --dry-run")
+   else:
+    data=repo_create(a,True);effects=[{"type":"externalSideEffect","operation":a.command,"target":a.repo}]
+  elif a.command=="release.body.update":
    if a.dry_run:data=release_body_update(a,False)
    elif a.confirm!=a.command:raise ValueError(f"mutation requires --confirm {a.command}; preview first with --dry-run")
    else:
