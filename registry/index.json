@@ -266,6 +266,54 @@
       }
     },
     {
+      "id": "enterprise-newsletter",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Compose bounded, brand-token enterprise newsletters with computed HTML/text parity and bind reviewed content and private recipient sets to deterministic release manifests.",
+      "path": "skills/enterprise-newsletter",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "02e0efba928154e8af123df5ecbaafe4a9109208796cb1372b96ad91857264df"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "7cbdcb900715ca387be238036a98edc754a42a95ef334c85e3dfe67ded21238d"
+        },
+        {
+          "path": "assets/enterprise-dark-v1.html",
+          "sha256": "2917b53ec69ae600e17ebd33f37a251d2598e5511dea1ae8f7eff606ea8854e1"
+        },
+        {
+          "path": "examples/newsletter.json",
+          "sha256": "086ea1f9226f0a6917ff2785589a231af5a150c6f484e2113d5826311af1e176"
+        },
+        {
+          "path": "references/newsletter-contract.md",
+          "sha256": "aad2738b845f32951d78571d98244e6f2b0586900371c83a7d36d025c7908b36"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "f1e95fd2fab727d39a21af2c9f40ea75a63330c6fdfe18ea1a54ac371aa8efca"
+        }
+      ],
+      "linkedHarness": {
+        "id": "enterprise-newsletter",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "github",
       "type": "skill",
       "version": "0.1.2",
@@ -864,6 +912,34 @@
         {
           "path": "harness.json",
           "sha256": "924988303a3e51b239c98e48a5f917d49a9c873f687118b9c31f8d7e09cc1a0a"
+        }
+      ]
+    },
+    {
+      "id": "enterprise-newsletter",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
+      "path": "harnesses/enterprise-newsletter",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "enterprise_newsletter.py",
+          "sha256": "af9ce4c8ee6c53529370142ee419fcde16289da7d3d872504b2aecc666564999"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "d0442ff396252a4c1570ebe9e90df1c42afa77eb2cd25ccf2294c15b825be9d2"
         }
       ]
     },
