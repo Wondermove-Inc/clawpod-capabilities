@@ -382,7 +382,7 @@
     {
       "id": "resend-email",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Route protected Resend onboarding and verified-sender single or privacy-preserving bulk transactional email with attachments by default.",
       "path": "skills/resend-email",
       "compatibility": {
@@ -399,12 +399,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0375958e7012ee1158aeaee87b7b96cf65021857bf66612150f815afce2f307e"
+          "sha256": "38682e8f34910675bf0546f8760eb4b33bd50c80fcc66d357e4bfd6eb2cb8b87"
         }
       ],
       "linkedHarness": {
         "id": "resend-email",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -1044,7 +1044,7 @@
     {
       "id": "resend-email",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Guarded Resend HTTPS API email with protected onboarding, verified sender enforcement, attachments, previews, and retry-safe bulk delivery.",
       "path": "harnesses/resend-email",
       "compatibility": {
@@ -1061,7 +1061,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "5371fc5a1a471105273768a8b750c8fc47de5f527b942aebcebe76b916cbfdf9"
+          "sha256": "ea0dc54774ec7278827ae499537421b5eb1d9dd9fac4b289fc52cba94fc3d68b"
         },
         {
           "path": "command_contracts.json",
@@ -1069,15 +1069,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "13e22188ed327438940e2ab17946618e26598bfab71583fc9b5c59b423091edb"
+          "sha256": "313913a2c6462a19f4289aa9be7452ba5252883ca57fdbfea8c25ea7e9c2b7a9"
         },
         {
           "path": "resend_email.py",
-          "sha256": "4811897cb2b88d65b8d6b3baec9ea5975b17ba807cc1a174c4a1030562491aa7"
+          "sha256": "ecb4a8afe6ccf45a291981b3b90dbc3627bfcd4f2bc0256d358b9e1be01caeb8"
         },
         {
           "path": "scripts/generate_manifest.py",
-          "sha256": "9b2f3c5820a1a9675f6e4de0a098b57a1de55b1bc047d48679b10a51cc6ccac6"
+          "sha256": "77eea0721cae8697a72b850ae642205f2ad3023513d7a783c2f5e065b34f3e71"
         }
       ]
     },

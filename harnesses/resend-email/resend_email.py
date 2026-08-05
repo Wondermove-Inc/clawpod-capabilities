@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000
@@ -53,7 +53,7 @@ def emails(raw: str | None, field: str, limit: int) -> list[str]:
 
 def api_key() -> str:
     key=os.environ.get("RESEND_API_KEY","")
-    if not key: raise HarnessError("not_connected", "credential unavailable; use the protected secret-capture handoff and runtime injection")
+    if not key: raise HarnessError("not_connected", "credential unavailable; capture with owner-only memory_secret routing and inject through RESEND_API_KEY")
     return key
 
 class Client:
@@ -182,7 +182,7 @@ def verified_sender(client: Client, msg: dict) -> int:
 def command(a) -> dict:
     if a.command=="onboarding":
         data=onboarding_status(a.state)
-        data.update({"next":["capture RESEND_API_KEY through protected secret storage","run verify","run sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"environment":"RESEND_API_KEY","protected_storage_only":True,"never_chat_files_args_logs":True},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
+        data.update({"next":["if supplied in the Room or a message, route the key immediately to owner-only memory_secret without repeating it","inject the stored secret as RESEND_API_KEY only for a separately approved verify operation","run sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"source":"Room or message","storage":"memory_secret","owner_only":True,"environment":"RESEND_API_KEY","environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
         return output(a.command,True,data=data)
     if a.command=="status":
         data=onboarding_status(a.state); data["persistent_policy_required"]=False

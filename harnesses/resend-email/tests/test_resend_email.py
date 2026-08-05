@@ -22,11 +22,28 @@ class SuccessClient:
 def test_fresh_agent_onboarding_has_only_irreducible_inputs():
     proc=subprocess.run([sys.executable,str(P),"onboarding"],text=True,capture_output=True,env={})
     data=json.loads(proc.stdout)["data"]; rendered=json.dumps(data).lower()
-    assert data["state"]=="installed_but_unconnected" and data["secret_handoff"]["protected_storage_only"]
+    handoff=data["secret_handoff"]
+    assert data["state"]=="installed_but_unconnected"
+    assert handoff["source"]=="Room or message" and handoff["storage"]=="memory_secret" and handoff["owner_only"]
+    assert handoff["environment"]=="RESEND_API_KEY" and handoff["environment_injection_only"] and not handoff["argument_allowed"]
+    assert not handoff["plaintext_persistence_allowed"] and not handoff["plaintext_output_allowed"] and not handoff["protected_ui_required"]
     assert data["send_defaults"]=={"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False}
     for removed in ("allowed_recipient_domains","max_recipients_per_operation","max_recipients_per_day","allow_single","allow_bulk","allow_attachments","standing_policy"):
         assert removed not in rendered
     assert "resend_api_key" in rendered and "sender.readiness" in rendered and "re_" not in proc.stdout
+
+def test_fresh_agent_skill_room_capture_contract_and_no_fake_ui_or_revocation_rule():
+    skill=(P.parents[2]/"skills"/"resend-email"/"SKILL.md").read_text()
+    lowered=skill.lower()
+    assert "room or a message" in lowered and "immediately route" in lowered and "`memory_secret`" in skill
+    assert "ordinary files, normal memory, reports, prompts, or child agents" in lowered
+    assert "safe pointer metadata" in lowered and "protected runtime injection" in lowered
+    assert "there is no user-facing protected secret ui" in lowered
+    assert "room delivery alone does not mean the key is compromised" in lowered
+    assert "does not require revocation" in lowered and "independent compromise signal" in lowered
+    assert "treat it as exposed and require revocation" not in lowered
+    assert "protected secret-entry surface" not in lowered
+    assert "never as an argument" in lowered and "original message as sensitive" in lowered
 
 def test_removed_onboarding_and_policy_flags_are_rejected():
     for args in (["onboarding.configure"],["onboarding","--allowed-recipient-domains","example.com"],["status","--policy","policy.json"],["onboarding","--max-recipients-per-day","1"],["onboarding","--allow-bulk"]):
@@ -167,7 +184,11 @@ def test_recursive_secret_and_body_redaction(monkeypatch):
 
 def test_manifest_defaults_and_external_effect_metadata():
     manifest=json.loads((P.parent/"harness.json").read_text())
-    assert manifest["version"]=="0.1.1" and "onboarding.configure" not in manifest["commands"]
+    skill_metadata=json.loads((P.parents[2]/"skills"/"resend-email"/"capability.json").read_text())
+    harness_metadata=json.loads((P.parent/"capability.json").read_text())
+    assert manifest["version"]=="0.1.2" and "onboarding.configure" not in manifest["commands"]
+    assert skill_metadata["safety"]==harness_metadata["safety"]=={"risk":"externally-visible","approvalRequired":True}
+    assert skill_metadata["linkedHarness"]=={"id":"resend-email","version":"0.1.2"}
     for command in manifest["commands"].values():
         args=set(command["inputSchema"]["properties"])
         assert not args & {"policy","allowedRecipientDomains","allowedSenderDomains","maxRecipients","allowAttachments","allowSingle","allowBulk","maxRecipientsPerDay"}
@@ -175,6 +196,7 @@ def test_manifest_defaults_and_external_effect_metadata():
     assert "externalSideEffect" in manifest["commands"]["bulk.send"]["safetyClasses"]
     test=manifest["commands"]["onboarding.test"]
     assert set(test["safetyClasses"])=={"externalSideEffect","humanAccountAction","secretUse","authReuse"}
+    assert set(manifest["commands"]["verify"]["safetyClasses"])=={"readOnly","secretUse","authReuse"}
     for name in ("send","bulk.send"):
         assert "humanAccountAction" in manifest["commands"][name]["safetyClasses"]
     assert set(test["inputSchema"]["required"])=={"from","to","state"}
