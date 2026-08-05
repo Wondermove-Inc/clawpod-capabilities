@@ -1,0 +1,1 @@
+{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.0","description":"Guarded Resend HTTPS API email with protected onboarding, mode permissions, durable daily quota, previews, and retry-safe bulk delivery.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"externally-visible","approvalRequired":true}}

@@ -1,0 +1,1287 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "resend-email",
+  "title": "Resend Email",
+  "description": "Guarded Resend HTTPS transactional email with protected onboarding, standing authorization policy, previews, readiness, and retry-safe per-recipient bulk delivery.",
+  "version": "0.1.0",
+  "entrypoint": "./resend_email.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 120000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Onboard, verify, preview, or send transactional email with Resend"
+  ],
+  "capabilities": [
+    "resend-https-api",
+    "protected-secret-handoff",
+    "standing-send-policy",
+    "per-recipient-bulk",
+    "stable-json-redaction"
+  ],
+  "authModel": {
+    "type": "bearer-token-protected-injection",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "onboarding": {
+      "description": "onboarding via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "onboarding"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": []
+    },
+    "status": {
+      "description": "status via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "policy": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "policy",
+          "type": "option",
+          "flag": "--policy",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "onboarding.configure": {
+      "description": "onboarding configure via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "onboarding.configure"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "allowBulk",
+          "allowSingle",
+          "allowedRecipientDomains",
+          "allowedSenderDomains",
+          "maxRecipientsPerDay",
+          "policy"
+        ],
+        "properties": {
+          "policy": {
+            "type": "string"
+          },
+          "allowedRecipientDomains": {
+            "type": "string"
+          },
+          "allowedSenderDomains": {
+            "type": "string"
+          },
+          "maxRecipients": {
+            "type": "number"
+          },
+          "allowAttachments": {
+            "type": "boolean"
+          },
+          "allowSingle": {
+            "type": "boolean"
+          },
+          "allowBulk": {
+            "type": "boolean"
+          },
+          "maxRecipientsPerDay": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "policy",
+          "type": "option",
+          "flag": "--policy",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        },
+        {
+          "arg": "allowedRecipientDomains",
+          "type": "option",
+          "flag": "--allowed-recipient-domains",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "allowedSenderDomains",
+          "type": "option",
+          "flag": "--allowed-sender-domains",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "maxRecipients",
+          "type": "option",
+          "flag": "--max-recipients",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "allowAttachments",
+          "type": "booleanFlag",
+          "flag": "--allow-attachments",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "allowSingle",
+          "type": "booleanFlag",
+          "flag": "--allow-single",
+          "valueType": "boolean",
+          "optional": false
+        },
+        {
+          "arg": "allowBulk",
+          "type": "booleanFlag",
+          "flag": "--allow-bulk",
+          "valueType": "boolean",
+          "optional": false
+        },
+        {
+          "arg": "maxRecipientsPerDay",
+          "type": "option",
+          "flag": "--max-recipients-per-day",
+          "valueType": "number",
+          "optional": false
+        }
+      ]
+    },
+    "verify": {
+      "description": "verify via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
+    },
+    "domains.list": {
+      "description": "domains list via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "domains.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
+    },
+    "readiness": {
+      "description": "readiness via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "readiness"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
+    },
+    "sender.readiness": {
+      "description": "sender readiness via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "sender.readiness"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "from"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "from",
+          "type": "option",
+          "flag": "--from",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "preview": {
+      "description": "preview via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "from",
+          "policy",
+          "subject",
+          "to"
+        ],
+        "properties": {
+          "policy": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "replyTo": {
+            "type": "string"
+          },
+          "cc": {
+            "type": "string"
+          },
+          "bcc": {
+            "type": "string"
+          },
+          "attachment": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "policy",
+          "type": "option",
+          "flag": "--policy",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "from",
+          "type": "option",
+          "flag": "--from",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "to",
+          "type": "option",
+          "flag": "--to",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "subject",
+          "type": "option",
+          "flag": "--subject",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "text",
+          "type": "option",
+          "flag": "--text",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "html",
+          "type": "option",
+          "flag": "--html",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "replyTo",
+          "type": "option",
+          "flag": "--reply-to",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "cc",
+          "type": "option",
+          "flag": "--cc",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bcc",
+          "type": "option",
+          "flag": "--bcc",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attachment",
+          "type": "option",
+          "flag": "--attachment",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "send": {
+      "description": "send via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "send"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "from",
+          "policy",
+          "subject",
+          "to"
+        ],
+        "properties": {
+          "policy": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "replyTo": {
+            "type": "string"
+          },
+          "cc": {
+            "type": "string"
+          },
+          "bcc": {
+            "type": "string"
+          },
+          "attachment": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "policy",
+          "type": "option",
+          "flag": "--policy",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "from",
+          "type": "option",
+          "flag": "--from",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "to",
+          "type": "option",
+          "flag": "--to",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "subject",
+          "type": "option",
+          "flag": "--subject",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "text",
+          "type": "option",
+          "flag": "--text",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "html",
+          "type": "option",
+          "flag": "--html",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "replyTo",
+          "type": "option",
+          "flag": "--reply-to",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "cc",
+          "type": "option",
+          "flag": "--cc",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bcc",
+          "type": "option",
+          "flag": "--bcc",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attachment",
+          "type": "option",
+          "flag": "--attachment",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "bulk.send": {
+      "description": "bulk send via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "bulk.send"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "from",
+          "policy",
+          "subject",
+          "to"
+        ],
+        "properties": {
+          "policy": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "replyTo": {
+            "type": "string"
+          },
+          "attachment": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "batchSize": {
+            "type": "number"
+          },
+          "concurrency": {
+            "type": "number"
+          },
+          "ratePerSecond": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "policy",
+          "type": "option",
+          "flag": "--policy",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "from",
+          "type": "option",
+          "flag": "--from",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "to",
+          "type": "option",
+          "flag": "--to",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "subject",
+          "type": "option",
+          "flag": "--subject",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "text",
+          "type": "option",
+          "flag": "--text",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "html",
+          "type": "option",
+          "flag": "--html",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "replyTo",
+          "type": "option",
+          "flag": "--reply-to",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attachment",
+          "type": "option",
+          "flag": "--attachment",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "batchSize",
+          "type": "option",
+          "flag": "--batch-size",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "concurrency",
+          "type": "option",
+          "flag": "--concurrency",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "ratePerSecond",
+          "type": "option",
+          "flag": "--rate-per-second",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
+    }
+  }
+}
