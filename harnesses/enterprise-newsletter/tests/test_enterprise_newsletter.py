@@ -95,8 +95,15 @@ def test_output_name_recipients_and_schema_output(tmp_path):
 def test_gateway_manifest_has_no_unsupported_definitions_or_refs():
     manifest=json.loads((HERE/"harness.json").read_text())
     assert "definitions" not in manifest
-    assert manifest["version"] == "0.1.1"
+    assert manifest["version"] == "0.1.2"
     assert "$ref" not in json.dumps(manifest)
     for command in manifest["commands"].values():
         assert isinstance(command["inputSchema"],dict)
         assert isinstance(command["outputSchema"],dict)
+
+
+def test_gateway_render_intent_schema_avoids_unsupported_enum_keyword():
+    manifest=json.loads((HERE/"harness.json").read_text())
+    template_schema=manifest["commands"]["render"]["inputSchema"]["properties"]["template"]
+    assert template_schema == {"type":"string"}
+    assert "enum" not in json.dumps(manifest["commands"]["render"]["inputSchema"])
