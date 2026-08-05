@@ -316,8 +316,8 @@
     {
       "id": "github",
       "type": "skill",
-      "version": "0.1.2",
-      "description": "Route GitHub work through the guarded Harness, including verified release body-only updates.",
+      "version": "0.3.0",
+      "description": "Route GitHub work through the guarded Harness, including verified local repository bootstrap and existing-repository branch push.",
       "path": "skills/github",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -333,7 +333,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "318d095c3c10ed2e874bd4953438222e902bff9696caca7fe6007988552a6963"
+          "sha256": "088054acb260dfa61a84b71a1b111c329fd87fb00357921503bf17c31954e0ae"
         },
         {
           "path": "references/onboarding.md",
@@ -341,12 +341,12 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "9c731218bf30e156d98a809cda044c3f10d4405048900cdeebbd6b55ee87097d"
+          "sha256": "7768d31f44e8f2833c07d2278d3e806f12e1d716872d207ca2e39578675873ea"
         }
       ],
       "linkedHarness": {
         "id": "github",
-        "version": "0.1.2"
+        "version": "0.3.0"
       }
     },
     {
@@ -946,8 +946,8 @@
     {
       "id": "github",
       "type": "harness",
-      "version": "0.1.2",
-      "description": "Execute guarded GitHub operations, including verified release body-only updates, through the real gh CLI.",
+      "version": "0.3.0",
+      "description": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
       "path": "harnesses/github",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -963,7 +963,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "18c191b3b21597000f666ac817e976dfdc5f99ffed4635122b79428e1f2f8ec0"
+          "sha256": "c65aa95ebc8fa8b9c6a6760c09c1e84fcb8e8fab2a1be137b1bc0e47adc3e5c9"
         },
         {
           "path": "TEST.md",
@@ -971,19 +971,19 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "b361c5cde37931f0e611520c39711b859ed3fa4afa3c1bb0022355ed259fc0e6"
+          "sha256": "dc31560ab821dba3c7529f9941bdb134615fe32ebe391ffc2789fe5bb71c12c6"
         },
         {
           "path": "github.py",
-          "sha256": "2506a5d83da8bdff18cb2cf5915ec4661abb2b18d05d6dc5e2ea64067d3f0bb2"
+          "sha256": "e6717c565dabcecb3b7c00166f5e5696fe3ce15946d7be910a6873eccd108ba8"
         },
         {
           "path": "harness.json",
-          "sha256": "3429c9d77bebffcef45b0e28b75cb0b7259e65bcd088d5848c5666210860452c"
+          "sha256": "f1c4aa94a19dee718030f5419366d446a240b85496580db0a45fe05fe0ec5360"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "099c9264341236e95e32904a0144383032e4a771082788511980b09bbe43c73b"
+          "sha256": "df5873c343d1df8b5aef6a9efaba112715f8c8f224b8fd1a7c1e45b89de05618"
         }
       ]
     },
