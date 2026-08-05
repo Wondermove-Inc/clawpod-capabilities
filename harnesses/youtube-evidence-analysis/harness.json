@@ -4,7 +4,7 @@
   "name": "youtube-evidence-analysis",
   "title": "YouTube Evidence Analysis",
   "description": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./youtube_evidence_analysis.py",
   "packageRoot": ".",
   "execution": {
@@ -56,7 +56,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -108,7 +108,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -166,7 +166,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -238,7 +238,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -318,7 +318,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -409,7 +409,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -539,7 +539,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
@@ -639,7 +639,7 @@
             "type": "boolean"
           },
           "schemaVersion": {
-            "type": "integer"
+            "type": "number"
           },
           "command": {
             "type": "string"
