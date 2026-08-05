@@ -6,4 +6,4 @@ The Harness accepts an approved protected password through `SYNOLOGY_SMB_PASSWOR
 
 `mount.restore --server SERVER --account ACCOUNT --share SHARE` is the manual, idempotent recovery command. It no-ops on the exact existing mount without requiring a password; otherwise it checks bounded local prerequisites, requires `SYNOLOGY_SMB_PASSWORD`, uses the fixed target and safe SMB 3.1.1 options, and verifies the result.
 
-File get/put defaults to 16 MiB and is capped at 64 MiB. Put requires an explicit absolute `--transfer-root` plus a relative `--source`; traversal and symlinks are rejected.
+The Harness intentionally has no ordinary file copy, move, read, write, or list commands. After exact `/workspace/shared` CIFS source/target verification, use OS filesystem commands for those operations under the mounted path.
