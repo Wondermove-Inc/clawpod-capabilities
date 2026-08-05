@@ -2,12 +2,12 @@
 """Guarded Resend HTTPS API harness; stdout is always one redacted JSON object."""
 from __future__ import annotations
 
-import argparse, base64, datetime, fcntl, hashlib, json, mimetypes, os, re, stat, sys, time, urllib.error, urllib.parse, urllib.request, uuid
+import argparse, base64, datetime, hashlib, json, mimetypes, os, re, stat, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000
@@ -17,6 +17,7 @@ MAX_TOTAL_ATTACHMENT_BYTES = 25_000_000
 SECRET_KEYS = {"authorization", "api_key", "apikey", "token", "secret", "credential"}
 SECRET_RE = re.compile(r"(?i)(bearer\s+\S+|re_[A-Za-z0-9_-]{8,})")
 EMAIL_RE = re.compile(r"^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$")
+ONBOARDING_STATE_FIELDS = {"provider_accepted", "message_id", "accepted_at", "sender_domain", "test_recipient_sha256"}
 
 class HarnessError(Exception):
     def __init__(self, code: str, message: str, *, retryable: bool = False, status: int | None = None, retry_after: float | None = None):
@@ -49,99 +50,6 @@ def emails(raw: str | None, field: str, limit: int) -> list[str]:
     except json.JSONDecodeError: values=[x.strip() for x in raw.split(",") if x.strip()]
     if not isinstance(values,list) or len(values)>limit: raise HarnessError("invalid_input", f"{field} must contain at most {limit} addresses")
     return [email(str(x),field) for x in values]
-
-def secure_file(path: Path, *, must_exist: bool = True) -> None:
-    try: info=path.lstat()
-    except FileNotFoundError:
-        if must_exist: raise HarnessError("not_configured", "policy is not configured; run onboarding.configure")
-        return
-    if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode)!=0o600:
-        raise HarnessError("unsafe_storage", "private state must be a non-symlink regular file with mode 0600")
-
-def secure_parent(path: Path) -> None:
-    try: info=path.parent.lstat()
-    except OSError as exc: raise HarnessError("unsafe_storage",f"private state parent is unavailable: {exc}")
-    if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode) or stat.S_IMODE(info.st_mode)&0o077:
-        raise HarnessError("unsafe_storage", "private state parent must already exist and be private (mode 0700)")
-
-def read_private_json(path: Path, missing_code: str) -> dict:
-    secure_file(path)
-    try:
-        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
-        with os.fdopen(fd) as fh: return json.load(fh)
-    except (OSError,json.JSONDecodeError) as exc: raise HarnessError(missing_code,f"cannot read valid private state: {exc}")
-
-def load_policy(path: str) -> dict:
-    p=Path(path); value=read_private_json(p,"invalid_policy")
-    if value.get("schema_version") != 1: raise HarnessError("invalid_policy", "unsupported policy schema")
-    required={"allowed_recipient_domains","allowed_sender_domains","max_recipients_per_operation","allow_attachments","allow_single","allow_bulk","max_recipients_per_day","usage_state_path"}
-    if not required<=value.keys(): raise HarnessError("invalid_policy","policy is missing required standing-authorization fields")
-    return value
-
-def write_policy(path: str, policy: dict) -> None:
-    p=Path(path)
-    secure_file(p,must_exist=False)
-    secure_parent(p)
-    fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_TRUNC|os.O_NOFOLLOW,0o600)
-    with os.fdopen(fd,"w") as fh: json.dump(policy,fh,sort_keys=True,separators=(",",":")); fh.write("\n")
-
-def utc_day() -> str: return datetime.datetime.now(datetime.timezone.utc).date().isoformat()
-
-class DailyQuota:
-    """Durable fail-closed daily quota with cross-process reservations."""
-    def __init__(self, policy: dict):
-        self.limit=policy["max_recipients_per_day"]
-        self.path=Path(policy["usage_state_path"])
-        self.lock_path=self.path.with_name(self.path.name+".lock")
-        self.reservation_id: str | None=None
-
-    def _locked(self):
-        secure_parent(self.path)
-        secure_file(self.path,must_exist=False)
-        secure_file(self.lock_path,must_exist=False)
-        try: fd=os.open(self.lock_path,os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600)
-        except OSError as exc: raise HarnessError("unsafe_storage",f"cannot open private usage lock: {exc}")
-        os.fchmod(fd,0o600); fcntl.flock(fd,fcntl.LOCK_EX)
-        return os.fdopen(fd,"r+")
-
-    def _read(self) -> dict:
-        try: self.path.lstat()
-        except FileNotFoundError: return {"schema_version":1,"date":utc_day(),"used":0,"reservations":{}}
-        value=read_private_json(self.path,"invalid_usage_state")
-        reservations=value.get("reservations")
-        if value.get("schema_version")!=1 or not isinstance(value.get("used"),int) or value["used"]<0 or not isinstance(reservations,dict) or any(not isinstance(x,int) or x<1 for x in reservations.values()):
-            raise HarnessError("invalid_usage_state","usage state has an invalid schema")
-        if value.get("date")!=utc_day(): return {"schema_version":1,"date":utc_day(),"used":0,"reservations":{}}
-        return value
-
-    def _write(self, value: dict) -> None:
-        tmp=self.path.with_name(self.path.name+"."+uuid.uuid4().hex+".tmp")
-        try:
-            fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
-            with os.fdopen(fd,"w") as fh:
-                json.dump(value,fh,sort_keys=True,separators=(",",":")); fh.write("\n"); fh.flush(); os.fsync(fh.fileno())
-            os.replace(tmp,self.path)
-            parent_fd=os.open(self.path.parent,os.O_RDONLY|os.O_DIRECTORY)
-            try: os.fsync(parent_fd)
-            finally: os.close(parent_fd)
-        finally:
-            try: tmp.unlink()
-            except FileNotFoundError: pass
-
-    def reserve(self, count: int) -> None:
-        with self._locked():
-            state=self._read(); reserved=sum(state["reservations"].values())
-            if state["used"]+reserved+count>self.limit: raise HarnessError("daily_quota_exhausted","daily recipient limit is exhausted")
-            self.reservation_id=uuid.uuid4().hex; state["reservations"][self.reservation_id]=count; self._write(state)
-
-    def finish(self, successful: int) -> None:
-        if self.reservation_id is None: return
-        with self._locked():
-            state=self._read(); reserved=state["reservations"].pop(self.reservation_id,None)
-            if reserved is None: raise HarnessError("invalid_usage_state","quota reservation is missing")
-            if successful<0 or successful>reserved: raise HarnessError("invalid_usage_state","successful count exceeds reservation")
-            state["used"]+=successful; self._write(state)
-        self.reservation_id=None
 
 def api_key() -> str:
     key=os.environ.get("RESEND_API_KEY","")
@@ -208,35 +116,77 @@ def message_from_args(a, recipient: str | None = None) -> dict:
 
 def domain_of(address: str) -> str: return address.rsplit("@",1)[1].rstrip(">").lower()
 
-def enforce(policy: dict, msg: dict, count: int, mode: str) -> None:
-    if mode=="single" and not policy["allow_single"]: raise HarnessError("policy_violation","single send is disabled by standing policy")
-    if mode=="bulk" and not policy["allow_bulk"]: raise HarnessError("policy_violation","bulk send is disabled by standing policy")
-    recipients=[*msg["to"],*msg.get("cc",[]),*msg.get("bcc",[])]
-    allowed=set(policy["allowed_recipient_domains"])
-    if count>policy["max_recipients_per_operation"]: raise HarnessError("policy_violation","recipient count exceeds standing policy")
-    if any(domain_of(x) not in allowed for x in recipients): raise HarnessError("policy_violation","recipient is outside allowed domains")
-    if domain_of(msg["from"]) not in set(policy["allowed_sender_domains"]): raise HarnessError("policy_violation","sender is outside allowed domains")
-    if msg.get("attachments") and not policy["allow_attachments"]: raise HarnessError("policy_violation","attachments are not authorized by standing policy")
+def private_state_path(raw: str, *, may_be_missing: bool) -> Path:
+    path=Path(raw).expanduser()
+    if not path.is_absolute(): raise HarnessError("unsafe_state_path","onboarding state path must be absolute")
+    if path.exists() and path.is_symlink(): raise HarnessError("unsafe_state_path","onboarding state must not be a symlink")
+    parent=path.parent
+    if not parent.is_dir() or parent.is_symlink(): raise HarnessError("unsafe_state_path","onboarding state parent must be an existing private directory")
+    resolved_parent=parent.resolve(strict=True)
+    if resolved_parent != parent: raise HarnessError("unsafe_state_path","onboarding state parent must not contain symlink indirection")
+    if stat.S_IMODE(parent.stat().st_mode) & 0o077: raise HarnessError("unsafe_state_path","onboarding state parent must not be accessible by group or other users")
+    if path.exists():
+        mode=path.stat().st_mode
+        if not stat.S_ISREG(mode) or stat.S_IMODE(mode) & 0o077: raise HarnessError("unsafe_state_path","onboarding state must be a private regular file")
+    elif not may_be_missing:
+        raise HarnessError("onboarding_incomplete","private onboarding test state is unavailable")
+    return path
 
-def preview_data(msg: dict, count: int, policy: dict) -> dict:
+def read_onboarding_state(raw: str | None) -> dict | None:
+    if not raw: return None
+    path=private_state_path(raw,may_be_missing=True)
+    if not path.exists(): return None
+    try: value=json.loads(path.read_text(encoding="utf-8"))
+    except (OSError,UnicodeError,json.JSONDecodeError): return None
+    if not isinstance(value,dict) or set(value)!=ONBOARDING_STATE_FIELDS: return None
+    if value.get("provider_accepted") is not True: return None
+    if not all(isinstance(value.get(k),str) and value[k] for k in ONBOARDING_STATE_FIELDS-{"provider_accepted"}): return None
+    if not re.fullmatch(r"[0-9a-f]{64}",value["test_recipient_sha256"]): return None
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,200}",value["message_id"]): return None
+    if not re.fullmatch(r"[a-z0-9.-]+\.[a-z0-9-]+",value["sender_domain"]): return None
+    try: datetime.datetime.fromisoformat(value["accepted_at"].replace("Z","+00:00"))
+    except ValueError: return None
+    return value
+
+def write_onboarding_state(raw: str, value: dict) -> None:
+    path=private_state_path(raw,may_be_missing=True)
+    fd,tmp=tempfile.mkstemp(prefix=".resend-onboarding-",dir=path.parent)
+    try:
+        os.fchmod(fd,0o600)
+        with os.fdopen(fd,"w",encoding="utf-8") as stream:
+            json.dump(value,stream,sort_keys=True,separators=(",",":")); stream.write("\n"); stream.flush(); os.fsync(stream.fileno())
+        os.replace(tmp,path)
+    finally:
+        try: os.unlink(tmp)
+        except FileNotFoundError: pass
+
+def onboarding_status(state_path: str | None) -> dict:
+    connected=bool(os.environ.get("RESEND_API_KEY"))
+    state=read_onboarding_state(state_path)
+    complete=connected and state is not None
+    return {"state":"onboarding_complete" if complete else "connected_not_verified" if connected else "installed_but_unconnected","onboarding":"onboarding_complete" if complete else "onboarding_incomplete","credential_available":connected,"provider_test_accepted":bool(state),"delivery_confirmed":False}
+
+def preview_data(msg: dict, count: int) -> dict:
     safe={k:v for k,v in msg.items() if k not in {"text","html","attachments"}}
     safe["content"]={"text_bytes":len(msg.get("text","").encode()),"html_bytes":len(msg.get("html","").encode()),"attachment_count":len(msg.get("attachments",[]))}
-    return {"authorized":True,"recipient_count":count,"message":safe,"intent_digest":digest(msg),"policy_digest":digest(policy)}
+    return {"authorized":True,"recipient_count":count,"message":safe,"intent_digest":digest(msg)}
+
+def verified_sender(client: Client, msg: dict) -> int:
+    domains,attempts,_=client.request("GET","/domains")
+    items=domains.get("data",domains if isinstance(domains,list) else [])
+    sender_domain=domain_of(msg["from"])
+    if not any(str(x.get("name","")).lower()==sender_domain and x.get("status")=="verified" for x in items):
+        raise HarnessError("sender_not_ready","sender domain is not verified")
+    return attempts
 
 def command(a) -> dict:
     if a.command=="onboarding":
-        return output(a.command,True,data={"state":"installed_but_unconnected","next":"onboarding.configure","secret_handoff":{"required":True,"environment":"RESEND_API_KEY","protected_storage_only":True,"never_chat_files_args_logs":True},"standing_policy":"Configure once; in-policy sends need no per-send approval and out-of-policy sends fail closed."})
+        data=onboarding_status(a.state)
+        data.update({"next":["capture RESEND_API_KEY through protected secret storage","run verify","run sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"environment":"RESEND_API_KEY","protected_storage_only":True,"never_chat_files_args_logs":True},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
+        return output(a.command,True,data=data)
     if a.command=="status":
-        configured=Path(a.policy).is_file(); connected=bool(os.environ.get("RESEND_API_KEY"))
-        return output(a.command,True,data={"state":"ready" if configured and connected else "installed_but_unconnected","configured":configured,"credential_available":connected})
-    if a.command=="onboarding.configure":
-        recipient_domains=sorted(set(x.strip().lower() for x in a.allowed_recipient_domains.split(",") if x.strip()))
-        sender_domains=sorted(set(x.strip().lower() for x in a.allowed_sender_domains.split(",") if x.strip()))
-        if not recipient_domains or not sender_domains or any("@" in x for x in recipient_domains+sender_domains): raise HarnessError("invalid_input","provide bare allowed domains")
-        usage_path=str(Path(a.policy).with_name(Path(a.policy).name+".usage.json").absolute())
-        policy={"schema_version":1,"allowed_recipient_domains":recipient_domains,"allowed_sender_domains":sender_domains,"max_recipients_per_operation":a.max_recipients,"allow_attachments":a.allow_attachments,"allow_single":a.allow_single,"allow_bulk":a.allow_bulk,"max_recipients_per_day":a.max_recipients_per_day,"usage_state_path":usage_path,"created_by":"resend-email onboarding"}
-        write_policy(a.policy,policy)
-        return output(a.command,True,data={"configured":True,"policy_digest":digest(policy),"credential_stored":False,"next":"capture RESEND_API_KEY only through protected secret storage, then run verify"},effects="local_policy_configured")
+        data=onboarding_status(a.state); data["persistent_policy_required"]=False
+        return output(a.command,True,data=data)
     client=Client(a.base_url,a.timeout,a.retries)
     if a.command=="verify":
         domains,attempts,_=client.request("GET","/domains")
@@ -250,25 +200,37 @@ def command(a) -> dict:
             match=next((x for x in ready if x["name"]==sender_domain),None)
             data={"sender_domain":sender_domain,"ready":bool(match and match["ready"]),"domain":match}
         return output(a.command,True,data=data,retry={"attempts":attempts,"retryable":False,"retry_after_seconds":None})
-    policy=load_policy(a.policy)
+    if a.command=="onboarding.test":
+        sender=email(a.from_address.rsplit("<",1)[-1].rstrip(">"),"from")
+        recipient=email(a.to,"to")
+        msg={"from":a.from_address,"to":[recipient],"subject":"[Resend onboarding test] Provider submission check","text":"Resend onboarding test: provider submission check. Inbox delivery is not confirmed by this message submission."}
+        readiness_attempts=verified_sender(client,msg)
+        recipient_hash=hashlib.sha256(recipient.encode()).hexdigest()
+        idem="resend-onboarding-v1-"+digest({"sender":sender,"test_recipient_sha256":recipient_hash})
+        prior=read_onboarding_state(a.state)
+        if prior and prior["sender_domain"]==domain_of(sender) and prior["test_recipient_sha256"]==recipient_hash:
+            return output(a.command,True,data={"provider_accepted":True,"message_id":prior["message_id"],"accepted_at":prior["accepted_at"],"sender_domain":prior["sender_domain"],"test_recipient_sha256":recipient_hash,"idempotent":True,"delivery_confirmed":False,"meaning":"Resend previously accepted this test submission; inbox delivery is not confirmed."},retry={"attempts":readiness_attempts,"retryable":False,"retry_after_seconds":None})
+        result,attempts,_=client.request("POST","/emails",msg,idem)
+        message_id=result.get("id")
+        if not isinstance(message_id,str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,200}",message_id): raise HarnessError("backend_failure","Resend did not return a safe message id for the accepted submission")
+        accepted_at=datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00","Z")
+        state={"provider_accepted":True,"message_id":message_id,"accepted_at":accepted_at,"sender_domain":domain_of(sender),"test_recipient_sha256":recipient_hash}
+        write_onboarding_state(a.state,state)
+        return output(a.command,True,data={**state,"idempotent":False,"delivery_confirmed":False,"meaning":"Resend accepted the test message for submission; inbox delivery is not confirmed."},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
     if a.command in {"preview","send"}:
-        msg=message_from_args(a); count=len(msg["to"])+len(msg.get("cc",[]))+len(msg.get("bcc",[])); enforce(policy,msg,count,"single")
-        preview=preview_data(msg,len(msg["to"]),policy)
+        msg=message_from_args(a); preview=preview_data(msg,len(msg["to"]))
         if a.command=="preview" or a.dry_run: return output(a.command,True,data={"dry_run":True,"preview":preview})
-        quota=DailyQuota(policy); quota.reserve(count)
+        readiness_attempts=verified_sender(client,msg)
         key=a.idempotency_key or preview["intent_digest"]
-        try: result,attempts,_=client.request("POST","/emails",msg,key)
-        except HarnessError:
-            quota.finish(0); raise
-        quota.finish(count)
-        return output(a.command,True,data={"id":result.get("id"),"idempotency_key":key,"preview":preview},effects="email_submitted",retry={"attempts":attempts,"retryable":False,"retry_after_seconds":None})
+        result,attempts,_=client.request("POST","/emails",msg,key)
+        return output(a.command,True,data={"id":result.get("id"),"idempotency_key":key,"preview":preview,"sender_verified":True},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
     if a.command=="bulk.send":
         recipients=list(dict.fromkeys(emails(a.to,"to",MAX_RECIPIENTS)))
         if not recipients: raise HarnessError("invalid_input","at least one recipient is required")
-        sample=message_from_args(a,recipients[0]); enforce(policy,sample,len(recipients),"bulk")
+        sample=message_from_args(a,recipients[0])
         base_key=a.idempotency_key or digest({"recipients":recipients,"message":sample})
-        if a.dry_run: return output(a.command,True,data={"dry_run":True,"deduplicated_count":len(recipients),"preview":preview_data(sample,len(recipients),policy),"idempotency_key":base_key})
-        quota=DailyQuota(policy); quota.reserve(len(recipients))
+        if a.dry_run: return output(a.command,True,data={"dry_run":True,"deduplicated_count":len(recipients),"preview":preview_data(sample,len(recipients)),"idempotency_key":base_key})
+        verified_sender(client,sample)
         def deliver(index_address):
             index,address=index_address; msg=message_from_args(a,address); key=f"{base_key}:{digest(address)[:16]}"
             try:
@@ -283,10 +245,9 @@ def command(a) -> dict:
                     results.extend(f.result() for f in as_completed(futures))
                 if a.rate_per_second>0 and start+a.batch_size<len(recipients): time.sleep(a.batch_size/a.rate_per_second)
         except BaseException:
-            # Unknown completion state: retain the full durable reservation and fail closed.
+            # Unknown completion state: surface failure and rely on stable idempotency keys.
             raise
         results.sort(key=lambda x:recipients.index(x["recipient"])); failed=[x for x in results if not x["ok"]]
-        quota.finish(len(results)-len(failed))
         data={"submitted":len(results)-len(failed),"failed":len(failed),"partial_failure":bool(failed) and len(failed)<len(results),"retry_safe":all(x.get("retry_safe",True) for x in failed),"idempotency_key":base_key,"results":results}
         return output(a.command,not failed,data=data,effects="partial_email_submission" if failed else "emails_submitted")
     raise HarnessError("invalid_input","unknown command")
@@ -295,20 +256,19 @@ class JsonParser(argparse.ArgumentParser):
     def error(self,message): raise HarnessError("invalid_input",message)
 
 def parser() -> argparse.ArgumentParser:
-    p=JsonParser(); p.add_argument("command",choices=["onboarding","status","onboarding.configure","verify","domains.list","readiness","sender.readiness","preview","send","bulk.send"])
-    p.add_argument("--policy",default="resend-policy.json"); p.add_argument("--base-url",default=DEFAULT_BASE); p.add_argument("--timeout",type=float,default=10); p.add_argument("--retries",type=int,default=2)
-    p.add_argument("--allowed-recipient-domains"); p.add_argument("--allowed-sender-domains"); p.add_argument("--max-recipients",type=int,default=100); p.add_argument("--allow-attachments",action="store_true"); p.add_argument("--allow-single",action="store_true"); p.add_argument("--allow-bulk",action="store_true"); p.add_argument("--max-recipients-per-day",type=int)
+    p=JsonParser(); p.add_argument("command",choices=["onboarding","status","verify","domains.list","readiness","sender.readiness","onboarding.test","preview","send","bulk.send"])
+    p.add_argument("--base-url",default=DEFAULT_BASE); p.add_argument("--timeout",type=float,default=10); p.add_argument("--retries",type=int,default=2)
     p.add_argument("--from",dest="from_address"); p.add_argument("--to"); p.add_argument("--subject"); p.add_argument("--text"); p.add_argument("--html"); p.add_argument("--reply-to"); p.add_argument("--cc"); p.add_argument("--bcc"); p.add_argument("--attachment",action="append")
     p.add_argument("--dry-run",action="store_true"); p.add_argument("--idempotency-key"); p.add_argument("--batch-size",type=int,default=100); p.add_argument("--concurrency",type=int,default=4); p.add_argument("--rate-per-second",type=float,default=2)
+    p.add_argument("--state")
     return p
 
 def validate_args(a) -> None:
-    for name,value,low,high in [("timeout",a.timeout,.1,30),("retries",a.retries,0,5),("max recipients",a.max_recipients,1,MAX_RECIPIENTS),("batch size",a.batch_size,1,100),("concurrency",a.concurrency,1,10),("rate",a.rate_per_second,.1,100)]:
+    for name,value,low,high in [("timeout",a.timeout,.1,30),("retries",a.retries,0,5),("batch size",a.batch_size,1,100),("concurrency",a.concurrency,1,10),("rate",a.rate_per_second,.1,100)]:
         if value<low or value>high: raise HarnessError("invalid_input",f"{name} must be between {low} and {high}")
     if a.command in {"preview","send","bulk.send"} and (not a.from_address or not a.subject): raise HarnessError("invalid_input","--from and --subject are required")
     if a.command=="sender.readiness" and not a.from_address: raise HarnessError("invalid_input","--from is required")
-    if a.command=="onboarding.configure" and (not a.allowed_recipient_domains or not a.allowed_sender_domains or a.max_recipients_per_day is None): raise HarnessError("invalid_input","allowed domains and max recipients per day are required")
-    if a.command=="onboarding.configure" and not 1<=a.max_recipients_per_day<=1_000_000: raise HarnessError("invalid_input","max recipients per day must be between 1 and 1000000")
+    if a.command=="onboarding.test" and (not a.from_address or not a.to or not a.state): raise HarnessError("invalid_input","--from, --to, and --state are required")
 
 def main(argv=None) -> int:
     raw=list(argv) if argv is not None else sys.argv[1:]
