@@ -380,6 +380,34 @@
       }
     },
     {
+      "id": "resend-email",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route protected Resend onboarding and quota-backed standing-policy authorized single or bulk transactional email.",
+      "path": "skills/resend-email",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "externally-visible",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "53f70274bb519cf741754c1913ecd2936d3dc83095d4e2a6857b1cdf4a38f553"
+        }
+      ],
+      "linkedHarness": {
+        "id": "resend-email",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "synology-smb-storage",
       "type": "skill",
       "version": "0.1.1",
@@ -1010,6 +1038,46 @@
         {
           "path": "onboarding.py",
           "sha256": "819b0622d59e3e9106d7e2d1dd2847f3993d789c76331dc5088a43b2123c1e6b"
+        }
+      ]
+    },
+    {
+      "id": "resend-email",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Guarded Resend HTTPS API email with protected onboarding, mode permissions, durable daily quota, previews, and retry-safe bulk delivery.",
+      "path": "harnesses/resend-email",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "externally-visible",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "e681c596402e5b4de9b049927c6457718d38b3dd2d78e94bb7db6e34142f754f"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "47c273820dbfd2af488eb95d148ff865ba97bf71442730a220a9453a0fa896e6"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "a4ad0ab08aab7bdef77755cbd79d8f41df82c6945dadbdf63e2becc802aa44a0"
+        },
+        {
+          "path": "resend_email.py",
+          "sha256": "315da0c70bbf0f4cefb40f5cd7c0586afbdc74846e69722d7bfa0ae0704366ad"
+        },
+        {
+          "path": "scripts/generate_manifest.py",
+          "sha256": "20227e66f0de3e15079f490f851d07135d61048cd46ac649fe7c8279d3af695a"
         }
       ]
     },
