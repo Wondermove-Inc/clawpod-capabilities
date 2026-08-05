@@ -16,7 +16,7 @@ cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
 
 
 class EndToEndTests(unittest.TestCase):
-    SYNOLOGY_VERSION="0.1.2"
+    SYNOLOGY_VERSION="0.1.3"
 
     def test_fresh_agent_workflow_onboarding_cli(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -100,6 +100,8 @@ class EndToEndTests(unittest.TestCase):
             skill_root=base/"skills";linked_harness_root=base/"linked-harnesses"
             installed_harness=Path(harness_result["destination"])
             installed_manifest=json.loads((installed_harness/"harness.json").read_text())
+            self.assertEqual(len(installed_manifest["commands"]),13)
+            self.assertTrue({"file.list","file.get","file.put"}.isdisjoint(installed_manifest["commands"]))
             supported={"type"}
             for command in installed_manifest["commands"].values():
                 for schema in command["inputSchema"].get("properties",{}).values():

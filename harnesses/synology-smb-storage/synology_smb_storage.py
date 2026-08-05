@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Typed, bounded Synology SMB storage harness with secret-redacted output."""
-import argparse, base64, json, os, re, shutil, subprocess, sys, tempfile, uuid
+"""Guarded Synology SMB storage control harness with secret-redacted output."""
+import argparse, json, os, re, shutil, subprocess, sys, tempfile, uuid
 from pathlib import Path
 
 ROOT=Path("/workspace/shared")
@@ -9,8 +9,6 @@ END="<!-- END SYNOLOGY SMB STORAGE POLICY v0.1.0 -->"
 PASSWORD_ENV="SYNOLOGY_SMB_PASSWORD"
 SAFE_OPTS=("vers=3.1.1","nosuid","nodev","noexec","cache=strict")
 SMBCLIENT_PROTOCOL=("--option=client min protocol=SMB3_11","--option=client max protocol=SMB3_11")
-DEFAULT_MAX_BYTES=16*1024*1024
-HARD_MAX_BYTES=64*1024*1024
 NAME=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,62}$")
 ACCOUNT=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._@-]{0,126}$")
 SERVER=re.compile(r"^(?=.{1,253}$)(?:[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?|(?:\d{1,3}\.){3}\d{1,3})$")
@@ -34,16 +32,6 @@ def valid_account(v):
 def valid_server(v):
  if not SERVER.fullmatch(v or "") or "/" in v or "\\" in v: raise Fault("INVALID_INPUT","invalid server")
  return v
-
-def relpath(v):
- p=Path(v or ".")
- if p.is_absolute() or ".." in p.parts or any(x=="" for x in p.parts): raise Fault("PATH_TRAVERSAL","path must be relative")
- return p
-
-def max_bytes(v):
- n=DEFAULT_MAX_BYTES if v is None else v
- if not isinstance(n,int) or n<1 or n>HARD_MAX_BYTES: raise Fault("INVALID_INPUT",f"max-bytes must be 1..{HARD_MAX_BYTES}")
- return n
 
 def password():
  p=os.environ.get(PASSWORD_ENV)
@@ -159,68 +147,6 @@ def layout(a,ensure=False,created=None):
    if not p.exists(): p.mkdir(); changed.append(str(p))
  return {"paths":[{"path":str(p),"exists":p.is_dir() and not p.is_symlink()} for p in ps],"changed":changed}
 
-def reject_symlinks(base,candidate):
- cur=base
- if base.is_symlink(): raise Fault("SYMLINK_REJECTED","base path may not be a symlink")
- for part in candidate.relative_to(base).parts:
-  cur=cur/part
-  if cur.is_symlink(): raise Fault("SYMLINK_REJECTED","symlink path components are not allowed")
-
-def safe_under(base,value,must_exist=False):
- base_abs=base.absolute(); candidate=base_abs/relpath(value)
- reject_symlinks(base_abs,candidate)
- if must_exist and not candidate.exists(): raise Fault("NOT_FOUND","path not found")
- resolved=candidate.resolve(strict=must_exist); root=base_abs.resolve(strict=base_abs.exists())
- if resolved!=root and root not in resolved.parents: raise Fault("PATH_TRAVERSAL","path escapes allowed root")
- return candidate
-
-def fileop(a,op):
- if not mounted(): raise Fault("NOT_MOUNTED","shared storage is not mounted")
- target=safe_under(ROOT,a.path,must_exist=op in ("list","get")); limit=max_bytes(getattr(a,"max_bytes",None))
- if op=="list":
-  if not target.is_dir() or target.is_symlink(): raise Fault("NOT_FOUND","directory not found")
-  entries=[]
-  for x in sorted(target.iterdir()):
-   if x.is_symlink(): typ,size="symlink",None
-   elif x.is_dir(): typ,size="directory",None
-   else: typ,size="file",x.stat().st_size
-   entries.append({"name":x.name,"type":typ,"size":size})
-  return {"path":a.path,"entries":entries}
- if op=="get":
-  if not target.is_file() or target.is_symlink(): raise Fault("NOT_FOUND","file not found")
-  size=target.stat().st_size
-  if size>limit: raise Fault("SIZE_LIMIT","file exceeds max-bytes",{"size":size,"maxBytes":limit})
-  raw=target.read_bytes()
-  if len(raw)>limit: raise Fault("SIZE_LIMIT","file grew beyond max-bytes",{"maxBytes":limit})
-  return {"path":a.path,"bytes":len(raw),"maxBytes":limit,"contentBase64":base64.b64encode(raw).decode("ascii")}
- transfer=Path(a.transfer_root)
- if not transfer.is_absolute() or ".." in transfer.parts: raise Fault("INVALID_INPUT","transfer-root must be an absolute non-symlink directory")
- cur=Path(transfer.anchor)
- for part in transfer.parts[1:]:
-  cur=cur/part
-  if cur.is_symlink(): raise Fault("SYMLINK_REJECTED","transfer-root components may not be symlinks")
- transfer=transfer.resolve(strict=True)
- if not transfer.is_dir(): raise Fault("INVALID_INPUT","transfer-root must be a directory")
- src=safe_under(transfer,a.source,must_exist=True)
- if not src.is_file() or src.is_symlink(): raise Fault("NOT_FOUND","source must be a regular non-symlink file")
- size=src.stat().st_size
- if size>limit: raise Fault("SIZE_LIMIT","source exceeds max-bytes",{"size":size,"maxBytes":limit})
- target.parent.mkdir(parents=True,exist_ok=True)
- reject_symlinks(ROOT.absolute(),target)
- if target.exists() and not a.overwrite: raise Fault("ALREADY_EXISTS","destination exists")
- fd,tmp=tempfile.mkstemp(dir=target.parent,prefix=".smb-put-"); os.close(fd)
- copied=0
- try:
-  with src.open("rb") as inp,open(tmp,"wb") as out:
-   while chunk:=inp.read(min(1024*1024,limit-copied+1)):
-    copied+=len(chunk)
-    if copied>limit: raise Fault("SIZE_LIMIT","source grew beyond max-bytes",{"maxBytes":limit})
-    out.write(chunk)
-  os.replace(tmp,target)
- finally:
-  if os.path.exists(tmp): os.unlink(tmp)
- return {"path":a.path,"bytes":copied,"maxBytes":limit}
-
 def policy_validate(text):
  begins=[m.start() for m in re.finditer(re.escape("<!-- BEGIN SYNOLOGY SMB STORAGE POLICY"),text)]
  ends=[m.start() for m in re.finditer(re.escape("<!-- END SYNOLOGY SMB STORAGE POLICY"),text)]
@@ -311,9 +237,6 @@ def parser():
  sp.add_parser("mount.status"); sp.add_parser("mount.unmount")
  for c in ("layout.inspect","layout.ensure"):
   q=sp.add_parser(c); q.add_argument("--org-id",required=True); q.add_argument("--agent-id",required=True)
- q=sp.add_parser("file.list"); q.add_argument("--path",default=".")
- q=sp.add_parser("file.get"); q.add_argument("--path",required=True); q.add_argument("--max-bytes",type=int)
- q=sp.add_parser("file.put"); q.add_argument("--path",required=True); q.add_argument("--transfer-root",required=True); q.add_argument("--source",required=True); q.add_argument("--max-bytes",type=int); q.add_argument("--overwrite",action="store_true")
  for c in ("workflow.install","workflow.rollback"): q=sp.add_parser(c); q.add_argument("--workflow",required=True)
  return p
 
@@ -330,9 +253,6 @@ def main():
   elif c=="mount.unmount": d=unmount(a)
   elif c=="layout.inspect": d=layout(a)
   elif c=="layout.ensure": d=layout(a,True)
-  elif c=="file.list": d=fileop(a,"list")
-  elif c=="file.get": d=fileop(a,"get")
-  elif c=="file.put": d=fileop(a,"put")
   elif c=="workflow.install": d=workflow(a)
   elif c=="workflow.rollback": d=workflow(a,True)
   elif c=="auth.onboard": d=onboard(a)
