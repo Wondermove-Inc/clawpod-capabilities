@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "resend-email",
   "title": "Resend Email",
-  "description": "Guarded Resend HTTPS transactional email with protected onboarding, standing authorization policy, previews, readiness, and retry-safe per-recipient bulk delivery.",
-  "version": "0.1.0",
+  "description": "Guarded Resend HTTPS transactional email with protected onboarding, verified-sender enforcement, previews, and retry-safe per-recipient bulk delivery.",
+  "version": "0.1.1",
   "entrypoint": "./resend_email.py",
   "packageRoot": ".",
   "execution": {
@@ -18,7 +18,7 @@
   "capabilities": [
     "resend-https-api",
     "protected-secret-handoff",
-    "standing-send-policy",
+    "verified-sender-domain",
     "per-recipient-bulk",
     "stable-json-redaction"
   ],
@@ -39,7 +39,11 @@
       "inputSchema": {
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+          "state": {
+            "type": "string"
+          }
+        },
         "additionalProperties": false
       },
       "outputSchema": {
@@ -82,7 +86,16 @@
         },
         "additionalProperties": false
       },
-      "argMap": []
+      "argMap": [
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
     },
     "status": {
       "description": "status via guarded Resend HTTPS API.",
@@ -96,7 +109,7 @@
         "type": "object",
         "required": [],
         "properties": {
-          "policy": {
+          "state": {
             "type": "string"
           }
         },
@@ -144,159 +157,12 @@
       },
       "argMap": [
         {
-          "arg": "policy",
+          "arg": "state",
           "type": "option",
-          "flag": "--policy",
+          "flag": "--state",
           "valueType": "path",
           "optional": true,
           "pathRole": "input"
-        }
-      ]
-    },
-    "onboarding.configure": {
-      "description": "onboarding configure via guarded Resend HTTPS API.",
-      "baseArgv": [
-        "onboarding.configure"
-      ],
-      "safetyClasses": [
-        "writeSafe",
-        "humanAccountAction"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "allowBulk",
-          "allowSingle",
-          "allowedRecipientDomains",
-          "allowedSenderDomains",
-          "maxRecipientsPerDay",
-          "policy"
-        ],
-        "properties": {
-          "policy": {
-            "type": "string"
-          },
-          "allowedRecipientDomains": {
-            "type": "string"
-          },
-          "allowedSenderDomains": {
-            "type": "string"
-          },
-          "maxRecipients": {
-            "type": "number"
-          },
-          "allowAttachments": {
-            "type": "boolean"
-          },
-          "allowSingle": {
-            "type": "boolean"
-          },
-          "allowBulk": {
-            "type": "boolean"
-          },
-          "maxRecipientsPerDay": {
-            "type": "number"
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "schema_version",
-          "ok",
-          "command",
-          "request_id",
-          "effects",
-          "retry",
-          "warnings"
-        ],
-        "properties": {
-          "schema_version": {
-            "type": "string"
-          },
-          "ok": {
-            "type": "boolean"
-          },
-          "command": {
-            "type": "string"
-          },
-          "request_id": {
-            "type": "string"
-          },
-          "effects": {
-            "type": "object"
-          },
-          "retry": {
-            "type": "object"
-          },
-          "warnings": {
-            "type": "array"
-          },
-          "data": {},
-          "error": {
-            "type": "object"
-          }
-        },
-        "additionalProperties": false
-      },
-      "argMap": [
-        {
-          "arg": "policy",
-          "type": "option",
-          "flag": "--policy",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "output"
-        },
-        {
-          "arg": "allowedRecipientDomains",
-          "type": "option",
-          "flag": "--allowed-recipient-domains",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "allowedSenderDomains",
-          "type": "option",
-          "flag": "--allowed-sender-domains",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "maxRecipients",
-          "type": "option",
-          "flag": "--max-recipients",
-          "valueType": "number",
-          "optional": true
-        },
-        {
-          "arg": "allowAttachments",
-          "type": "booleanFlag",
-          "flag": "--allow-attachments",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "allowSingle",
-          "type": "booleanFlag",
-          "flag": "--allow-single",
-          "valueType": "boolean",
-          "optional": false
-        },
-        {
-          "arg": "allowBulk",
-          "type": "booleanFlag",
-          "flag": "--allow-bulk",
-          "valueType": "boolean",
-          "optional": false
-        },
-        {
-          "arg": "maxRecipientsPerDay",
-          "type": "option",
-          "flag": "--max-recipients-per-day",
-          "valueType": "number",
-          "optional": false
         }
       ]
     },
@@ -672,6 +538,132 @@
         }
       ]
     },
+    "onboarding.test": {
+      "description": "onboarding test via guarded Resend HTTPS API.",
+      "baseArgv": [
+        "onboarding.test"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "from",
+          "state",
+          "to"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "ok",
+          "command",
+          "request_id",
+          "effects",
+          "retry",
+          "warnings"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "retry": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeout",
+          "type": "option",
+          "flag": "--timeout",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "number",
+          "optional": true
+        },
+        {
+          "arg": "from",
+          "type": "option",
+          "flag": "--from",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "to",
+          "type": "option",
+          "flag": "--to",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        }
+      ]
+    },
     "preview": {
       "description": "preview via guarded Resend HTTPS API.",
       "baseArgv": [
@@ -684,14 +676,10 @@
         "type": "object",
         "required": [
           "from",
-          "policy",
           "subject",
           "to"
         ],
         "properties": {
-          "policy": {
-            "type": "string"
-          },
           "from": {
             "type": "string"
           },
@@ -763,14 +751,6 @@
         "additionalProperties": false
       },
       "argMap": [
-        {
-          "arg": "policy",
-          "type": "option",
-          "flag": "--policy",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
-        },
         {
           "arg": "from",
           "type": "option",
@@ -852,14 +832,10 @@
         "type": "object",
         "required": [
           "from",
-          "policy",
           "subject",
           "to"
         ],
         "properties": {
-          "policy": {
-            "type": "string"
-          },
           "baseUrl": {
             "type": "string"
           },
@@ -946,14 +922,6 @@
         "additionalProperties": false
       },
       "argMap": [
-        {
-          "arg": "policy",
-          "type": "option",
-          "flag": "--policy",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
-        },
         {
           "arg": "baseUrl",
           "type": "option",
@@ -1070,14 +1038,10 @@
         "type": "object",
         "required": [
           "from",
-          "policy",
           "subject",
           "to"
         ],
         "properties": {
-          "policy": {
-            "type": "string"
-          },
           "baseUrl": {
             "type": "string"
           },
@@ -1167,14 +1131,6 @@
         "additionalProperties": false
       },
       "argMap": [
-        {
-          "arg": "policy",
-          "type": "option",
-          "flag": "--policy",
-          "valueType": "path",
-          "optional": false,
-          "pathRole": "input"
-        },
         {
           "arg": "baseUrl",
           "type": "option",
