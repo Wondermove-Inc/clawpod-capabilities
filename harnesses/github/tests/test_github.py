@@ -23,10 +23,13 @@ if args[:2]==["repo","view"] and "--json" in args:
  if mode=="repo-target-mismatch":target="other/repo"
  if mode=="repo-branch-mismatch":branch="other"
  print(json.dumps({"nameWithOwner":target,"visibility":visibility,"defaultBranchRef":{"name":branch},"url":"https://github.com/"+target}));sys.exit(0)
+if "/git/matching-refs/heads/" in " ".join(args):
+ sha=os.getenv("FAKE_REMOTE_BEFORE","");branch=args[-1].split("/heads/",1)[1]
+ print(json.dumps([] if not sha else [{"ref":"refs/heads/"+branch,"object":{"sha":sha}}]));sys.exit(0)
 if "/git/ref/heads/" in " ".join(args):
  sha=os.getenv("FAKE_SOURCE_HEAD","")
- if mode=="repo-sha-mismatch":sha="0"*40
- print(json.dumps({"sha":sha}));sys.exit(0)
+ if mode in {"repo-sha-mismatch","push-sha-mismatch"}:sha="0"*40
+ print(json.dumps({"sha":sha,"object":{"sha":sha}}));sys.exit(0)
 endpoint=next((x for x in args if x.startswith("repos/") and "/releases/" in x),"")
 method=args[args.index("--method")+1] if "--method" in args else ""
 state_path=os.getenv("FAKE_RELEASE_STATE")
@@ -46,14 +49,26 @@ if state_path and endpoint and method=="PATCH":
  open(state_path,"w").write(json.dumps(stored));print(json.dumps(response));sys.exit(0)
 print(json.dumps({"argv":args}))
 '''
+FAKE_GIT='''#!/usr/bin/env python3
+import json,os,subprocess,sys
+args=sys.argv[1:]
+if "push" in args:
+ open(os.environ["GIT_ARGV_LOG"],"a").write(json.dumps(args)+"\\n")
+ if os.getenv("FAKE_GIT_PUSH_FAIL"):
+  print("push rejected",file=sys.stderr);sys.exit(1)
+ sys.exit(0)
+os.execv("/usr/bin/git",["git"]+args)
+'''
 @pytest.fixture
 def env(tmp_path):
  gh=tmp_path/'gh';gh.write_text(FAKE);gh.chmod(0o755)
+ git=tmp_path/'git';git.write_text(FAKE_GIT);git.chmod(0o755)
  state=tmp_path/'release.json';shutil.copyfile(ROOT/'tests/fixtures/release.json',state)
- return {**os.environ,'PATH':str(tmp_path)+os.pathsep+os.environ.get('PATH',''),'ARGV_LOG':str(tmp_path/'argv'),'STDIN_LOG':str(tmp_path/'stdin'),'FAKE_RELEASE_STATE':str(state),'FAKE_PATCH_COUNT':str(tmp_path/'patch-count')}
+ return {**os.environ,'PATH':str(tmp_path)+os.pathsep+os.environ.get('PATH',''),'ARGV_LOG':str(tmp_path/'argv'),'GIT_ARGV_LOG':str(tmp_path/'git-argv'),'STDIN_LOG':str(tmp_path/'stdin'),'FAKE_RELEASE_STATE':str(state),'FAKE_PATCH_COUNT':str(tmp_path/'patch-count')}
 def run(args,env):return subprocess.run([sys.executable,str(CLI)]+args,text=True,capture_output=True,env=env,cwd='/tmp')
 def data(r):return json.loads(r.stdout)
 def argv_log(env):return [json.loads(x) for x in Path(env['ARGV_LOG']).read_text().splitlines()]
+def git_argv_log(env):return [json.loads(x) for x in Path(env['GIT_ARGV_LOG']).read_text().splitlines()]
 def make_repo(tmp_path,branch='main'):
  source=tmp_path/'source';source.mkdir()
  subprocess.run(['git','init','-b',branch,str(source)],check=True,capture_output=True)
@@ -87,6 +102,44 @@ def test_mutation_preview_confirmation_and_ambiguity(env):
  base=['issue.create','--repo','o/r','--title','x'];pre=data(run(base,env));assert pre['error']['ambiguousCommit'] is False
  p=data(run(base+['--dry-run'],env));assert p['data']['preview']['idempotency'].startswith('best-effort')
  bad=data(run(base+['--confirm','issue.create'],{**env,'FAKE_GH_MODE':'fail'}));assert bad['error']['retryable'] is False and bad['error']['ambiguousCommit'] is True
+def test_repo_push_preview_new_branch_is_exact_and_has_no_push(env,tmp_path):
+ source,branch,head=make_repo(tmp_path)
+ args=['repo.push','--host','github.com','--expected-account','octocat','--repo','o/r','--source',str(source),'--source-branch',branch,'--remote-branch','feature/x','--dry-run']
+ r=run(args,env);p=data(r)['data']['preview']
+ assert r.returncode==0 and p['target']=={'host':'github.com','repo':'o/r','expectedAccount':'octocat'}
+ assert p['source']=={'branch':branch,'head':head,'clean':True}
+ assert p['remote']=={'branch':'feature/x','currentSha':None,'expectedRemoteSha':None}
+ assert p['refspec']=='HEAD:refs/heads/feature/x' and p['force'] is False and str(source) not in r.stdout
+ assert not Path(env['GIT_ARGV_LOG']).exists()
+
+def test_repo_push_existing_branch_requires_matching_expected_sha(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);base=['repo.push','--host','github.com','--expected-account','octocat','--repo','o/r','--source',str(source),'--source-branch',branch,'--remote-branch','main','--dry-run']
+ e={**env,'FAKE_REMOTE_BEFORE':'1'*40}
+ assert 'expected-remote-sha is required' in data(run(base,e))['error']['message']
+ assert 'does not exactly match' in data(run(base+['--expected-remote-sha','2'*40],e))['error']['message']
+ assert run(base+['--expected-remote-sha','1'*40],e).returncode==0
+
+def test_repo_push_success_uses_exact_non_force_refspec_and_readback(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);e={**env,'FAKE_SOURCE_HEAD':head}
+ args=['repo.push','--host','github.com','--expected-account','octocat','--repo','o/r','--source',str(source),'--source-branch',branch,'--remote-branch','feature/x','--confirm','repo.push']
+ r=run(args,e);d=data(r);push=git_argv_log(e)[0]
+ assert r.returncode==0 and d['data']['verified'] and d['data']['remoteCommitSha']==head
+ assert push==['-C',str(source),'push','https://x-access-token@github.com/o/r.git','HEAD:refs/heads/feature/x']
+ assert '--force' not in push and '+' not in push[-1]
+ calls=argv_log(e);assert calls[-2][-1]=='repos/o/r/git/ref/heads/feature%2Fx' and calls[-1][:3]==['repo','view','o/r']
+ assert d['effects']==[{'type':'externalSideEffect','operation':'repo.push','target':'o/r'}]
+
+def test_repo_push_validation_failure_and_no_retry_after_start(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);base=['repo.push','--host','github.com','--expected-account','octocat','--repo','o/r','--source',str(source),'--source-branch',branch,'--remote-branch','feature/x']
+ assert run(base+['--source-branch','other','--dry-run'],env).returncode==2
+ r=run(base+['--confirm','repo.push','--retries','3'],{**env,'FAKE_GIT_PUSH_FAIL':'1'});d=data(r)
+ assert r.returncode==2 and d['error']['ambiguousCommit'] is True and d['error']['retryable'] is False and len(git_argv_log(env))==1
+
+def test_repo_push_readback_mismatch_is_ambiguous(env,tmp_path):
+ source,branch,head=make_repo(tmp_path);e={**env,'FAKE_SOURCE_HEAD':head,'FAKE_GH_MODE':'push-sha-mismatch'}
+ r=run(['repo.push','--host','github.com','--expected-account','octocat','--repo','o/r','--source',str(source),'--source-branch',branch,'--remote-branch','x','--confirm','repo.push'],e)
+ assert r.returncode==2 and 'remote commit mismatch' in data(r)['error']['message'] and data(r)['error']['ambiguousCommit'] is True
+
 def test_repo_create_preview_is_bounded_and_omits_source_path(env,tmp_path):
  source,branch,head=make_repo(tmp_path)
  r=run(['repo.create','--repo','Wondermove-Inc/clawpod-tech-blog','--source',str(source),'--visibility','private','--description','Tech blog','--homepage','https://example.com/blog','--dry-run'],env);d=data(r);p=d['data']['preview']
