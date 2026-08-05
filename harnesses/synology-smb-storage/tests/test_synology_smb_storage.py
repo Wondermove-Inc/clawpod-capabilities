@@ -182,6 +182,18 @@ def test_file_bounds_transfer_root_symlink_and_list(monkeypatch,tmp_path):
  listing=smb.fileop(args(path='.',max_bytes=None),'list'); assert {'name':'escape','type':'symlink','size':None} in listing['entries']
  with pytest.raises(smb.Fault): smb.fileop(args(path='escape',max_bytes=10),'get')
 
+@pytest.mark.parametrize('operation,limit',[
+ ('get',0),('get',smb.HARD_MAX_BYTES+1),('put',0),('put',smb.HARD_MAX_BYTES+1),
+])
+def test_file_runtime_rejects_out_of_range_max_bytes(monkeypatch,tmp_path,operation,limit):
+ root=tmp_path/'shared'; root.mkdir(); (root/'stored').write_bytes(b'x')
+ transfer=tmp_path/'transfer'; transfer.mkdir(); (transfer/'source').write_bytes(b'x')
+ monkeypatch.setattr(smb,'ROOT',root); monkeypatch.setattr(smb,'mounted',lambda:'mount')
+ values={'path':'stored','max_bytes':limit}
+ if operation=='put': values.update(path='new',transfer_root=str(transfer),source='source',overwrite=False)
+ with pytest.raises(smb.Fault) as raised: smb.fileop(args(**values),operation)
+ assert raised.value.code=='INVALID_INPUT'
+
 def test_preflight_contract(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); d=smb.preflight()
  assert d['protocol']['dialect']=='SMB3.1.1'; assert 'capSysAdmin' in d['privilege']; assert 'conflict' in d['mountRoot']
@@ -190,7 +202,17 @@ def test_manifest_safety_and_transfer_contracts():
  h=json.loads((HERE/'harness.json').read_text())['commands']; cc=json.loads((HERE/'command_contracts.json').read_text())
  expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'mount.restore':['secretUse','externalSideEffect'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'file.put':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
  for name,classes in expected.items(): assert h[name]['safetyClasses']==classes and cc[name]['safetyClasses']==classes
- assert 'transferRoot' in h['file.put']['inputSchema']['required']; assert h['file.get']['inputSchema']['properties']['maxBytes']['maximum']==smb.HARD_MAX_BYTES
+ assert 'transferRoot' in h['file.put']['inputSchema']['required']
+ assert h['file.get']['inputSchema']['properties']['maxBytes']=={'type':'integer'}
+ assert h['file.put']['inputSchema']['properties']['maxBytes']=={'type':'integer'}
+
+def test_manifest_input_schemas_use_gateway_supported_keywords():
+ supported={'type'}
+ for filename in ('harness.json','command_contracts.json'):
+  document=json.loads((HERE/filename).read_text()); commands=document.get('commands',document)
+  for command_name,command in commands.items():
+   for argument_name,schema in command['inputSchema'].get('properties',{}).items():
+    assert set(schema)<=supported,f'{filename}: {command_name}.{argument_name}'
 
 def test_installed_cli_subprocess_json():
  cp=subprocess.run([sys.executable,str(SCRIPT),'auth.contract'],text=True,capture_output=True,check=True); d=json.loads(cp.stdout)

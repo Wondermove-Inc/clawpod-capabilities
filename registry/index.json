@@ -458,7 +458,7 @@
     {
       "id": "synology-smb-storage",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Connect and manually restore Synology SMB 3.1.1 storage with bounded, idempotent recovery and shared-storage-first policy guidance.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
@@ -483,7 +483,7 @@
       ],
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -1160,7 +1160,7 @@
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Deterministic SMB 3.1.1 discovery, idempotent manual mount restoration, layout, policy, and file operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
@@ -1180,11 +1180,11 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "7a6803a6f9fda8533662e7a7df2f495654dc892a22f157a64702c29676b58666"
+          "sha256": "02843804935fef8a10c9fe746b95e6553f6d23b6e40b7f3cf885fb426be5b319"
         },
         {
           "path": "harness.json",
-          "sha256": "f5a62e5142fc420869585714d1f93e5ae13904cd19d015b7c36e84d7fcce847e"
+          "sha256": "d17110e2bc27072815d6199ed4ba436e0ab3ae8f2b80301abf1a10ce9fa5f2d5"
         },
         {
           "path": "synology_smb_storage.py",
