@@ -1,1 +1,17 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.0","description":"Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"write-safe","approvalRequired":false}}
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.1",
+  "description": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  }
+}
