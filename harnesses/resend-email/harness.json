@@ -4,7 +4,7 @@
   "name": "resend-email",
   "title": "Resend Email",
   "description": "Guarded Resend HTTPS transactional email with protected onboarding, verified-sender enforcement, previews, and retry-safe per-recipient bulk delivery.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./resend_email.py",
   "packageRoot": ".",
   "execution": {

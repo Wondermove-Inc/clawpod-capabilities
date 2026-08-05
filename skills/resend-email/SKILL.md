@@ -5,11 +5,13 @@ description: Send transactional email through the paired guarded Resend HTTPS AP
 
 # Resend Email
 
-Use only the paired `resend-email` Harness. Never construct curl requests or accept an API key in chat, prompts, ordinary files, arguments, logs, or output.
+Use only the paired `resend-email` Harness (version 0.1.2). Never construct curl requests. The Harness accepts the key only through protected `RESEND_API_KEY` environment injection, never as an argument.
 
 ## First use and onboarding
 
-Immediately after installation report **installed but not connected** and run `onboarding`. A fresh owner agent must perform the secret-capture handoff: ask the user to provide the Resend API key through the runtime's protected secret-entry surface, store it only in protected secret storage, and inject it as `RESEND_API_KEY`. Never see, repeat, persist, validate, or delegate plaintext credential handling. If a key appears in an ordinary channel, treat it as exposed and require revocation and replacement.
+Immediately after installation report **installed but not connected** and run `onboarding`. There is no user-facing protected Secret UI. A user may supply a Resend key in the Room or a message. When that happens, the owner agent must immediately route the value to agent-side `memory_secret` storage without echoing, quoting, repeating, logging, or otherwise outputting it. Never write it to ordinary files, normal memory, reports, prompts, or child agents. Retain only safe pointer metadata (for example, that the Resend credential is available and its protected reference); never retain the plaintext value or include a secret-store location in a report. Use protected runtime injection to expose that stored secret as `RESEND_API_KEY` only for a separately approved `verify`, `sender.readiness`, `onboarding.test`, `send`, or `bulk.send` operation. Never pass it as an argument.
+
+After secret capture, treat the original message as sensitive: do not quote or forward it. Room delivery alone does not mean the key is compromised and does not require revocation. If provider revocation or another independent compromise signal is indicated, rotate the key.
 
 Run `verify`, then run `sender.readiness` with the intended sender address. Do not call the account ready until the credential verifies and the intended sender domain reports `verified`. Only after both checks succeed, ask for exactly one onboarding test-recipient email address and run `onboarding.test` with the intended sender and a private state path. Never ask for domains, limits, permission toggles, or message content during onboarding. A domain may require DNS work in Resend; this Harness reports readiness but does not alter DNS. There is no private standing-policy file to configure.
 
