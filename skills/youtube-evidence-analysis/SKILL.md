@@ -5,7 +5,7 @@ description: "Analyze YouTube videos as evidence with explicit transcript proven
 
 # YouTube Evidence Analysis
 
-Use this Skill when a user asks to analyze, fact-check, summarize as evidence, or verify claims from a YouTube video. The linked `youtube-evidence-analysis` Harness (version 0.1.0) performs deterministic normalization and validation; it does not watch a video, acquire captions, judge truth, or replace research.
+Use this Skill when a user asks to analyze, fact-check, summarize as evidence, or verify claims from a YouTube video. The linked `youtube-evidence-analysis` Harness (version 0.1.1) performs deterministic normalization and validation; it does not watch a video, acquire captions, judge truth, or replace research.
 
 ## Required workflow
 

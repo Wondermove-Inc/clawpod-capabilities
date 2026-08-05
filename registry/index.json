@@ -478,7 +478,7 @@
     {
       "id": "youtube-evidence-analysis",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
       "path": "skills/youtube-evidence-analysis",
       "compatibility": {
@@ -496,7 +496,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b95ad5e89da958ee25f549bf87f8d3d1df511a7f7388ce57ea83147801226b62"
+          "sha256": "708dba9bd16e567b48ed72237d28bd7998baa833eacac9f7b0b6daa593613ab0"
         },
         {
           "path": "references/operations.md",
@@ -505,7 +505,7 @@
       ],
       "linkedHarness": {
         "id": "youtube-evidence-analysis",
-        "version": "0.1.0"
+        "version": "0.1.1"
       }
     },
     {
@@ -1128,7 +1128,7 @@
     {
       "id": "youtube-evidence-analysis",
       "type": "harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
       "path": "harnesses/youtube-evidence-analysis",
       "compatibility": {
@@ -1154,19 +1154,19 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "e84dca5d438e425c9dad48e52230c954a9283882e1bd7f344bbcd7073eeff6d2"
+          "sha256": "26b3039073469318b3c62dd213970e9012c76a2f5f1f4a48d192cb5947b6ae93"
         },
         {
           "path": "harness.json",
-          "sha256": "a435762fdfe4f05d1749a7b2e934a9680a9a1f9866c8c775001bfdb008500eae"
+          "sha256": "c13a8a3659f678cf749f7714979bf85565ee50768cf677ea1092d8b6cc691c8d"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "b34c58744927fcd0d96732ccc00b4e6f7971ae206ea268d3d5dcaeff47748596"
+          "sha256": "dc931840c9886bc0d83fbbc18ad17984755368d1c5afc900e06a9aabf770e220"
         },
         {
           "path": "youtube_evidence_analysis.py",
-          "sha256": "6bc7c07fd2b7bbdd5f2b99cbf0cccc979c8da4fd456f22b3cc01dd22adea1085"
+          "sha256": "ca075f7c5302e699041c79a934e101a7afa04f64318896dba223bc667112338e"
         }
       ]
     }
