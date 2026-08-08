@@ -1,23 +1,23 @@
 ---
 name: resend-email
-description: Send transactional email through the paired guarded Resend HTTPS API Harness, including Gateway SecretRef credential binding, protected onboarding, sender readiness, previews, attachments, and retry-safe delivery.
+description: Send transactional email through the paired guarded Resend HTTPS API Harness, including per-run Gateway memory-secret binding, onboarding, sender readiness, previews, attachments, and retry-safe delivery.
 ---
 
 # Resend Email
 
-Use only the paired `resend-email` Harness (version 0.1.3). Never construct curl requests. The Harness accepts the key only through protected `RESEND_API_KEY` environment injection, never as an argument.
+Use only the paired `resend-email` Harness (version 0.1.4). Never construct curl requests. The Harness accepts the key only through protected `RESEND_API_KEY` environment injection, never as an argument.
 
 ## First use and onboarding
 
-Immediately after installation report **installed but not connected** and inspect the `onboarding` command contract. The Harness declares this Gateway binding:
+Immediately after installation report **installed but not connected** and run the secret-free `onboarding` command. A user may supply a Resend key in the Room or a message. Route it immediately to owner-only `memory_secret` storage without echoing, quoting, repeating, or logging it, and retain only safe pointer metadata.
+
+For every credentialed command, select an owner-authorized memory-secret pointer from the injected safe secret catalog. Pass the identical mapping to both Gateway calls:
 
 ```json
-{"name":"RESEND_API_KEY","ref":{"source":"env","provider":"default","id":"RESEND_API_KEY"}}
+{"secretRefs":{"RESEND_API_KEY":"msp_..."}}
 ```
 
-This is a reference contract, not a credential. It is manifest-wide, so Gateway resolves it before every command, including `onboarding` and `preview`; do not attempt those runs while disconnected. Each independent agent or Gateway must connect a Resend key it owns or is authorized to use. Never copy another agent's secret pointer or credential. Confirm that `secrets.providers.default` is an `env` provider and that the Gateway service receives `RESEND_API_KEY` through its approved secret-management path. Do not put the key in the Harness manifest, config JSON, arguments, ordinary files, normal memory, reports, prompts, or logs.
-
-A user may supply a Resend key in the Room or a message. Route it immediately to owner-only `memory_secret` storage without echoing, quoting, repeating, or logging it, and retain only safe pointer metadata. A memory-secret pointer is not currently an OpenClaw SecretRef provider and cannot satisfy the manifest binding by itself. Do not claim Gateway connectivity until a Gateway `prepare → run` verification succeeds. When a credential exists only in `memory_secret`, either use an already approved protected runtime-injection lane for the immediate operation or report the Gateway binding blocker. Never materialize it into an ordinary file to bridge the two systems.
+Run `harness.run.prepare` first, then `harness.run` with the matching intent hash and the same `secretRefs` map. Gateway resolves the pointer in the calling agent's owner scope and injects the value only for that run. Never copy another independent agent's pointer, put a pointer in the shared Harness manifest, or put the plaintext key in config JSON, arguments, ordinary files, normal memory, reports, prompts, or logs. Do not claim connectivity until this exact Gateway `prepare → run` verification succeeds.
 
 After secret capture, treat the original message as sensitive: do not quote or forward it. Room delivery alone does not mean the key is compromised and does not require revocation. If provider revocation or another independent compromise signal is indicated, rotate the key.
 
