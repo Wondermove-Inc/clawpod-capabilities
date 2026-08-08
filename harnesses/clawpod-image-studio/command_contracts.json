@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "providers": {
+    "openai": {"secretEnvironment": "OPENAI_API_KEY", "auth": "owner-scoped protected secret"},
+    "vertex": {"secretEnvironment": null, "auth": "ADC/OAuth/service-account lifecycle", "requires": ["project", "location", "iam"]},
+    "bfl": {"secretEnvironment": "BFL_API_KEY", "auth": "owner-scoped protected secret"},
+    "recraft": {"secretEnvironment": "RECRAFT_API_KEY", "auth": "owner-scoped protected secret"}
+  },
+  "secretBinding": {"kind": "gateway-memory-secret-per-run", "parameter": "secretRefs", "prepareRunMustMatch": true, "manifestStoresPointer": false, "pointerIdsInSharedPackage": false},
+  "paidIntent": {"required": ["provider", "model", "options", "count", "output", "maxUsd", "expiresAt", "bindingDigest", "preparedDigest"], "automaticRetryOnAmbiguousBilling": false},
+  "network": {"default": "disabled", "transport": "injectable", "liveReadinessRequiresOnboarding": true},
+  "compare": {"minLegs": 2, "maxLegs": 4, "aggregateAndPerLegDigests": true},
+  "onboarding": {"interview": ["intendedUse", "providers/models", "budget", "dataConstraints", "project/location/IAM", "safetyPolicy", "rightsPolicy", "publicationPolicy"], "states": ["connected", "configured_unverified", "deferred", "revoked"]}
+}
