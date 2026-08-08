@@ -4,7 +4,7 @@
   "name": "github",
   "title": "GitHub",
   "description": "Guarded typed GitHub operations through the real gh CLI with stable JSON and bounded execution.",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "entrypoint": "./github.py",
   "packageRoot": ".",
   "execution": {
@@ -13,12 +13,14 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Operate GitHub repositories, issues, pull requests, workflow runs, releases, or bounded API reads"
+    "Operate GitHub repositories, issues, pull requests, workflow runs, releases, local repository bootstrap and guarded branch push, or bounded API reads"
   ],
   "capabilities": [
     "gh-cli",
     "guarded-mutations",
     "verified-release-body-update",
+    "verified-repository-bootstrap",
+    "verified-branch-push",
     "stable-json"
   ],
   "authModel": {
@@ -47,6 +49,27 @@
             "type": "string"
           },
           "repo": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
             "type": "string"
           },
           "state": {
@@ -158,6 +181,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -306,6 +379,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -415,6 +509,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -563,6 +707,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -672,6 +837,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -821,6 +1036,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -930,6 +1166,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -1078,6 +1364,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -1187,6 +1494,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -1336,6 +1693,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -1445,6 +1823,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -1594,6 +2022,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -1703,6 +2152,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -1851,6 +2350,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -1960,6 +2480,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -2109,6 +2679,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -2218,6 +2809,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -2367,6 +3008,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -2476,6 +3138,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -2624,6 +3336,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -2733,6 +3466,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -2882,6 +3665,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -2991,6 +3795,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -3139,6 +3993,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -3248,6 +4123,722 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "repo.create": {
+      "description": "repo create through GitHub CLI.",
+      "baseArgv": [
+        "repo.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "repo",
+          "source",
+          "visibility",
+          "description"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "state",
+          "type": "option",
+          "flag": "--state",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "number",
+          "type": "option",
+          "flag": "--number",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "runId",
+          "type": "option",
+          "flag": "--run-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "title",
+          "type": "option",
+          "flag": "--title",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "head",
+          "type": "option",
+          "flag": "--head",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "base",
+          "type": "option",
+          "flag": "--base",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "review",
+          "type": "option",
+          "flag": "--review",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mergeMethod",
+          "type": "option",
+          "flag": "--merge-method",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tag",
+          "type": "option",
+          "flag": "--tag",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "endpoint",
+          "type": "option",
+          "flag": "--endpoint",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "limit",
+          "type": "option",
+          "flag": "--limit",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "retries",
+          "type": "option",
+          "flag": "--retries",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "repo.push": {
+      "description": "repo push through GitHub CLI.",
+      "baseArgv": [
+        "repo.push"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "host",
+          "expectedAccount",
+          "repo",
+          "source",
+          "sourceBranch",
+          "remoteBranch"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "expectedAccount": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "base": {
+            "type": "string"
+          },
+          "review": {
+            "type": "string"
+          },
+          "mergeMethod": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "retries": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedAccount",
+          "type": "option",
+          "flag": "--expected-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repo",
+          "type": "option",
+          "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -3398,6 +4989,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -3507,6 +5119,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -3658,6 +5320,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -3767,6 +5450,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -3918,6 +5651,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -4027,6 +5781,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -4177,6 +5981,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -4286,6 +6111,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -4438,6 +6313,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -4547,6 +6443,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -4698,6 +6644,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -4807,6 +6774,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -4958,6 +6975,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -5067,6 +7105,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -5218,6 +7306,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -5327,6 +7436,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -5477,6 +7636,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -5586,6 +7766,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -5737,6 +7967,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -5846,6 +8097,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -5997,6 +8298,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -6106,6 +8428,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -6258,6 +8630,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -6367,6 +8760,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },
@@ -6518,6 +8961,27 @@
           "repo": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "sourceBranch": {
+            "type": "string"
+          },
+          "remoteBranch": {
+            "type": "string"
+          },
+          "expectedRemoteSha": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
           "state": {
             "type": "string"
           },
@@ -6627,6 +9091,56 @@
           "arg": "repo",
           "type": "option",
           "flag": "--repo",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "source",
+          "type": "option",
+          "flag": "--source",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sourceBranch",
+          "type": "option",
+          "flag": "--source-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "remoteBranch",
+          "type": "option",
+          "flag": "--remote-branch",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedRemoteSha",
+          "type": "option",
+          "flag": "--expected-remote-sha",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "visibility",
+          "type": "option",
+          "flag": "--visibility",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "description",
+          "type": "option",
+          "flag": "--description",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "homepage",
+          "type": "option",
+          "flag": "--homepage",
           "valueType": "string",
           "optional": true
         },

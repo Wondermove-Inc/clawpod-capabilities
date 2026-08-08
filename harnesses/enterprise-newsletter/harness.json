@@ -1,0 +1,638 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "enterprise-newsletter",
+  "title": "Enterprise Newsletter",
+  "description": "Credential-free complete-schema validation, bounded brand-token rendering, computed HTML/text parity, inspection, and digest-bound release verification.",
+  "version": "0.1.2",
+  "entrypoint": "./enterprise_newsletter.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 30000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Validate, render, inspect, or release-bind an enterprise newsletter without sending it"
+  ],
+  "capabilities": [
+    "complete-newsletter-json-schema",
+    "bounded-brand-token-rendering",
+    "computed-html-text-parity",
+    "approval-digest-binding",
+    "recipient-set-privacy"
+  ],
+  "authModel": {
+    "type": "none",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "status": {
+      "description": "Report local renderer readiness.",
+      "baseArgv": [
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": []
+    },
+    "schema": {
+      "description": "Return or write the Newsletter JSON schema summary.",
+      "baseArgv": [
+        "schema"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "outputRoot": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "validate": {
+      "description": "Validate bounded Newsletter JSON and evidence bindings.",
+      "baseArgv": [
+        "validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "render": {
+      "description": "Render deterministic enterprise-dark-v1 HTML and plain text.",
+      "baseArgv": [
+        "render"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input",
+          "outputRoot"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        },
+        {
+          "arg": "html",
+          "type": "option",
+          "flag": "--html",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "text",
+          "type": "option",
+          "flag": "--text",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "template",
+          "type": "option",
+          "flag": "--template",
+          "valueType": "enum",
+          "optional": true
+        }
+      ]
+    },
+    "inspect": {
+      "description": "Inspect a rendered local artifact without exposing content.",
+      "baseArgv": [
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "release.prepare": {
+      "description": "Write a digest-only release manifest after exact content approval.",
+      "baseArgv": [
+        "release.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input",
+          "recipients",
+          "approvedContentDigest",
+          "outputRoot"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "recipients": {
+            "type": "string"
+          },
+          "approvedContentDigest": {
+            "type": "string"
+          },
+          "outputRoot": {
+            "type": "string"
+          },
+          "manifest": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "recipients",
+          "type": "option",
+          "flag": "--recipients",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approvedContentDigest",
+          "type": "option",
+          "flag": "--approved-content-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        },
+        {
+          "arg": "manifest",
+          "type": "option",
+          "flag": "--manifest",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "release.verify": {
+      "description": "Verify unchanged content and recipient-set bindings.",
+      "baseArgv": [
+        "release.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputRoot",
+          "input",
+          "recipients",
+          "manifestRoot"
+        ],
+        "properties": {
+          "inputRoot": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "recipients": {
+            "type": "string"
+          },
+          "manifestRoot": {
+            "type": "string"
+          },
+          "manifest": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "effects",
+          "version"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "version": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputRoot",
+          "type": "option",
+          "flag": "--input-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "recipients",
+          "type": "option",
+          "flag": "--recipients",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "manifestRoot",
+          "type": "option",
+          "flag": "--manifest-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "manifest",
+          "type": "option",
+          "flag": "--manifest",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "profile": "newsletter",
+  "brand": {"name": "Example Enterprise", "primaryColor": "#2474FF", "tagline": "Evidence for decisions"},
+  "edition": {"label": "Weekly Brief", "date": "2026-08-05"},
+  "headline": "Three signals shaping this week",
+  "preheader": "A concise, source-backed decision brief.",
+  "executiveLead": "This edition presents verified facts separately from editorial interpretation.",
+  "atAGlance": [
+    {"title": "Signal one", "summary": "A verified change merits review.", "signal": "Review"},
+    {"title": "Signal two", "summary": "A second source adds context.", "signal": "Monitor"}
+  ],
+  "keyNumbers": [
+    {"value": "1", "label": "Primary change", "sourceIds": ["source-1"]},
+    {"value": "2", "label": "Supporting observations", "sourceIds": ["source-1"]},
+    {"value": "3", "label": "Decision options", "sourceIds": ["source-1"]},
+    {"value": "4", "label": "Review checkpoints", "sourceIds": ["source-1"]}
+  ],
+  "sections": [
+    {"title": "What changed", "cards": [
+      {"title": "Verified update", "facts": [{"text": "The primary source records the update.", "evidenceRequired": true, "sourceIds": ["source-1"]}], "whyItMatters": "The update may affect near-term planning.", "cta": {"label": "Read primary source", "url": "https://example.com/source"}, "imageAlt": "Abstract diagram representing the verified update"},
+      {"title": "Decision context", "facts": [{"text": "This is clearly labeled editorial analysis.", "evidenceRequired": false, "sourceIds": []}], "whyItMatters": "Explicit labeling keeps interpretation distinct from evidence.", "cta": {"label": "Review context", "url": "https://example.com/context"}, "imageAlt": "Decision paths branching from a central signal"}
+    ]},
+    {"title": "What to do next", "cards": [
+      {"title": "Review the evidence", "facts": [{"text": "The cited source is available over HTTPS.", "evidenceRequired": true, "sourceIds": ["source-1"]}], "whyItMatters": "Review before approval preserves the evidence boundary.", "cta": {"label": "Open evidence", "url": "https://example.com/source"}, "imageAlt": "Reviewer checking a source record"}
+    ]}
+  ],
+  "synthesis": ["Treat the verified update as an input to judgment, not a substitute for it."],
+  "methodology": "This example uses one illustrative HTTPS source and is not a claim about a real organization.",
+  "footer": {"tagline": "Decisions grounded in evidence", "text": "Example Enterprise · Internal review copy", "unsubscribeUrl": "https://example.com/unsubscribe"},
+  "sources": [{"id": "source-1", "title": "Illustrative primary source", "url": "https://example.com/source", "publisher": "Example Publisher", "publishedAt": "2026-08-04"}]
+}

@@ -1,11 +1,11 @@
 ---
 name: synology-smb-storage
-description: Connect Synology SMB 3.1.1 shared storage, enforce its durable-artifact layout, and operate files through a guarded typed harness.
+description: Connect Synology SMB 3.1.1 shared storage, verify its exact mount, and enforce its durable-artifact layout and WORKFLOW policy.
 ---
 
 # Synology SMB Storage
 
-Use the linked `synology-smb-storage` Harness. Do not construct `smbclient`, `mount.cifs`, or shell commands manually.
+Use the linked `synology-smb-storage` Harness for credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy. Do not construct `smbclient` or `mount.cifs` commands manually.
 
 ## Post-install handoff
 
@@ -25,7 +25,9 @@ Explain that the password goes directly to protected secret storage, enters the 
 4. Route the password to approved protected storage. Never place it in prompts, argv, files, logs, artifacts, examples, or output.
 5. Invoke credential-bearing commands only through the approved secret-injection lane with the protected pointer injected as `SYNOLOGY_SMB_PASSWORD`; never resolve or paste plaintext into a prompt or command.
 6. Verify `mount.status`, `layout.inspect`, and the policy result. Do not report operational readiness before all succeed.
-7. Use `file.list`, bounded `file.get`, and bounded `file.put` for file operations.
+7. Before every ordinary file copy, move, read, write, or listing, verify that `/workspace/shared` is the exact expected CIFS mount: the mount target must equal `/workspace/shared`, the filesystem type must be `cifs`, and the source must equal the approved `//<server>/<share>`. Fail closed on a missing, different, or ambiguous mount.
+8. Only after that exact verification, use OS filesystem commands for ordinary file work, constrained to paths beneath `/workspace/shared`. The Harness has no file copy, move, read, write, or list commands.
+9. Obtain approval required by the active policy before mutations. Treat overwrite, replacement, move, and deletion as destructive: inspect and resolve exact source and destination paths first, preserve recoverability where practical, and ask before proceeding when scope or authorization is unclear.
 
 Do not add startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restarts, or direct live mount/unmount actions. `mount.restore` is manual and Harness-mediated.
 

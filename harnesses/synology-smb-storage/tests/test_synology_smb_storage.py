@@ -46,9 +46,8 @@ def test_backend_failure_and_reflected_secret_not_returned(monkeypatch):
  with pytest.raises(smb.Fault) as e:smb.discover(args(server='nas',account='u'))
  assert e.value.code=='BACKEND_UNAVAILABLE'
 
-def test_validation_traversal_and_mount_conflict(monkeypatch,tmp_path):
+def test_validation_and_mount_conflict(monkeypatch,tmp_path):
  with pytest.raises(smb.Fault): smb.valid_server('nas/x')
- with pytest.raises(smb.Fault): smb.relpath('../secret')
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); monkeypatch.setattr(smb,'mount_record',lambda:{'fstype':'tmpfs','source':'tmpfs'})
  with pytest.raises(smb.Fault) as e:smb.mount_apply(args(server='nas',share='x',account='u'))
  assert e.value.code=='MOUNT_CONFLICT'
@@ -169,28 +168,42 @@ def test_onboard_never_unmounts_preexisting(monkeypatch,tmp_path):
  with pytest.raises(smb.Fault): smb.onboard(args(server='nas',account='u',share=None,workflow=str(tmp_path/'w'),org_id='o',agent_id='a'))
  assert called==[]
 
-def test_file_bounds_transfer_root_symlink_and_list(monkeypatch,tmp_path):
- root=tmp_path/'shared'; root.mkdir(); transfer=tmp_path/'transfer'; transfer.mkdir(); (transfer/'src').write_bytes(b'abc')
- monkeypatch.setattr(smb,'ROOT',root); monkeypatch.setattr(smb,'mounted',lambda:'mount')
- put=args(path='org/a.txt',transfer_root=str(transfer),source='src',overwrite=False,max_bytes=3)
- assert smb.fileop(put,'put')['bytes']==3
- assert smb.fileop(args(path='org/a.txt',max_bytes=3),'get')['contentBase64']=='YWJj'
- with pytest.raises(smb.Fault): smb.fileop(args(path='org/a.txt',max_bytes=2),'get')
- outside=tmp_path/'outside'; outside.write_bytes(b'x'); (transfer/'link').symlink_to(outside)
- with pytest.raises(smb.Fault): smb.fileop(args(path='x',transfer_root=str(transfer),source='link',overwrite=False,max_bytes=10),'put')
- (root/'escape').symlink_to(outside)
- listing=smb.fileop(args(path='.',max_bytes=None),'list'); assert {'name':'escape','type':'symlink','size':None} in listing['entries']
- with pytest.raises(smb.Fault): smb.fileop(args(path='escape',max_bytes=10),'get')
-
 def test_preflight_contract(monkeypatch,tmp_path):
  monkeypatch.setattr(smb,'ROOT',tmp_path/'shared'); d=smb.preflight()
  assert d['protocol']['dialect']=='SMB3.1.1'; assert 'capSysAdmin' in d['privilege']; assert 'conflict' in d['mountRoot']
 
-def test_manifest_safety_and_transfer_contracts():
+def test_manifest_safety_and_control_plane_contracts():
  h=json.loads((HERE/'harness.json').read_text())['commands']; cc=json.loads((HERE/'command_contracts.json').read_text())
- expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'mount.restore':['secretUse','externalSideEffect'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'file.put':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
+ expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'mount.restore':['secretUse','externalSideEffect'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
  for name,classes in expected.items(): assert h[name]['safetyClasses']==classes and cc[name]['safetyClasses']==classes
- assert 'transferRoot' in h['file.put']['inputSchema']['required']; assert h['file.get']['inputSchema']['properties']['maxBytes']['maximum']==smb.HARD_MAX_BYTES
+ assert len(h)==len(cc)==13
+
+def test_file_commands_absent_from_manifest_contracts_parser_and_discovery():
+ removed={'file.list','file.get','file.put'}
+ manifest=json.loads((HERE/'harness.json').read_text())
+ contracts=json.loads((HERE/'command_contracts.json').read_text())
+ assert removed.isdisjoint(manifest['commands'])
+ assert removed.isdisjoint(contracts)
+ choices=smb.parser()._subparsers._group_actions[0].choices
+ assert removed.isdisjoint(choices)
+ help_result=subprocess.run([sys.executable,str(SCRIPT),'--help'],text=True,capture_output=True,check=True)
+ assert all(command not in help_result.stdout for command in removed)
+
+def test_skill_requires_exact_mount_verification_os_commands_approval_and_destructive_caution():
+ skill=(HERE.parents[1]/'skills'/'synology-smb-storage'/'SKILL.md').read_text()
+ assert '/workspace/shared' in skill and 'filesystem type must be `cifs`' in skill
+ assert 'source must equal the approved `//<server>/<share>`' in skill
+ assert 'OS filesystem commands' in skill and 'Harness has no file copy, move, read, write, or list commands' in skill
+ assert 'Obtain approval' in skill and 'destructive' in skill
+ assert all(command not in skill for command in ('file.list','file.get','file.put'))
+
+def test_manifest_input_schemas_use_gateway_supported_keywords():
+ supported={'type'}
+ for filename in ('harness.json','command_contracts.json'):
+  document=json.loads((HERE/filename).read_text()); commands=document.get('commands',document)
+  for command_name,command in commands.items():
+   for argument_name,schema in command['inputSchema'].get('properties',{}).items():
+    assert set(schema)<=supported,f'{filename}: {command_name}.{argument_name}'
 
 def test_installed_cli_subprocess_json():
  cp=subprocess.run([sys.executable,str(SCRIPT),'auth.contract'],text=True,capture_output=True,check=True); d=json.loads(cp.stdout)
