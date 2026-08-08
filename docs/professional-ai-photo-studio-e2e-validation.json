@@ -1,0 +1,91 @@
+{
+  "projectId": "prj_41fce205-8523-48be-808d-e0cd867412ce",
+  "shotId": "shot_00000000-0000-0000-0000-000000000108",
+  "paidProviderCalls": 0,
+  "networkCalls": 0,
+  "initial": {
+    "versionId": "ver_32cea585-865f-4a06-b078-f5fb9c971dce",
+    "sha256": "sha256:0c68153cda1e8b1c580f2a2f2c84ef6b35746884d84b7282ef5c79b501f45047",
+    "qaPassed": true,
+    "rubricScores": {
+      "technical": 4.0,
+      "brand_fidelity": 3.4,
+      "composition": 4.0,
+      "commercial_readiness": 3.2
+    },
+    "weighted": 3.66
+  },
+  "final": {
+    "versionId": "ver_c6febf4d-f095-4ed5-bfc7-c3cdd5e3485c",
+    "parentVersionIds": [
+      "ver_32cea585-865f-4a06-b078-f5fb9c971dce"
+    ],
+    "sha256": "sha256:2735b64b906bbc40a64c46da0b6c410b0ac836c2f38a7a38b3417825e8b820bf",
+    "qaPassed": true,
+    "rubricScores": {
+      "technical": 5.0,
+      "brand_fidelity": 4.8,
+      "composition": 4.6,
+      "commercial_readiness": 4.2
+    },
+    "weighted": 4.68,
+    "improvement": 1.02
+  },
+  "critic": {
+    "advisoryOnly": true,
+    "humanGates": [
+      "identity",
+      "product_truth",
+      "regulated_claims",
+      "brand_critical",
+      "creative",
+      "rights"
+    ]
+  },
+  "masterApprovalId": "apr_0b69e045-027a-4ada-9597-0f1ea3ce0ab2",
+  "contactSheet": {
+    "path": "studio/contact-artifacts/7dd3f321c38415b68afa5b54b5e4b14b2595919955bc1395717f845a29ff8b8c.svg",
+    "manifestDigest": "sha256:7dd3f321c38415b68afa5b54b5e4b14b2595919955bc1395717f845a29ff8b8c"
+  },
+  "package": {
+    "path": "/tmp/clawpod-image-studio-commercial-e2e/durable/15b855111f344a9b9a05ebf2076a79988aa2e316c5f6c48f1b92c873231f2412.zip",
+    "sha256": "sha256:dd2cf5322e14c93ede7266a003fb23160fb709bd81c86eea9c6df2530bfa0f40"
+  },
+  "recovery": {
+    "passed": true
+  },
+  "audit": {
+    "projectId": "prj_41fce205-8523-48be-808d-e0cd867412ce",
+    "counts": {
+      "shots": 1,
+      "versions": 2,
+      "qa": 0,
+      "critics": 1,
+      "selections": 1,
+      "revisions": 1,
+      "finishes": 1,
+      "approvals": 2,
+      "contacts": 1,
+      "deliveries": 1
+    },
+    "findings": [],
+    "blocking": 0,
+    "valid": true
+  },
+  "adversarial": {
+    "invalid_input": {
+      "passed": true,
+      "observed": "UNKNOWN_FIELD"
+    },
+    "permission_boundary": {
+      "passed": true,
+      "observed": "DURABLE_ROOT_UNAVAILABLE"
+    }
+  },
+  "limitations": [
+    "Visual rubric scores are documented human-review judgments, not automated perceptual metrics.",
+    "Contact sheet is a deterministic SVG review proxy, not a color-managed raster proof.",
+    "No paid provider generation was performed because fresh exact approval was not supplied.",
+    "Offline SVG assets validate workflow mechanics and lineage, not provider photorealism or model quality."
+  ]
+}

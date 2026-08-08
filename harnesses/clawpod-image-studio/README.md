@@ -1,6 +1,30 @@
 # ClawPod Image Studio
 
-Portable, guarded CLI Harness for OpenAI Images, Vertex Imagen, BFL FLUX, and Recraft. Version 0.2.0 adds the first production transport, one-shot OpenAI image generation. Other providers remain offline/injectable only.
+Portable, guarded CLI Harness for OpenAI Images, Vertex Imagen, BFL FLUX, and Recraft. Version 0.3.0 adds an offline professional production layer while preserving the v0.2.0 one-shot OpenAI transport and all of its approval controls. Other providers remain offline/injectable only.
+
+## Professional studio vertical slice
+
+The local Studio commands cover the smallest complete production path:
+
+`project.create` → `brief.save` → `brief.approve` → `shot.compile` →
+`generation.register`/`candidate.register` → `qa.evaluate` → `critic.input` →
+`select.record` → `revision.plan` → `finish.record` → `master.approve` →
+`contact_sheet.create` → `delivery.prepare` → `delivery.package` → `audit.verify`.
+
+Records live beneath `<root>/studio` and use schema version 1, stable prefixed IDs,
+revisions, timestamps, immutable SHA-256 asset identity, and parent lineage. This is
+an additive state layout: existing v0.2.0 connection, prepared-intent, compare, and
+artifact files are read unchanged and need no migration. Candidate and generation
+registration are offline: they inspect existing files beneath `<root>/artifacts` or
+`<root>/studio/inputs` and never submit provider work. Unknown Shot Spec fields and
+unsupported controls fail closed.
+
+Contact sheets are deterministic SVG review proxies with exact JSON manifests.
+Delivery preparation recomputes source hashes and requires active hash-bound master
+approval. Packaging writes a normalized, byte-reproducible ZIP to an existing
+durable root; externally visible delivery additionally requires a separate
+publication approval identifier. Automated QA and critic payloads never create a
+human approval.
 
 ## OpenAI production transport
 

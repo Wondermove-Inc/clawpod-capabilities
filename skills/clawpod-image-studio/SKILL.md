@@ -5,7 +5,7 @@ description: "Create, edit, compare, onboard, and QA images across OpenAI, Verte
 
 # ClawPod Image Studio
 
-Use the linked `clawpod-image-studio` Harness v0.2.0. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
+Use the linked `clawpod-image-studio` Harness v0.3.0. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
 
 ## Immediate post-install onboarding
 
@@ -33,6 +33,11 @@ Honor an explicit compatible provider/model. Never silently substitute after app
 
 ## Production workflow
 
+For professional campaigns, read and follow `references/professional-production.md`.
+It adds persistent brief/shot planning, offline candidate registration,
+hash-bound review, non-destructive masters, deterministic contact sheets, and
+delivery manifests without weakening the paid provider boundary below.
+
 1. Clarify the target, audience, intended use, dimensions/aspect, raster or vector output, references, edit mask, rights, real-person consent, publication plan, deadline, and budget.
 2. Call `request.validate`, then `request.estimate`. Do not infer unsupported provider options.
 3. For multi-provider comparison, use `image.compare` only after validating every leg. Cap provider count and total outputs; show aggregate and per-leg costs.
@@ -58,3 +63,9 @@ Read `references/safety.md` before real-person work, public-figure or political 
 ## Completion
 
 Report provider/model, operation, artifact paths and hashes, dimensions/MIME, provenance and safety state, estimate and provider-reported billed cost when available (otherwise mark cost unreconciled), retry safety, approval/publication state, and remaining limitations. The capability is operational only for providers that passed onboarding and documented verification; otherwise report installed-but-not-connected or configured-unverified.
+
+For professional productions also report project/shot IDs, selected and master
+hashes, revision-plan exceptions, hash-bound human approvals, QA/critic status,
+contact-sheet manifest digest, delivery manifest and package digests, durable
+destination, and publication state. State plainly that stochastic generation
+cannot guarantee identity, product, logo, typography, palette, or style consistency.

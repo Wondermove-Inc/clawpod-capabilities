@@ -102,8 +102,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "skill",
-      "version": "0.2.0",
-      "description": "Route guarded multi-provider image workflows with production OpenAI generation, onboarding, provenance, and QA.",
+      "version": "0.3.0",
+      "description": "Route guarded multi-provider workflows and a complete offline professional photo production procedure.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -119,11 +119,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0d55e9c42683095f3bac46651990681456bfb126cdb1bb360a5d5503366df170"
+          "sha256": "a036ed5448cca7d554e907014f66a28633b76b6a5827f71aa1a8c57ee0d6df09"
         },
         {
           "path": "references/onboarding.md",
           "sha256": "c58743ec5aee928260a213ecf5c8ced1f8ad6330398310638e7f68c5451c0f1d"
+        },
+        {
+          "path": "references/professional-production.md",
+          "sha256": "cd3aae5e6fa46b05ae1bbdf0ef4b52ca5cf669421d90aaef0cf18594cae1ec45"
         },
         {
           "path": "references/providers.md",
@@ -136,7 +140,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-image-studio",
-        "version": "0.2.0"
+        "version": "0.3.0"
       }
     },
     {
@@ -764,8 +768,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "harness",
-      "version": "0.2.0",
-      "description": "Guarded image workflows with exact paid intents, provenance, QA, and one-shot OpenAI Images HTTPS transport.",
+      "version": "0.3.0",
+      "description": "Guarded provider image workflows plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
       "path": "harnesses/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -781,19 +785,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "2b7be2b4a828ed9de12d5d2f69067911aa2d99ad3c79d0c9ab4bf83431f5adf1"
+          "sha256": "1e3af512a18e2f7574e2a294d3d2a3f3b61565239f66512de3422aa7049b71ef"
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "13150a6bc5c5fb10ba0a8aead5e5ee054083c1912b2881d61bebd83814038159"
+          "sha256": "ea9f1eb94adc8ffed7abe8d0e63bc31e053dfa76045ef6125032382cdc43eb96"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "1a2c489e2fa7b0d7e291e5a895db5ce62d0ab862fad9d94473c24fa6545890c8"
+          "sha256": "88f45d5762253a5512a00f2ab215ad84d693e48eb42c0159e330a95d0cec7519"
         },
         {
           "path": "harness.json",
-          "sha256": "a3f0284e002728efce232ca452d7abcfb1915797ba98be3c62da9df76c1f9b91"
+          "sha256": "579bf961c8e331d35522386c7d1d660e3aa9b0e7eff394492eb272ca57ede8a0"
+        },
+        {
+          "path": "professional_studio.py",
+          "sha256": "fe2ba87c9338b1e2753914c81b89efe790e11600b62423663e1607d85cedefae"
         }
       ]
     },

@@ -1,16 +1,549 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "providers": {
-    "openai": {"secretEnvironment": "OPENAI_API_KEY", "auth": "owner-scoped protected runtime secret", "liveTransport": "one-shot POST /v1/images/generations", "nonBillableVerification": "GET /v1/models/gpt-image-1"},
-    "vertex": {"secretEnvironment": null, "auth": "ADC/OAuth/service-account lifecycle", "liveTransport": false, "requires": ["project", "location", "iam"]},
-    "bfl": {"secretEnvironment": "BFL_API_KEY", "auth": "owner-scoped protected secret", "liveTransport": false},
-    "recraft": {"secretEnvironment": "RECRAFT_API_KEY", "auth": "owner-scoped protected secret", "liveTransport": false}
+    "openai": {
+      "secretEnvironment": "OPENAI_API_KEY",
+      "auth": "owner-scoped protected runtime secret",
+      "liveTransport": "one-shot POST /v1/images/generations",
+      "nonBillableVerification": "GET /v1/models/gpt-image-1"
+    },
+    "vertex": {
+      "secretEnvironment": null,
+      "auth": "ADC/OAuth/service-account lifecycle",
+      "liveTransport": false,
+      "requires": [
+        "project",
+        "location",
+        "iam"
+      ]
+    },
+    "bfl": {
+      "secretEnvironment": "BFL_API_KEY",
+      "auth": "owner-scoped protected secret",
+      "liveTransport": false
+    },
+    "recraft": {
+      "secretEnvironment": "RECRAFT_API_KEY",
+      "auth": "owner-scoped protected secret",
+      "liveTransport": false
+    }
   },
-  "secretBinding": {"kind": "gateway-memory-secret-per-run", "parameter": "secretRefs", "prepareRunMustMatch": true, "manifestStoresPointer": false, "plaintextInArgvInputFilesLogsOutput": false},
-  "paidIntent": {"required": ["provider", "model", "options", "count", "output", "maxUsd", "expiresAt", "bindingDigest", "preparedDigest"], "exactDigestBindingCostExpiryChecks": true, "automaticRetryOnAmbiguousBilling": false},
-  "network": {"default": "disabled-without-approved-secret-injection", "openaiProtectedInjectionEnablesLivePath": true, "openaiTimeoutSeconds": 45, "maximumResponseBytes": 26214400, "automaticRetries": 0, "liveReadinessRequiresOnboarding": true},
-  "openaiOptions": {"allowlist": ["size", "quality", "background", "output_format", "output_compression", "moderation"], "cannotOverride": ["model", "prompt", "n"]},
-  "openaiResults": {"accepted": ["b64_json", "https_url"], "artifactRoot": "<root>/artifacts", "qa": ["recognized_mime", "dimensions_when_detectable", "sha256", "provenance"]},
-  "compare": {"minLegs": 2, "maxLegs": 4, "aggregateAndPerLegDigests": true},
-  "onboarding": {"states": ["connected", "configured_unverified", "deferred", "revoked"]}
+  "secretBinding": {
+    "kind": "gateway-memory-secret-per-run",
+    "parameter": "secretRefs",
+    "prepareRunMustMatch": true,
+    "manifestStoresPointer": false,
+    "plaintextInArgvInputFilesLogsOutput": false
+  },
+  "paidIntent": {
+    "required": [
+      "provider",
+      "model",
+      "options",
+      "count",
+      "output",
+      "maxUsd",
+      "expiresAt",
+      "bindingDigest",
+      "preparedDigest"
+    ],
+    "exactDigestBindingCostExpiryChecks": true,
+    "automaticRetryOnAmbiguousBilling": false
+  },
+  "network": {
+    "default": "disabled-without-approved-secret-injection",
+    "openaiProtectedInjectionEnablesLivePath": true,
+    "openaiTimeoutSeconds": 45,
+    "maximumResponseBytes": 26214400,
+    "automaticRetries": 0,
+    "liveReadinessRequiresOnboarding": true
+  },
+  "openaiOptions": {
+    "allowlist": [
+      "size",
+      "quality",
+      "background",
+      "output_format",
+      "output_compression",
+      "moderation"
+    ],
+    "cannotOverride": [
+      "model",
+      "prompt",
+      "n"
+    ]
+  },
+  "openaiResults": {
+    "accepted": [
+      "b64_json",
+      "https_url"
+    ],
+    "artifactRoot": "<root>/artifacts",
+    "qa": [
+      "recognized_mime",
+      "dimensions_when_detectable",
+      "sha256",
+      "provenance"
+    ]
+  },
+  "compare": {
+    "minLegs": 2,
+    "maxLegs": 4,
+    "aggregateAndPerLegDigests": true
+  },
+  "onboarding": {
+    "states": [
+      "connected",
+      "configured_unverified",
+      "deferred",
+      "revoked"
+    ]
+  },
+  "professionalStudio": {
+    "network": "forbidden; registration only",
+    "recordSchemaVersion": 1,
+    "optimisticConcurrency": true,
+    "assetIdentity": "lowercase sha256",
+    "commands": {
+      "project.create": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "name",
+            "actor"
+          ],
+          "properties": {
+            "name": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "project.get": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId"
+          ],
+          "properties": {
+            "projectId": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "project.list": {
+        "inputSchema": {
+          "type": "object",
+          "required": [],
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "brief.save": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "expectedProjectRevision",
+            "actor",
+            "brief"
+          ],
+          "properties": {
+            "projectId": {},
+            "expectedProjectRevision": {},
+            "actor": {},
+            "brief": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "brief.approve": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "briefId",
+            "expectedBriefRevision",
+            "approver",
+            "role"
+          ],
+          "properties": {
+            "projectId": {},
+            "briefId": {},
+            "expectedBriefRevision": {},
+            "approver": {},
+            "role": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "shot.compile": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "expectedProjectRevision",
+            "actor",
+            "shots"
+          ],
+          "properties": {
+            "projectId": {},
+            "expectedProjectRevision": {},
+            "actor": {},
+            "shots": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "shot.list": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId"
+          ],
+          "properties": {
+            "projectId": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "candidate.register": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "shotId",
+            "path",
+            "actor"
+          ],
+          "properties": {
+            "projectId": {},
+            "shotId": {},
+            "path": {},
+            "role": {},
+            "parentVersionIds": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "generation.register": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "shotId",
+            "path",
+            "actor",
+            "provider",
+            "model",
+            "preparedDigest",
+            "promptDigest"
+          ],
+          "properties": {
+            "projectId": {},
+            "shotId": {},
+            "path": {},
+            "role": {},
+            "parentVersionIds": {},
+            "actor": {},
+            "provider": {},
+            "model": {},
+            "providerRequestId": {},
+            "preparedDigest": {},
+            "promptDigest": {},
+            "referenceHashes": {},
+            "controls": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "qa.evaluate": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "versionId",
+            "actor"
+          ],
+          "properties": {
+            "versionId": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "critic.input": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "versionId",
+            "qaId",
+            "rubric",
+            "actor"
+          ],
+          "properties": {
+            "versionId": {},
+            "qaId": {},
+            "rubric": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "select.record": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "versionId",
+            "expectedShotRevision",
+            "reviewer",
+            "role",
+            "reason"
+          ],
+          "properties": {
+            "versionId": {},
+            "expectedShotRevision": {},
+            "reviewer": {},
+            "role": {},
+            "reason": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "revision.plan": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "baseVersionId",
+            "selectionId",
+            "objective",
+            "preserve",
+            "issues",
+            "order",
+            "maximumPaidOperations",
+            "approvalImpact",
+            "actor"
+          ],
+          "properties": {
+            "baseVersionId": {},
+            "selectionId": {},
+            "objective": {},
+            "preserve": {},
+            "issues": {},
+            "order": {},
+            "maximumPaidOperations": {},
+            "approvalImpact": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "finish.record": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "baseVersionId",
+            "path",
+            "recipe",
+            "actor"
+          ],
+          "properties": {
+            "baseVersionId": {},
+            "path": {},
+            "recipe": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "master.approve": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "versionId",
+            "approver",
+            "role",
+            "proofCondition"
+          ],
+          "properties": {
+            "versionId": {},
+            "approver": {},
+            "role": {},
+            "proofCondition": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "contact_sheet.create": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "versionIds",
+            "columns",
+            "actor"
+          ],
+          "properties": {
+            "projectId": {},
+            "versionIds": {},
+            "columns": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "delivery.prepare": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId",
+            "versionIds",
+            "destination",
+            "external",
+            "actor"
+          ],
+          "properties": {
+            "projectId": {},
+            "versionIds": {},
+            "destination": {},
+            "external": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "delivery.package": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "deliveryId",
+            "manifestDigest",
+            "durableRoot",
+            "actor"
+          ],
+          "properties": {
+            "deliveryId": {},
+            "manifestDigest": {},
+            "durableRoot": {},
+            "publicationApprovalId": {},
+            "actor": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      },
+      "audit.verify": {
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectId"
+          ],
+          "properties": {
+            "projectId": {}
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "billable": false,
+        "network": false
+      }
+    },
+    "invariants": [
+      "immutable asset bytes",
+      "hash-bound QA and approvals",
+      "human approvals cannot be created by automated QA or critic",
+      "provider execution remains behind request.prepare and image.*"
+    ]
+  }
 }

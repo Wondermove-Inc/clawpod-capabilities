@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Offline-first guarded image provider orchestration harness."""
 from __future__ import annotations
-import argparse, base64, binascii, datetime as dt, hashlib, json, mimetypes, os, re, struct, sys, tempfile, uuid
+import argparse, base64, binascii, datetime as dt, hashlib, json, mimetypes, os, re, struct, sys, tempfile, uuid, types
 import urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 from typing import Any
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import professional_studio
 
-VERSION="0.2.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
+VERSION="0.3.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
 OPENAI_BASE="https://api.openai.com/v1"; HTTP_TIMEOUT=45; MAX_RESPONSE_BYTES=25*1024*1024
 PROVIDERS={
  "openai":{"env":"OPENAI_API_KEY","auth":"api_key","models":["gpt-image-1"],"features":["generate","edit","mask","multi_image"]},
@@ -15,7 +17,7 @@ PROVIDERS={
  "recraft":{"env":"RECRAFT_API_KEY","auth":"api_key","models":["recraft-v3"],"features":["generate","edit","vector","svg","design"]},
 }
 PRICES={"openai":{"gpt-image-1":0.04},"vertex":{"imagen-3":0.04},"bfl":{"flux-pro-1.1":0.05},"recraft":{"recraft-v3":0.04}}
-COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.status job.collect artifact.inspect pricing.snapshot".split()
+COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.status job.collect artifact.inspect pricing.snapshot".split()+professional_studio.STUDIO_COMMANDS
 SECRET_RE=re.compile(r"(?i)(bearer\s+\S+|(?:sk|key|token|secret)[-_][A-Za-z0-9._-]{8,})")
 SECRET_KEYS=re.compile(r"(?i)(api.?key|token|secret|password|authorization|credential)")
 
@@ -232,6 +234,7 @@ def run_image(req,r,op):
  for art in artifacts: art["provenance"].update({"provider":prepared["provider"],"model":prepared["model"],"operation":prepared["operation"],"preparedDigest":prepared["preparedDigest"],"providerRequestId":result.get("providerRequestId")})
  return {"state":"succeeded","provider":prepared["provider"],"providerRequestId":result.get("providerRequestId"),"artifact":artifacts[0] if len(artifacts)==1 else None,"artifacts":artifacts,"revisedPrompts":result.get("revisedPrompts",[]),"estimatedUsd":prepared["estimate"]["estimatedUsd"],"actualUsd":None,"costReconciliation":"provider response did not include a final billed amount","billingState":"accepted","automaticRetry":False}
 def execute(cmd,x,r):
+ if cmd in professional_studio.STUDIO_COMMANDS: return professional_studio.execute(types.SimpleNamespace(**globals()),cmd,x,r)
  if cmd=="provider.list": return {"items":[{"id":p,**v} for p,v in PROVIDERS.items()],"networkDefault":"disabled"}
  if cmd=="provider.requirements":
   closed(x,{"provider"},("provider",)); p=x["provider"]
@@ -329,6 +332,6 @@ def main(argv=None):
   try: x=json.loads(a.input_json)
   except json.JSONDecodeError: raise E("INVALID_ARGUMENT","input-json must be valid JSON")
   if not isinstance(x,dict): raise E("SCHEMA_VIOLATION","input must be object")
-  data=execute(cmd,x,root(a.root)); print(stable(env(cmd,True,data=data,effects="artifact_written" if cmd.startswith("image.") else "state_updated" if cmd.startswith("connection.") else "none"))); return 0
+  data=execute(cmd,x,root(a.root)); local_write=cmd in professional_studio.STUDIO_COMMANDS and cmd not in {"project.get","project.list","shot.list","audit.verify"}; print(stable(env(cmd,True,data=data,effects="artifact_written" if cmd.startswith("image.") or cmd in {"contact_sheet.create","delivery.package"} else "state_updated" if cmd.startswith("connection.") or local_write else "none"))); return 0
  except E as e: return fail(cmd,e)
 if __name__=="__main__": raise SystemExit(main())
