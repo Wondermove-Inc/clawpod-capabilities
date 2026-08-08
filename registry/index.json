@@ -789,7 +789,7 @@
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "bb7412418b70d47414fb9b55773c618906ccb6fb667129cc56eefec7c896c3d6"
+          "sha256": "1497bcb12484e1e5f9a71718aefe2780a4983fa829d85bf920f044f63cf751f2"
         },
         {
           "path": "command_contracts.json",
@@ -805,7 +805,7 @@
         },
         {
           "path": "test_detached_jobs.py",
-          "sha256": "a661f8d00c75797f500d2c2acfe4f4a94e5aa23d3ad46e8eda4be4e28756737f"
+          "sha256": "883366c69d4a8ff4e25bab2e1841eac1c6b2948e656363b0b648d7347ebec640"
         }
       ]
     },

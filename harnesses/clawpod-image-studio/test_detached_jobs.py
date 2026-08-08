@@ -25,6 +25,8 @@ def approved(root: Path):
         "count": 1,
         "output": "tests/out.png",
         "format": "png",
+        "purpose": "professional metadata parity test",
+        "features": ["editorial"],
         "options": {},
         "safetyPolicy": "approved test",
         "rightsPolicy": "owned test",

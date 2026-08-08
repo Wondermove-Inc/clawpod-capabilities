@@ -293,7 +293,7 @@ def _job_public(state):
  if state.get("error"): out["error"]=state["error"]
  return out
 def job_start(req,r):
- allowed={"operation","provider","model","prompt","count","output","format","options","safetyPolicy","rightsPolicy","publicationPolicy","maxUsd","expiresAt","bindingDigest","preparedDigest","timeoutSeconds"}
+ allowed={"operation","provider","model","prompt","count","output","format","purpose","features","options","safetyPolicy","rightsPolicy","publicationPolicy","maxUsd","expiresAt","bindingDigest","preparedDigest","timeoutSeconds"}
  closed(req,allowed,("operation","provider","model","prompt","output","safetyPolicy","rightsPolicy","publicationPolicy","maxUsd","expiresAt","bindingDigest","preparedDigest"))
  timeout=req.get("timeoutSeconds",300)
  if not isinstance(timeout,int) or isinstance(timeout,bool) or not 60<=timeout<=300: raise E("SCHEMA_VIOLATION","timeoutSeconds must be an integer from 60 through 300")
