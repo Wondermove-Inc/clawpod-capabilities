@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000
@@ -53,7 +53,7 @@ def emails(raw: str | None, field: str, limit: int) -> list[str]:
 
 def api_key() -> str:
     key=os.environ.get("RESEND_API_KEY","")
-    if not key: raise HarnessError("not_connected", "credential unavailable; configure the Harness SecretRef binding for RESEND_API_KEY or use an approved protected runtime injection lane")
+    if not key: raise HarnessError("not_connected", "credential unavailable; pass an owner-authorized memory-secret pointer as RESEND_API_KEY in secretRefs to both Gateway prepare and run")
     return key
 
 class Client:
@@ -182,7 +182,7 @@ def verified_sender(client: Client, msg: dict) -> int:
 def command(a) -> dict:
     if a.command=="onboarding":
         data=onboarding_status(a.state)
-        data.update({"next":["capture any supplied key immediately into owner-only protected secret storage without repeating it","bind an agent-authorized credential to RESEND_API_KEY through the Harness Gateway SecretRef contract; if the credential exists only as a memory-secret pointer, use an approved protected runtime injection lane because memory pointers are not SecretRef providers","run verify, then sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"source":"Room, message, or an existing owner-authorized credential","storage":"protected secret storage","owner_only":True,"environment":"RESEND_API_KEY","gateway_secret_env":{"source":"env","provider":"default","id":"RESEND_API_KEY"},"memory_pointer_is_secretref_provider":False,"environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
+        data.update({"next":["capture any supplied key immediately into owner-only memory_secret storage without repeating it","select the authorized Resend pointer from the safe secret catalog","pass the identical secretRefs mapping {RESEND_API_KEY: pointerId} to Gateway prepare and run","run verify, then sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"source":"Room, message, or an existing owner-authorized credential","storage":"memory_secret","owner_only":True,"environment":"RESEND_API_KEY","gateway_parameter":"secretRefs","per_run_binding":True,"prepare_run_binding_must_match":True,"environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
         return output(a.command,True,data=data)
     if a.command=="status":
         data=onboarding_status(a.state); data["persistent_policy_required"]=False
