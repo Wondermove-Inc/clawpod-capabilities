@@ -157,3 +157,13 @@ No license has been selected yet. Until one is added, copyright remains with the
 ### ClawPod OCR 0.3.1
 
 ClawPod OCR produces local enterprise `.docx` comparison reports for one or multiple completed OCR jobs. Reports preserve and distinguish raw OCR from separately corrected text and include source imagery, QA metadata, document controls, and file-specific sections.
+
+### ClawPod Image Studio 0.3.0
+
+ClawPod Image Studio now includes an additive, offline professional production
+slice: revisioned projects and briefs, strict shot compilation, content-addressed
+candidate lineage, deterministic QA and critic inputs, human selections,
+non-destructive master records, deterministic contact sheets, and reproducible
+delivery manifests/packages. Its existing protected-secret and exact paid-intent
+provider boundary remains unchanged; Studio registration commands never call a
+provider.

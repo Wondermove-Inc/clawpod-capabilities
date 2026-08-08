@@ -1,0 +1,3081 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-image-studio",
+  "title": "ClawPod Image Studio",
+  "description": "Guarded provider workflows plus an offline, deterministic professional AI photo studio production layer.",
+  "version": "0.3.0",
+  "entrypoint": "./clawpod_image_studio.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 120000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Plan, validate, prepare, generate, edit, compare, or inspect images across OpenAI, Vertex, BFL, and Recraft"
+  ],
+  "capabilities": [
+    "offline-provider-routing",
+    "exact-paid-intent-digests",
+    "protected-secret-bindings",
+    "artifact-provenance",
+    "openai-images-live-transport",
+    "svg-qa",
+    "professional-project-and-shot-planning",
+    "content-addressed-studio-lineage",
+    "deterministic-contact-sheets",
+    "deterministic-delivery-packages"
+  ],
+  "authModel": {
+    "type": "provider-specific-protected-injection",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "provider.list": {
+      "description": "provider list for guarded offline-first image workflows.",
+      "baseArgv": [
+        "provider.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "provider.status": {
+      "description": "provider status for guarded offline-first image workflows.",
+      "baseArgv": [
+        "provider.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "provider.requirements": {
+      "description": "provider requirements for guarded offline-first image workflows.",
+      "baseArgv": [
+        "provider.requirements"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "onboarding.interview": {
+      "description": "onboarding interview for guarded offline-first image workflows.",
+      "baseArgv": [
+        "onboarding.interview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "connection.bind": {
+      "description": "connection bind for guarded offline-first image workflows.",
+      "baseArgv": [
+        "connection.bind"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "connection.status": {
+      "description": "connection status for guarded offline-first image workflows.",
+      "baseArgv": [
+        "connection.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "connection.verify": {
+      "description": "connection verify for guarded offline-first image workflows.",
+      "baseArgv": [
+        "connection.verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse",
+        "authReuse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "connection.revoke": {
+      "description": "connection revoke for guarded offline-first image workflows.",
+      "baseArgv": [
+        "connection.revoke"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "request.validate": {
+      "description": "request validate for guarded offline-first image workflows.",
+      "baseArgv": [
+        "request.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "request.estimate": {
+      "description": "request estimate for guarded offline-first image workflows.",
+      "baseArgv": [
+        "request.estimate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "request.prepare": {
+      "description": "request prepare for guarded offline-first image workflows.",
+      "baseArgv": [
+        "request.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "image.generate": {
+      "description": "image generate for guarded offline-first image workflows.",
+      "baseArgv": [
+        "image.generate"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "image.edit": {
+      "description": "image edit for guarded offline-first image workflows.",
+      "baseArgv": [
+        "image.edit"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "image.compare": {
+      "description": "image compare for guarded offline-first image workflows.",
+      "baseArgv": [
+        "image.compare"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "job.status": {
+      "description": "job status for guarded offline-first image workflows.",
+      "baseArgv": [
+        "job.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "job.collect": {
+      "description": "job collect for guarded offline-first image workflows.",
+      "baseArgv": [
+        "job.collect"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "artifact.inspect": {
+      "description": "artifact inspect for guarded offline-first image workflows.",
+      "baseArgv": [
+        "artifact.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "pricing.snapshot": {
+      "description": "pricing snapshot for guarded offline-first image workflows.",
+      "baseArgv": [
+        "pricing.snapshot"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "project.create": {
+      "description": "project create for deterministic professional photo production.",
+      "baseArgv": [
+        "project.create"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "project.get": {
+      "description": "project get for deterministic professional photo production.",
+      "baseArgv": [
+        "project.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "project.list": {
+      "description": "project list for deterministic professional photo production.",
+      "baseArgv": [
+        "project.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "brief.save": {
+      "description": "brief save for deterministic professional photo production.",
+      "baseArgv": [
+        "brief.save"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "brief.approve": {
+      "description": "brief approve for deterministic professional photo production.",
+      "baseArgv": [
+        "brief.approve"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "shot.compile": {
+      "description": "shot compile for deterministic professional photo production.",
+      "baseArgv": [
+        "shot.compile"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "shot.list": {
+      "description": "shot list for deterministic professional photo production.",
+      "baseArgv": [
+        "shot.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "candidate.register": {
+      "description": "candidate register for deterministic professional photo production.",
+      "baseArgv": [
+        "candidate.register"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "generation.register": {
+      "description": "generation register for deterministic professional photo production.",
+      "baseArgv": [
+        "generation.register"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "qa.evaluate": {
+      "description": "qa evaluate for deterministic professional photo production.",
+      "baseArgv": [
+        "qa.evaluate"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "critic.input": {
+      "description": "critic input for deterministic professional photo production.",
+      "baseArgv": [
+        "critic.input"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "select.record": {
+      "description": "select record for deterministic professional photo production.",
+      "baseArgv": [
+        "select.record"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "revision.plan": {
+      "description": "revision plan for deterministic professional photo production.",
+      "baseArgv": [
+        "revision.plan"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "finish.record": {
+      "description": "finish record for deterministic professional photo production.",
+      "baseArgv": [
+        "finish.record"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "master.approve": {
+      "description": "master approve for deterministic professional photo production.",
+      "baseArgv": [
+        "master.approve"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "contact_sheet.create": {
+      "description": "contact_sheet create for deterministic professional photo production.",
+      "baseArgv": [
+        "contact_sheet.create"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "delivery.prepare": {
+      "description": "delivery prepare for deterministic professional photo production.",
+      "baseArgv": [
+        "delivery.prepare"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "delivery.package": {
+      "description": "delivery package for deterministic professional photo production.",
+      "baseArgv": [
+        "delivery.package"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "audit.verify": {
+      "description": "audit verify for deterministic professional photo production.",
+      "baseArgv": [
+        "audit.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    }
+  }
+}
