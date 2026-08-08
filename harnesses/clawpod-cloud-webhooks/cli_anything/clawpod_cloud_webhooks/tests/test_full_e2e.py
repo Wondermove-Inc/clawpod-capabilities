@@ -119,7 +119,11 @@ def test_auth_contract(server):
     assert d['onboarding_prompts']['protected_credential']['ask_in_chat'] is False
     assert d['onboarding_prompts']['protected_credential']['accept_from_chat'] is False
     assert d['onboarding_prompts']['user_runs_commands'] is False
-    assert d['protected_credential_contract']['gateway_harness_run_injection_supported'] is False
+    protected=d['protected_credential_contract']
+    assert protected['gateway_harness_run_injection_supported'] is True
+    assert protected['gateway_parameter']=='secretRefs' and protected['per_run_binding']
+    assert protected['prepare_run_binding_must_match'] and not protected['manifest_stores_pointer']
+    assert protected['approved_execution_lane']=='Gateway prepare and run with identical owner-scoped secretRefs'
     assert 'protected credential pointers' in d['blockers']['missing_credential']
     assert d['tls']['default']=='strict' and d['tls']['http_rejected']
     assert 'both --insecure-skip-tls-verify and --i-understand-insecure-tls-risk' in d['tls']['insecure']

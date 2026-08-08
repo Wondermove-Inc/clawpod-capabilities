@@ -18,3 +18,7 @@ Follow `references/oauth-onboarding.md` for every first authorization, repair, o
 Prefer typed read commands. Preview every mutation and require the matching confirmation. Never expose credentials, authorization URLs, codes, client secrets, tokens, or sensitive provider data.
 
 Treat onboarding as complete only after non-expired OAuth status, site discovery, identity verification, one bounded Jira project read, and one bounded Confluence space read all succeed. Do not substitute successful consent or token exchange for end-to-end verification.
+
+## Direct basic/PAT per-run binding
+
+For direct basic/PAT sites only, keep site configuration secret-free with `emailRef: env:ATLASSIAN_EMAIL` and `tokenRef: env:ATLASSIAN_API_TOKEN`. Select authorized owner-scoped pointers and pass `{"secretRefs":{"ATLASSIAN_EMAIL":"msp_...","ATLASSIAN_API_TOKEN":"msp_..."}}` to `harness.run.prepare`, then pass the identical map to `harness.run`. Gateway resolves both only for that execution; shared manifests store no pointer or provider binding. Missing values fail closed. Do not apply this flow to OAuth 3LO: its client, private token bundle, refresh, detached worker, and auth-reuse lifecycle remain unchanged.

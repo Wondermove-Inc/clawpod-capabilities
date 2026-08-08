@@ -141,5 +141,15 @@
     "insecureApprovalFlag": "--i-understand-insecure-tls-risk",
     "scope": "process/client instance only",
     "environmentBypass": false
+  },
+  "directCredentialSecretBinding": {
+    "kind": "gateway-memory-secret-per-run",
+    "parameter": "secretRefs",
+    "names": [
+      "CLAWPOD_CLOUD_EMAIL",
+      "CLAWPOD_CLOUD_PASSWORD"
+    ],
+    "prepareRunMustMatch": true,
+    "manifestStoresPointer": false
   }
 }

@@ -880,5 +880,14 @@
         "optional": false
       }
     ]
+  },
+  "directCredentialSecretBinding": {
+    "kind": "gateway-memory-secret-per-run",
+    "parameter": "secretRefs",
+    "names": [
+      "SYNOLOGY_SMB_PASSWORD"
+    ],
+    "prepareRunMustMatch": true,
+    "manifestStoresPointer": false
   }
 }

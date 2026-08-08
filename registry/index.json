@@ -5,7 +5,7 @@
     {
       "id": "atlassian",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Route approved Jira and Confluence work through the typed Atlassian harness.",
       "path": "skills/atlassian",
       "compatibility": {
@@ -23,7 +23,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "3d77456076f4e98b91112b1af65ef04666cd0b552817f1e3867c396ab62ce559"
+          "sha256": "fb7ddaac21997dae196a320d6ed8b3edec57332969f063eda7c1e8301a110425"
         },
         {
           "path": "references/commands.md",
@@ -40,7 +40,7 @@
       ],
       "linkedHarness": {
         "id": "atlassian",
-        "version": "0.3.0"
+        "version": "0.3.1"
       }
     },
     {
@@ -75,7 +75,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -91,12 +91,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "3219ed53770634d80b09ca09b609ef1334cfec6dd13bb231083451172ff6ffc5"
+          "sha256": "95600b9dba8a80eb2e47eb5b03e5d40d3990a40ea8a8a124beba3570ce9b46c8"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.1.8"
+        "version": "0.1.9"
       }
     },
     {
@@ -393,7 +393,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Route guarded Notion API work and guide exact PAT/Internal Integration onboarding through the typed notion Harness.",
       "path": "skills/notion",
       "compatibility": {
@@ -411,7 +411,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5590a0a03abd3d9e9b06e62039fce1a78cd4c8d33ed2ddfe8aea50c73918c96a"
+          "sha256": "f6c7ce66df386f0b81fd3166687bdc246cf828ec942e5652bdbcb1af393b46bb"
         },
         {
           "path": "references/commands.md",
@@ -424,7 +424,7 @@
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.7"
+        "version": "0.1.9"
       }
     },
     {
@@ -458,7 +458,7 @@
     {
       "id": "synology-smb-storage",
       "type": "skill",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "description": "Connect and manually restore Synology SMB 3.1.1 storage with exact mount verification and shared-storage-first policy guidance.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
@@ -474,16 +474,16 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5141bb4e3e67d797c69b85540e7773aace66b61894283f4b22b006e82fe764cc"
+          "sha256": "e0079f2be17c3b3563cc73b6258de7117598921f3fcb188579e466af3ce191c8"
         },
         {
           "path": "references/operations.md",
-          "sha256": "e65fa4934f11d06c349ce9456ae67dcab58dd15060d6c78593de8e400492f7f7"
+          "sha256": "c132b8b5e29b601d173da4dd857fc52be76ca470dae970ec005ef6f57f2c47fb"
         }
       ],
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.3"
+        "version": "0.1.4"
       }
     },
     {
@@ -559,7 +559,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -577,7 +577,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "dfc041db551fe327e21c9546ce7f628dcefe1bf3f7362bc2f71ba62e0c8da8a5"
+          "sha256": "7b0f6db750ece41e0a6c1dec3f7be6db70eba9adde9faba257280f38e3b9965a"
         },
         {
           "path": "TEST.md",
@@ -585,15 +585,15 @@
         },
         {
           "path": "atlassian.py",
-          "sha256": "fb8b44d8845b6e3b136e77ace86ac166831684696b73db44f38fb1e10c70b0d8"
+          "sha256": "5d169866fbf0eacd3daaa2c481d04419982830a7c42ffe2f4cf65651d075ebbb"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "99e2a4189c0d8f4b74d3740c8c417197d81cfaf89344cfff8c70e585e554c025"
+          "sha256": "191ff01e11b5299483befac13b2c856a6da4cf8d91a7c006422a01ad349d191a"
         },
         {
           "path": "harness.json",
-          "sha256": "6b8c8927ad2ce57d6bcb3322d8f9cb052459b7d7f2e84ef2b5f7f729073d8607"
+          "sha256": "9454bed007cf839dd3012a75518a31002ce6fac0b39ab77b4093e14b1005bc1d"
         },
         {
           "path": "oauth3lo.py",
@@ -605,7 +605,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "607e15b7d64ad20cb22663e469fb7d7f6ed6efe9341ac6c294c80676471fdb76"
+          "sha256": "b5799ed90128ccc4d10a5c33d62d39fb025f1e81cc4d716e1946f7b9799a7ef8"
         },
         {
           "path": "test_oauth_async.py",
@@ -649,7 +649,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -665,7 +665,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "5dc148e2dc215639800655283c099ea2ca7b42932f3070fb32317fe088a0b50b"
+          "sha256": "b505afd689fe6f0ea7b93bc16c24fd01838b8b5ef1a58b514deac73ec0b2bd10"
         },
         {
           "path": "TEST.md",
@@ -677,7 +677,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "0baf400e56d0444425475e6dae77b2036b24f31d3ea07e2b0c05f97ecbf5f7f5"
+          "sha256": "5c86b16cc6f288ff8bde482e4751a1c62ac56e54d788747594c7c35484ef1d42"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -685,7 +685,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/clawpod_cloud_webhooks_cli.py",
-          "sha256": "1c7d80cd6255846f106094096743c26bd5303942b135f4f84c73117251469fce"
+          "sha256": "61922d2fa103be78cebf27ca8c0b6a0b0c74a3ac9ad4e93d2aa9b0079ffe331b"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/core/__init__.py",
@@ -709,15 +709,15 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "017256340c2a1e54f1c7cbcaf23fbb615f2d13a7f200153454ab83551b9dce1a"
+          "sha256": "53946bd4f2cdc639256fe3fbc3b93ffa8d62d3f56c178019f5cba033eed6e1a8"
         },
         {
           "path": "harness.json",
-          "sha256": "b96f7faeadc368f08c7ade585bb7633b5ecf9fc4060dc7d6eea2da399d9387b2"
+          "sha256": "39afef52fd6a08ad7032a553705b88f64473af69b16700a7ba232d0be370bd12"
         },
         {
           "path": "setup.py",
-          "sha256": "a1c65a13c89372c3e1a40cbd8705bbc08038685e15c2d9e5d77883cef974f82d"
+          "sha256": "919dff5dc098a16ea134470f8df7e1631c2cfaaece078e9beb773bb852b27a2f"
         }
       ]
     },
@@ -1047,7 +1047,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.7",
+      "version": "0.1.9",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -1065,7 +1065,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "551f58eac3a87c441eda2b89f9c6c3cd5eeed80eab1a19b81c26594d7838a886"
+          "sha256": "fc08daa24e45ab089c2eca35be3b19c035fec572dde57db8190a2d526220be84"
         },
         {
           "path": "TEST.md",
@@ -1073,11 +1073,11 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "c9a63c2d34f5275cde7798118fc35b72c6cfe0df83ab86ec8e096198c71c7c05"
+          "sha256": "300b781b185be429931e80d2673bab9ac5617c53c41d273f3ae6763032e6f3f0"
         },
         {
           "path": "harness.json",
-          "sha256": "bc03da316349e55d0d902ed0b505fb4b32f9aef416cf026ff678b62f6ca6c685"
+          "sha256": "ff289184e77202a618548cb74f3d0e6234f2a22b33302e93547e85cd207edda2"
         },
         {
           "path": "notion.py",
@@ -1132,7 +1132,7 @@
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
@@ -1148,15 +1148,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "e14873d07429fac561e856afa16af06191dd1cff59b1fcf2c02dcd7308c2e481"
+          "sha256": "12d596654c1b2c3fa3e83c8e8b0e307d30da73a6dbb925de31c301cf66b04512"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "89e7086b51c083437eadc85f0717ef9f7d2942d00afff7bebc3d177725c01691"
+          "sha256": "ed32d5ad7d2e2f56d5a89495ef426465336442d1207a7d65275e607000a7a573"
         },
         {
           "path": "harness.json",
-          "sha256": "a1b0e5a7718f99dc024f36bbf47e01020ad882e8af9a28c95f200cb7594e8c39"
+          "sha256": "328cdce156ee26da216e230f9381d572018e7f3abe0d875b6b01eed06b7121f3"
         },
         {
           "path": "synology_smb_storage.py",

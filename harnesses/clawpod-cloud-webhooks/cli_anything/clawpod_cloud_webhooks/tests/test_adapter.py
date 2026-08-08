@@ -127,4 +127,17 @@ def test_real_self_contained_adapter_subprocess():
     data = json.loads(result.stdout)
     assert result.returncode == 0
     assert data["ok"] is True
-    assert data["capability"]["version"] == "0.1.8"
+    assert data["capability"]["version"] == "0.1.9"
+
+
+def test_per_run_secretrefs_manifest_contract():
+ import json
+ from pathlib import Path
+ root=Path(__file__).resolve()
+ while not (root/'harnesses').exists(): root=root.parent
+ manifest=json.loads((root/'harnesses/clawpod-cloud-webhooks/harness.json').read_text())
+ binding=json.loads((root/'harnesses/clawpod-cloud-webhooks/command_contracts.json').read_text())['directCredentialSecretBinding']
+ assert manifest['version']=='0.1.9' and 'credentialEnvironment' not in manifest
+ assert binding['names']==['CLAWPOD_CLOUD_EMAIL', 'CLAWPOD_CLOUD_PASSWORD'] and binding['parameter']=='secretRefs'
+ assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
+ assert json.loads((root/'skills/clawpod-cloud-webhooks/capability.json').read_text())['linkedHarness']['version']=='0.1.9'

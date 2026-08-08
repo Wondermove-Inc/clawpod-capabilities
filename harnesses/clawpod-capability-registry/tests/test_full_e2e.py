@@ -16,7 +16,7 @@ cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
 
 
 class EndToEndTests(unittest.TestCase):
-    SYNOLOGY_VERSION="0.1.3"
+    SYNOLOGY_VERSION="0.1.4"
 
     def test_fresh_agent_workflow_onboarding_cli(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

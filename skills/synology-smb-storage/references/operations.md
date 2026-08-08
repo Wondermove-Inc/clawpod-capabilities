@@ -6,7 +6,7 @@ Commands include `mount.restore`, the idempotent one-command manual outage recov
 
 `auth.onboard` is credential-related and externally visible. Mount, unmount, layout, and policy commands require matching approval. Discovery and mounting use a secret. Onboarding and layout creation are external side effects. Status, preview, and inspect remain read-only. Unmount and WORKFLOW mutations are write-safe.
 
-The current Gateway run path cannot inject protected memory secrets. Run credential-bearing commands through approved `exec.useSecrets` with the pointer injected as `SYNOLOGY_SMB_PASSWORD`; do not resolve plaintext into argv, prompts, files, or reports. Gateway `prepare → run` remains mandatory for non-secret release-gate commands.
+Gateway credential-bearing runs use identical owner-scoped `secretRefs` maps for prepare and run; do not resolve plaintext into argv, prompts, files, or reports. Gateway `prepare → run` remains mandatory for non-secret release-gate commands.
 
 The managed WORKFLOW block is versioned and marker-delimited. Installation preserves bytes outside the block, writes atomically, stores a same-directory rollback backup, fails closed on malformed markers, and never changes `AGENTS.md`. Use `workflow.rollback` to restore the exact pre-install bytes.
 

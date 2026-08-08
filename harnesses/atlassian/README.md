@@ -47,3 +47,5 @@ Token and site files are atomically written mode 0600 only after bounded Jira id
 ### Limits
 
 Atlassian may change consent-page markup or wording. The driver intentionally fails rather than guessing when site or Accept controls are missing or ambiguous. The managed Chromium endpoint and OAuth callback must be loopback-only, and the registered callback must exactly match the client file.
+
+Per-run Gateway credential contract: select owner-authorized pointers and pass the identical `secretRefs` environment-name map to prepare and run. Expected environment: `ATLASSIAN_EMAIL and ATLASSIAN_API_TOKEN for direct basic/PAT only`. The shared Harness stores no pointer/provider binding and fails closed when a required direct credential is unavailable.
