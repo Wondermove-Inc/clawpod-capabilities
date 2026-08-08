@@ -789,7 +789,7 @@
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "8d8e9f1c58cad5f2750e33d02419ea9c50388c1bfb325a541ba0f95c6f941432"
+          "sha256": "bb7412418b70d47414fb9b55773c618906ccb6fb667129cc56eefec7c896c3d6"
         },
         {
           "path": "command_contracts.json",

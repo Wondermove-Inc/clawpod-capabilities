@@ -17,7 +17,8 @@ PROVIDERS={
  "recraft":{"env":"RECRAFT_API_KEY","auth":"api_key","models":["recraft-v3"],"features":["generate","edit","vector","svg","design"]},
 }
 PRICES={"openai":{"gpt-image-1":0.04},"vertex":{"imagen-3":0.04},"bfl":{"flux-pro-1.1":0.05},"recraft":{"recraft-v3":0.04}}
-COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.start job.status job.collect artifact.inspect pricing.snapshot _job.worker".split()+professional_studio.STUDIO_COMMANDS
+COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.start job.status job.collect artifact.inspect pricing.snapshot".split()+professional_studio.STUDIO_COMMANDS
+INTERNAL_COMMANDS=["_job.worker"]
 SECRET_RE=re.compile(r"(?i)(bearer\s+\S+|(?:sk|key|token|secret)[-_][A-Za-z0-9._-]{8,})")
 SECRET_KEYS=re.compile(r"(?i)(api.?key|token|secret|password|authorization|credential)")
 
@@ -486,7 +487,7 @@ class Parser(argparse.ArgumentParser):
 def main(argv=None):
  cmd="unknown"
  try:
-  p=Parser(); p.add_argument("command",choices=COMMANDS); p.add_argument("--input-json",default="{}"); p.add_argument("--root")
+  p=Parser(); p.add_argument("command",choices=COMMANDS+INTERNAL_COMMANDS); p.add_argument("--input-json",default="{}"); p.add_argument("--root")
   a=p.parse_args(argv); cmd=a.command
   try: x=json.loads(a.input_json)
   except json.JSONDecodeError: raise E("INVALID_ARGUMENT","input-json must be valid JSON")
