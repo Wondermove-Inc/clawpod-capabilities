@@ -24,7 +24,9 @@ def test_fresh_agent_onboarding_has_only_irreducible_inputs():
     data=json.loads(proc.stdout)["data"]; rendered=json.dumps(data).lower()
     handoff=data["secret_handoff"]
     assert data["state"]=="installed_but_unconnected"
-    assert handoff["source"]=="Room or message" and handoff["storage"]=="memory_secret" and handoff["owner_only"]
+    assert handoff["source"]=="Room, message, or an existing owner-authorized credential" and handoff["storage"]=="protected secret storage" and handoff["owner_only"]
+    assert handoff["gateway_secret_env"]=={"source":"env","provider":"default","id":"RESEND_API_KEY"}
+    assert not handoff["memory_pointer_is_secretref_provider"]
     assert handoff["environment"]=="RESEND_API_KEY" and handoff["environment_injection_only"] and not handoff["argument_allowed"]
     assert not handoff["plaintext_persistence_allowed"] and not handoff["plaintext_output_allowed"] and not handoff["protected_ui_required"]
     assert data["send_defaults"]=={"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False}
@@ -35,10 +37,10 @@ def test_fresh_agent_onboarding_has_only_irreducible_inputs():
 def test_fresh_agent_skill_room_capture_contract_and_no_fake_ui_or_revocation_rule():
     skill=(P.parents[2]/"skills"/"resend-email"/"SKILL.md").read_text()
     lowered=skill.lower()
-    assert "room or a message" in lowered and "immediately route" in lowered and "`memory_secret`" in skill
-    assert "ordinary files, normal memory, reports, prompts, or child agents" in lowered
-    assert "safe pointer metadata" in lowered and "protected runtime injection" in lowered
-    assert "there is no user-facing protected secret ui" in lowered
+    assert "room or a message" in lowered and "route it immediately" in lowered and "`memory_secret`" in skill
+    assert "ordinary files, normal memory, reports, prompts, or logs" in lowered
+    assert "safe pointer metadata" in lowered and "protected runtime-injection lane" in lowered
+    assert "memory-secret pointer is not currently an openclaw secretref provider" in lowered
     assert "room delivery alone does not mean the key is compromised" in lowered
     assert "does not require revocation" in lowered and "independent compromise signal" in lowered
     assert "treat it as exposed and require revocation" not in lowered
@@ -186,9 +188,10 @@ def test_manifest_defaults_and_external_effect_metadata():
     manifest=json.loads((P.parent/"harness.json").read_text())
     skill_metadata=json.loads((P.parents[2]/"skills"/"resend-email"/"capability.json").read_text())
     harness_metadata=json.loads((P.parent/"capability.json").read_text())
-    assert manifest["version"]=="0.1.2" and "onboarding.configure" not in manifest["commands"]
+    assert manifest["version"]=="0.1.3" and "onboarding.configure" not in manifest["commands"]
+    assert manifest["secretEnv"]==[{"name":"RESEND_API_KEY","ref":{"source":"env","provider":"default","id":"RESEND_API_KEY"}}]
     assert skill_metadata["safety"]==harness_metadata["safety"]=={"risk":"externally-visible","approvalRequired":True}
-    assert skill_metadata["linkedHarness"]=={"id":"resend-email","version":"0.1.2"}
+    assert skill_metadata["linkedHarness"]=={"id":"resend-email","version":"0.1.3"}
     for command in manifest["commands"].values():
         args=set(command["inputSchema"]["properties"])
         assert not args & {"policy","allowedRecipientDomains","allowedSenderDomains","maxRecipients","allowAttachments","allowSingle","allowBulk","maxRecipientsPerDay"}

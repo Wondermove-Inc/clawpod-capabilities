@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "resend-email",
   "title": "Resend Email",
-  "description": "Guarded Resend HTTPS transactional email with protected onboarding, verified-sender enforcement, previews, and retry-safe per-recipient bulk delivery.",
-  "version": "0.1.2",
+  "description": "Guarded Resend HTTPS transactional email with Gateway SecretRef injection, protected onboarding, verified-sender enforcement, previews, and retry-safe per-recipient bulk delivery.",
+  "version": "0.1.3",
   "entrypoint": "./resend_email.py",
   "packageRoot": ".",
   "execution": {
@@ -12,11 +12,22 @@
     "timeoutMs": 120000,
     "requiresJson": true
   },
+  "secretEnv": [
+    {
+      "name": "RESEND_API_KEY",
+      "ref": {
+        "source": "env",
+        "provider": "default",
+        "id": "RESEND_API_KEY"
+      }
+    }
+  ],
   "whenToUse": [
     "Onboard, verify, preview, or send transactional email with Resend"
   ],
   "capabilities": [
     "resend-https-api",
+    "gateway-secretref-injection",
     "protected-secret-handoff",
     "verified-sender-domain",
     "per-recipient-bulk",
