@@ -4777,5 +4777,15 @@
         "additionalProperties": false
       }
     }
+  },
+  "directCredentialSecretBinding": {
+    "kind": "gateway-memory-secret-per-run",
+    "parameter": "secretRefs",
+    "names": [
+      "ATLASSIAN_EMAIL",
+      "ATLASSIAN_API_TOKEN"
+    ],
+    "prepareRunMustMatch": true,
+    "manifestStoresPointer": false
   }
 }

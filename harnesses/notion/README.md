@@ -11,3 +11,5 @@ The current Gateway accepts structured values through scalar JSON-string fields.
 5. Reuse verified roots as `allowedRoots`. For writes, run `operation.plan`, then `--preview`, approve the exact intent hash, execute once, and inspect exact-resource verification.
 
 Fixtures under `tests/fixtures` are deterministic adapter contracts and do not contact Notion. See `../../docs/notion-contract.md` for coverage, recovery, revocation, and residual limits.
+
+Per-run Gateway credential contract: select owner-authorized pointers and pass the identical `secretRefs` environment-name map to prepare and run. Expected environment: `NOTION_TOKEN`. The shared Harness stores no pointer/provider binding and fails closed when a required direct credential is unavailable.

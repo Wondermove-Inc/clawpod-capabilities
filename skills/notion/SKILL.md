@@ -39,3 +39,7 @@ After approval, create or select an existing owner-only output root, then use `o
 If a token was pasted into chat or another ordinary channel, treat it as exposed and require revocation/rotation before continuing. At `secret_capture_required`, the owner agent captures the credential directly into protected storage. Never scrape, screenshot, print, persist, or pass plaintext tokens to child agents. Inject it only at runtime, run `auth.onboarding.verify`, confirm `user.me` matches the approved workspace, diagnose each 403/404 root, retrieve every approved root, configure the verified list as `allowedRoots`, and run a bounded read-only smoke. Read [references/onboarding.md](references/onboarding.md) for adapter, recovery, cancellation, timeout, and revocation contracts.
 
 Read [references/commands.md](references/commands.md) when selecting commands and [references/onboarding.md](references/onboarding.md) for connection/recovery.
+
+## Per-run protected credential binding
+
+For every PAT or Internal Integration run, select an authorized owner-scoped memory-secret pointer and pass `{"secretRefs":{"NOTION_TOKEN":"msp_..."}}` to `harness.run.prepare`, then pass the identical map to `harness.run`. Gateway resolves and injects it only for that execution. The shared manifest stores neither a pointer nor a provider binding. Never resolve plaintext into Harness input, argv, files, prompts, logs, or reports. Missing `NOTION_TOKEN` must fail closed. This does not change the separately configured OAuth planning path.

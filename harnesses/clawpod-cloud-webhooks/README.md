@@ -28,7 +28,7 @@ TLS verification is strict by default and HTTP base URLs are rejected. For an in
 
 `system version` and `auth contract` require no authentication. Every portal read or mutation fails clearly unless protected credential environment injection is present. Portal resources use the verified `/api/proxy/auth/*` and `/api/proxy/webhook-*` paths; auth setup uses `/api/auth/public-key`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout`.
 
-OpenClaw platform limitation: Gateway `harness.run` currently has command input plus approval-intent binding but no memory-secret injection field. Therefore authenticated onboarding and every later authenticated one-shot command use the approved `exec.useSecrets` execution lane to inject protected pointers into the installed CLI process. The agent reuses those pointers automatically; the user does not configure environment variables or repeat credentials. Secrets never enter chat, argv, files, or Harness input. This is not session persistence; each command uses a fresh process-memory session.
+Authenticated onboarding and every later authenticated one-shot Gateway command use identical owner-scoped `secretRefs` maps for prepare and run. The agent reuses those pointers automatically; the user does not configure environment variables or repeat credentials. Secrets never enter chat, argv, files, or Harness input. This is not session persistence; each command uses a fresh process-memory session.
 
 Use `mutation-preview` first. Supply its exact effect digest, stable idempotency key, and explicit `--approve` to `source-update`. Reads may retry bounded transient failures. Mutations are never blindly retried.
 
@@ -39,3 +39,5 @@ CLI_ANYTHING_FORCE_INSTALLED=1 python3 -m pytest cli_anything/clawpod_cloud_webh
 ```
 
 Tests use only a local mock HTTPS server with synthetic certificates and credentials. No live portal or secrets are accessed.
+
+Per-run Gateway credential contract: select owner-authorized pointers and pass the identical `secretRefs` environment-name map to prepare and run. Expected environment: `CLAWPOD_CLOUD_EMAIL and CLAWPOD_CLOUD_PASSWORD`. The shared Harness stores no pointer/provider binding and fails closed when a required direct credential is unavailable.

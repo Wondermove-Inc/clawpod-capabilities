@@ -4,7 +4,7 @@
   "name": "atlassian",
   "title": "Atlassian",
   "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
   "execution": {

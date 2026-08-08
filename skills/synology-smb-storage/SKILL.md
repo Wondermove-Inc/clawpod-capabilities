@@ -32,3 +32,7 @@ Explain that the password goes directly to protected secret storage, enters the 
 Do not add startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restarts, or direct live mount/unmount actions. `mount.restore` is manual and Harness-mediated.
 
 Read `references/operations.md` for command and recovery details.
+
+## Per-run protected credential binding
+
+For credential-bearing Gateway commands, select an authorized owner-scoped password pointer and pass `{"secretRefs":{"SYNOLOGY_SMB_PASSWORD":"msp_..."}}` to `harness.run.prepare`, then pass the identical map to `harness.run`. Gateway resolves it only for that execution. The shared manifest stores no pointer or provider binding. Harness stdin remains a supported protected transport outside this Gateway lane, and the backend still receives only `PASSWD`. Missing credentials fail closed.

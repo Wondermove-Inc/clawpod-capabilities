@@ -1528,5 +1528,14 @@
         }
       }
     }
+  },
+  "directCredentialSecretBinding": {
+    "kind": "gateway-memory-secret-per-run",
+    "parameter": "secretRefs",
+    "names": [
+      "NOTION_TOKEN"
+    ],
+    "prepareRunMustMatch": true,
+    "manifestStoresPointer": false
   }
 }

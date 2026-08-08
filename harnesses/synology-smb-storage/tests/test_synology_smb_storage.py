@@ -176,7 +176,7 @@ def test_manifest_safety_and_control_plane_contracts():
  h=json.loads((HERE/'harness.json').read_text())['commands']; cc=json.loads((HERE/'command_contracts.json').read_text())
  expected={'shares.discover':['readOnly','secretUse'],'mount.apply':['secretUse','writeSafe'],'mount.restore':['secretUse','externalSideEffect'],'auth.onboard':['secretUse','writeSafe','externalSideEffect'],'layout.ensure':['externalSideEffect','writeSafe'],'mount.unmount':['writeSafe'],'workflow.install':['writeSafe'],'workflow.rollback':['writeSafe']}
  for name,classes in expected.items(): assert h[name]['safetyClasses']==classes and cc[name]['safetyClasses']==classes
- assert len(h)==len(cc)==13
+ assert len(h)==13 and len([name for name in cc if name!='directCredentialSecretBinding'])==13
 
 def test_file_commands_absent_from_manifest_contracts_parser_and_discovery():
  removed={'file.list','file.get','file.put'}
@@ -202,6 +202,7 @@ def test_manifest_input_schemas_use_gateway_supported_keywords():
  for filename in ('harness.json','command_contracts.json'):
   document=json.loads((HERE/filename).read_text()); commands=document.get('commands',document)
   for command_name,command in commands.items():
+   if command_name=='directCredentialSecretBinding': continue
    for argument_name,schema in command['inputSchema'].get('properties',{}).items():
     assert set(schema)<=supported,f'{filename}: {command_name}.{argument_name}'
 
@@ -209,3 +210,16 @@ def test_installed_cli_subprocess_json():
  cp=subprocess.run([sys.executable,str(SCRIPT),'auth.contract'],text=True,capture_output=True,check=True); d=json.loads(cp.stdout)
  assert d['ok'] and d['data']['backendPasswordTransport']=='PASSWD environment only'
  bad=subprocess.run([sys.executable,str(SCRIPT),'mount.preview','--server','bad/x'],text=True,capture_output=True); assert json.loads(bad.stdout)['error']['code']=='INVALID_INPUT'
+
+
+def test_per_run_secretrefs_manifest_contract():
+ import json
+ from pathlib import Path
+ root=Path(__file__).resolve()
+ while not (root/'harnesses').exists(): root=root.parent
+ manifest=json.loads((root/'harnesses/synology-smb-storage/harness.json').read_text())
+ binding=json.loads((root/'harnesses/synology-smb-storage/command_contracts.json').read_text())['directCredentialSecretBinding']
+ assert manifest['version']=='0.1.4' and 'credentialEnvironment' not in manifest
+ assert binding['names']==['SYNOLOGY_SMB_PASSWORD'] and binding['parameter']=='secretRefs'
+ assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
+ assert json.loads((root/'skills/synology-smb-storage/capability.json').read_text())['linkedHarness']['version']=='0.1.4'

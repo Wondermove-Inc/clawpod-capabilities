@@ -66,7 +66,9 @@ def secret(ref):
 def authorization(s):
  a=s.get('auth',{}); typ=a.get('type')
  if typ=='oauth': return 'Bearer '+secret(a.get('tokenRef'))
- if typ=='basic' and a.get('email'): return 'Basic '+base64.b64encode((a['email']+':'+secret(a.get('tokenRef'))).encode()).decode()
+ if typ=='basic':
+  email=secret(a.get('emailRef','env:ATLASSIAN_EMAIL')); token=secret(a.get('tokenRef','env:ATLASSIAN_API_TOKEN'))
+  return 'Basic '+base64.b64encode((email+':'+token).encode()).decode()
  raise Failure('auth_invalid','auth.type must be basic or oauth',systemic=True)
 def bounds(ns):
  upper=600000 if ns.command=='auth.oauth.login' else 120000
