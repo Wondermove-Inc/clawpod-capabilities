@@ -375,3 +375,16 @@ def test_gateway_simplification_retains_harness_side_revalidation():
  assert invalid.returncode!=0 and "invalid choice" in invalid.stderr
  rc,o,_=run("onboard.status","--output-root","")
  assert rc==2 and "--output-root is required" in o["error"]["message"]
+
+
+def test_per_run_secretrefs_manifest_contract():
+ import json
+ from pathlib import Path
+ root=Path(__file__).resolve()
+ while not (root/'harnesses').exists(): root=root.parent
+ manifest=json.loads((root/'harnesses/notion/harness.json').read_text())
+ binding=json.loads((root/'harnesses/notion/command_contracts.json').read_text())['directCredentialSecretBinding']
+ assert manifest['version']=='0.1.9' and 'credentialEnvironment' not in manifest
+ assert binding['names']==['NOTION_TOKEN'] and binding['parameter']=='secretRefs'
+ assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
+ assert json.loads((root/'skills/notion/capability.json').read_text())['linkedHarness']['version']=='0.1.9'

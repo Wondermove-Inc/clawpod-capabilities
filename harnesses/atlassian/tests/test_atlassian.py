@@ -192,3 +192,20 @@ def test_oauth_manifest_contracts_are_typed():
 
 def test_contract_inventory():
  assert len(a.CONTRACTS)==31 and all(x.startswith(('auth.','jira.','confluence.')) for x in a.CONTRACTS)
+
+
+def test_direct_basic_uses_per_run_environment(tmp_path,monkeypatch):
+ p=tmp_path/'sites.json'; p.write_text(json.dumps({'sites':{'one':{'baseUrl':'https://one.atlassian.net','auth':{'type':'basic','emailRef':'env:ATLASSIAN_EMAIL','tokenRef':'env:ATLASSIAN_API_TOKEN'}}}})); p.chmod(0o600)
+ monkeypatch.setenv('ATLASSIAN_EMAIL','agent@example.invalid'); monkeypatch.setenv('ATLASSIAN_API_TOKEN','fixture-token')
+ assert a.authorization(a.get_site('one',p)).startswith('Basic ')
+ monkeypatch.delenv('ATLASSIAN_API_TOKEN')
+ with pytest.raises(a.Failure) as e:a.authorization(a.get_site('one',p))
+ assert e.value.code=='auth_missing'
+
+def test_secretrefs_metadata_contract():
+ manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
+ binding=json.loads(Path('harnesses/atlassian/command_contracts.json').read_text())['directCredentialSecretBinding']
+ assert manifest['version']=='0.3.1' and 'credentialEnvironment' not in manifest
+ assert binding['names']==['ATLASSIAN_EMAIL','ATLASSIAN_API_TOKEN'] and binding['parameter']=='secretRefs'
+ assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
+ assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.1'
