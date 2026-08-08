@@ -430,8 +430,8 @@
     {
       "id": "resend-email",
       "type": "skill",
-      "version": "0.1.2",
-      "description": "Route protected Resend onboarding and verified-sender single or privacy-preserving bulk transactional email with attachments by default.",
+      "version": "0.1.3",
+      "description": "Route Gateway SecretRef-backed Resend onboarding and verified-sender transactional delivery with protected credentials.",
       "path": "skills/resend-email",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -447,12 +447,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "38682e8f34910675bf0546f8760eb4b33bd50c80fcc66d357e4bfd6eb2cb8b87"
+          "sha256": "70dba085392834be640e5e5ff6e45f39e0d42863ae3a74931ec3cf83bd8ee8ad"
         }
       ],
       "linkedHarness": {
         "id": "resend-email",
-        "version": "0.1.2"
+        "version": "0.1.3"
       }
     },
     {
@@ -1092,8 +1092,8 @@
     {
       "id": "resend-email",
       "type": "harness",
-      "version": "0.1.2",
-      "description": "Guarded Resend HTTPS API email with protected onboarding, verified sender enforcement, attachments, previews, and retry-safe bulk delivery.",
+      "version": "0.1.3",
+      "description": "Guarded Resend HTTPS API email with Gateway SecretRef injection, protected onboarding, verified sender enforcement, previews, attachments, and retry-safe delivery.",
       "path": "harnesses/resend-email",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -1109,23 +1109,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "ea0dc54774ec7278827ae499537421b5eb1d9dd9fac4b289fc52cba94fc3d68b"
+          "sha256": "66d0dcb0f1d4f1f93c871122ff3b88fa297ef85d31a05919fd305fdf0ba7061d"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "8d39b18bbbb66db84710fc04652907e092ed01d57a7895bd28e64da8c1e93bf3"
+          "sha256": "241ffdb84e3437c1dd38f2ebf8f31b0f703c290fb485035e9ce3c21dabb97eae"
         },
         {
           "path": "harness.json",
-          "sha256": "313913a2c6462a19f4289aa9be7452ba5252883ca57fdbfea8c25ea7e9c2b7a9"
+          "sha256": "409d616a5acca293fc570ca35cb8f3caf2e7ca9933b87be8848932ad1dcd32c5"
         },
         {
           "path": "resend_email.py",
-          "sha256": "ecb4a8afe6ccf45a291981b3b90dbc3627bfcd4f2bc0256d358b9e1be01caeb8"
+          "sha256": "3517c521a627f7cacc3bc993dfc32e5e9d863747a719b18457208b66e3a57f3f"
         },
         {
           "path": "scripts/generate_manifest.py",
-          "sha256": "77eea0721cae8697a72b850ae642205f2ad3023513d7a783c2f5e065b34f3e71"
+          "sha256": "9c75344eb60deebf0eabb3143cace8399a8a4caa1bea477f609217974f68fbb0"
         }
       ]
     },
