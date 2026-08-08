@@ -102,8 +102,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "skill",
-      "version": "0.1.0",
-      "description": "Route guarded multi-provider image generation, editing, comparison, onboarding, provenance, and QA.",
+      "version": "0.2.0",
+      "description": "Route guarded multi-provider image workflows with production OpenAI generation, onboarding, provenance, and QA.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -119,7 +119,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2cf3a301d6ed10cea0bf1b0cc9d99defb83f8d1fcea769895bd5d1c2370557e9"
+          "sha256": "0d55e9c42683095f3bac46651990681456bfb126cdb1bb360a5d5503366df170"
         },
         {
           "path": "references/onboarding.md",
@@ -136,7 +136,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-image-studio",
-        "version": "0.1.0"
+        "version": "0.2.0"
       }
     },
     {
@@ -764,8 +764,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "harness",
-      "version": "0.1.0",
-      "description": "Offline-first guarded image generation and editing across OpenAI, Vertex, BFL, and Recraft with exact budget-bound intents and provenance.",
+      "version": "0.2.0",
+      "description": "Guarded image workflows with exact paid intents, provenance, QA, and one-shot OpenAI Images HTTPS transport.",
       "path": "harnesses/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -781,19 +781,19 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "812aab067647e774b0905f720fdb4a330c085d1abccb68626c2fe8f0232be0cf"
+          "sha256": "2b7be2b4a828ed9de12d5d2f69067911aa2d99ad3c79d0c9ab4bf83431f5adf1"
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "63d1d0e897cc84713ec8933ae777d744dbecf957f1170b6cfb9ca43052f5f6ca"
+          "sha256": "13150a6bc5c5fb10ba0a8aead5e5ee054083c1912b2881d61bebd83814038159"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "d1f6ed335516d7fae18bf73fe505e9fccb6f8450c038d544f4f7f4eddecea085"
+          "sha256": "1a2c489e2fa7b0d7e291e5a895db5ce62d0ab862fad9d94473c24fa6545890c8"
         },
         {
           "path": "harness.json",
-          "sha256": "7c95be44cae3025dc034ab38e3a38fa9ea60e08282b8d5b795758694be1d3048"
+          "sha256": "a3f0284e002728efce232ca452d7abcfb1915797ba98be3c62da9df76c1f9b91"
         }
       ]
     },

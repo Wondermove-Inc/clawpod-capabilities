@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-image-studio",
   "title": "ClawPod Image Studio",
-  "description": "Guarded offline-first multi-provider image generation, editing, comparison, onboarding, budget approval, provenance, and QA.",
-  "version": "0.1.0",
+  "description": "Guarded multi-provider image workflows with exact paid intents, provenance, QA, and one-shot OpenAI Images HTTPS transport.",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_image_studio.py",
   "packageRoot": ".",
   "execution": {
@@ -20,6 +20,7 @@
     "exact-paid-intent-digests",
     "protected-secret-bindings",
     "artifact-provenance",
+    "openai-images-live-transport",
     "svg-qa"
   ],
   "authModel": {

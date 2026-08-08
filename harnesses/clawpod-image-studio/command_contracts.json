@@ -1,14 +1,16 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "providers": {
-    "openai": {"secretEnvironment": "OPENAI_API_KEY", "auth": "owner-scoped protected secret"},
-    "vertex": {"secretEnvironment": null, "auth": "ADC/OAuth/service-account lifecycle", "requires": ["project", "location", "iam"]},
-    "bfl": {"secretEnvironment": "BFL_API_KEY", "auth": "owner-scoped protected secret"},
-    "recraft": {"secretEnvironment": "RECRAFT_API_KEY", "auth": "owner-scoped protected secret"}
+    "openai": {"secretEnvironment": "OPENAI_API_KEY", "auth": "owner-scoped protected runtime secret", "liveTransport": "one-shot POST /v1/images/generations", "nonBillableVerification": "GET /v1/models/gpt-image-1"},
+    "vertex": {"secretEnvironment": null, "auth": "ADC/OAuth/service-account lifecycle", "liveTransport": false, "requires": ["project", "location", "iam"]},
+    "bfl": {"secretEnvironment": "BFL_API_KEY", "auth": "owner-scoped protected secret", "liveTransport": false},
+    "recraft": {"secretEnvironment": "RECRAFT_API_KEY", "auth": "owner-scoped protected secret", "liveTransport": false}
   },
-  "secretBinding": {"kind": "gateway-memory-secret-per-run", "parameter": "secretRefs", "prepareRunMustMatch": true, "manifestStoresPointer": false, "pointerIdsInSharedPackage": false},
-  "paidIntent": {"required": ["provider", "model", "options", "count", "output", "maxUsd", "expiresAt", "bindingDigest", "preparedDigest"], "automaticRetryOnAmbiguousBilling": false},
-  "network": {"default": "disabled", "transport": "injectable", "liveReadinessRequiresOnboarding": true},
+  "secretBinding": {"kind": "gateway-memory-secret-per-run", "parameter": "secretRefs", "prepareRunMustMatch": true, "manifestStoresPointer": false, "plaintextInArgvInputFilesLogsOutput": false},
+  "paidIntent": {"required": ["provider", "model", "options", "count", "output", "maxUsd", "expiresAt", "bindingDigest", "preparedDigest"], "exactDigestBindingCostExpiryChecks": true, "automaticRetryOnAmbiguousBilling": false},
+  "network": {"default": "disabled-without-approved-secret-injection", "openaiProtectedInjectionEnablesLivePath": true, "openaiTimeoutSeconds": 45, "maximumResponseBytes": 26214400, "automaticRetries": 0, "liveReadinessRequiresOnboarding": true},
+  "openaiOptions": {"allowlist": ["size", "quality", "background", "output_format", "output_compression", "moderation"], "cannotOverride": ["model", "prompt", "n"]},
+  "openaiResults": {"accepted": ["b64_json", "https_url"], "artifactRoot": "<root>/artifacts", "qa": ["recognized_mime", "dimensions_when_detectable", "sha256", "provenance"]},
   "compare": {"minLegs": 2, "maxLegs": 4, "aggregateAndPerLegDigests": true},
-  "onboarding": {"interview": ["intendedUse", "providers/models", "budget", "dataConstraints", "project/location/IAM", "safetyPolicy", "rightsPolicy", "publicationPolicy"], "states": ["connected", "configured_unverified", "deferred", "revoked"]}
+  "onboarding": {"states": ["connected", "configured_unverified", "deferred", "revoked"]}
 }

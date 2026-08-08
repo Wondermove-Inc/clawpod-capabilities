@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Offline-first guarded image provider orchestration harness."""
 from __future__ import annotations
-import argparse, datetime as dt, hashlib, json, mimetypes, os, re, stat, sys, tempfile, uuid
+import argparse, base64, binascii, datetime as dt, hashlib, json, mimetypes, os, re, struct, sys, tempfile, uuid
+import urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 from typing import Any
 
-VERSION="0.1.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
+VERSION="0.2.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
+OPENAI_BASE="https://api.openai.com/v1"; HTTP_TIMEOUT=45; MAX_RESPONSE_BYTES=25*1024*1024
 PROVIDERS={
  "openai":{"env":"OPENAI_API_KEY","auth":"api_key","models":["gpt-image-1"],"features":["generate","edit","mask","multi_image"]},
  "vertex":{"env":None,"auth":"adc_oauth_service_account","models":["imagen-3"],"features":["generate","edit","governance","synthid"],"requires":["project","location","iam"]},
@@ -50,6 +52,15 @@ def atomic(path,obj):
  try:
   os.fchmod(fd,0o600)
   with os.fdopen(fd,"w") as f: json.dump(obj,f,sort_keys=True); f.flush(); os.fsync(f.fileno())
+  os.replace(tmp,path)
+ finally:
+  try: os.unlink(tmp)
+  except FileNotFoundError: pass
+def atomic_bytes(path,data):
+ path.parent.mkdir(parents=True,exist_ok=True,mode=0o700); fd,tmp=tempfile.mkstemp(dir=path.parent,prefix=".tmp-")
+ try:
+  os.fchmod(fd,0o600)
+  with os.fdopen(fd,"wb") as f: f.write(data); f.flush(); os.fsync(f.fileno())
   os.replace(tmp,path)
  finally:
   try: os.unlink(tmp)
@@ -119,30 +130,107 @@ def assert_prepared(req,r,op):
  if not isinstance(d,str): raise E("APPROVAL_REQUIRED","preparedDigest required",exit_code=6)
  stored=readj(r/"prepared"/(d.removeprefix("sha256:")+".json"),None)
  if not stored: raise E("DIGEST_MISMATCH","prepared intent not found",exit_code=6)
- check=prepare({k:v for k,v in req.items() if k not in {"preparedDigest","bindingDigest","legDigests","aggregateDigest"}},r)
- if check["preparedDigest"]!=d or req.get("bindingDigest")!=stored["bindingDigest"]: raise E("DIGEST_MISMATCH","intent or secret binding changed",exit_code=6)
+ current=validate_request({k:v for k,v in req.items() if k not in {"preparedDigest","bindingDigest","legDigests","aggregateDigest"}},op)
+ expected={k:v for k,v in stored.items() if k not in {"estimate","bindingDigest","preparedDigest"}}
+ if stable(current)!=stable(expected) or req.get("bindingDigest")!=stored["bindingDigest"]: raise E("DIGEST_MISMATCH","intent, cost, expiry, or secret binding changed",exit_code=6)
+ if required_binding(stored["provider"],connections(r).get(stored["provider"],{}))!=stored["bindingDigest"]: raise E("DIGEST_MISMATCH","current secret binding changed",exit_code=6)
+ try: expiry=dt.datetime.fromisoformat(stored["expiresAt"].replace("Z","+00:00"))
+ except (KeyError,ValueError,AttributeError): raise E("APPROVAL_EXPIRED","prepared expiry is invalid",exit_code=6)
+ if expiry<=dt.datetime.now(dt.timezone.utc): raise E("APPROVAL_EXPIRED","prepared approval expired",exit_code=6)
+ if float(stored["maxUsd"])<float(stored["estimate"]["estimatedUsd"]): raise E("COST_CEILING_REQUIRED","prepared cost ceiling no longer covers estimate",exit_code=6)
  return stored
 
-def transport(provider,payload):
- mode=os.getenv("CLAWPOD_IMAGE_STUDIO_TRANSPORT","disabled")
+def _api_key():
+ key=os.getenv("OPENAI_API_KEY")
+ if not key: raise E("CREDENTIAL_UNAVAILABLE","OPENAI_API_KEY was not injected at runtime",exit_code=5)
+ return key
+def _read_limited(response,limit=MAX_RESPONSE_BYTES):
+ data=response.read(limit+1)
+ if len(data)>limit: raise E("PROVIDER_RESPONSE_INVALID","provider response exceeded size limit",exit_code=8)
+ return data
+def _open(request,timeout=HTTP_TIMEOUT): return urllib.request.urlopen(request,timeout=timeout)
+def _http_error(err,paid):
+ status=getattr(err,"code",None)
+ if status in (401,403): return E("PROVIDER_AUTH_FAILED","OpenAI rejected the protected credential",exit_code=5,details={"httpStatus":status,"billingState":"not_accepted"})
+ if status==429: return E("PROVIDER_RATE_LIMITED","OpenAI rate limited the request before acceptance",exit_code=8,retryable=not paid,details={"httpStatus":429,"billingState":"not_accepted" if paid else "not_applicable","automaticRetry":False})
+ if status and 400<=status<500: return E("PROVIDER_REJECTED","OpenAI rejected the request before a successful response",exit_code=8,retryable=False,details={"httpStatus":status,"billingState":"not_accepted","automaticRetry":False})
+ return E("BILLING_AMBIGUOUS" if paid else "PROVIDER_UNAVAILABLE","OpenAI response was ambiguous; do not automatically retry the paid request" if paid else "OpenAI verification unavailable",exit_code=10 if paid else 8,retryable=False if paid else True,details={"httpStatus":status,"billingState":"unknown" if paid else "not_applicable","automaticRetry":False})
+def openai_verify(opener=_open):
+ req=urllib.request.Request(OPENAI_BASE+"/models/gpt-image-1",headers={"Authorization":"Bearer "+_api_key(),"Accept":"application/json"})
+ try:
+  with opener(req,HTTP_TIMEOUT) as response: doc=json.loads(_read_limited(response,1024*1024))
+ except urllib.error.HTTPError as e: raise _http_error(e,False)
+ except (TimeoutError,urllib.error.URLError,OSError): raise E("PROVIDER_UNAVAILABLE","OpenAI non-billable model-readiness check unavailable",8,True)
+ except (json.JSONDecodeError,UnicodeDecodeError): raise E("PROVIDER_RESPONSE_INVALID","OpenAI readiness response was malformed",8)
+ if not isinstance(doc,dict) or doc.get("id")!="gpt-image-1": raise E("PROVIDER_RESPONSE_INVALID","OpenAI readiness response did not confirm gpt-image-1",8)
+ return {"verified":True,"method":"GET /v1/models/gpt-image-1","billingAttempted":False}
+def _decode_openai_item(item,opener):
+ if not isinstance(item,dict): raise E("PROVIDER_RESPONSE_INVALID","OpenAI image item was malformed",8,details={"billingState":"accepted"})
+ if isinstance(item.get("b64_json"),str):
+  try: return base64.b64decode(item["b64_json"],validate=True)
+  except (binascii.Error,ValueError): raise E("PROVIDER_RESPONSE_INVALID","OpenAI returned invalid base64 image data",8,details={"billingState":"accepted"})
+ url=item.get("url")
+ if isinstance(url,str):
+  parsed=urllib.parse.urlparse(url)
+  if parsed.scheme!="https" or not parsed.hostname: raise E("PROVIDER_RESPONSE_INVALID","OpenAI returned an unsafe image URL",8,details={"billingState":"accepted"})
+  try:
+   with opener(urllib.request.Request(url,headers={"Accept":"image/*"}),HTTP_TIMEOUT) as response: return _read_limited(response)
+  except Exception: raise E("BILLING_AMBIGUOUS","image generation succeeded but result download was not confirmed; do not resubmit",10,False,{"billingState":"accepted_output_unavailable","automaticRetry":False})
+ raise E("PROVIDER_RESPONSE_INVALID","OpenAI response contained neither b64_json nor URL",8,details={"billingState":"accepted"})
+def openai_generate(payload,opener=_open):
+ if payload.get("operation")!="generate": raise E("PROVIDER_OPERATION_UNSUPPORTED","live OpenAI transport currently supports generation only",6)
+ options=payload.get("options") or {}; allowed={"size","quality","background","output_format","output_compression","moderation"}
+ if not isinstance(options,dict): raise E("SCHEMA_VIOLATION","options must be an object")
+ unknown=set(options)-allowed
+ if unknown: raise E("SCHEMA_VIOLATION","unsupported OpenAI options",details={"fields":sorted(unknown)})
+ body={**options,"model":payload["model"],"prompt":payload["prompt"],"n":payload["count"]}
+ req=urllib.request.Request(OPENAI_BASE+"/images/generations",data=stable(body).encode(),method="POST",headers={"Authorization":"Bearer "+_api_key(),"Content-Type":"application/json","Accept":"application/json"})
+ try:
+  with opener(req,HTTP_TIMEOUT) as response: raw=_read_limited(response)
+ except urllib.error.HTTPError as e: raise _http_error(e,True)
+ except (TimeoutError,urllib.error.URLError,OSError): raise E("BILLING_AMBIGUOUS","OpenAI submission outcome is unknown; do not automatically retry",10,False,{"billingState":"unknown","automaticRetry":False})
+ try: doc=json.loads(raw)
+ except (json.JSONDecodeError,UnicodeDecodeError): raise E("PROVIDER_RESPONSE_INVALID","OpenAI returned malformed JSON after accepting the request",8,False,{"billingState":"unknown","automaticRetry":False})
+ data=doc.get("data") if isinstance(doc,dict) else None
+ if not isinstance(data,list) or len(data)!=payload["count"]: raise E("PROVIDER_RESPONSE_INVALID","OpenAI returned an unexpected image count",8,False,{"billingState":"unknown","automaticRetry":False})
+ return {"items":[_decode_openai_item(item,opener) for item in data],"providerRequestId":doc.get("id"),"revisedPrompts":[item.get("revised_prompt") for item in data if isinstance(item,dict) and item.get("revised_prompt")]}
+def transport(provider,payload,opener=_open):
+ mode=os.getenv("CLAWPOD_IMAGE_STUDIO_TRANSPORT","openai-live" if provider=="openai" and os.getenv("OPENAI_API_KEY") else "disabled")
  if mode=="disabled": raise E("NETWORK_DISABLED","live provider transport is disabled by default",exit_code=8)
  if mode=="mock-outage": raise E("PROVIDER_OUTAGE","provider unavailable",exit_code=8,retryable=True)
  if mode=="mock-ambiguous": raise E("BILLING_AMBIGUOUS","provider response was ambiguous; do not automatically retry paid operation",exit_code=10,retryable=False,details={"billingState":"unknown","automaticRetry":False})
- if mode!="mock-success": raise E("NETWORK_DISABLED","only injected transports are supported",exit_code=8)
- return {"bytes":b"<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16'/></svg>" if payload["format"]=="svg" else b"\x89PNG\r\n\x1a\nmock","mime":"image/svg+xml" if payload["format"]=="svg" else "image/png","providerJobId":"mock-"+sha(payload)[7:19]}
+ if mode=="openai-live":
+  if provider!="openai": raise E("NETWORK_DISABLED","live transport is enabled only for OpenAI Images",8)
+  return openai_generate(payload,opener)
+ if mode!="mock-success": raise E("NETWORK_DISABLED","unsupported transport mode",exit_code=8)
+ png=b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"+struct.pack(">II",1,1)+b"\x08\x06\x00\x00\x00"
+ return {"items":[b"<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16'/></svg>" if payload["format"]=="svg" else png],"providerRequestId":"mock-"+sha(payload)[7:19],"revisedPrompts":[]}
 def inspect_artifact(path):
- b=path.read_bytes(); mime="image/svg+xml" if path.suffix.lower()==".svg" else (mimetypes.guess_type(path.name)[0] or "application/octet-stream")
- qa={"nonEmpty":bool(b),"svgParsed":None}
+ b=path.read_bytes(); mime="application/octet-stream"; dimensions=None
+ if b.startswith(b"\x89PNG\r\n\x1a\n") and len(b)>=24: mime="image/png"; dimensions={"width":struct.unpack(">I",b[16:20])[0],"height":struct.unpack(">I",b[20:24])[0]}
+ elif b.startswith((b"\xff\xd8\xff",)): mime="image/jpeg"
+ elif b.startswith((b"RIFF",)) and b[8:12]==b"WEBP": mime="image/webp"
+ elif b.lstrip().startswith(b"<svg"): mime="image/svg+xml"
+ qa={"nonEmpty":bool(b),"decoded":mime.startswith("image/") and bool(b),"svgParsed":None}
  if mime=="image/svg+xml":
   import xml.etree.ElementTree as ET
-  try: root=ET.fromstring(b); qa["svgParsed"]=root.tag.endswith("svg")
+  try:
+   root=ET.fromstring(b); qa["svgParsed"]=root.tag.endswith("svg")
+   def num(name):
+    m=re.match(r"([0-9]+(?:\.[0-9]+)?)",root.attrib.get(name,"")); return int(float(m.group(1))) if m else None
+   w,h=num("width"),num("height"); dimensions={"width":w,"height":h} if w and h else None
   except ET.ParseError: qa["svgParsed"]=False
- return {"path":path.name,"bytes":len(b),"sha256":sha(b),"mimeType":mime,"qa":qa,"provenance":{"harness":"clawpod-image-studio","version":VERSION}}
+ if not qa["decoded"]: raise E("ARTIFACT_INVALID","provider output is not a recognized image",8,False,{"billingState":"accepted"})
+ return {"path":str(path),"bytes":len(b),"sha256":sha(b),"mimeType":mime,"dimensions":dimensions,"qa":qa,"provenance":{"harness":"clawpod-image-studio","version":VERSION}}
 def run_image(req,r,op):
  prepared=assert_prepared(req,r,op); p=safe_output(r/"artifacts",prepared["output"]); p.parent.mkdir(parents=True,exist_ok=True)
  result=transport(prepared["provider"],prepared)
- p.write_bytes(result["bytes"]); art=inspect_artifact(p)
- return {"state":"succeeded","provider":prepared["provider"],"providerJobId":result["providerJobId"],"artifact":art,"actualUsd":prepared["estimate"]["estimatedUsd"],"automaticRetry":False}
+ artifacts=[]
+ for i,b in enumerate(result["items"]):
+  target=p if len(result["items"])==1 else p.with_name(f"{p.stem}-{i+1}{p.suffix}")
+  target=safe_output(r/"artifacts",str(target.relative_to(r/"artifacts"))); atomic_bytes(target,b); artifacts.append(inspect_artifact(target))
+ for art in artifacts: art["provenance"].update({"provider":prepared["provider"],"model":prepared["model"],"operation":prepared["operation"],"preparedDigest":prepared["preparedDigest"],"providerRequestId":result.get("providerRequestId")})
+ return {"state":"succeeded","provider":prepared["provider"],"providerRequestId":result.get("providerRequestId"),"artifact":artifacts[0] if len(artifacts)==1 else None,"artifacts":artifacts,"revisedPrompts":result.get("revisedPrompts",[]),"estimatedUsd":prepared["estimate"]["estimatedUsd"],"actualUsd":None,"costReconciliation":"provider response did not include a final billed amount","billingState":"accepted","automaticRetry":False}
 def execute(cmd,x,r):
  if cmd=="provider.list": return {"items":[{"id":p,**v} for p,v in PROVIDERS.items()],"networkDefault":"disabled"}
  if cmd=="provider.requirements":
@@ -178,11 +266,15 @@ def execute(cmd,x,r):
   closed(x,{"provider","nonBillable"},("provider",)); p=x["provider"]; cs=connections(r); rec=cs.get(p)
   if not rec or rec.get("state") not in {"configured_unverified","connected"}: raise E("NOT_CONNECTED","binding unavailable",5)
   if x.get("nonBillable") is not True: raise E("NONBILLABLE_REQUIRED","verification must be explicitly non-billable",6)
-  mode=os.getenv("CLAWPOD_IMAGE_STUDIO_VERIFY","disabled")
-  if mode=="disabled": return {"provider":p,"state":"configured_unverified","verified":False,"billingAttempted":False,"reason":"no injected non-billable verifier"}
+  mode=os.getenv("CLAWPOD_IMAGE_STUDIO_VERIFY","openai-live" if p=="openai" and os.getenv("OPENAI_API_KEY") else "disabled")
+  if mode=="disabled": return {"provider":p,"state":"configured_unverified","verified":False,"billingAttempted":False,"reason":"non-billable verification transport disabled"}
   if mode=="mock-outage": raise E("PROVIDER_OUTAGE","verification unavailable",8,True)
-  if mode!="mock-success": raise E("NETWORK_DISABLED","unsupported verifier",8)
-  rec["state"]="connected"; rec["verification"]={"at":now(),"billingAttempted":False}; cs[p]=rec; atomic(conn_path(r),cs); return {"provider":p,"state":"connected","verified":True,"billingAttempted":False}
+  if mode=="openai-live":
+   if p!="openai": return {"provider":p,"state":"configured_unverified","verified":False,"billingAttempted":False,"reason":"no documented non-billable verifier implemented for this provider"}
+   verification=openai_verify()
+  elif mode=="mock-success": verification={"billingAttempted":False,"method":"mock"}
+  else: raise E("NETWORK_DISABLED","unsupported verifier",8)
+  rec["state"]="connected"; rec["verification"]={"at":now(),**verification}; cs[p]=rec; atomic(conn_path(r),cs); return {"provider":p,"state":"connected","verified":True,**verification}
  if cmd=="connection.revoke":
   closed(x,{"provider","confirm"},("provider","confirm"));
   if x["confirm"]!="revoke-binding": raise E("CONFIRMATION_REQUIRED","confirm revoke-binding",6)
