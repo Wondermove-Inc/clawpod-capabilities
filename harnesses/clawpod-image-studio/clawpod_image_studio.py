@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Offline-first guarded image provider orchestration harness."""
 from __future__ import annotations
-import argparse, base64, binascii, datetime as dt, hashlib, json, mimetypes, os, re, struct, sys, tempfile, uuid, types
+import argparse, base64, binascii, datetime as dt, hashlib, json, mimetypes, os, re, signal, struct, subprocess, sys, tempfile, time, uuid, types
 import urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 from typing import Any
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import professional_studio
 
-VERSION="0.3.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
+VERSION="0.4.0"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
 OPENAI_BASE="https://api.openai.com/v1"; HTTP_TIMEOUT=45; MAX_RESPONSE_BYTES=25*1024*1024
 PROVIDERS={
  "openai":{"env":"OPENAI_API_KEY","auth":"api_key","models":["gpt-image-1"],"features":["generate","edit","mask","multi_image"]},
@@ -17,7 +17,7 @@ PROVIDERS={
  "recraft":{"env":"RECRAFT_API_KEY","auth":"api_key","models":["recraft-v3"],"features":["generate","edit","vector","svg","design"]},
 }
 PRICES={"openai":{"gpt-image-1":0.04},"vertex":{"imagen-3":0.04},"bfl":{"flux-pro-1.1":0.05},"recraft":{"recraft-v3":0.04}}
-COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.status job.collect artifact.inspect pricing.snapshot".split()+professional_studio.STUDIO_COMMANDS
+COMMANDS="provider.list provider.status provider.requirements onboarding.interview connection.bind connection.status connection.verify connection.revoke request.validate request.estimate request.prepare image.generate image.edit image.compare job.start job.status job.collect artifact.inspect pricing.snapshot _job.worker".split()+professional_studio.STUDIO_COMMANDS
 SECRET_RE=re.compile(r"(?i)(bearer\s+\S+|(?:sk|key|token|secret)[-_][A-Za-z0-9._-]{8,})")
 SECRET_KEYS=re.compile(r"(?i)(api.?key|token|secret|password|authorization|credential)")
 
@@ -55,6 +55,7 @@ def atomic(path,obj):
   os.fchmod(fd,0o600)
   with os.fdopen(fd,"w") as f: json.dump(obj,f,sort_keys=True); f.flush(); os.fsync(f.fileno())
   os.replace(tmp,path)
+  dfd=os.open(path.parent,os.O_RDONLY); os.fsync(dfd); os.close(dfd)
  finally:
   try: os.unlink(tmp)
   except FileNotFoundError: pass
@@ -64,6 +65,7 @@ def atomic_bytes(path,data):
   os.fchmod(fd,0o600)
   with os.fdopen(fd,"wb") as f: f.write(data); f.flush(); os.fsync(f.fileno())
   os.replace(tmp,path)
+  dfd=os.open(path.parent,os.O_RDONLY); os.fsync(dfd); os.close(dfd)
  finally:
   try: os.unlink(tmp)
   except FileNotFoundError: pass
@@ -233,6 +235,159 @@ def run_image(req,r,op):
   target=safe_output(r/"artifacts",str(target.relative_to(r/"artifacts"))); atomic_bytes(target,b); artifacts.append(inspect_artifact(target))
  for art in artifacts: art["provenance"].update({"provider":prepared["provider"],"model":prepared["model"],"operation":prepared["operation"],"preparedDigest":prepared["preparedDigest"],"providerRequestId":result.get("providerRequestId")})
  return {"state":"succeeded","provider":prepared["provider"],"providerRequestId":result.get("providerRequestId"),"artifact":artifacts[0] if len(artifacts)==1 else None,"artifacts":artifacts,"revisedPrompts":result.get("revisedPrompts",[]),"estimatedUsd":prepared["estimate"]["estimatedUsd"],"actualUsd":None,"costReconciliation":"provider response did not include a final billed amount","billingState":"accepted","automaticRetry":False}
+
+# OpenAI's image endpoint is synchronous. These helpers wrap exactly one paid
+# submission in a detached, durable local worker; they never retry it.
+JOB_ID_RE=re.compile(r"job_[0-9a-f]{32}")
+JOB_TERMINAL={"succeeded","failed","ambiguous","cancelled"}
+JOB_RESERVE_SECONDS=10
+def _job_dir(r,job_id):
+ if not isinstance(job_id,str) or not JOB_ID_RE.fullmatch(job_id): raise E("INVALID_JOB_ID","jobId is invalid")
+ return r/"jobs"/job_id
+def _job_read(r,job_id):
+ p=_job_dir(r,job_id)/"state.json"
+ if not p.is_file() or p.is_symlink(): raise E("JOB_NOT_FOUND","job does not exist",3)
+ return readj(p,None)
+def _pid_start(pid):
+ try:
+  fields=Path(f"/proc/{pid}/stat").read_text().rsplit(")",1)[1].split()
+  return None if fields[0]=="Z" else int(fields[19])
+ except (OSError,ValueError,IndexError):
+  try:
+   value=subprocess.check_output(["ps","-o","lstart=","-p",str(pid)],text=True,stderr=subprocess.DEVNULL,timeout=1).strip()
+   return value or None
+  except (OSError,subprocess.SubprocessError): return None
+def _pid_alive(identity):
+ return isinstance(identity,dict) and _pid_start(identity.get("pid"))==identity.get("startTime")
+def _job_write(jd,current,**changes):
+ nxt={**current,**changes,"updatedAt":now(),"revision":int(current.get("revision",0))+1}
+ atomic(jd/"state.json",nxt); return nxt
+def _safe_job_error(code,message,details=None):
+ return {"code":code,"message":message,"retryable":False,"details":details or {}}
+def _job_recover(r,state):
+ if state.get("state") in JOB_TERMINAL: return state
+ jd=_job_dir(r,state["jobId"]); deadline=dt.datetime.fromisoformat(state["deadlineAt"].replace("Z","+00:00"))
+ overdue=dt.datetime.now(dt.timezone.utc)>deadline+dt.timedelta(seconds=5)
+ alive=_pid_alive(state.get("pidIdentity"))
+ if alive and not overdue: return state
+ if alive and overdue:
+  ident=state["pidIdentity"]
+  try:
+   if os.getpgid(ident["pid"])==ident.get("pgid")==ident["pid"]: os.killpg(ident["pgid"],signal.SIGTERM)
+  except (ProcessLookupError,PermissionError,OSError): pass
+  time.sleep(.05)
+  if _pid_alive(ident):
+   try:
+    if os.getpgid(ident["pid"])==ident.get("pgid")==ident["pid"]: os.killpg(ident["pgid"],signal.SIGKILL)
+   except (ProcessLookupError,PermissionError,OSError): pass
+ phase=state.get("phase","bootstrap")
+ if phase in {"bootstrap","preflight"}:
+  return _job_write(jd,state,state="failed",billingState="not_submitted",error=_safe_job_error("WORKER_EXITED","worker ended before provider submission"))
+ billing="accepted_output_unavailable" if phase in {"provider_response","artifact_commit"} else "unknown"
+ terminal="failed" if billing.startswith("accepted") else "ambiguous"
+ return _job_write(jd,state,state=terminal,billingState=billing,error=_safe_job_error("WORKER_EXITED","worker ended after the paid submission boundary"))
+def _job_public(state):
+ keys=("jobId","state","phase","billingState","automaticRetry","createdAt","updatedAt","deadlineAt","providerRequestId","revision")
+ out={k:state[k] for k in keys if k in state}; out["terminal"]=state.get("state") in JOB_TERMINAL
+ if state.get("error"): out["error"]=state["error"]
+ return out
+def job_start(req,r):
+ allowed={"operation","provider","model","prompt","count","output","format","options","safetyPolicy","rightsPolicy","publicationPolicy","maxUsd","expiresAt","bindingDigest","preparedDigest","timeoutSeconds"}
+ closed(req,allowed,("operation","provider","model","prompt","output","safetyPolicy","rightsPolicy","publicationPolicy","maxUsd","expiresAt","bindingDigest","preparedDigest"))
+ timeout=req.get("timeoutSeconds",300)
+ if not isinstance(timeout,int) or isinstance(timeout,bool) or not 60<=timeout<=300: raise E("SCHEMA_VIOLATION","timeoutSeconds must be an integer from 60 through 300")
+ approved={k:v for k,v in req.items() if k!="timeoutSeconds"}; prepared=assert_prepared(approved,r,"generate")
+ if prepared["provider"]!="openai" or prepared["operation"]!="generate": raise E("PROVIDER_OPERATION_UNSUPPORTED","detached jobs support OpenAI generation only",6)
+ _api_key() # protected environment only; never copied into durable state or argv
+ for jd in (r/"jobs").glob("job_*") if (r/"jobs").exists() else ():
+  try: old=readj(jd/"state.json",None)
+  except E: continue
+  if old and old.get("preparedDigest")==prepared["preparedDigest"]:
+   raise E("PAID_JOB_EXISTS","a job already exists for this approved paid intent",6,False,{"jobId":old["jobId"],"state":old["state"]})
+ job_id="job_"+uuid.uuid4().hex; jd=_job_dir(r,job_id); jd.mkdir(parents=True,mode=0o700); os.chmod(jd,0o700)
+ created=now(); deadline=(dt.datetime.now(dt.timezone.utc)+dt.timedelta(seconds=timeout)).isoformat().replace("+00:00","Z")
+ request_doc={"schemaVersion":1,"jobId":job_id,"approved":approved,"timeoutSeconds":timeout}
+ state={"schemaVersion":1,"jobId":job_id,"provider":"openai","operation":"generate","preparedDigest":prepared["preparedDigest"],"bindingDigest":prepared["bindingDigest"],"state":"queued","phase":"bootstrap","billingState":"not_submitted","automaticRetry":False,"createdAt":created,"updatedAt":created,"deadlineAt":deadline,"pidIdentity":None,"providerRequestId":None,"artifactPaths":[],"error":None,"revision":1}
+ atomic(jd/"request.json",request_doc); atomic(jd/"state.json",state)
+ argv=[sys.executable,str(Path(__file__).resolve()),"_job.worker","--root",str(r),"--input-json",stable({"jobId":job_id})]
+ try:
+  with open(os.devnull,"rb") as inp, open(os.devnull,"ab") as out:
+   child=subprocess.Popen(argv,stdin=inp,stdout=out,stderr=out,start_new_session=True,close_fds=True,env=os.environ.copy())
+  ident={"pid":child.pid,"pgid":child.pid,"startTime":None}
+  end=time.monotonic()+5
+  while ident["startTime"] is None and time.monotonic()<end:
+   ident["startTime"]=_pid_start(child.pid)
+   if child.poll() is not None: break
+   time.sleep(.01)
+  if ident["startTime"] is None: raise OSError("worker bootstrap failed")
+  state=_job_write(jd,_job_read(r,job_id),pidIdentity=ident)
+  atomic(jd/"worker.pid",ident)
+ except (OSError,subprocess.SubprocessError):
+  _job_write(jd,state,state="failed",billingState="not_submitted",error=_safe_job_error("WORKER_BOOTSTRAP_FAILED","detached worker could not start"))
+  raise E("WORKER_BOOTSTRAP_FAILED","detached worker could not start",8)
+ return {"jobId":job_id,"state":"queued","billingState":"not_submitted","automaticRetry":False,"statusCommand":"job.status","collectCommand":"job.collect"}
+def _detached_openai_generate(payload,timeout,opener=_open):
+ options=payload.get("options") or {}; allowed={"size","quality","background","output_format","output_compression","moderation"}
+ if not isinstance(options,dict) or set(options)-allowed: raise E("SCHEMA_VIOLATION","unsupported OpenAI options")
+ body={**options,"model":payload["model"],"prompt":payload["prompt"],"n":payload["count"]}; transport_deadline=time.monotonic()+timeout
+ def bounded_open(request,_timeout=None): return opener(request,max(1,transport_deadline-time.monotonic()))
+ key=_api_key(); req=urllib.request.Request(OPENAI_BASE+"/images/generations",data=stable(body).encode(),method="POST",headers={"Authorization":"Bearer "+key,"Content-Type":"application/json","Accept":"application/json"}); del key; os.environ.pop("OPENAI_API_KEY",None)
+ try:
+  with bounded_open(req) as response: raw=_read_limited(response)
+ except urllib.error.HTTPError as e: raise _http_error(e,True)
+ except (TimeoutError,urllib.error.URLError,OSError): raise E("BILLING_AMBIGUOUS","OpenAI submission outcome is unknown; do not automatically retry",10,False,{"billingState":"unknown","automaticRetry":False})
+ try: doc=json.loads(raw)
+ except (json.JSONDecodeError,UnicodeDecodeError): raise E("PROVIDER_RESPONSE_INVALID","OpenAI success response was malformed; do not automatically retry",10,False,{"billingState":"accepted_output_unavailable","automaticRetry":False})
+ data=doc.get("data") if isinstance(doc,dict) else None
+ if not isinstance(data,list) or len(data)!=payload["count"]: raise E("PROVIDER_RESPONSE_INVALID","OpenAI returned an unexpected image count; do not automatically retry",10,False,{"billingState":"accepted_output_unavailable","automaticRetry":False})
+ return {"items":[_decode_openai_item(item,bounded_open) for item in data],"providerRequestId":doc.get("id"),"revisedPrompts":[item.get("revised_prompt") for item in data if isinstance(item,dict) and item.get("revised_prompt")]}
+def job_worker(r,job_id):
+ jd=_job_dir(r,job_id); state=_job_read(r,job_id); request_doc=readj(jd/"request.json",None)
+ if not request_doc: _job_write(jd,state,state="failed",billingState="not_submitted",error=_safe_job_error("REQUEST_INVALID","durable request is unavailable")); return {}
+ def term(_sig,_frame):
+  s=_job_read(r,job_id); before=s.get("phase") in {"bootstrap","preflight"}; _job_write(jd,s,state="failed" if before else "ambiguous",billingState="not_submitted" if before else "unknown",error=_safe_job_error("WORKER_TERMINATED","worker was terminated")); raise SystemExit(143)
+ signal.signal(signal.SIGTERM,term); approved=request_doc["approved"]
+ try:
+  state=_job_write(jd,state,state="running",phase="preflight")
+  prepared=assert_prepared(approved,r,"generate"); _api_key()
+  remaining=(dt.datetime.fromisoformat(state["deadlineAt"].replace("Z","+00:00"))-dt.datetime.now(dt.timezone.utc)).total_seconds()-JOB_RESERVE_SECONDS
+  if remaining<=0: raise E("JOB_TIMEOUT","deadline expired before provider submission",8)
+  state=_job_write(jd,state,phase="provider_request",billingState="unknown")
+  mode=os.getenv("CLAWPOD_IMAGE_STUDIO_TRANSPORT","openai-live")
+  if mode=="mock-success": result=transport("openai",prepared)
+  elif mode=="mock-timeout": time.sleep(float(os.getenv("CLAWPOD_IMAGE_STUDIO_MOCK_DELAY","61"))); raise TimeoutError()
+  elif mode=="mock-crash": os._exit(91)
+  elif mode=="openai-live": result=_detached_openai_generate(prepared,max(1,remaining))
+  else: raise E("NETWORK_DISABLED","unsupported detached transport mode",8)
+  state=_job_write(jd,state,phase="provider_response",billingState="accepted",providerRequestId=result.get("providerRequestId"))
+  p=safe_output(r/"artifacts",prepared["output"]); artifacts=[]; state=_job_write(jd,state,phase="artifact_commit")
+  for i,b in enumerate(result["items"]):
+   target=p if len(result["items"])==1 else p.with_name(f"{p.stem}-{i+1}{p.suffix}"); target=safe_output(r/"artifacts",str(target.relative_to(r/"artifacts"))); atomic_bytes(target,b); art=inspect_artifact(target); art["provenance"].update({"provider":"openai","model":prepared["model"],"operation":"generate","preparedDigest":prepared["preparedDigest"],"providerRequestId":result.get("providerRequestId")}); artifacts.append(art)
+  result_doc={"artifacts":artifacts,"revisedPrompts":result.get("revisedPrompts",[]),"estimatedUsd":prepared["estimate"]["estimatedUsd"],"actualUsd":None,"costReconciliation":"provider response did not include a final billed amount"}; atomic(jd/"result.json",result_doc)
+  _job_write(jd,state,state="succeeded",billingState="accepted",artifactPaths=[a["path"] for a in artifacts]); return {}
+ except E as e:
+  state=_job_read(r,job_id); billing=e.details.get("billingState") or ("not_submitted" if state.get("phase") in {"bootstrap","preflight"} else "unknown")
+  ambiguous=billing=="unknown" and state.get("phase") not in {"bootstrap","preflight"}
+  _job_write(jd,state,state="ambiguous" if ambiguous else "failed",billingState=billing,error=_safe_job_error(e.code,e.msg,{k:v for k,v in e.details.items() if k in {"httpStatus","billingState","automaticRetry"}})); return {}
+ except (TimeoutError,urllib.error.URLError,OSError):
+  state=_job_read(r,job_id); _job_write(jd,state,state="ambiguous",billingState="unknown",error=_safe_job_error("BILLING_AMBIGUOUS","submission outcome is unknown; do not automatically retry")); return {}
+def job_status(r,job_id): return _job_public(_job_recover(r,_job_read(r,job_id)))
+def job_collect(r,job_id):
+ state=_job_recover(r,_job_read(r,job_id))
+ if state["state"] not in JOB_TERMINAL: raise E("JOB_NOT_READY","job is not terminal; poll this same job",4,True,{"jobId":job_id,"state":state["state"],"automaticRetry":False})
+ if state["state"]!="succeeded": return _job_public(state)
+ doc=readj(_job_dir(r,job_id)/"result.json",None)
+ if not doc: raise E("ARTIFACT_INVALID","terminal result metadata is missing",8)
+ checked=[]
+ for expected in doc.get("artifacts",[]):
+  path=Path(expected.get("path","")); base=(r/"artifacts").resolve()
+  try: rel=path.resolve(strict=False).relative_to(base); bounded=safe_output(base,str(rel))
+  except (ValueError,E): raise E("ARTIFACT_INVALID","artifact path is invalid",8)
+  if not bounded.is_file() or bounded.is_symlink(): raise E("ARTIFACT_INVALID","artifact is missing",8)
+  actual=inspect_artifact(bounded)
+  if actual["sha256"]!=expected.get("sha256"): raise E("ARTIFACT_INVALID","artifact hash changed",8)
+  checked.append(expected)
+ return {"state":"succeeded","provider":"openai","providerRequestId":state.get("providerRequestId"),"artifact":checked[0] if len(checked)==1 else None,"artifacts":checked,"revisedPrompts":doc.get("revisedPrompts",[]),"estimatedUsd":doc.get("estimatedUsd"),"actualUsd":doc.get("actualUsd"),"costReconciliation":doc.get("costReconciliation"),"billingState":"accepted","automaticRetry":False}
 def execute(cmd,x,r):
  if cmd in professional_studio.STUDIO_COMMANDS: return professional_studio.execute(types.SimpleNamespace(**globals()),cmd,x,r)
  if cmd=="provider.list": return {"items":[{"id":p,**v} for p,v in PROVIDERS.items()],"networkDefault":"disabled"}
@@ -313,9 +468,13 @@ def execute(cmd,x,r):
    try: results.append({"ok":True,"data":run_image(payload,r,"generate")})
    except E as e: results.append({"ok":False,"error":{"code":e.code,"retryable":e.retryable}})
   ok=sum(1 for z in results if z["ok"]); return {"state":"succeeded" if ok==len(results) else "partial" if ok else "failed","completed":ok,"failed":len(results)-ok,"results":results,"automaticPaidRetry":False}
+ if cmd=="job.start": return job_start(x,r)
  if cmd=="job.status":
-  closed(x,{"provider","jobId"},("provider","jobId")); return {"state":"unknown","provider":x["provider"],"jobId":x["jobId"],"reason":"no live transport configured"}
- if cmd=="job.collect": raise E("NETWORK_DISABLED","collect requires an injected provider transport",8)
+  closed(x,{"jobId"},("jobId",)); return job_status(r,x["jobId"])
+ if cmd=="job.collect":
+  closed(x,{"jobId"},("jobId",)); return job_collect(r,x["jobId"])
+ if cmd=="_job.worker":
+  closed(x,{"jobId"},("jobId",)); return job_worker(r,x["jobId"])
  if cmd=="artifact.inspect":
   closed(x,{"path"},("path",)); p=safe_output(r/"artifacts",x["path"])
   if not p.is_file() or p.is_symlink(): raise E("NOT_FOUND","artifact unavailable",3)

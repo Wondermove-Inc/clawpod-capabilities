@@ -102,8 +102,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "skill",
-      "version": "0.3.0",
-      "description": "Route guarded multi-provider workflows and a complete offline professional photo production procedure.",
+      "version": "0.4.0",
+      "description": "Route guarded detached image jobs and a complete offline professional photo production procedure.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -119,7 +119,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a036ed5448cca7d554e907014f66a28633b76b6a5827f71aa1a8c57ee0d6df09"
+          "sha256": "43cfe5f5d9a48c6988dda90e2580c32aabf99d2a0e23004671b709a21ecdd78d"
         },
         {
           "path": "references/onboarding.md",
@@ -140,7 +140,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-image-studio",
-        "version": "0.3.0"
+        "version": "0.4.0"
       }
     },
     {
@@ -768,8 +768,8 @@
     {
       "id": "clawpod-image-studio",
       "type": "harness",
-      "version": "0.3.0",
-      "description": "Guarded provider image workflows plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
+      "version": "0.4.0",
+      "description": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
       "path": "harnesses/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -785,23 +785,27 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "1e3af512a18e2f7574e2a294d3d2a3f3b61565239f66512de3422aa7049b71ef"
+          "sha256": "2ad24086a95fd669e50a3a507123ce08a0acd59a530c4bbbe2523b28c91f4ac9"
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "ea9f1eb94adc8ffed7abe8d0e63bc31e053dfa76045ef6125032382cdc43eb96"
+          "sha256": "8d8e9f1c58cad5f2750e33d02419ea9c50388c1bfb325a541ba0f95c6f941432"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "88f45d5762253a5512a00f2ab215ad84d693e48eb42c0159e330a95d0cec7519"
+          "sha256": "9718435080afab4844cf72bc6ed0310eccd962c679d10f6e1f8274984ec68951"
         },
         {
           "path": "harness.json",
-          "sha256": "579bf961c8e331d35522386c7d1d660e3aa9b0e7eff394492eb272ca57ede8a0"
+          "sha256": "5798f99da451ac2794d92f9ac882e6e33d130af39f0a3e3d2e5bf9da1b3577eb"
         },
         {
           "path": "professional_studio.py",
           "sha256": "fe2ba87c9338b1e2753914c81b89efe790e11600b62423663e1607d85cedefae"
+        },
+        {
+          "path": "test_detached_jobs.py",
+          "sha256": "a661f8d00c75797f500d2c2acfe4f4a94e5aa23d3ad46e8eda4be4e28756737f"
         }
       ]
     },
