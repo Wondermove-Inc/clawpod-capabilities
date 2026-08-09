@@ -5,7 +5,7 @@ description: "Create, edit, compare, onboard, and QA images across OpenAI, Verte
 
 # ClawPod Image Studio
 
-Use the linked `clawpod-image-studio` Harness v0.3.0. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
+Use the linked `clawpod-image-studio` Harness v0.4.0. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
 
 ## Immediate post-install onboarding
 
@@ -43,8 +43,8 @@ delivery manifests without weakening the paid provider boundary below.
 3. For multi-provider comparison, use `image.compare` only after validating every leg. Cap provider count and total outputs; show aggregate and per-leg costs.
 4. Call `request.prepare`. Present provider, model, operation, prompt/reference digests, count, dimensions, quality/options, destination, pricing snapshot, estimate range, maximum USD, secret-binding metadata, expiry, and approval digest.
 5. Obtain exact approval for credential use and paid external generation. Any material change requires a fresh preparation and approval.
-6. Pass the unchanged prepared digest and identical owner-scoped `secretRefs` to the run command. For the current production path, protected `OPENAI_API_KEY` injection automatically enables only the approved OpenAI generation path. Never put plaintext credentials in Harness input.
-7. For async providers, track the original job through `job.status` and `job.collect`; do not resubmit because polling or webhook delivery failed.
+6. Pass the unchanged prepared digest and identical owner-scoped `secretRefs` to `job.start`. Protected `OPENAI_API_KEY` injection enables only the approved OpenAI generation path. Never put plaintext credentials in Harness input. Use the legacy synchronous `image.generate` only when compatibility is explicitly required.
+7. Track the original detached job through `job.status` and `job.collect`; both are local and credential-free. Do not resubmit because polling, timeout, worker exit, or result collection failed. The job timeout is 60–300 seconds (default 300), and the provider receives the remaining deadline minus at least 10 seconds for validation and artifact commit.
 8. Inspect every artifact with `artifact.inspect`. Verify decode, MIME, dimensions, SHA-256, alpha/SVG validity, provider/model provenance, safety metadata, and reconciled cost.
 9. Store durable deliverables only under an approved shared-storage artifact root. Do not claim durable delivery when shared storage is unavailable.
 10. Treat publication or external sharing as a separate approval and action.
