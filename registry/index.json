@@ -64,7 +64,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "cce9377d1227fa9b2b230a99b38fc34bc1fc5a61b31b725989f6ce827c58b0a3"
+          "sha256": "2a2bcc932a6483ac302e4d81c23a2bd8613bc0d7f493704d3cceb763e2f6703a"
         }
       ],
       "linkedHarness": {
@@ -432,6 +432,35 @@
       "linkedHarness": {
         "id": "google-workspace",
         "version": "0.2.3"
+      }
+    },
+    {
+      "id": "memory-graph",
+      "type": "skill",
+      "version": "0.5.0",
+      "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from canonical workspace memory.",
+      "path": "skills/memory-graph",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2deca0aed05e1fd1be4d71f409591e2f2eb60bdc8c5a14bea913dc13fd38c312"
+        }
+      ],
+      "linkedHarness": {
+        "id": "memory-graph",
+        "version": "0.5.0"
       }
     },
     {
@@ -1129,6 +1158,39 @@
         {
           "path": "scripts/generate_schemas.py",
           "sha256": "12696f6ac8bcfe271b6950adf4cb653d8b3266da53095ac39285882d0c24078e"
+        }
+      ]
+    },
+    {
+      "id": "memory-graph",
+      "type": "harness",
+      "version": "0.5.0",
+      "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's canonical workspace memory.",
+      "path": "harnesses/memory-graph",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "d3bc6e59be946ea0bbdfa31072d2526ba344b132e7f5352a2b7977e86b094030"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "0ce99d368c3aed366a5a8f3d7bbd522ae60342c5e083fb3c1fd6517c6e1941ec"
+        },
+        {
+          "path": "memory_graph.py",
+          "sha256": "000ed54aefdef116922a6546fa9d03cd4a0048e18bdb221a7a2eb4371f70af78"
         }
       ]
     },
