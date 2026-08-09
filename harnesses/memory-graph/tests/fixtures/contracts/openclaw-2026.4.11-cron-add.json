@@ -1,0 +1,11 @@
+{
+  "contract": "OpenClaw 2026.4.11 CronAddParamsSchema",
+  "id_generated_by_gateway": true,
+  "payload_kinds": ["systemEvent", "agentTurn"],
+  "allowed_top_level": [
+    "schedule", "sessionTarget", "wakeMode", "payload", "delivery",
+    "failureAlert", "agentId", "sessionKey", "description", "enabled",
+    "deleteAfterRun", "name"
+  ],
+  "required_top_level": ["schedule", "sessionTarget", "wakeMode", "payload", "name"]
+}

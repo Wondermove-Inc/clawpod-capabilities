@@ -1,0 +1,1041 @@
+#!/usr/bin/env python3
+"""Build a deterministic, noncanonical graph plan from canonical Markdown memory."""
+
+from __future__ import annotations
+
+import argparse
+import errno
+import fcntl
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+SCHEMA_VERSION = 4
+CONTRACT_VERSION = "0.5.0"
+MAX_SOURCE_FILES = 256
+MAX_SOURCE_BYTES = 8 * 1024 * 1024
+MAX_MCP_OUTPUT_BYTES = 1024 * 1024
+MAX_MCP_ARGV_BYTES = 48 * 1024
+MAX_MCP_BATCH_ITEMS = 100
+HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+BLOCK_RE = re.compile(r"^```memory-claim\s*$\n(.*?)^```\s*$", re.MULTILINE | re.DOTALL)
+WRITER_ID_RE = re.compile(r"^<!--\s*openclaw-memory-claim:([^\s>]+)\s*-->\s*$", re.MULTILINE)
+WRITER_JSON_RE = re.compile(r"^<!--\s*openclaw-memory-claim-json:(.*?)\s*-->\s*$", re.MULTILINE)
+HEADING_RE = re.compile(r"^#{2,6}\s+.+$", re.MULTILINE)
+CORE_HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILINE)
+FIELD_RE = re.compile(r"^- (Status|Claim|Confidence|Evidence|Updated):(?:\s+(.*))?$", re.MULTILINE)
+ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+AGENT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+SECRET_PATTERNS = [
+    re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    re.compile(r"\b(?:sk|rk|pk)_(?:live|test)_[A-Za-z0-9]{12,}\b"),
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+    re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
+    re.compile(r"(?i)\b(?:password|passwd|api[_ -]?key|access[_ -]?token)\s*[:=]\s*[^\s,;]{8,}"),
+]
+ALLOWED_STATUS = {"current", "tentative", "superseded", "rejected", "conflicted", "archived", "active"}
+ELIGIBLE_STATUS = {"current", "tentative", "active"}
+
+# OpenClaw's portable workspace contract.  This is intentionally an exact
+# allowlist: adding a Markdown file beside these files must never ingest it.
+CORE_SOURCES = {
+    "SOUL.md": ("persona", "follows_persona", "workspace_persona"),
+    "IDENTITY.md": ("identity", "has_identity", "workspace_identity"),
+    "USER.md": ("user_profile", "has_user_profile", "workspace_user_context"),
+    "AGENTS.md": ("agent_policy", "follows_policy", "workspace_agent_policy"),
+    "ORGANIZATIONS.md": ("organization", "belongs_to_organization_context", "workspace_organization_context"),
+    "WORKFLOW.md": ("workflow", "follows_workflow", "workspace_workflow"),
+}
+MEMORY_AUTHORITY = "canonical_memory"
+
+
+class InputError(Exception):
+    def __init__(self, code: str, message: str, details: dict[str, Any] | None = None):
+        super().__init__(message)
+        self.code, self.message, self.details = code, message, details or {}
+
+
+def canonical_bytes(value: Any) -> bytes:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+
+
+def mcp_argv(executable: str, tool: str, arguments: dict[str, Any]) -> list[str]:
+    return [executable, "call", f"memory.{tool}", "--args",
+            json.dumps(arguments, ensure_ascii=False, separators=(",", ":"))]
+
+
+def argv_payload_bytes(argv: list[str]) -> int:
+    """Bytes consumed by argv strings, including their terminating NULs."""
+    return sum(len(argument.encode("utf-8")) + 1 for argument in argv)
+
+
+def mutation_batches(executable: str, tool: str, key: str, items: list[Any],
+                     count_cap: int = MAX_MCP_BATCH_ITEMS) -> list[dict[str, Any]]:
+    """Deterministically preserve order while respecting count and argv byte caps."""
+    batches: list[dict[str, Any]] = []
+    pending: list[Any] = []
+    for index, item in enumerate(items):
+        candidate = pending + [item]
+        arguments = {key: candidate}
+        payload_bytes = argv_payload_bytes(mcp_argv(executable, tool, arguments))
+        if len(candidate) <= count_cap and payload_bytes <= MAX_MCP_ARGV_BYTES:
+            pending = candidate
+            continue
+        if not pending:
+            raise InputError("mutation_item_too_large",
+                "A single MCP mutation item exceeds the safe argv payload cap; no mutation was attempted",
+                {"tool": tool, "item_index": index, "payload_bytes": payload_bytes,
+                 "payload_cap_bytes": MAX_MCP_ARGV_BYTES, "mutation_performed": False})
+        batches.append({"tool": tool, "arguments": {key: pending}})
+        pending = [item]
+        single_bytes = argv_payload_bytes(mcp_argv(executable, tool, {key: pending}))
+        if single_bytes > MAX_MCP_ARGV_BYTES:
+            raise InputError("mutation_item_too_large",
+                "A single MCP mutation item exceeds the safe argv payload cap; no mutation was attempted",
+                {"tool": tool, "item_index": index, "payload_bytes": single_bytes,
+                 "payload_cap_bytes": MAX_MCP_ARGV_BYTES, "mutation_performed": False})
+    if pending:
+        batches.append({"tool": tool, "arguments": {key: pending}})
+    return batches
+
+
+def digest(value: Any) -> str:
+    return hashlib.sha256(canonical_bytes(value)).hexdigest()
+
+
+def safe_resolve(root: Path, raw: str) -> Path:
+    candidate = (root / raw).resolve() if not Path(raw).is_absolute() else Path(raw).resolve()
+    try:
+        candidate.relative_to(root.resolve())
+    except ValueError as exc:
+        raise InputError("path_outside_root", "Input path must remain within workspace root", {"path": raw}) from exc
+    return candidate
+
+
+def recognized_files(root: Path) -> list[tuple[Path, str, str, str | None]]:
+    root = root.resolve()
+    paths: list[tuple[Path, str, str, str | None]] = []
+    for name, (source_class, relation, authority) in CORE_SOURCES.items():
+        p = root / name
+        if p.is_symlink():
+            raise InputError("unsafe_core_path", "Core workspace sources must not be symlinks", {"path": name})
+        if p.exists() and not p.is_file():
+            raise InputError("unsafe_core_path", "Core workspace sources must be regular files", {"path": name})
+        if p.is_file():
+            paths.append((p, source_class, authority, relation))
+    for name in ("MEMORY.md", "memory.md"):
+        p = root / name
+        if p.is_symlink():
+            raise InputError("unsafe_memory_path", "Memory sources must not be symlinks", {"path": name})
+        if p.exists() and not p.is_file():
+            raise InputError("unsafe_memory_path", "Memory sources must be regular files", {"path": name})
+        if p.is_file():
+            paths.append((p, "memory_index", MEMORY_AUTHORITY, None))
+    folder = root / "memory"
+    if folder.is_symlink():
+        raise InputError("unsafe_memory_path", "Memory directory must not be a symlink", {"path": "memory"})
+    if folder.exists() and not folder.is_dir():
+        raise InputError("unsafe_memory_path", "Memory directory must be a regular directory", {"path": "memory"})
+    if folder.is_dir():
+        for p in folder.iterdir():
+            if p.name.endswith(".md"):
+                rel = p.relative_to(root).as_posix()
+                if p.is_symlink() or not p.is_file():
+                    raise InputError("unsafe_memory_path", "Memory topic sources must be regular non-symlink files", {"path": rel})
+                resolved = p.resolve()
+                try:
+                    resolved.relative_to(root)
+                except ValueError as exc:
+                    raise InputError("unsafe_memory_path", "Memory source resolves outside root", {"path": rel}) from exc
+                paths.append((p, "memory_claim", MEMORY_AUTHORITY, None))
+    result = sorted(paths, key=lambda item: item[0].relative_to(root).as_posix())
+    if len(result) > MAX_SOURCE_FILES:
+        raise InputError("source_limit", "Too many canonical memory source files", {"limit": MAX_SOURCE_FILES})
+    return result
+
+
+def parse_core_sections(text: str, path: str, source_hash: str, source_class: str,
+                        authority: str, secret_policy: str) -> list[dict[str, Any]]:
+    matches = list(CORE_HEADING_RE.finditer(text))
+    sections: list[dict[str, Any]] = []
+    for index, match in enumerate(matches):
+        heading = match.group(2).strip()
+        if secret_like(heading):
+            if secret_policy == "reject":
+                raise InputError("secret_like_text", "Secret-like core workspace text rejected", {"path": path, "line": text.count("\n", 0, match.start()) + 1})
+            heading = "[REDACTED]"
+        start = text.count("\n", 0, match.start()) + 1
+        end_offset = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        end = max(start, text.count("\n", 0, end_offset) + (0 if end_offset and text[end_offset - 1:end_offset] == "\n" else 1))
+        sections.append({"heading": heading, "heading_level": len(match.group(1)), "line_start": start,
+                         "line_end": end, "path": path, "source_content_hash": source_hash,
+                         "source_class": source_class, "authority_class": authority,
+                         "precedence_class": authority})
+    return sections
+
+
+def namespace_for(agent_id: str, root: Path, workspace_id: str | None = None) -> dict[str, str]:
+    if not AGENT_ID_RE.fullmatch(agent_id):
+        raise InputError("invalid_agent_id", "agent-id must be explicit and portable", {"pattern": AGENT_ID_RE.pattern})
+    identity = workspace_id if workspace_id is not None else root.resolve().as_posix()
+    if not identity or len(identity.encode()) > 4096:
+        raise InputError("invalid_workspace_id", "workspace-id must be non-empty and bounded")
+    workspace_hash = hashlib.sha256(identity.encode()).hexdigest()
+    owner_hash = hashlib.sha256(canonical_bytes({"agent_id": agent_id, "workspace_hash": workspace_hash})).hexdigest()[:24]
+    return {"agent_id": agent_id, "workspace_hash": workspace_hash, "namespace": f"memory-graph:v1:{owner_hash}:"}
+
+
+def apply_namespace(snapshot: dict[str, Any], ownership: dict[str, str]) -> dict[str, Any]:
+    prefix = ownership["namespace"]
+    mapping = {entity["name"]: prefix + entity["name"] for entity in snapshot["entities"]}
+    def relation(value: dict[str, str]) -> dict[str, str]:
+        return {"from": mapping[value["from"]], "to": mapping[value["to"]], "relationType": value["relationType"]}
+    result = dict(snapshot)
+    result["ownership"] = ownership
+    result["entities"] = [
+        {"name": mapping[e["name"]], "entityType": e["entityType"], "observations": e["observations"]}
+        for e in snapshot["entities"]
+    ]
+    for field in ("explicit_relations", "structural_relations", "inferred_relations"):
+        result[field] = [relation(r) for r in snapshot[field]]
+    result.pop("snapshot_hash", None)
+    result["snapshot_hash"] = digest(result)
+    return result
+
+
+def secret_like(value: Any) -> bool:
+    text = json.dumps(value, ensure_ascii=False, sort_keys=True)
+    return any(pattern.search(text) for pattern in SECRET_PATTERNS)
+
+
+def redact(value: Any, sensitive_context: bool = False) -> Any:
+    if isinstance(value, str):
+        return "[REDACTED]" if sensitive_context or secret_like(value) else value
+    if isinstance(value, list):
+        return [redact(item, sensitive_context) for item in value]
+    if isinstance(value, dict):
+        return {key: redact(item, sensitive_context or bool(re.search(r"(?i)(password|passwd|secret|api.?key|access.?token)", key))) for key, item in value.items()}
+    return value
+
+
+def _id_array(raw: dict[str, Any], field: str, path: str, line: int) -> list[str]:
+    value = raw.get(field, [])
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list) or not all(isinstance(x, str) and ID_RE.fullmatch(x) for x in value):
+        raise InputError("malformed_metadata", f"{field} must be a claim-id array", {"path": path, "line": line})
+    return sorted(set(value))
+
+
+def validate_claim(raw: Any, path: str, line: int, secret_policy: str, bullets: dict[str, str] | None = None, marker_id: str | None = None) -> dict[str, Any]:
+    if not isinstance(raw, dict):
+        raise InputError("malformed_metadata", "Claim metadata must be a JSON object", {"path": path, "line": line})
+    if "claim_key" in raw and "key" in raw and raw["claim_key"] != raw["key"]:
+        raise InputError("malformed_metadata", "claim_key and legacy key disagree", {"path": path, "line": line})
+    required = ("claim_id", "status", "evidence")
+    missing = [key for key in required if key not in raw]
+    if "claim_key" not in raw and "key" not in raw:
+        missing.append("claim_key")
+    if missing:
+        raise InputError("malformed_metadata", "Claim metadata is missing required fields", {"path": path, "line": line, "fields": missing})
+    if not isinstance(raw["claim_id"], str) or not ID_RE.fullmatch(raw["claim_id"]):
+        raise InputError("invalid_claim_id", "claim_id has an invalid format", {"path": path, "line": line})
+    claim_key = raw.get("claim_key", raw.get("key"))
+    if not isinstance(claim_key, str) or not claim_key.strip():
+        raise InputError("malformed_metadata", "claim_key must be a non-empty string", {"path": path, "line": line})
+    if marker_id is not None and marker_id != raw["claim_id"]:
+        raise InputError("malformed_metadata", "Claim marker and JSON claim_id disagree", {"path": path, "line": line})
+    if raw["status"] not in ALLOWED_STATUS:
+        raise InputError("malformed_metadata", "status is not supported", {"path": path, "line": line, "status": raw["status"]})
+    evidence = raw["evidence"]
+    valid_evidence = isinstance(evidence, list) and bool(evidence) and all(
+        (isinstance(x, str) and bool(x)) or
+        (isinstance(x, dict) and isinstance(x.get("evidence_id"), str) and bool(x["evidence_id"])
+         and isinstance(x.get("path"), str) and bool(x["path"])
+         and isinstance(x.get("content_hash"), str) and bool(re.fullmatch(r"[0-9a-f]{64}", x["content_hash"])))
+        for x in evidence
+    )
+    if not valid_evidence:
+        raise InputError("malformed_metadata", "evidence must be a non-empty array of evidence metadata or legacy strings", {"path": path, "line": line})
+    supersedes = _id_array(raw, "supersedes", path, line)
+    superseded_by = _id_array(raw, "superseded_by", path, line)
+    relations = raw.get("relations", [])
+    if not isinstance(relations, list):
+        raise InputError("malformed_metadata", "relations must be an array", {"path": path, "line": line})
+    for relation in relations:
+        if not isinstance(relation, dict) or set(("to", "type")) - relation.keys() or not all(isinstance(relation[k], str) and relation[k] for k in ("to", "type")):
+            raise InputError("malformed_metadata", "Each relation requires string to and type fields", {"path": path, "line": line})
+    content = dict(raw)
+    content.pop("key", None)
+    content["claim_key"] = claim_key
+    content["relations"] = relations
+    if bullets is not None:
+        required_bullets = {"Status", "Claim", "Confidence", "Evidence", "Updated"}
+        missing_bullets = sorted(required_bullets - bullets.keys())
+        if missing_bullets:
+            raise InputError("malformed_metadata", "Writer claim is missing required bullet fields", {"path": path, "line": line, "fields": missing_bullets})
+        if bullets["Status"] != raw["status"]:
+            raise InputError("malformed_metadata", "Status bullet disagrees with metadata", {"path": path, "line": line})
+        if "updated_at" in raw and bullets["Updated"] != raw["updated_at"]:
+            raise InputError("malformed_metadata", "Updated bullet disagrees with metadata", {"path": path, "line": line})
+        try:
+            confidence = float(bullets["Confidence"])
+        except ValueError as exc:
+            raise InputError("malformed_metadata", "Confidence must be numeric", {"path": path, "line": line}) from exc
+        if not 0 <= confidence <= 1 or not bullets["Claim"].strip() or not bullets["Evidence"].strip():
+            raise InputError("malformed_metadata", "Writer bullet values are invalid", {"path": path, "line": line})
+        content.update({"claim": bullets["Claim"], "confidence": confidence, "evidence_text": bullets["Evidence"], "updated": bullets["Updated"]})
+    if secret_like(content):
+        if secret_policy == "reject":
+            raise InputError("secret_like_text", "Secret-like claim text rejected", {"path": path, "line": line})
+        content = redact(content)
+    content["supersedes"] = sorted(set(supersedes))
+    content["superseded_by"] = superseded_by
+    content["evidence"] = sorted(content["evidence"], key=lambda x: canonical_bytes(x))
+    content["relations"] = sorted(content["relations"], key=lambda x: (x["to"], x["type"]))
+    claim_hash = digest(content)
+    content["path"] = path
+    content["line"] = line
+    content["hash"] = claim_hash
+    content["content_hash"] = claim_hash
+    return content
+
+
+def parse_writer_claims(text: str, path: str, secret_policy: str) -> list[dict[str, Any]]:
+    claims: list[dict[str, Any]] = []
+    markers = list(WRITER_ID_RE.finditer(text))
+    json_comments = list(WRITER_JSON_RE.finditer(text))
+    if len(markers) != len(json_comments):
+        raise InputError("malformed_metadata", "Writer claim markers and JSON comments are unpaired", {"path": path})
+    for index, marker in enumerate(markers):
+        line = text.count("\n", 0, marker.start()) + 1
+        preceding = [value for value in text[:marker.start()].splitlines() if value.strip()]
+        if not preceding or not re.fullmatch(r"#{2,6}\s+.+", preceding[-1]):
+            raise InputError("malformed_metadata", "Writer claim marker must follow a section heading", {"path": path, "line": line})
+        meta = next((item for item in json_comments if item.start() > marker.end() and (index + 1 == len(markers) or item.start() < markers[index + 1].start())), None)
+        if meta is None:
+            raise InputError("malformed_metadata", "Writer claim is missing its JSON comment", {"path": path, "line": line})
+        boundary = markers[index + 1].start() if index + 1 < len(markers) else len(text)
+        heading = HEADING_RE.search(text, meta.end(), boundary)
+        section_end = heading.start() if heading else boundary
+        fields: dict[str, str] = {}
+        for field in FIELD_RE.finditer(text, meta.end(), section_end):
+            if field.group(1) in fields:
+                raise InputError("malformed_metadata", "Writer claim has duplicate bullet fields", {"path": path, "line": line, "field": field.group(1)})
+            fields[field.group(1)] = field.group(2) or ""
+        try:
+            raw = json.loads(meta.group(1))
+        except json.JSONDecodeError as exc:
+            raise InputError("malformed_metadata", "Writer claim JSON comment contains invalid JSON", {"path": path, "line": line, "column": exc.colno}) from exc
+        claims.append(validate_claim(raw, path, line, secret_policy, fields, marker.group(1)))
+    return claims
+
+
+def inspect_workspace(root: Path, secret_policy: str = "reject") -> dict[str, Any]:
+    if not root.is_dir():
+        raise InputError("invalid_root", "Workspace root does not exist or is not a directory", {"root": str(root)})
+    claims: list[dict[str, Any]] = []
+    sources: list[dict[str, Any]] = []
+    documents: list[dict[str, Any]] = []
+    sections: list[dict[str, Any]] = []
+    total_bytes = 0
+    for file, source_class, authority, relation in recognized_files(root):
+        rel = file.relative_to(root).as_posix()
+        size = file.stat().st_size
+        total_bytes += size
+        if total_bytes > MAX_SOURCE_BYTES:
+            raise InputError("source_limit", "Canonical memory sources exceed the byte limit", {"limit": MAX_SOURCE_BYTES})
+        text = file.read_text(encoding="utf-8")
+        source_hash = hashlib.sha256(text.encode()).hexdigest()
+        if source_class not in {"memory_index", "memory_claim"} and secret_like(text) and secret_policy == "reject":
+            raise InputError("secret_like_text", "Secret-like core workspace text rejected", {"path": rel})
+        sources.append({"path": rel, "hash": source_hash, "source_class": source_class,
+                        "authority_class": authority, "precedence_class": authority})
+        if source_class not in {"memory_index", "memory_claim"}:
+            line_end = max(1, len(text.splitlines()))
+            documents.append({"path": rel, "line_start": 1, "line_end": line_end,
+                              "source_content_hash": source_hash, "source_class": source_class,
+                              "authority_class": authority, "precedence_class": authority,
+                              "structural_relation": relation})
+            sections.extend(parse_core_sections(text, rel, source_hash, source_class, authority, secret_policy))
+        if source_class in {"memory_index", "memory_claim"}:
+            writer_claims = parse_writer_claims(text, rel, secret_policy)
+            claims.extend(writer_claims)
+            for match in BLOCK_RE.finditer(text):
+                line = text.count("\n", 0, match.start()) + 1
+                try:
+                    raw = json.loads(match.group(1))
+                except json.JSONDecodeError as exc:
+                    raise InputError("malformed_metadata", "Claim block contains invalid JSON", {"path": rel, "line": line, "column": exc.colno}) from exc
+                claims.append(validate_claim(raw, rel, line, secret_policy))
+    ids: dict[str, dict[str, Any]] = {}
+    for claim in claims:
+        if claim["claim_id"] in ids:
+            raise InputError("duplicate_claim_id", "Duplicate claim_id", {"claim_id": claim["claim_id"], "paths": sorted([ids[claim["claim_id"]]["path"], claim["path"]])})
+        ids[claim["claim_id"]] = claim
+    claims.sort(key=lambda x: (x["claim_key"], x["claim_id"], x["path"], x["line"]))
+    sources.sort(key=lambda x: x["path"])
+    documents.sort(key=lambda x: x["path"])
+    sections.sort(key=lambda x: (x["path"], x["line_start"], x["heading_level"], x["heading"]))
+    return {"schema_version": SCHEMA_VERSION, "canonical_source": "openclaw_workspace_markdown",
+            "claims": claims, "sources": sources, "core_documents": documents,
+            "core_sections": sections, "source_digest": digest(sources)}
+
+
+def build_plan(inspected: dict[str, Any], include_inferred: bool = False, ownership: dict[str, str] | None = None) -> dict[str, Any]:
+    claims = inspected["claims"]
+    by_id = {c["claim_id"]: c for c in claims}
+    superseded_ids = {old for c in claims for old in c["supersedes"]}
+    referenced_ids = superseded_ids | {new for c in claims for new in c["superseded_by"]}
+    for claim_id in referenced_ids:
+        if claim_id not in by_id:
+            raise InputError("unknown_superseded_claim", "Supersession references an unknown claim", {"claim_id": claim_id})
+    for claim in claims:
+        if claim["claim_id"] in claim["supersedes"] or claim["claim_id"] in claim["superseded_by"]:
+            raise InputError("inconsistent_supersession", "A claim cannot supersede itself", {"claim_id": claim["claim_id"]})
+    candidates = [c for c in claims if c["status"] in ELIGIBLE_STATUS and c["claim_id"] not in superseded_ids and not c["superseded_by"]]
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for claim in candidates:
+        grouped.setdefault(claim["claim_key"], []).append(claim)
+    ambiguous_claim_keys = [
+        {"claim_key": key, "claim_ids": sorted(c["claim_id"] for c in vals)}
+        for key, vals in sorted(grouped.items()) if len(vals) > 1
+    ]
+    selected = sorted(candidates, key=lambda x: (x["claim_key"], x["claim_id"]))
+    entities: dict[str, dict[str, Any]] = {}
+    explicit: list[dict[str, str]] = []
+    structural: list[dict[str, str]] = []
+    inferred: list[dict[str, str]] = []
+    claim_names: dict[str, str] = {}
+    key_names = {key: f"claim-key:{key}" for key in grouped}
+    reserved_key_names = set(key_names.values())
+    source_by_path = {source["path"]: source for source in inspected.get("sources", [])}
+
+    entities["agent:self"] = {"name": "agent:self", "entityType": "Agent", "observations": [json.dumps({"role": "workspace_agent"}, sort_keys=True, separators=(",", ":"))]}
+    entities["workspace:self"] = {"name": "workspace:self", "entityType": "Workspace", "observations": [json.dumps({"role": "owner_workspace"}, sort_keys=True, separators=(",", ":"))]}
+    structural.append({"from": "agent:self", "to": "workspace:self", "relationType": "operates_in_workspace"})
+    for document in inspected.get("core_documents", []):
+        doc_name = "document:" + document["path"]
+        observation = {key: value for key, value in document.items() if key != "structural_relation"}
+        entities[doc_name] = {"name": doc_name, "entityType": "CoreDocument", "observations": [json.dumps(observation, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]}
+        structural.append({"from": "agent:self", "to": doc_name, "relationType": document["structural_relation"]})
+        structural.append({"from": "workspace:self", "to": doc_name, "relationType": "contains_core_document"})
+    for section in inspected.get("core_sections", []):
+        section_name = f"section:{section['path']}:{section['line_start']}"
+        doc_name = "document:" + section["path"]
+        entities[section_name] = {"name": section_name, "entityType": "CoreSection", "observations": [json.dumps(section, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]}
+        structural.append({"from": doc_name, "to": section_name, "relationType": "has_section"})
+
+    # Resolve the whole claim namespace before insertion so no entity can be
+    # silently overwritten. Explicit names are accepted only when globally
+    # collision-free, including against derived ClaimKey entities.
+    for claim in selected:
+        entity = claim.get("entity", {})
+        if entity and not isinstance(entity, dict):
+            raise InputError("malformed_metadata", "entity must be an object", {"claim_id": claim["claim_id"]})
+        name = entity.get("name", f"claim:{claim['claim_id']}")
+        etype = entity.get("type", "MemoryClaim")
+        if not isinstance(name, str) or not name or not isinstance(etype, str) or not etype:
+            raise InputError("malformed_metadata", "entity name and type must be non-empty strings", {"claim_id": claim["claim_id"]})
+        if name in entities or name in claim_names.values() or name in reserved_key_names:
+            colliding = sorted(cid for cid, other_name in claim_names.items() if other_name == name)
+            raise InputError("entity_name_collision", "Claim entity name is not collision-free", {"claim_id": claim["claim_id"], "entity_name": name, "collides_with_claim_ids": colliding})
+        claim_names[claim["claim_id"]] = name
+
+    for key, name in sorted(key_names.items()):
+        entities[name] = {"name": name, "entityType": "ClaimKey", "observations": [json.dumps({"claim_key": key}, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]}
+
+    for claim in selected:
+        entity = claim.get("entity", {})
+        name = claim_names[claim["claim_id"]]
+        etype = entity.get("type", "MemoryClaim")
+        source = source_by_path.get(claim["path"], {})
+        observation = json.dumps({"claim_id": claim["claim_id"], "claim_key": claim["claim_key"], "status": claim["status"], "supersedes": claim["supersedes"], "superseded_by": claim["superseded_by"], "evidence": claim["evidence"], "claim": claim.get("claim", claim.get("value")), "confidence": claim.get("confidence"), "path": claim["path"], "line": claim["line"], "content_hash": claim["content_hash"], "source_content_hash": source.get("hash"), "source_class": source.get("source_class", "memory_claim"), "authority_class": source.get("authority_class", MEMORY_AUTHORITY), "precedence_class": source.get("precedence_class", MEMORY_AUTHORITY)}, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        entities[name] = {"name": name, "entityType": etype, "observations": [observation]}
+        structural.append({"from": name, "to": key_names[claim["claim_key"]], "relationType": "has_claim_key"})
+        structural.append({"from": "agent:self", "to": name, "relationType": "has_memory_claim"})
+        for relation in claim["relations"]:
+            explicit.append({"from": name, "to": relation["to"], "relationType": relation["type"]})
+        if include_inferred and "." in claim["claim_key"]:
+            parent = claim["claim_key"].rsplit(".", 1)[0]
+            if parent in grouped and len(grouped[parent]) == 1:
+                inferred.append({"from": name, "to": claim_names[grouped[parent][0]["claim_id"]], "relationType": "derived_from_key_namespace"})
+    for relation in explicit:
+        if relation["from"] not in entities or relation["to"] not in entities:
+            raise InputError("dangling_relation", "Explicit relation endpoint is absent from the current graph", relation)
+    entity_list = sorted(entities.values(), key=lambda x: x["name"])
+    explicit = sorted({tuple(x.values()): x for x in explicit}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
+    structural = sorted({tuple(x.values()): x for x in structural}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
+    inferred = sorted({tuple(x.values()): x for x in inferred}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
+    result = {"schema_version": SCHEMA_VERSION, "canonical": False, "rebuildable": True, "source_digest": inspected["source_digest"], "claims": selected, "core_documents": inspected.get("core_documents", []), "core_sections": inspected.get("core_sections", []), "entities": entity_list, "explicit_relations": explicit, "structural_relations": structural, "inferred_relations": inferred, "conflicts": {"ambiguous_claim_keys": ambiguous_claim_keys}, "excluded_claims": sorted([c["claim_id"] for c in claims if c not in selected])}
+    result["snapshot_hash"] = digest(result)
+    return apply_namespace(result, ownership) if ownership else result
+
+
+def validate_snapshot(snapshot: Any) -> dict[str, Any]:
+    if not isinstance(snapshot, dict):
+        raise InputError("invalid_snapshot", "Snapshot must be a JSON object")
+    required = {"schema_version", "canonical", "rebuildable", "source_digest", "entities", "explicit_relations", "structural_relations", "inferred_relations", "conflicts", "snapshot_hash"}
+    if missing := sorted(required - snapshot.keys()):
+        raise InputError("invalid_snapshot", "Snapshot is missing required fields", {"fields": missing})
+    allowed = required | {"claims", "core_documents", "core_sections", "excluded_claims", "ownership"}
+    if extra := sorted(snapshot.keys() - allowed):
+        raise InputError("invalid_snapshot", "Snapshot contains unsupported fields", {"fields": extra})
+    if snapshot["schema_version"] != SCHEMA_VERSION or not isinstance(snapshot["source_digest"], str) or not HASH_RE.fullmatch(snapshot["source_digest"]):
+        raise InputError("invalid_snapshot", "Snapshot schema version or source digest is invalid")
+    if snapshot["canonical"] is not False or snapshot["rebuildable"] is not True:
+        raise InputError("invalid_snapshot", "Snapshot must declare canonical=false and rebuildable=true")
+    unhashed = dict(snapshot)
+    supplied = unhashed.pop("snapshot_hash")
+    if supplied != digest(unhashed):
+        raise InputError("invalid_snapshot_hash", "Snapshot hash does not match content")
+    if not isinstance(snapshot["entities"], list) or not all(isinstance(e, dict) and set(e) == {"name", "entityType", "observations"} for e in snapshot["entities"]):
+        raise InputError("invalid_snapshot", "entities must be an object array")
+    names = [e.get("name") for e in snapshot["entities"]]
+    valid_entity = all(isinstance(e.get("name"), str) and e["name"] and isinstance(e.get("entityType"), str) and e["entityType"] and isinstance(e.get("observations"), list) and all(isinstance(x, str) for x in e["observations"]) for e in snapshot["entities"])
+    if not valid_entity or len(names) != len(set(names)):
+        raise InputError("invalid_snapshot", "Entities require unique names, entityType, and string observations")
+    endpoints = set(names)
+    ownership = snapshot.get("ownership")
+    if ownership is not None:
+        if (not isinstance(ownership, dict) or set(ownership) != {"agent_id", "workspace_hash", "namespace"}
+                or not AGENT_ID_RE.fullmatch(ownership.get("agent_id", ""))
+                or not HASH_RE.fullmatch(ownership.get("workspace_hash", ""))
+                or not isinstance(ownership.get("namespace"), str)
+                or not ownership["namespace"].startswith("memory-graph:v1:")
+                or not all(name.startswith(ownership["namespace"]) for name in names)):
+            raise InputError("invalid_snapshot", "Snapshot ownership namespace is invalid")
+        recomputed = hashlib.sha256(canonical_bytes({"agent_id": ownership["agent_id"], "workspace_hash": ownership["workspace_hash"]})).hexdigest()[:24]
+        if ownership["namespace"] != f"memory-graph:v1:{recomputed}:":
+            raise InputError("invalid_snapshot", "Snapshot ownership namespace does not match its explicit identity")
+    _validate_conflicts(snapshot["conflicts"], "invalid_snapshot")
+    ambiguous = snapshot["conflicts"]["ambiguous_claim_keys"]
+    for field in ("explicit_relations", "structural_relations", "inferred_relations"):
+        relations = snapshot[field]
+        if not isinstance(relations, list):
+            raise InputError("invalid_snapshot", f"{field} must be an array")
+        for relation in relations:
+            if not isinstance(relation, dict) or set(relation) != {"from", "to", "relationType"} or not all(isinstance(relation[k], str) and relation[k] for k in relation):
+                raise InputError("invalid_snapshot", f"{field} contains an invalid relation")
+            if relation["from"] not in endpoints or relation["to"] not in endpoints:
+                raise InputError("invalid_snapshot", f"{field} contains a dangling relation", relation)
+    entity_types = {e["name"]: e["entityType"] for e in snapshot["entities"]}
+    structural_types = {"has_claim_key", "has_memory_claim", "operates_in_workspace", "contains_core_document", "has_section"} | {v[1] for v in CORE_SOURCES.values()}
+    for relation in snapshot["structural_relations"]:
+        if relation["relationType"] not in structural_types:
+            raise InputError("invalid_snapshot", "structural_relations contains an unsupported structural link", relation)
+        if relation["relationType"] == "has_claim_key" and entity_types[relation["to"]] != "ClaimKey":
+            raise InputError("invalid_snapshot", "has_claim_key must target a ClaimKey entity", relation)
+    return {"valid": True, "snapshot_hash": supplied, "entity_count": len(names), "explicit_relation_count": len(snapshot["explicit_relations"]), "structural_relation_count": len(snapshot["structural_relations"]), "inferred_relation_count": len(snapshot["inferred_relations"]), "ambiguous_claim_key_count": len(ambiguous)}
+
+
+def graph_diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
+    validate_snapshot(old); validate_snapshot(new)
+    if old.get("ownership") is None or old.get("ownership") != new.get("ownership"):
+        raise InputError("ownership_mismatch", "Old and new snapshots must have the same recomputed ownership")
+    old_e, new_e = {x["name"]: x for x in old["entities"]}, {x["name"]: x for x in new["entities"]}
+    old_r = {tuple((x[k] for k in ("from", "to", "relationType"))) for field in ("explicit_relations", "structural_relations") for x in old[field]}
+    new_r = {tuple((x[k] for k in ("from", "to", "relationType"))) for field in ("explicit_relations", "structural_relations") for x in new[field]}
+    changed = sorted(name for name in old_e.keys() & new_e.keys() if old_e[name] != new_e[name])
+    deletes = sorted(old_e.keys() - new_e.keys()) + changed
+    creates = sorted(new_e.keys() - old_e.keys()) + changed
+    changed_set = set(changed)
+    delete_r = (old_r - new_r) | {r for r in old_r if r[0] in changed_set or r[1] in changed_set}
+    create_r = (new_r - old_r) | {r for r in new_r if r[0] in changed_set or r[1] in changed_set}
+    return {"schema_version": SCHEMA_VERSION, "ownership": new["ownership"], "from_snapshot_hash": old["snapshot_hash"], "to_snapshot_hash": new["snapshot_hash"], "conflicts": new["conflicts"], "delete_relations": [{"from": a, "to": b, "relationType": c} for a,b,c in sorted(delete_r)], "delete_entities": sorted(deletes), "create_entities": [new_e[name] for name in sorted(creates)], "create_relations": [{"from": a, "to": b, "relationType": c} for a,b,c in sorted(create_r)], "unchanged_entities": sorted((old_e.keys() & new_e.keys()) - changed_set)}
+
+
+def _validate_conflicts(conflicts: Any, code: str) -> None:
+    if not isinstance(conflicts, dict) or set(conflicts) != {"ambiguous_claim_keys"}:
+        raise InputError(code, "conflicts has an invalid shape")
+    groups = conflicts["ambiguous_claim_keys"]
+    if not isinstance(groups, list) or groups != sorted(groups, key=lambda x: x.get("claim_key", "") if isinstance(x, dict) else ""):
+        raise InputError(code, "ambiguous claim-key conflicts must be an ordered array")
+    for group in groups:
+        if (not isinstance(group, dict) or set(group) != {"claim_key", "claim_ids"}
+                or not isinstance(group["claim_key"], str) or not group["claim_key"]
+                or not isinstance(group["claim_ids"], list) or len(group["claim_ids"]) < 2
+                or group["claim_ids"] != sorted(set(group["claim_ids"]))
+                or not all(isinstance(x, str) and ID_RE.fullmatch(x) for x in group["claim_ids"])):
+            raise InputError(code, "conflicts contains an invalid ambiguity group")
+
+
+def _validate_entities(entities: Any, code: str) -> list[str]:
+    if not isinstance(entities, list):
+        raise InputError(code, "create_entities must be an array")
+    names: list[str] = []
+    for entity in entities:
+        if (not isinstance(entity, dict) or set(entity) != {"name", "entityType", "observations"}
+                or not isinstance(entity["name"], str) or not entity["name"]
+                or not isinstance(entity["entityType"], str) or not entity["entityType"]
+                or not isinstance(entity["observations"], list)
+                or not all(isinstance(x, str) for x in entity["observations"])):
+            raise InputError(code, "create_entities contains an invalid entity")
+        names.append(entity["name"])
+    if names != sorted(set(names)):
+        raise InputError(code, "create entity names must be unique and ordered")
+    return names
+
+
+def _validate_relations(relations: Any, field: str, code: str) -> list[tuple[str, str, str]]:
+    if not isinstance(relations, list):
+        raise InputError(code, f"{field} must be an array")
+    result = []
+    for relation in relations:
+        if (not isinstance(relation, dict) or set(relation) != {"from", "to", "relationType"}
+                or not all(isinstance(relation[k], str) and relation[k] for k in ("from", "to", "relationType"))):
+            raise InputError(code, f"{field} contains an invalid relation")
+        result.append((relation["from"], relation["to"], relation["relationType"]))
+    if result != sorted(set(result)):
+        raise InputError(code, f"{field} relations must be unique and ordered")
+    return result
+
+
+def validate_diff(value: Any) -> dict[str, Any]:
+    code = "invalid_diff"
+    allowed = {"schema_version", "ownership", "from_snapshot_hash", "to_snapshot_hash", "conflicts", "delete_relations", "delete_entities", "create_entities", "create_relations", "unchanged_entities"}
+    if not isinstance(value, dict) or set(value) != allowed or value.get("schema_version") != SCHEMA_VERSION:
+        raise InputError(code, "Diff must contain exactly the supported fields and schema version")
+    if not all(isinstance(value[k], str) and HASH_RE.fullmatch(value[k]) for k in ("from_snapshot_hash", "to_snapshot_hash")):
+        raise InputError(code, "Diff snapshot hashes must be lowercase SHA-256 values")
+    ownership = value["ownership"]
+    if not isinstance(ownership, dict) or set(ownership) != {"agent_id", "workspace_hash", "namespace"}:
+        raise InputError(code, "Diff ownership is invalid")
+    expected = f"memory-graph:v1:{hashlib.sha256(canonical_bytes({'agent_id': ownership.get('agent_id'), 'workspace_hash': ownership.get('workspace_hash')})).hexdigest()[:24]}:"
+    if ownership.get("namespace") != expected:
+        raise InputError(code, "Diff ownership namespace does not match its explicit identity")
+    _validate_conflicts(value["conflicts"], code)
+    deleted = value["delete_entities"]
+    unchanged = value["unchanged_entities"]
+    if (not isinstance(deleted, list) or deleted != sorted(set(deleted)) or not all(isinstance(x, str) and x for x in deleted)
+            or not isinstance(unchanged, list) or unchanged != sorted(set(unchanged)) or not all(isinstance(x, str) and x for x in unchanged)):
+        raise InputError(code, "Entity name arrays must contain unique ordered non-empty strings")
+    created = _validate_entities(value["create_entities"], code)
+    if set(deleted) & set(unchanged) or set(created) & set(unchanged):
+        raise InputError(code, "Diff entity sets conflict")
+    old_endpoints, new_endpoints = set(deleted) | set(unchanged), set(created) | set(unchanged)
+    for relation in _validate_relations(value["delete_relations"], "delete_relations", code):
+        if relation[0] not in old_endpoints or relation[1] not in old_endpoints:
+            raise InputError(code, "delete_relations contains an invalid old endpoint")
+    for relation in _validate_relations(value["create_relations"], "create_relations", code):
+        if relation[0] not in new_endpoints or relation[1] not in new_endpoints:
+            raise InputError(code, "create_relations contains an invalid new endpoint")
+    return value
+
+
+def export_batches(value: dict[str, Any], include_inferred: bool, batch_size: int) -> dict[str, Any]:
+    if batch_size < 1 or batch_size > 1000:
+        raise InputError("invalid_batch_size", "batch-size must be between 1 and 1000")
+    batches: list[dict[str, Any]] = []
+    def add(tool: str, key: str, items: list[Any]) -> None:
+        batches.extend(mutation_batches("mcporter", tool, key, items, batch_size))
+    if "entities" in value:
+        validate_snapshot(value)
+        add("create_entities", "entities", value["entities"])
+        rels = value["explicit_relations"] + value["structural_relations"] + (value["inferred_relations"] if include_inferred else [])
+        add("create_relations", "relations", sorted(rels, key=lambda x: (x["from"], x["to"], x["relationType"])))
+    else:
+        validate_diff(value)
+        add("delete_relations", "relations", value.get("delete_relations", []))
+        add("delete_entities", "entityNames", value.get("delete_entities", []))
+        add("create_entities", "entities", value.get("create_entities", []))
+        add("create_relations", "relations", value.get("create_relations", []))
+    return {"schema_version": SCHEMA_VERSION, "memory_mcp_compatible": True, "mutation_performed": False, "conflicts": value.get("conflicts", {"ambiguous_claim_keys": []}), "batches": batches}
+
+
+def load_json(path: str, root: Path) -> Any:
+    target = safe_resolve(root, path)
+    if not target.is_file():
+        raise InputError("missing_snapshot", "JSON input file does not exist", {"path": path})
+    try:
+        return json.loads(target.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise InputError("invalid_json", "Input file contains invalid JSON", {"path": path, "line": exc.lineno, "column": exc.colno}) from exc
+
+
+def atomic_private_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if path.parent.is_symlink() or path.is_symlink():
+        raise InputError("unsafe_state_path", "Private state paths must not be symlinks")
+    os.chmod(path.parent, 0o700)
+    fd, raw = tempfile.mkstemp(prefix=".memory-graph-", dir=path.parent)
+    tmp = Path(raw)
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(canonical_bytes(value) + b"\n")
+            handle.flush(); os.fsync(handle.fileno())
+        os.replace(tmp, path)
+        os.chmod(path, 0o600)
+        directory_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+
+
+def mcp_run(argv: list[str], timeout_seconds: float) -> Any:
+    stdout_file = tempfile.TemporaryFile()
+    stderr_file = tempfile.TemporaryFile()
+    try:
+        process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=stdout_file, stderr=stderr_file)
+        deadline = time.monotonic() + timeout_seconds
+        while process.poll() is None:
+            if stdout_file.tell() > MAX_MCP_OUTPUT_BYTES or stderr_file.tell() > MAX_MCP_OUTPUT_BYTES:
+                process.kill(); process.wait()
+                raise InputError("backend_output_limit", "Memory MCP command output exceeded the safety limit")
+            if time.monotonic() >= deadline:
+                process.kill(); process.wait()
+                raise InputError("backend_unavailable", "Memory MCP command was unavailable or timed out", {"type": "TimeoutExpired"})
+            time.sleep(0.01)
+        stdout_file.seek(0); stderr_file.seek(0)
+        stdout = stdout_file.read(MAX_MCP_OUTPUT_BYTES + 1)
+        stderr = stderr_file.read(MAX_MCP_OUTPUT_BYTES + 1)
+    except OSError as exc:
+        details = {"type": type(exc).__name__, "errno": exc.errno, "spawned": False,
+                   "mutation_definitely_not_performed": True}
+        if exc.errno == errno.ENOENT:
+            raise InputError("backend_unavailable",
+                "Memory MCP backend executable is unavailable", details) from exc
+        if exc.errno == errno.E2BIG:
+            raise InputError("backend_argv_too_large",
+                "Memory MCP argv exceeded the operating-system limit before spawn; no mutation occurred", details) from exc
+        raise InputError("backend_unavailable", "Memory MCP command could not be spawned", details) from exc
+    finally:
+        stdout_file.close(); stderr_file.close()
+    if len(stdout) > MAX_MCP_OUTPUT_BYTES or len(stderr) > MAX_MCP_OUTPUT_BYTES:
+        raise InputError("backend_output_limit", "Memory MCP command output exceeded the safety limit")
+    if process.returncode:
+        raise InputError("backend_failure", "Memory MCP command failed", {"returncode": process.returncode})
+    text = stdout.decode("utf-8", "replace").strip()
+    try:
+        return json.loads(text) if text else {}
+    except json.JSONDecodeError as exc:
+        raise InputError("backend_parse_error", "Memory MCP command returned invalid JSON") from exc
+
+
+def mcp_call(executable: str, tool: str, arguments: dict[str, Any], timeout_seconds: float) -> Any:
+    return mcp_run(mcp_argv(executable, tool, arguments), timeout_seconds)
+
+
+def _graph_payload(value: Any) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    if isinstance(value, dict):
+        if isinstance(value.get("entities"), list) and isinstance(value.get("relations"), list):
+            return value["entities"], value["relations"]
+        for child in value.values():
+            entities, relations = _graph_payload(child)
+            if entities or relations:
+                return entities, relations
+    if isinstance(value, list):
+        for child in value:
+            entities, relations = _graph_payload(child)
+            if entities or relations:
+                return entities, relations
+    return [], []
+
+
+REQUIRED_MCP_SIGNATURES = {
+    "create_entities": "entities", "create_relations": "relations",
+    "delete_entities": "entityNames", "delete_relations": "relations",
+    "read_graph": None, "open_nodes": "names",
+}
+
+
+def verify_mcp_schema(value: Any) -> None:
+    found: dict[str, set[str]] = {}
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            name = node.get("name")
+            schema = node.get("inputSchema", node.get("input_schema"))
+            if isinstance(name, str) and isinstance(schema, dict):
+                properties = schema.get("properties", {})
+                required = schema.get("required", [])
+                if isinstance(properties, dict) and isinstance(required, list):
+                    found[name.split(".")[-1]] = set(properties) & set(required)
+            for child in node.values(): walk(child)
+        elif isinstance(node, list):
+            for child in node: walk(child)
+    walk(value)
+    bad = []
+    for name, argument in REQUIRED_MCP_SIGNATURES.items():
+        if name not in found or (argument is not None and argument not in found[name]): bad.append(name)
+    if bad:
+        raise InputError("backend_schema_mismatch", "Registered Memory MCP tool signatures are incompatible", {"tools": bad})
+
+
+def backend_view(value: Any, ownership: dict[str, str]) -> tuple[dict[str, Any], list[dict[str, str]], list[dict[str, str]]]:
+    entities, relations = _graph_payload(value)
+    prefix = ownership["namespace"]
+    owned = [e for e in entities if isinstance(e, dict) and str(e.get("name", "")).startswith(prefix)]
+    if any(set(e) != {"name", "entityType", "observations"} or not isinstance(e.get("entityType"), str)
+           or not isinstance(e.get("observations"), list) or not all(isinstance(x, str) for x in e["observations"]) for e in owned):
+        raise InputError("backend_corruption", "Backend contains malformed owned entities")
+    owned_names = {e.get("name") for e in owned}
+    internal, foreign = [], []
+    for relation in relations:
+        if not isinstance(relation, dict): continue
+        a, b = relation.get("from"), relation.get("to")
+        if a in owned_names or b in owned_names:
+            if set(relation) != {"from", "to", "relationType"} or not all(isinstance(relation.get(k), str) for k in ("from", "to", "relationType")):
+                raise InputError("backend_corruption", "Backend contains malformed owned incident relations")
+            (internal if a in owned_names and b in owned_names else foreign).append(relation)
+    entity_keys = [e["name"] for e in owned]
+    relation_keys = [(r["from"], r["to"], r["relationType"]) for r in internal + foreign]
+    if len(entity_keys) != len(set(entity_keys)) or len(relation_keys) != len(set(relation_keys)):
+        raise InputError("backend_corruption", "Backend contains duplicate owned or incident records")
+    snapshot = {"schema_version": SCHEMA_VERSION, "canonical": False, "rebuildable": True,
+        "source_digest": digest([]), "claims": [], "core_documents": [], "core_sections": [],
+        "entities": sorted(owned, key=lambda x: x["name"]),
+        "explicit_relations": sorted(internal, key=lambda x: (x["from"], x["to"], x["relationType"])),
+        "structural_relations": [], "inferred_relations": [], "conflicts": {"ambiguous_claim_keys": []},
+        "excluded_claims": [], "ownership": ownership}
+    snapshot["snapshot_hash"] = digest(snapshot)
+    inbound = sorted([r for r in foreign if r.get("to") in owned_names], key=canonical_bytes)
+    outbound = sorted([r for r in foreign if r.get("from") in owned_names], key=canonical_bytes)
+    return snapshot, inbound, outbound
+
+
+def exact_remaining(current: dict[str, Any], target: dict[str, Any], inbound: list[dict[str, str]],
+                    outbound: list[dict[str, str]], executable: str = "mcporter") -> list[dict[str, Any]]:
+    delta = graph_diff(current, target)
+    deleting = set(delta["delete_entities"])
+    changed = deleting & {e["name"] for e in delta["create_entities"]}
+    stale_incident = [r for r in inbound if r["from"] in deleting or r["to"] in deleting]
+    foreign_delete = stale_incident + outbound
+    foreign_restore = [r for r in stale_incident if r["from"] in changed or r["to"] in changed]
+    batches: list[dict[str, Any]] = []
+    def add(tool: str, key: str, items: list[Any]) -> None:
+        batches.extend(mutation_batches(executable, tool, key, items))
+    add("delete_relations", "relations", sorted(delta["delete_relations"] + foreign_delete, key=canonical_bytes))
+    add("delete_entities", "entityNames", delta["delete_entities"])
+    add("create_entities", "entities", delta["create_entities"])
+    add("create_relations", "relations", sorted(delta["create_relations"] + foreign_restore, key=canonical_bytes))
+    return batches
+
+
+def fault_point(name: str) -> None:
+    if os.environ.get("MEMORY_GRAPH_FAULT") == name:
+        raise OSError(f"fault injection: {name}")
+
+
+def cron_plan(root: Path, agent_id: str, workspace_id: str | None, state_root: str, timezone: str) -> dict[str, Any]:
+    ownership = namespace_for(agent_id, root, workspace_id)
+    try:
+        zone = ZoneInfo(timezone)
+    except (ZoneInfoNotFoundError, ValueError) as exc:
+        raise InputError("invalid_timezone", "A registered IANA timezone is required; UTC is never inferred", {"timezone": timezone}) from exc
+    if zone.key != timezone:
+        raise InputError("invalid_timezone", "Timezone must be an explicit canonical IANA key")
+    cron_hash = hashlib.sha256(canonical_bytes({"capability":"memory-graph", **ownership})).hexdigest()[:20]
+    name = f"memory-graph-daily-{cron_hash}"
+    identity = f"root={root}; agentId={agent_id}; stateRoot={state_root}"
+    if workspace_id is not None: identity += f"; workspaceId={workspace_id}"
+    message = ("Daily memory-graph reconciliation under the owner's standing authorization. "
+        "Select the memory-graph Skill and use only this identity: " + identity + ". "
+        "Compute the canonical source digest; if unchanged, make no graph mutations and stay silent. "
+        "If changed, call trusted Gateway harness.run.prepare for memory-graph onboard with the exact identity, "
+        "then call harness.run with the matching approvalIntentHash without asking again. Verify the exact owned "
+        "namespace and representative retrieval. Report only failures or material graph changes. Never modify "
+        "Markdown, another namespace, or publish externally.")
+    cron_add = {"name": name, "description": f"Owned daily Memory Graph reconcile for {ownership['namespace']}",
+        "agentId": agent_id, "enabled": True,
+        "schedule": {"kind": "cron", "expr": "0 0 * * *", "tz": timezone},
+        "sessionTarget": "isolated", "wakeMode": "now",
+        "payload": {"kind": "agentTurn", "message": message}, "delivery": {"mode": "none"}}
+    return {"name": name, "cron_add": cron_add, "match": {"name": name, "agentId": agent_id, "sessionTarget": "isolated"},
+            "server_generated_id": True,
+            "namespace": ownership["namespace"], "source_digest_noop": True, "overlap_prevented_by_namespace_lock": True,
+            "failure_policy": "resume_on_next_daily_run"}
+
+
+def onboard(root: Path, agent_id: str, workspace_id: str | None, state_root: Path,
+            executable: str, timeout_seconds: float, secret_policy: str) -> dict[str, Any]:
+    deadline = time.monotonic() + 30.0
+    def bounded_timeout() -> float:
+        remaining = deadline - time.monotonic()
+        if remaining < 0.1:
+            raise InputError("backend_unavailable", "Memory MCP onboarding exceeded its total time bound")
+        return min(timeout_seconds, remaining)
+    ownership = namespace_for(agent_id, root, workspace_id)
+    if state_root.is_symlink():
+        raise InputError("unsafe_state_path", "State root must not be a symlink")
+    state_root = state_root.resolve()
+    state_dir = state_root / ownership["namespace"].split(":")[-2]
+    state_file, journal_file, lock_file = state_dir / "snapshot.json", state_dir / "journal.json", state_dir / "lock"
+    state_dir.mkdir(parents=True, exist_ok=True, mode=0o700); os.chmod(state_dir, 0o700)
+    lock_fd = os.open(lock_file, os.O_CREAT | os.O_RDWR, 0o600)
+    os.fchmod(lock_fd, 0o600)
+    try:
+        try: fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc: raise InputError("onboard_locked", "This namespace is already onboarding") from exc
+        inspected = inspect_workspace(root, secret_policy)
+        target = build_plan(inspected, False, ownership)
+        prior = {}
+        if journal_file.is_file():
+            try: prior = json.loads(journal_file.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as exc: raise InputError("invalid_private_state", "Private journal is malformed") from exc
+        transaction_id = prior.get("transaction_id", 0)
+        if not isinstance(transaction_id, int) or transaction_id < 0: raise InputError("invalid_private_state", "Private transaction ID is invalid")
+        transaction_id += 1
+        journal = {"status": "prepared", "transaction_id": transaction_id, "ownership": ownership,
+                   "source_digest": target["source_digest"], "snapshot_hash": target["snapshot_hash"],
+                   "target_snapshot": target, "applied_batches": 0, "updated_unix": int(time.time())}
+        atomic_private_json(journal_file, journal); fault_point("prepared")
+        schema_result = mcp_run([executable, "list", "memory", "--schema", "--json"], bounded_timeout())
+        verify_mcp_schema(schema_result); fault_point("schema_verified")
+        graph = mcp_call(executable, "read_graph", {}, bounded_timeout())
+        current, inbound, outbound = backend_view(graph, ownership); fault_point("backend_discovered")
+        initial_inbound = list(inbound)
+        applied = 0
+        while True:
+            batches = exact_remaining(current, target, inbound, outbound, executable)
+            if not batches: break
+            batch = batches[0]
+            journal["status"] = "applying"; journal["next_tool"] = batch["tool"]
+            journal["mutation_attempt"] = {"status": "dispatching", "tool": batch["tool"],
+                "transaction_id": transaction_id, "namespace": ownership["namespace"],
+                "arguments_hash": digest(batch["arguments"]), "reconciliation_required": True}
+            atomic_private_json(journal_file, journal); fault_point("before_mutation")
+            mcp_call(executable, batch["tool"], batch["arguments"], bounded_timeout())
+            applied += 1; journal["applied_batches"] = applied
+            fault_point("after_mutation")
+            journal["mutation_attempt"]["status"] = "confirmed"
+            journal["mutation_attempt"]["reconciliation_required"] = False
+            atomic_private_json(journal_file, journal); fault_point("progress_recorded")
+            graph = mcp_call(executable, "read_graph", {}, bounded_timeout())
+            current, inbound, outbound = backend_view(graph, ownership)
+        graph = mcp_call(executable, "read_graph", {}, bounded_timeout())
+        current, final_inbound, final_outbound = backend_view(graph, ownership)
+        expected_entities = sorted(target["entities"], key=canonical_bytes)
+        actual_entities = sorted(current["entities"], key=canonical_bytes)
+        expected_relations = sorted(target["explicit_relations"] + target["structural_relations"], key=canonical_bytes)
+        actual_relations = sorted(current["explicit_relations"], key=canonical_bytes)
+        if actual_entities != expected_entities or actual_relations != expected_relations or final_outbound:
+            raise InputError("verification_failed", "Owned entities and exact incident relations do not match the target",
+                {"expected_entities": len(expected_entities), "actual_entities": len(actual_entities),
+                 "expected_relations": len(expected_relations), "actual_relations": len(actual_relations),
+                 "foreign_inbound_relations": final_inbound, "foreign_outbound_relations": final_outbound})
+        representative = target["entities"][0]["name"] if target["entities"] else None
+        if representative:
+            opened = mcp_call(executable, "open_nodes", {"names": [representative]}, bounded_timeout())
+            opened_entities, _ = _graph_payload(opened)
+            if [e for e in opened_entities if isinstance(e, dict) and e.get("name") == representative] != [target["entities"][0]]:
+                raise InputError("verification_failed", "Representative owned entity content could not be retrieved exactly")
+        journal["status"] = "verified"; journal["foreign_inbound_relations"] = final_inbound
+        atomic_private_json(journal_file, journal); fault_point("verified")
+        atomic_private_json(state_file, target); fault_point("snapshot_committed")
+        journal["status"] = "complete"; journal.pop("target_snapshot", None); journal.pop("next_tool", None)
+        atomic_private_json(journal_file, journal); fault_point("complete")
+    except (InputError, OSError) as exc:
+        effects = []
+        if 'journal' in locals():
+            journal["status"] = "backend_unavailable" if isinstance(exc, InputError) and exc.code == "backend_unavailable" else "partial_failure"
+            journal["updated_unix"] = int(time.time())
+            try: atomic_private_json(journal_file, journal)
+            except OSError: pass
+            attempt = journal.get("mutation_attempt")
+            definitely_no_mutation = (isinstance(exc, InputError)
+                and exc.details.get("mutation_definitely_not_performed") is True)
+            if isinstance(attempt, dict) and attempt.get("status") == "dispatching" and not definitely_no_mutation:
+                effects.append({"type":"mutation_may_have_occurred", "tool":attempt.get("tool"),
+                    "transaction_id":transaction_id, "namespace":ownership["namespace"], "reconciliation_required":True})
+            elif journal.get("applied_batches", 0):
+                effects.append({"type":"mutate_owned_derived_graph", "namespace":ownership["namespace"], "batch_count":journal["applied_batches"]})
+        if isinstance(exc, InputError): exc.details["effects"] = effects; raise
+        raise InputError("io_error", "Recoverable onboarding state I/O failure", {"type":type(exc).__name__, "effects":effects}) from exc
+    finally:
+        os.close(lock_fd)
+    representative = target["entities"][0]["name"] if target["entities"] else None
+    return {"namespace": ownership["namespace"], "workspace_hash": ownership["workspace_hash"],
+            "source_count": len(inspected["sources"]), "core_source_count": len(inspected["core_documents"]),
+            "core_document_count": len(inspected["core_documents"]), "core_section_count": len(inspected["core_sections"]),
+            "memory_claim_count": len(inspected["claims"]), "claim_count": len(inspected["claims"]),
+            "entity_count": len(target["entities"]), "relation_count": len(expected_relations),
+            "source_digest": target["source_digest"], "snapshot_hash": target["snapshot_hash"],
+            "representative_entity": representative, "representative_retrieved": True,
+            "verified": True, "applied_batches": applied, "transaction_id": transaction_id,
+            "foreign_inbound_relations": final_inbound,
+            "removed_foreign_inbound_relations": [r for r in initial_inbound if r not in final_inbound]}
+
+
+def parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="memory-graph")
+    sub = p.add_subparsers(dest="command", required=True)
+    for name in ("inspect", "plan"):
+        c = sub.add_parser(name); c.add_argument("--root", default="."); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
+        c.add_argument("--detail", action="store_true"); c.add_argument("--output"); c.add_argument("--output-root")
+        if name == "plan":
+            c.add_argument("--include-inferred", action="store_true"); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+    c = sub.add_parser("validate-plan"); c.add_argument("--plan", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("validate-snapshot"); c.add_argument("--snapshot", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("diff"); c.add_argument("--snapshot", required=True); c.add_argument("--root", default="."); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject"); c.add_argument("--include-inferred", action="store_true"); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+    c = sub.add_parser("export-mcp-batch"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--batch-size", type=int, default=100); c.add_argument("--include-inferred", action="store_true")
+    c = sub.add_parser("query-plan"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--query", required=True)
+    c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
+    c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parser().parse_args(argv)
+    try:
+        root = Path(args.root).resolve()
+        if args.command == "inspect": data = inspect_workspace(root, args.secret_policy)
+        elif args.command == "plan": data = build_plan(inspect_workspace(root, args.secret_policy), args.include_inferred, namespace_for(args.agent_id, root, args.workspace_id))
+        elif args.command in {"validate-plan", "validate-snapshot"}: data = validate_snapshot(load_json(getattr(args, "plan", None) or args.snapshot, root))
+        elif args.command == "diff": data = graph_diff(load_json(args.snapshot, root), build_plan(inspect_workspace(root, args.secret_policy), args.include_inferred, namespace_for(args.agent_id, root, args.workspace_id)))
+        elif args.command == "export-mcp-batch": data = export_batches(load_json(args.input, root), args.include_inferred, args.batch_size)
+        elif args.command == "onboard":
+            if not 1 <= args.timeout_seconds <= 30:
+                raise InputError("invalid_timeout", "timeout-seconds must be between 1 and 30")
+            data = onboard(root, args.agent_id, args.workspace_id, Path(args.state_root), args.mcporter, args.timeout_seconds, args.secret_policy)
+        elif args.command == "cron-plan": data = cron_plan(root, args.agent_id, args.workspace_id, args.state_root, args.timezone)
+        else:
+            snapshot = load_json(args.input, root); validate_snapshot(snapshot); terms = args.query.casefold().split()
+            matches = [e for e in snapshot["entities"] if all(term in json.dumps(e, ensure_ascii=False).casefold() for term in terms)]
+            data = {"query": args.query, "entities": sorted(matches, key=lambda x: x["name"]), "conflicts": snapshot["conflicts"], "canonical_grounding_required": True}
+        effects = []
+        if args.command == "onboard":
+            effects.append({"type": "write_private_state", "namespace": data["namespace"]})
+            if data["applied_batches"]:
+                effects.append({"type": "mutate_owned_derived_graph", "namespace": data["namespace"], "batch_count": data["applied_batches"]})
+        if args.command in {"inspect", "plan"} and args.output:
+            if not args.output_root:
+                raise InputError("invalid_output_path", "--output requires --output-root")
+            output_root = Path(args.output_root).resolve()
+            if not output_root.is_dir():
+                raise InputError("invalid_output_path", "Output root must be an existing directory")
+            target = safe_resolve(output_root, args.output)
+            if target.is_symlink() or (target.exists() and not target.is_file()):
+                raise InputError("invalid_output_path", "Output must be a regular non-symlink file")
+            target.write_bytes(canonical_bytes(data) + b"\n")
+            effects.append({"type": "write_file", "path": target.relative_to(output_root).as_posix()})
+        if args.command in {"inspect", "plan"} and not args.detail:
+            if args.command == "inspect":
+                data = {"source_digest": data["source_digest"], "source_count": len(data["sources"]), "core_source_count": len(data["core_documents"]), "core_document_count": len(data["core_documents"]), "core_section_count": len(data["core_sections"]), "memory_claim_count": len(data["claims"]), "claim_count": len(data["claims"]), "detail_available": True}
+            else:
+                data = {"snapshot_hash": data["snapshot_hash"], "source_digest": data["source_digest"], "core_source_count": len(data["core_documents"]), "core_document_count": len(data["core_documents"]), "core_section_count": len(data["core_sections"]), "memory_claim_count": len(data["claims"]), "claim_count": len(data["claims"]), "entity_count": len(data["entities"]), "explicit_relation_count": len(data["explicit_relations"]), "structural_relation_count": len(data["structural_relations"]), "inferred_relation_count": len(data["inferred_relations"]), "excluded_claim_count": len(data["excluded_claims"]), "ambiguous_claim_key_count": len(data["conflicts"]["ambiguous_claim_keys"]), "artifact_written": bool(args.output), "detail_available": True}
+        output = {"ok": True, "schema_version": SCHEMA_VERSION, "command": args.command, "data": data, "effects": effects}
+        print(json.dumps(output, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+        return 0
+    except (InputError, OSError, UnicodeError) as exc:
+        if isinstance(exc, InputError): code, message, details = exc.code, exc.message, exc.details
+        else: code, message, details = "io_error", "Unable to read input", {"type": type(exc).__name__}
+        effects = details.pop("effects", []) if isinstance(details, dict) else []
+        print(json.dumps({"ok": False, "schema_version": SCHEMA_VERSION, "command": getattr(args, "command", None), "error": {"code": code, "message": message, "details": details}, "effects": effects}, sort_keys=True, separators=(",", ":")))
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

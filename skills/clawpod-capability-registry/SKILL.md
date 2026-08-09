@@ -37,7 +37,7 @@ After install or update:
 - Validate every Harness through the current Gateway lifecycle, establish trust only after validation, and exercise one bounded `prepare → run` path.
 - Read `workflow-status` and record the policy status, managed policy version, hashed workflow path, changed or unchanged result, and recovery guidance. Never include WORKFLOW contents or secrets in evidence.
 - Run a fresh-agent test proving a capability-creation request checks installed capabilities and the canonical registry before choosing `create`.
-- For credentialed capabilities, deliver the post-install onboarding handoff and do not claim operational readiness while authorization is pending.
+- Deliver the post-install onboarding handoff required by the installed capability. Immediately after validation, if credential or account connection is required, state that the capability is installed but not yet connected and explain what the user must do and what the agent will do. Ask whether to start onboarding now. Do not claim operational readiness while authorization is pending. Preserve an installed capability's narrower explicit standing authorization when its contract requires autonomous non-credentialed onboarding; do not broaden that authorization or add an unnecessary prompt.
 
 ## Rollback and recovery
 
