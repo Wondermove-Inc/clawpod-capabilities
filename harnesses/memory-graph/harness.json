@@ -1110,13 +1110,17 @@
         "additionalProperties": false,
         "required": [
           "input",
-          "manifest"
+          "manifest",
+          "expectedReviewerId"
         ],
         "properties": {
           "input": {
             "type": "string"
           },
           "manifest": {
+            "type": "string"
+          },
+          "expectedReviewerId": {
             "type": "string"
           },
           "root": {
@@ -1147,6 +1151,12 @@
           "flag": "--manifest",
           "valueType": "path",
           "pathRole": "input"
+        },
+        {
+          "arg": "expectedReviewerId",
+          "type": "option",
+          "flag": "--expected-reviewer-id",
+          "valueType": "string"
         },
         {
           "arg": "root",

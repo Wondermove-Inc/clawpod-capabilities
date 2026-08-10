@@ -8,6 +8,8 @@ class SemanticV10(unittest.TestCase):
  def cli(self,cmd,*args,code=0):
   common=['--root',str(self.t)];
   if cmd in {'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue'}: common += ['--agent-id','test-agent','--workspace-id','test-workspace']
+  if cmd=='semantic-approve' and '--expected-reviewer-id' not in args:
+   manifest=args[args.index('--manifest')+1]; common += ['--expected-reviewer-id',json.loads((self.t/manifest).read_text())['reviewer_id']]
   p=subprocess.run([str(CLI),cmd,*common,*args],cwd=ROOT,text=True,capture_output=True); self.assertEqual(p.returncode,code,p.stdout+p.stderr); return json.loads(p.stdout)
  def write(self,name,v): (self.t/name).write_text(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':')))
  def source(self): return {k:self.claim[k] for k in ('path','line_start','line_end','source_content_hash','claim_content_hash')}
@@ -55,6 +57,10 @@ class SemanticV10(unittest.TestCase):
   pid=v['entity_proposals'][0]['proposal_id']
   for decisions in [[{'proposal_id':'unknown','lifecycle':'approved','reason':'direct'}],[{'proposal_id':pid,'lifecycle':'approved','reason':'direct'}]*2,[{'proposal_id':pid,'lifecycle':'approved','reason':''}]]:
    self.write('m.json',{**base,'decisions':decisions}); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
+ def test_approval_rejects_reviewer_spoof_and_temporally_stale_review(self):
+  v=self.validated(); self.write('v.json',v); pid=v['entity_proposals'][0]['proposal_id']; base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:alice','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':pid,'lifecycle':'approved','reason':'direct'}]}
+  self.write('m.json',base); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json','--expected-reviewer-id','human:mallory',code=2)['error']['code'],'invalid_approval_authority')
+  base['reviewed_at']='2000-01-01T00:00:00Z'; self.write('m.json',base); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'stale_approval_manifest')
  def test_approval_binds_exact_validated_bundle(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':'0'*64,'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')

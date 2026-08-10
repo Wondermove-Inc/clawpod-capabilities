@@ -1591,7 +1591,7 @@ def parser() -> argparse.ArgumentParser:
     c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor")
     for name in ("semantic-validate-proposals", "semantic-review-queue"):
         c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
-    c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--expected-reviewer-id", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-build"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-reconcile"); c.add_argument("--input", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-reconcile-verify"); c.add_argument("--input", required=True); c.add_argument("--plan", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
@@ -1644,7 +1644,7 @@ def main(argv: list[str] | None = None) -> int:
             validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
             data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
         elif args.command == "semantic-approve":
-            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError})
+            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id)
         elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
         elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
         elif args.command == "semantic-reconcile-verify": data=semantic_v10.verify_reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.plan,root),load_semantic_bundle(args.current,root),{"error":InputError})
