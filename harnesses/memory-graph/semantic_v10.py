@@ -73,7 +73,13 @@ def approve(validated,manifest,api):
  if manifest["namespace"]!=validated["namespace"] or not str(manifest["reviewer_id"]).startswith("human:"): fail(api,"invalid_approval_manifest","explicit human reviewer required")
  try: dt=datetime.fromisoformat(manifest["reviewed_at"].replace("Z","+00:00")); assert dt.tzinfo
  except Exception: fail(api,"invalid_approval_manifest","reviewed_at must be timezone-aware ISO-8601")
- decisions={d["proposal_id"]:d for d in manifest["decisions"] if closed(d,{"proposal_id","lifecycle","reason"}) and d["lifecycle"] in {"approved","rejected"} and d["reason"].strip()}
+ proposals=validated["entity_proposals"]+validated["assertion_proposals"]; known={x["proposal_id"] for x in proposals}
+ if len(known)!=len(proposals): fail(api,"invalid_approval_manifest","proposal IDs must be unique")
+ decisions={}
+ for d in manifest["decisions"]:
+  if not closed(d,{"proposal_id","lifecycle","reason"}) or d["lifecycle"] not in {"approved","rejected"} or not isinstance(d["reason"],str) or not d["reason"].strip(): fail(api,"invalid_approval_manifest","every decision must be closed and reasoned")
+  if d["proposal_id"] not in known or d["proposal_id"] in decisions: fail(api,"invalid_approval_manifest","decision IDs must be known and unique")
+  decisions[d["proposal_id"]]=d
  out=[]
  for x in validated["entity_proposals"]+validated["assertion_proposals"]:
   d=decisions.get(x["proposal_id"]); y=dict(x)

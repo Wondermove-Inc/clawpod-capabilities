@@ -27,6 +27,11 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3)
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':'p1','lifecycle':'approved','reason':'direct explicit entity'},{'proposal_id':'p2','lifecycle':'approved','reason':'direct explicit entity'}]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
+ def test_approval_rejects_unknown_duplicate_and_malformed_decisions(self):
+  v=self.validated(); self.write('v.json',v)
+  base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}
+  for decisions in [[{'proposal_id':'unknown','lifecycle':'approved','reason':'direct'}],[{'proposal_id':'p1','lifecycle':'approved','reason':'direct'}]*2,[{'proposal_id':'p1','lifecycle':'approved','reason':''}]]:
+   self.write('m.json',{**base,'decisions':decisions}); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
  def test_chronology_cause_rejected(self):
   self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'}); self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
  def test_assertion_endpoint_ids_and_domains_are_closed(self):
