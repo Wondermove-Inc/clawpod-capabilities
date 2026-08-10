@@ -193,9 +193,19 @@ def reconcile(snapshot,current,api):
  target_e=[{**x,"semantic_owner":ns} for x in snapshot["entities"]]
  target_r=[{"semantic_id":x["semantic_id"],"namespace":ns,"semantic_owner":ns,"from":x["subject"],"relationType":x["predicate"],"to":x["object"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"]} for x in snapshot["assertions"]]
  ce={x["semantic_id"]:x for x in current["entities"] if owned(x)}; cr={x["semantic_id"]:x for x in current["relations"] if owned(x)}; te={x["semantic_id"]:x for x in target_e}; tr={x["semantic_id"]:x for x in target_r}
+ deleted_entity_ids={ce[i].get("entity_id") for i in ce.keys()-te.keys()}
+ for relation in current["relations"]:
+  if owned(relation): continue
+  endpoints=[]
+  for endpoint in (relation.get("from"),relation.get("to")):
+   endpoints.append(endpoint.get("entity_id") if isinstance(endpoint,dict) else endpoint)
+  if deleted_entity_ids.intersection(endpoints): fail(api,"foreign_relation_dependency","cannot delete an owned entity still referenced by a preserved foreign relation",foreign_relation=relation.get("semantic_id"))
  ops=[]
+ # Preserve referential integrity: remove relations before entities, then create
+ # entities before relations. Updates occur in their corresponding upsert phase.
+ for i in sorted(cr.keys()-tr.keys()): ops.append({"op":"delete","kind":"relation","semantic_id":i})
+ for i in sorted(ce.keys()-te.keys()): ops.append({"op":"delete","kind":"entity","semantic_id":i})
  for kind,a,b in (("entity",ce,te),("relation",cr,tr)):
-  for i in sorted(a.keys()-b.keys()): ops.append({"op":"delete","kind":kind,"semantic_id":i})
   for i in sorted(b):
    if a.get(i)!=b[i]: ops.append({"op":"create" if i not in a else "update","kind":kind,"semantic_id":i,"value":b[i]})
  for index,op in enumerate(ops): op.update(operation_index=index,operation_hash=sha({"namespace":ns,"snapshot_hash":snapshot["snapshot_hash"],"operation_index":index,"operation":op}))
