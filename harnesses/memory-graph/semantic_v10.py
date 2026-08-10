@@ -150,13 +150,13 @@ def approve(validated,manifest,api,expected_reviewer_id):
  if len(known)!=len(proposals): fail(api,"invalid_approval_manifest","proposal IDs must be unique")
  decisions={}
  for d in manifest["decisions"]:
-  if not closed(d,{"proposal_id","lifecycle","reason"}) or d["lifecycle"] not in {"approved","rejected"} or not isinstance(d["reason"],str) or not d["reason"].strip(): fail(api,"invalid_approval_manifest","every decision must be closed and reasoned")
+  if not closed(d,{"proposal_id","lifecycle","reason"}) or d["lifecycle"] not in {"approved","rejected","revoked"} or not isinstance(d["reason"],str) or not d["reason"].strip(): fail(api,"invalid_approval_manifest","every decision must be closed and reasoned")
   if d["proposal_id"] not in known or d["proposal_id"] in decisions: fail(api,"invalid_approval_manifest","decision IDs must be known and unique")
   decisions[d["proposal_id"]]=d
  out=[]
  for x in validated["entity_proposals"]+validated["assertion_proposals"]:
   d=decisions.get(x["proposal_id"]); y=dict(x)
-  if d: y.update(lifecycle=d["lifecycle"],review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"]})
+  if d: y.update(lifecycle=d["lifecycle"],review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":"withdrawn" if d["lifecycle"]=="revoked" else "granted" if d["lifecycle"]=="approved" else "denied"})
   if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and (not d or "direct" not in d["reason"].lower()): y.update(lifecycle="candidate",review=None)
   out.append(y)
  result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest)}
@@ -182,7 +182,7 @@ def build_snapshot(reviewed,api):
   item={"semantic_id":x["proposal_id"],"namespace":reviewed["namespace"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"],"label":"approved/private"}
   if x["kind"]=="entity": entities.append({**item,**x["payload"]})
   else: assertions.append({**item,**x["payload"]})
- out={"schema_version":SCHEMA_SNAPSHOT,"namespace":reviewed["namespace"],"source_snapshot_hash":reviewed["source_snapshot_hash"],"source_digest":reviewed["source_digest"],"entities":sorted(entities,key=lambda x:x["semantic_id"]),"assertions":sorted(assertions,key=lambda x:x["semantic_id"]),"candidates":[x for x in reviewed["proposals"] if x["lifecycle"]=="candidate"],"quarantine":reviewed["quarantine"],"inference_overlays":[]}
+ out={"schema_version":SCHEMA_SNAPSHOT,"namespace":reviewed["namespace"],"source_snapshot_hash":reviewed["source_snapshot_hash"],"source_digest":reviewed["source_digest"],"entities":sorted(entities,key=lambda x:x["semantic_id"]),"assertions":sorted(assertions,key=lambda x:x["semantic_id"]),"candidates":[x for x in reviewed["proposals"] if x["lifecycle"]=="candidate"],"revoked":[x for x in reviewed["proposals"] if x["lifecycle"]=="revoked"],"quarantine":reviewed["quarantine"],"inference_overlays":[]}
  out["snapshot_hash"]=sha(out); return out
 
 def reconcile(snapshot,current,api):
