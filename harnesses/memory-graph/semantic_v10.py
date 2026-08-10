@@ -324,6 +324,24 @@ def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edg
   source=item["source"]; return {"claim_id":item["claim_id"],"path":source["path"],"line_start":source["line_start"],"line_end":source["line_end"],"source_content_hash":source["source_content_hash"],"claim_content_hash":source["claim_content_hash"]}
  return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges}
 
+def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-workspace"):
+ """Read canonical lines only when both exact source bytes and claim digest agree."""
+ if not isinstance(locators,list) or len(locators)>300: fail(api,"invalid_hydration_request","hydration accepts at most 300 locators")
+ _,claims=fresh(api,root,agent,workspace); out=[]
+ for index,x in enumerate(locators):
+  keys={"claim_id","path","line_start","line_end","source_content_hash","claim_content_hash"}
+  if not closed(x,keys) or canonical_path(x.get("path")) is None or not HASH.fullmatch(str(x.get("source_content_hash"))) or not HASH.fullmatch(str(x.get("claim_content_hash"))): fail(api,"invalid_hydration_locator","closed canonical locator required",locator_index=index)
+  p=root/x["path"]
+  if not p.is_file() or p.is_symlink() or source_hash(root,x["path"])!=x["source_content_hash"]: fail(api,"hydration_source_drift","canonical source bytes changed",locator_index=index)
+  claim=claims.get(x["claim_id"])
+  if not claim or claim.get("content_hash")!=x["claim_content_hash"] or claim.get("path")!=x["path"] or claim.get("line")!=x["line_start"] or x["line_end"]!=x["line_start"]: fail(api,"hydration_claim_drift","claim locator no longer matches canonical parsing",locator_index=index)
+  _,text=source_bytes(root,x["path"]); lines=text.splitlines()
+  if not (isinstance(x["line_start"],int) and isinstance(x["line_end"],int) and 1<=x["line_start"]<=x["line_end"]<=len(lines)): fail(api,"hydration_line_drift","canonical line range is unavailable",locator_index=index)
+  value="\n".join(lines[x["line_start"]-1:x["line_end"]])
+  if SECRET.search(value): value="[REDACTED]"
+  out.append({"claim_id":x["claim_id"],"path":x["path"],"line_start":x["line_start"],"line_end":x["line_end"],"claim_content_hash":x["claim_content_hash"],"text":value})
+ return {"schema_version":"memory-graph-semantic-hydration/v1","canonical_readback_verified":True,"items":out}
+
 def reconcile(snapshot,current,api):
  if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
  ns=snapshot["namespace"]

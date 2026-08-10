@@ -35,6 +35,15 @@ class SemanticV10(unittest.TestCase):
   original=(self.t/row['path']).read_text(); (self.t/row['path']).write_bytes(('\ufeff'+original.replace('\n','\r\n')).encode())
   changed=self.cli('semantic-extractor-input','--limit','20')['data']['claims'][0]
   self.assertNotEqual(changed['source_content_hash'],row['source_content_hash'])
+ def test_hydration_verifies_fresh_source_and_claim_readback(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  locator={k:self.claim[k] for k in ('claim_id','path','line_start','line_end','source_content_hash','claim_content_hash')}
+  core_spec=importlib.util.spec_from_file_location('memory_graph_core',P/'memory_graph.py'); core=importlib.util.module_from_spec(core_spec); core_spec.loader.exec_module(core)
+  api={'error':ValueError,'inspect':core.inspect_workspace,'plan':core.build_plan,'namespace':core.namespace_for}
+  hydrated=module.hydrate_locators(self.t,[locator],api); self.assertTrue(hydrated['canonical_readback_verified'])
+  (self.t/locator['path']).write_text((self.t/locator['path']).read_text()+'\nchanged')
+  with self.assertRaises(ValueError): module.hydrate_locators(self.t,[locator],api)
  def test_extractor_pagination_is_stable_bounded_and_complete(self):
   pages=[]; ids=[]; cursor=None
   while True:
