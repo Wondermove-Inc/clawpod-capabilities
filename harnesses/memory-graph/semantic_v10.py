@@ -274,6 +274,11 @@ def approve(validated,manifest,api,expected_reviewer_id):
 
 def build_snapshot(reviewed,api):
  if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","approval_expires_at","review_policy","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
+ if not isinstance(reviewed["proposals"],list) or not isinstance(reviewed["quarantine"],list) or len(reviewed["proposals"])>2000 or len(reviewed["quarantine"])>1000: fail(api,"semantic_bundle_too_large","reviewed bundles are bounded to 2000 proposals and 1000 quarantine records")
+ kind_counts={"entity":0,"assertion":0}
+ for item in reviewed["proposals"]:
+  if isinstance(item,dict) and item.get("lifecycle") in {"approved","current"} and item.get("kind") in kind_counts: kind_counts[item["kind"]]+=1
+ if kind_counts["entity"]>500 or kind_counts["assertion"]>1000: fail(api,"semantic_snapshot_too_large","approved projection is bounded to 500 entities and 1000 assertions",counts=kind_counts)
  try: expires=datetime.fromisoformat(reviewed["approval_expires_at"].replace("Z","+00:00")); assert expires.tzinfo
  except Exception: fail(api,"invalid_reviewed_bundle","approval expiry must be timezone-aware ISO-8601")
  if expires <= datetime.now(timezone.utc): fail(api,"approval_expired","source-backed approval expired; revalidate sources and obtain a fresh review")

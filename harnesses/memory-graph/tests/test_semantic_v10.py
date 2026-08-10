@@ -145,6 +145,14 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; reviewed['approval_expires_at']='2000-01-01T00:00:00Z'; reviewed['reviewed_hash']=hashlib.sha256(json.dumps({k:v for k,v in reviewed.items() if k!='reviewed_hash'},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('r.json',reviewed)
   self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'approval_expired')
+ def test_build_bounds_review_bundle_and_projection_amplification(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  base={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':'memory-graph:test','source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':[],'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{}}
+  base['proposals']=[{'proposal_id':'p'+str(i),'kind':'entity','lifecycle':'approved'} for i in range(501)]; base['reviewed_hash']=module.sha(base)
+  with self.assertRaises(ValueError): module.build_snapshot(base,{'error':ValueError})
+  base['proposals']=[{}]*2001; base['reviewed_hash']=module.sha({k:v for k,v in base.items() if k!='reviewed_hash'})
+  with self.assertRaises(ValueError): module.build_snapshot(base,{'error':ValueError})
  def test_build_rejects_duplicate_assertions_and_supersession_cycles(self):
   def reviewed(assertions):
    proposals=[]
