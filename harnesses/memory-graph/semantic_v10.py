@@ -100,6 +100,17 @@ def review_queue(validated):
  q=[{"proposal_id":x["proposal_id"],"kind":x["kind"],"claim_id":x["claim_id"],"basis":x["basis"],"lifecycle":x["lifecycle"]} for x in validated["entity_proposals"]+validated["assertion_proposals"]]
  return {"schema_version":"memory-graph-semantic-review-queue/v1","namespace":validated["namespace"],"items":sorted(q,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"automatic_approval":False}
 
+def migrate_v09(bundle,api):
+ """Read-only bridge: preserve supported v0.9 semantics as inert evidence only."""
+ required={"conforms","shape_version","semantic_contract_version","namespace","source_snapshot_hash","source_digest","migration","entity_proposals","approved_endpoint_catalog","accepted_assertions","quarantine","identity_candidates","report_hash"}
+ if not closed(bundle,required) or bundle.get("semantic_contract_version")!="0.9" or bundle.get("shape_version")!="memory-graph-ontology-shapes/v2": fail(api,"unsupported_semantic_version","only a sealed v0.9 validated semantic report can migrate")
+ if bundle.get("report_hash")!=sha({k:v for k,v in bundle.items() if k!="report_hash"}): fail(api,"invalid_v09_bundle","v0.9 report is malformed or tampered")
+ candidates=[]
+ for kind,key in (("entity","entity_proposals"),("assertion","accepted_assertions")):
+  for item in bundle[key]: candidates.append({"legacy_kind":kind,"legacy_id":item.get("entity_proposal_id") if kind=="entity" else item.get("assertion_id"),"legacy_status":item.get("status"),"record":item,"lifecycle":"candidate","review":None})
+ out={"schema_version":"memory-graph-v09-migration/v1","from_semantic_contract":"0.9","to_semantic_contract":"1.0.0","namespace":bundle["namespace"],"source_snapshot_hash":bundle["source_snapshot_hash"],"source_digest":bundle["source_digest"],"candidates":sorted(candidates,key=lambda x:(x["legacy_kind"],str(x["legacy_id"]))),"quarantine":bundle["quarantine"],"input_rewritten":False,"approval_authority_migrated":False,"requires_fresh_v10_validation_and_human_review":True}
+ out["migration_hash"]=sha(out); return out
+
 def approve(validated,manifest,api,expected_reviewer_id):
  if not closed(manifest,{"schema_version","namespace","validated_hash","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
  if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")

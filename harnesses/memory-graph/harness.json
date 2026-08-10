@@ -1218,6 +1218,22 @@
         }
       ]
     },
+    "semantic-migrate-v09": {
+      "description": "Read-only migration of sealed v0.9 semantic reports into inert v0.10 candidates",
+      "baseArgv": ["semantic-migrate-v09"],
+      "safetyClasses": ["readOnly"],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["input"],
+        "properties": {"input": {"type": "string"}, "root": {"type": "string"}}
+      },
+      "outputSchema": {"type": "object", "required": ["ok", "schema_version", "command", "effects"]},
+      "argMap": [
+        {"arg": "input", "type": "option", "flag": "--input", "valueType": "path", "pathRole": "input"},
+        {"arg": "root", "type": "option", "flag": "--root", "valueType": "path", "pathRole": "input", "optional": true}
+      ]
+    },
     "semantic-reconcile": {
       "description": "Plan exact owned-only semantic reconciliation with resumable journal",
       "baseArgv": [
