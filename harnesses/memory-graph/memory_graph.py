@@ -1680,7 +1680,7 @@ def main(argv: list[str] | None = None) -> int:
             validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
             data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
         elif args.command == "semantic-approve":
-            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id)
+            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id,root)
         elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
         elif args.command == "semantic-migrate-v09": data=semantic_v10.migrate_v09(load_semantic_bundle(args.input,root),{"error":InputError})
         elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})

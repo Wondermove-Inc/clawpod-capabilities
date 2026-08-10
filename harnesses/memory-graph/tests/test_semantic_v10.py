@@ -137,6 +137,10 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
   v['quarantine'].append({'proposal_id':'x','reason_code':'tampered'}); self.write('v.json',v); m['validated_hash']=v['validated_hash']; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_validated_bundle')
+ def test_approval_rejects_source_delete_or_rename_after_validation(self):
+  v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
+  source=self.t/self.claim['path']; renamed=source.with_suffix('.renamed'); source.rename(renamed)
+  self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'approval_source_drift')
  def test_build_rejects_tampered_reviewed_bundle(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':v['entity_proposals'][0]['proposal_id'],'lifecycle':'approved','reason':'direct'}]}; self.write('m.json',m)
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; reviewed['proposals'][0]['lifecycle']='rejected'; self.write('r.json',reviewed)

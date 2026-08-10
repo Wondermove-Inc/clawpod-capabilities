@@ -241,10 +241,17 @@ def migrate_v09(bundle,api):
  out={"schema_version":"memory-graph-v09-migration/v1","from_semantic_contract":"0.9","to_semantic_contract":"1.0.0","namespace":bundle["namespace"],"source_snapshot_hash":bundle["source_snapshot_hash"],"source_digest":bundle["source_digest"],"candidates":sorted(candidates,key=lambda x:(x["legacy_kind"],str(x["legacy_id"]))),"quarantine":bundle["quarantine"],"input_rewritten":False,"approval_authority_migrated":False,"requires_fresh_v10_validation_and_human_review":True}
  out["migration_hash"]=sha(out); return out
 
-def approve(validated,manifest,api,expected_reviewer_id):
+def approve(validated,manifest,api,expected_reviewer_id,root=None):
  if not closed(manifest,{"schema_version","namespace","validated_hash","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
  if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")
  if manifest["namespace"]!=validated["namespace"] or manifest["validated_hash"]!=validated["validated_hash"]: fail(api,"invalid_approval_manifest","manifest must bind the exact validated bundle")
+ if root is not None:
+  checked=set()
+  for proposal in validated.get("entity_proposals",[])+validated.get("assertion_proposals",[]):
+   source=proposal.get("source",{}); path=source.get("path")
+   if path in checked: continue
+   checked.add(path); target=Path(root)/str(path)
+   if canonical_path(path) is None or not target.is_file() or target.is_symlink() or source_hash(Path(root),path)!=source.get("source_content_hash"): fail(api,"approval_source_drift","canonical source was deleted, renamed, replaced, or changed after validation",path=path)
  if manifest["reviewer_id"]!=expected_reviewer_id or not isinstance(expected_reviewer_id,str) or expected_reviewer_id!=unicodedata.normalize("NFC",expected_reviewer_id) or not REVIEWER_ID.fullmatch(expected_reviewer_id): fail(api,"invalid_approval_authority","authenticated reviewer must be an exact canonical ASCII human ID matching the manifest")
  extractor_ids={x.get("extractor",{}).get("extractor_id") for x in validated["entity_proposals"]+validated["assertion_proposals"]}
  if expected_reviewer_id.removeprefix("human:") in extractor_ids: fail(api,"separation_of_duties_violation","the extractor producer cannot review its own proposals")
