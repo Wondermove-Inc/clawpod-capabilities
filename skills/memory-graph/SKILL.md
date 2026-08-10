@@ -1,11 +1,13 @@
 ---
 name: memory-graph
-description: Autonomously build and reconcile each agent's private graph from its core workspace context and canonical memory.
+description: "Use Memory Graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts."
 ---
 
 # Memory Graph
 
 Treat canonical Markdown as read-only source of truth and the graph as private, noncanonical, disposable, and rebuildable.
+
+Use canonical Memory Search for direct lookup of a single fact, date, name, identifier, or current state. Use Memory Graph when the request requires relationships across multiple memories, historical change, decision rationale, related people or projects, or cause-and-effect reconstruction. Graph results are locators, never final evidence.
 
 ## Post-install onboarding
 
@@ -26,11 +28,11 @@ Compute `memory-graph.cron-plan` again from the same explicit agent/workspace id
 
 If schema/backend verification fails, leave Markdown untouched and report the private journal for retry. Never bypass schema verification. A partial failure is resumable from its mode-0600 journal; rerun the same command and identity before accepting canonical changes.
 
-## Semantics and grounding
+## Semantics, retrieval, and grounding
 
 Emit only deterministic structural relations for core documents and explicit metadata relations for memory claims. Preserve policy, role, instruction, and preference material as source-classed documents/sections; never promote its prose into ordinary semantic facts or assert content-level conflict resolution. Keep inferred relations off during autonomous onboarding. A semantic proposal from claim prose must identify source claim ID, relative path, line, content hash, edge type, and explicit confidence. Apply it autonomously only when this representation is unambiguous and validated; otherwise emit no edge. Never promote ambiguity to fact.
 
-Use `query-plan` only as a locator and rehydrate the cited Markdown before answering. Reject secret-like content by default; use redaction only when policy explicitly requires a derived redacted value.
+For connected recall, search or open the owned namespace through the registered Memory MCP graph tools to locate related entities, relations, and provenance paths. Then use canonical `memory_search` and `memory_get` to rehydrate every material claim from its cited Markdown before answering. For simple facts, skip graph traversal and use canonical Memory Search directly. Reject secret-like content by default; use redaction only when policy explicitly requires a derived redacted value.
 
 ## Completion report
 
