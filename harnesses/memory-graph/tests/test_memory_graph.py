@@ -85,8 +85,8 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
 
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
-        self.assertEqual(manifest["version"], "0.6.0")
-        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan"})
+        self.assertEqual(manifest["version"], "0.7.0")
+        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "validate-inference-candidates", "project-inference-overlay"})
         self.assertNotIn("query-plan", manifest["commands"], "semantic query remains direct-CLI-only in v0.6")
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(skill.startswith("---\nname: memory-graph\n")); self.assertIn("description:", skill.split("---", 2)[1])
@@ -711,6 +711,81 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
             if isinstance(value,list): return set().union(*(keys(v) for v in value),set())
             return set()
         self.assertTrue(forbidden.isdisjoint(keys(manifest)))
+
+    def inference_bundle(self, relation="participates_in", confidence=0.0, basis="direct_statement", explicit=False):
+        ev={"evidence_id":"ev","path":"memory/e.md","content_hash":"a"*64}
+        sem={"entities":[
+            {"entity_id":"person:p","type":"Person","canonical_name":"P"},
+            {"entity_id":"project:x","type":"Project","canonical_name":"X"}],"relations":
+            ([{"from":"person:p","type":"participates_in","to":"project:x"}] if explicit else [])}
+        folder=self.tmp/"memory"; folder.mkdir(exist_ok=True)
+        source=folder/"topic.md"; source.write_text(claim(status="current", evidence=[ev], semantic=sem), encoding="utf-8")
+        plan=self.run_cli("plan","--root",str(self.tmp),"--agent-id","test-agent","--workspace-id","test-workspace","--detail")[1]["data"]
+        canonical_claim=plan["claims"][0]; namespace=plan["ownership"]["namespace"]
+        candidate={"candidate_id":"", "source_claim_id":"c1", "source":{
+            "path":"memory/topic.md","line_start":1,"line_end":len(source.read_text().splitlines()),
+            "source_content_hash":hashlib.sha256(source.read_bytes()).hexdigest(),
+            "claim_content_hash":canonical_claim["content_hash"]},
+            "from":{"entity_id":"person:p","type":"Person"},"relation_type":relation,
+            "to":{"entity_id":"project:x","type":"Project"},"confidence":confidence,"basis":basis}
+        extractor={"name":"agent-semantic-inference","version":"extractor-v1","config_hash":"b"*64}
+        parts=(namespace,"c1",candidate["source"]["claim_content_hash"],"Person","person:p",relation,"Project","project:x",extractor["name"],extractor["version"],extractor["config_hash"])
+        candidate["candidate_id"]="ic_"+hashlib.sha256("".join(parts).encode()).hexdigest()
+        return {"schema_version":"memory-graph-inference-candidates/v1","semantic_contract_version":"0.7",
+            "namespace":namespace,"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],
+            "extractor":extractor,"candidates":[candidate]}, plan
+
+    def test_inference_projection_determinism_cache_query_and_visual_separation(self):
+        bundle, plan=self.inference_bundle(confidence=0.0); self.save("bundle.json",bundle); self.save("plan.json",plan)
+        spec=importlib.util.spec_from_file_location("memory_graph_inference_test",CLI)
+        module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        with mock.patch.object(module,"mcp_call",side_effect=AssertionError("MCP forbidden")), mock.patch.object(module.subprocess,"run",side_effect=AssertionError("network/model subprocess forbidden")):
+            validated=module.validate_inference_candidates(self.tmp,bundle,"test-agent","test-workspace")
+            self.assertEqual(len(module.project_inference_overlay(validated)["inferred_relations"]),1)
+        before={p: (hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in self.tmp.rglob("*.md")}
+        first=self.run_cli("project-inference-overlay","--root",str(self.tmp),"--input","bundle.json","--agent-id","test-agent","--workspace-id","test-workspace","--state-root",str(self.tmp/"state"))[1]
+        second=self.run_cli("project-inference-overlay","--root",str(self.tmp),"--input","bundle.json","--agent-id","test-agent","--workspace-id","test-workspace","--state-root",str(self.tmp/"state"))[1]
+        self.assertEqual(first["data"]["overlay_hash"],second["data"]["overlay_hash"]); self.assertTrue(second["data"]["cache"]["cache_hit"])
+        cache=next((self.tmp/"state").rglob("*.json")); self.assertEqual(cache.stat().st_mode & 0o777,0o600)
+        self.assertEqual(before,{p: (hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in self.tmp.rglob("*.md")})
+        self.save("overlay.json",first["data"] | {"cache": first["data"]["cache"]})
+        # Cache metadata is not part of an overlay artifact.
+        overlay=dict(first["data"]); overlay.pop("cache"); self.save("overlay.json",overlay)
+        default=self.run_cli("query-plan","--root",str(self.tmp),"--input","plan.json","--entity-id","person:p")[1]["data"]
+        opted=self.run_cli("query-plan","--root",str(self.tmp),"--input","plan.json","--overlay","overlay.json","--include-inferred","--entity-id","person:p")[1]["data"]
+        self.assertEqual(default["inferred_relations"],[]); self.assertEqual(opted["inferred_relations"][0]["confidence"],0.0)
+        visual=self.run_cli("export-visualization","--root",str(self.tmp),"--input","plan.json","--overlay","overlay.json","--include-inferred")[1]["data"]
+        self.assertEqual(visual["inferred_relations"][0]["line_style"],"dashed"); self.assertIn("Inferred, noncanonical",visual["inferred_relations"][0]["label"])
+
+    def test_inference_stale_namespace_id_endpoint_and_secret_fail_closed(self):
+        bundle,_=self.inference_bundle(); bundle["namespace"]="memory-graph:v1:"+("0"*24)+":"; self.save("bad.json",bundle)
+        bad=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bad.json","--agent-id","test-agent","--workspace-id","test-workspace",expected=2)[1]
+        self.assertEqual(bad["error"]["code"],"namespace_mismatch")
+        bundle,_=self.inference_bundle(); bundle["candidates"][0]["candidate_id"]="ic_"+("0"*64); self.save("bad.json",bundle)
+        data=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bad.json","--agent-id","test-agent","--workspace-id","test-workspace")[1]["data"]
+        self.assertEqual(data["quarantine"][0]["reason_code"],"id_mismatch")
+        secret="sk_live_12345678901234567890"; bundle["candidates"][0]["source_claim_id"]=secret; self.save("bad.json",bundle)
+        stdout,result=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bad.json","--agent-id","test-agent","--workspace-id","test-workspace")
+        self.assertEqual(result["data"]["quarantine"][0]["reason_code"],"secret_like_candidate"); self.assertNotIn(secret,stdout)
+
+    def test_inference_stale_source_malformed_oversized_and_symlink(self):
+        bundle,_=self.inference_bundle(); self.save("bundle.json",bundle)
+        (self.tmp/"memory/topic.md").write_text((self.tmp/"memory/topic.md").read_text()+"changed\n")
+        stale=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bundle.json","--agent-id","test-agent","--workspace-id","test-workspace",expected=2)[1]
+        self.assertEqual(stale["error"]["code"],"stale_snapshot")
+        (self.tmp/"bad.json").write_text("{"); malformed=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bad.json","--agent-id","x",expected=2)[1]
+        self.assertEqual(malformed["error"]["code"],"malformed_bundle")
+        (self.tmp/"big.json").write_bytes(b"x"*(1024*1024+1)); oversized=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","big.json","--agent-id","x",expected=2)[1]
+        self.assertEqual(oversized["error"]["code"],"oversized_bundle")
+
+    def test_inference_shadowing_causality_and_quarantine_order(self):
+        bundle,_=self.inference_bundle(); bundle["candidates"][0]["relation_type"]="caused"; bundle["candidates"][0]["basis"]="direct_statement"
+        bundle["candidates"][0]["candidate_id"]="ic_"+("0"*64); self.save("bundle.json",bundle)
+        data=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bundle.json","--agent-id","test-agent","--workspace-id","test-workspace")[1]["data"]
+        self.assertEqual(data["quarantine"][0]["reason_code"],"causality_not_direct")
+        fresh,_=self.inference_bundle(explicit=True); self.save("bundle.json",fresh)
+        data=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","bundle.json","--agent-id","test-agent","--workspace-id","test-workspace")[1]["data"]
+        self.assertEqual(data["quarantine"][0]["reason_code"],"shadowed_by_explicit"); self.assertEqual(data["accepted_candidates"],[])
 
 
 if __name__ == "__main__":

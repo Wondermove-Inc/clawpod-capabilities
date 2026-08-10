@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's canonical workspace memory.",
   "compatibility": {
     "openclaw": ">=2026.4.11",

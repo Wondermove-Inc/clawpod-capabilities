@@ -168,6 +168,6 @@ delivery manifests/packages. Its existing protected-secret and exact paid-intent
 provider boundary remains unchanged; Studio registration commands never call a
 provider.
 
-### Memory Graph 0.5.0
+### Memory Graph 0.7.0
 
-Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. Its standing authorization is namespace-scoped, leaves canonical Markdown untouched, and registers reconciliation daily at `00:00` in the agent/user's explicit registered IANA timezone.
+Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. v0.7 adds deterministic validation, quarantine, projection, private caching, bounded querying, and labeled visualization of separate noncanonical inference overlays; those paths never call a model, network, MCP, or live graph mutation surface.
