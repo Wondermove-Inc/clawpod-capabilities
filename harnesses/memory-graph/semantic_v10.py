@@ -352,10 +352,20 @@ def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-worksp
 def reconcile(snapshot,current,api):
  if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
  ns=snapshot["namespace"]
- if not isinstance(current,dict) or set(current)!={"schema_version","entities","relations"}: fail(api,"invalid_memory_mcp_schema","current backend graph shape invalid")
+ if not isinstance(current,dict) or set(current)!={"schema_version","entities","relations"} or current.get("schema_version")!="memory-mcp/v1" or not isinstance(current.get("entities"),list) or not isinstance(current.get("relations"),list) or len(current["entities"])>10000 or len(current["relations"])>20000: fail(api,"invalid_memory_mcp_schema","current backend graph shape invalid")
  def owned(x): return x.get("namespace")==ns and x.get("semantic_owner")==ns
  target_e=[{**x,"semantic_owner":ns} for x in snapshot["entities"]]
  target_r=[{"semantic_id":x["semantic_id"],"namespace":ns,"semantic_owner":ns,"from":x["subject"],"relationType":x["predicate"],"to":x["object"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"]} for x in snapshot["assertions"]]
+ target_ids={x["semantic_id"] for x in target_e+target_r}; seen=set()
+ for kind,items in (("entity",current["entities"]),("relation",current["relations"])):
+  for index,item in enumerate(items):
+   if not isinstance(item,dict) or not isinstance(item.get("semantic_id"),str) or not item["semantic_id"] or len(item["semantic_id"])>256: fail(api,"invalid_memory_mcp_schema","backend records require bounded semantic IDs",kind=kind,index=index)
+   identity=(kind,item["semantic_id"])
+   if identity in seen: fail(api,"duplicate_backend_semantic_id","backend view contains duplicate semantic IDs",kind=kind,semantic_id=item["semantic_id"])
+   seen.add(identity)
+   owner_fields=(item.get("namespace")==ns,item.get("semantic_owner")==ns)
+   if owner_fields[0]!=owner_fields[1]: fail(api,"ambiguous_semantic_ownership","namespace and semantic_owner must agree for owned records",kind=kind,semantic_id=item["semantic_id"])
+   if item["semantic_id"] in target_ids and not owned(item): fail(api,"foreign_semantic_id_collision","foreign backend record collides with the owned target namespace",kind=kind,semantic_id=item["semantic_id"])
  ce={x["semantic_id"]:x for x in current["entities"] if owned(x)}; cr={x["semantic_id"]:x for x in current["relations"] if owned(x)}; te={x["semantic_id"]:x for x in target_e}; tr={x["semantic_id"]:x for x in target_r}
  deleted_entity_ids={ce[i].get("entity_id") for i in ce.keys()-te.keys()}
  for relation in current["relations"]:
