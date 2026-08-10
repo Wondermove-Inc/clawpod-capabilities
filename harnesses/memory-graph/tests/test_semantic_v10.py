@@ -70,9 +70,12 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:réviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_authority')
  def test_review_approval_build_unapproved_inert_aliases(self):
-  v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3)
+  v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3); self.assertTrue(q['review_policy']['single_reviewer_per_manifest']); self.assertFalse(q['review_policy']['producer_may_review'])
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit entity'} for x in v['entity_proposals']]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
+ def test_extractor_producer_cannot_serve_as_human_reviewer(self):
+  v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:test','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
+  self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'separation_of_duties_violation')
  def test_conflicting_entity_types_for_same_id_are_all_quarantined(self):
   bad=copy.deepcopy(self.bundle); conflict=copy.deepcopy(bad['proposals'][0]); conflict['payload']['type']='Project'; bad['proposals'].append(conflict); self.write('bundle.json',self.reseal(bad))
   out=self.validated(); conflicts=[x for x in out['quarantine'] if x['reason_code']=='entity_identity_conflict']
@@ -119,7 +122,7 @@ class SemanticV10(unittest.TestCase):
   def reviewed(assertions):
    proposals=[]
    for i,p in enumerate(assertions): proposals.append({'proposal_id':'proposal:'+str(i),'kind':'assertion','claim_id':'c','source':{},'payload':p,'basis':'direct','lifecycle':'approved','review':{'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','review_reason':'direct'}})
-   out={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z'}; out['reviewed_hash']=hashlib.sha256(json.dumps(out,sort_keys=True,separators=(',',':')).encode()).hexdigest(); return out
+   out={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{'policy_version':'memory-graph-single-reviewer-sod/v1','reviewer_id':'human:r','single_reviewer':True,'producer_distinct':True}}; out['reviewed_hash']=hashlib.sha256(json.dumps(out,sort_keys=True,separators=(',',':')).encode()).hexdigest(); return out
   edge={'subject':{'entity_id':'project:a','type':'Project'},'predicate':'supersedes','object':{'entity_id':'project:b','type':'Project'},'valid_time':None}
   self.write('r.json',reviewed([edge,copy.deepcopy(edge)])); self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'duplicate_semantic_assertion')
   reverse={'subject':edge['object'],'predicate':'supersedes','object':edge['subject'],'valid_time':None}; self.write('r.json',reviewed([edge,reverse])); self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'supersession_cycle')

@@ -183,7 +183,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
 
 def review_queue(validated):
  q=[{"proposal_id":x["proposal_id"],"kind":x["kind"],"claim_id":x["claim_id"],"basis":x["basis"],"lifecycle":x["lifecycle"]} for x in validated["entity_proposals"]+validated["assertion_proposals"]]
- return {"schema_version":"memory-graph-semantic-review-queue/v1","namespace":validated["namespace"],"items":sorted(q,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"automatic_approval":False}
+ return {"schema_version":"memory-graph-semantic-review-queue/v1","namespace":validated["namespace"],"items":sorted(q,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"automatic_approval":False,"review_policy":{"policy_version":"memory-graph-single-reviewer-sod/v1","extractor_role":"producer","reviewer_role":"human-approver","single_reviewer_per_manifest":True,"producer_may_review":False,"mixed_reviewer_decisions_allowed":False}}
 
 def migrate_v09(bundle,api):
  """Read-only bridge: preserve supported v0.9 semantics as inert evidence only."""
@@ -201,6 +201,8 @@ def approve(validated,manifest,api,expected_reviewer_id):
  if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")
  if manifest["namespace"]!=validated["namespace"] or manifest["validated_hash"]!=validated["validated_hash"]: fail(api,"invalid_approval_manifest","manifest must bind the exact validated bundle")
  if manifest["reviewer_id"]!=expected_reviewer_id or not isinstance(expected_reviewer_id,str) or expected_reviewer_id!=unicodedata.normalize("NFC",expected_reviewer_id) or not REVIEWER_ID.fullmatch(expected_reviewer_id): fail(api,"invalid_approval_authority","authenticated reviewer must be an exact canonical ASCII human ID matching the manifest")
+ extractor_ids={x.get("extractor",{}).get("extractor_id") for x in validated["entity_proposals"]+validated["assertion_proposals"]}
+ if expected_reviewer_id.removeprefix("human:") in extractor_ids: fail(api,"separation_of_duties_violation","the extractor producer cannot review its own proposals")
  try: dt=datetime.fromisoformat(manifest["reviewed_at"].replace("Z","+00:00")); assert dt.tzinfo
  except Exception: fail(api,"invalid_approval_manifest","reviewed_at must be timezone-aware ISO-8601")
  source_dt=datetime.fromisoformat(validated["source_latest_mtime"].replace("Z","+00:00"))
@@ -219,11 +221,11 @@ def approve(validated,manifest,api,expected_reviewer_id):
   if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
   out.append(y)
  expires=(dt.astimezone(timezone.utc)+timedelta(hours=24)).isoformat().replace("+00:00","Z")
- result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest),"approval_expires_at":expires}
+ result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest),"approval_expires_at":expires,"review_policy":{"policy_version":"memory-graph-single-reviewer-sod/v1","reviewer_id":expected_reviewer_id,"single_reviewer":True,"producer_distinct":True}}
  result["reviewed_hash"]=sha(result); return result
 
 def build_snapshot(reviewed,api):
- if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","approval_expires_at","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
+ if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","approval_expires_at","review_policy","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
  try: expires=datetime.fromisoformat(reviewed["approval_expires_at"].replace("Z","+00:00")); assert expires.tzinfo
  except Exception: fail(api,"invalid_reviewed_bundle","approval expiry must be timezone-aware ISO-8601")
  if expires <= datetime.now(timezone.utc): fail(api,"approval_expired","source-backed approval expired; revalidate sources and obtain a fresh review")
