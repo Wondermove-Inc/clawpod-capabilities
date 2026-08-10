@@ -1,6 +1,8 @@
 # Memory Graph Harness
 
-Memory Graph 0.7.0 deterministically parses one agent's recognized core workspace Markdown and canonical memory into a private, namespaced, disposable Memory MCP graph. Canonical Markdown is always read-only. It also validates and projects agent-proposed relations into a separate, noncanonical read-only inference overlay.
+Version 0.8 adds local read-only assertion ontology commands: `ontology-validate`, `review-queue`, `cq-evaluate`, and `semantic-view`. They validate provenance-bearing approved assertions with closed shapes, keep identity and extraction candidates inert, require human-approved direct causality, preserve temporal precision, and emit semantic-first locator-only output. They do not call models, networks, MCP, or the live graph. See `../../artifacts/memory-graph-v0.8-assertion-ontology-contract.md`.
+
+Memory Graph 0.8.0 deterministically parses one agent's recognized core workspace Markdown and canonical memory into a private, namespaced, disposable Memory MCP graph. Canonical Markdown is always read-only. It also validates and projects agent-proposed relations into a separate, noncanonical read-only inference overlay.
 
 The fixed core allowlist is exactly `SOUL.md`, `IDENTITY.md`, `USER.md`, `AGENTS.md`, `ORGANIZATIONS.md`, and `WORKFLOW.md`. Root `MEMORY.md`/`memory.md` and direct `memory/*.md` are the only additional inputs. Arbitrary Markdown, secrets, configuration, symlinks, and other agents' workspaces are excluded.
 
@@ -8,7 +10,7 @@ Read [the full contract](../../docs/memory-graph-contract.md) before changing pa
 
 ## Commands
 
-- `inspect`, `plan`, `validate-plan`, `validate-snapshot`, `validate-inference-candidates`, `project-inference-overlay`, and `cron-plan` are read-only. The projection command may optionally reconcile only its private mode-0600 cache under an explicit `state-root`.
+- `inspect`, `plan`, `validate-plan`, `validate-snapshot`, `validate-inference-candidates`, `project-inference-overlay`, `ontology-validate`, `review-queue`, `cq-evaluate`, `semantic-view`, and `cron-plan` are read-only. The inference projection command may optionally reconcile only its private mode-0600 cache under an explicit `state-root`.
 - `onboard` is `writeSafe` and reconciles only the exact namespace derived from the explicit agent and workspace identity.
 - Larger `diff`, `export-mcp-batch`, `query-plan`, and `export-visualization` surfaces remain direct CLI operations and are intentionally absent from the Gateway manifest. Query and visualization exclude inference by default and require both `--include-inferred` and a fresh `--overlay`; explicit and inferred relations remain separate in output.
 

@@ -1,5 +1,11 @@
 # Memory Graph Contract
 
+## v0.8 assertion ontology
+
+v0.8 refines the paired capability with four additive layers: existing structural locators, the fixed Person/Project/Decision/Event domain, first-class provenance-bearing Assertions, and deterministic closed shape/CQ evaluation. The exact implementation contract is `artifacts/memory-graph-v0.8-assertion-ontology-contract.md`.
+
+`ontology-validate`, `review-queue`, `cq-evaluate`, and `semantic-view` are read-only, namespace-bound, canonical-source-preserving commands. Approved explicit or human-approved assertions alone become semantic edges. Extracted and identity candidates never merge or project automatically. Causality requires direct human approval, time precision is preserved without causal inference, and stale provenance is inert. Semantic-first views hide structural edges by default and attach canonical hydration locators to every edge. These paths make no model, network, MCP, or live graph calls. v0.7 inference overlays remain separate and opt-in.
+
 ## Classification and boundary
 
 Registry-first searches for `memory graph`, `knowledge graph`, and `memory MCP` returned no candidates, so this paired capability is classified **CREATE**. The Skill selects and grounds the workflow; the CLI Harness performs deterministic read-only parsing and planning.

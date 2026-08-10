@@ -16,16 +16,26 @@ import tempfile
 import time
 import unicodedata
 import math
+import importlib.util
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-SCHEMA_VERSION = 5
-CONTRACT_VERSION = "0.7.0"
+_ONTOLOGY_SPEC = importlib.util.spec_from_file_location("memory_graph_ontology", Path(__file__).with_name("ontology.py"))
+if _ONTOLOGY_SPEC is None or _ONTOLOGY_SPEC.loader is None:  # pragma: no cover - import machinery failure
+    raise RuntimeError("Unable to load local ontology module")
+ontology = importlib.util.module_from_spec(_ONTOLOGY_SPEC)
+_ONTOLOGY_SPEC.loader.exec_module(ontology)
+
+SCHEMA_VERSION = 6
+CONTRACT_VERSION = "0.8.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
+ASSERTION_SCHEMA_VERSION = "memory-graph-assertions/v1"
+ASSERTION_SHAPE_VERSION = "memory-graph-ontology-shapes/v1"
+ASSERTION_CONTRACT_VERSION = "0.8"
 MAX_INFERENCE_BUNDLE_BYTES = 1024 * 1024
 MAX_INFERENCE_CANDIDATES = 1000
 MAX_SOURCE_FILES = 256
@@ -708,7 +718,9 @@ def validate_snapshot(snapshot: Any) -> dict[str, Any]:
     allowed = required | {"claims", "core_documents", "core_sections", "excluded_claims", "ownership", "semantic_contract_version", "semantic_relations", "semantic_quarantine"}
     if extra := sorted(snapshot.keys() - allowed):
         raise InputError("invalid_snapshot", "Snapshot contains unsupported fields", {"fields": extra})
-    if snapshot["schema_version"] != SCHEMA_VERSION or not isinstance(snapshot["source_digest"], str) or not HASH_RE.fullmatch(snapshot["source_digest"]):
+    # v0.8 is additive: stored v0.7/schema-v5 snapshots remain valid inputs and
+    # can be diffed against a fresh schema-v6 rebuild.
+    if snapshot["schema_version"] not in {5, SCHEMA_VERSION} or not isinstance(snapshot["source_digest"], str) or not HASH_RE.fullmatch(snapshot["source_digest"]):
         raise InputError("invalid_snapshot", "Snapshot schema version or source digest is invalid")
     if snapshot["canonical"] is not False or snapshot["rebuildable"] is not True:
         raise InputError("invalid_snapshot", "Snapshot must declare canonical=false and rebuildable=true")
@@ -753,7 +765,7 @@ def validate_snapshot(snapshot: Any) -> dict[str, Any]:
             raise InputError("invalid_snapshot", "structural_relations contains an unsupported structural link", relation)
         if relation["relationType"] == "has_claim_key" and entity_types[relation["to"]] != "ClaimKey":
             raise InputError("invalid_snapshot", "has_claim_key must target a ClaimKey entity", relation)
-    return {"valid": True, "snapshot_hash": supplied, "entity_count": len(names), "explicit_relation_count": len(snapshot["explicit_relations"]), "structural_relation_count": len(snapshot["structural_relations"]), "inferred_relation_count": len(snapshot["inferred_relations"]), "ambiguous_claim_key_count": len(ambiguous)}
+    return {"valid": True, "schema_version": snapshot["schema_version"], "snapshot_hash": supplied, "entity_count": len(names), "explicit_relation_count": len(snapshot["explicit_relations"]), "structural_relation_count": len(snapshot["structural_relations"]), "inferred_relation_count": len(snapshot["inferred_relations"]), "ambiguous_claim_key_count": len(ambiguous)}
 
 
 def graph_diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
@@ -1615,6 +1627,10 @@ def parser() -> argparse.ArgumentParser:
         c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
         c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
         if name == "project-inference-overlay": c.add_argument("--state-root")
+    for name in ("ontology-validate", "review-queue", "cq-evaluate", "semantic-view"):
+        c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+        c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+        if name == "semantic-view": c.add_argument("--include-candidates", action="store_true")
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
@@ -1644,6 +1660,15 @@ def main(argv: list[str] | None = None) -> int:
                 data = project_inference_overlay(validated)
                 if args.state_root:
                     data = {**data, "cache": cache_inference_overlay(Path(args.state_root), validated, data)}
+        elif args.command in {"ontology-validate", "review-queue", "cq-evaluate", "semantic-view"}:
+            bundle, _ = load_inference_bundle(args.input, root)
+            api = {"error": InputError, "inspect": inspect_workspace, "namespace": namespace_for, "plan": build_plan,
+                "semantic_types": SEMANTIC_TYPES, "hash_re": HASH_RE, "id_re": ID_RE, "secret_like": secret_like}
+            validated = ontology.validate_bundle(root, bundle, args.agent_id, args.workspace_id, api)
+            if args.command == "ontology-validate": data = validated
+            elif args.command == "review-queue": data = ontology.review_queue(validated)
+            elif args.command == "cq-evaluate": data = ontology.cq_evaluate(validated)
+            else: data = ontology.semantic_view(validated, args.include_candidates)
         elif args.command == "export-visualization":
             snapshot = load_json(args.input, root)
             overlay = load_json(args.overlay, root) if args.overlay else None
