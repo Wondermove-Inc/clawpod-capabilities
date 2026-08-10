@@ -10,6 +10,7 @@ SCHEMA_PROPOSAL="memory-graph-extractor-proposals/v1"
 SCHEMA_APPROVAL="memory-graph-approval-manifest/v1"
 SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
+ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
 CAUSAL=re.compile(r"(?i)\b(?:caused|because|led to|resulted in|due to|원인|때문에|초래)\b")
@@ -55,6 +56,8 @@ def validate_proposals(root,bundle,agent,workspace,api):
   p=raw["payload"]
   if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]): entities.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
   elif raw["kind"]=="assertion" and closed(p,{"subject","predicate","object","valid_time"}) and p["predicate"] in PREDICATES and closed(p["subject"],{"entity_id","type"}) and closed(p["object"],{"entity_id","type"}):
+   subj,obj=p["subject"],p["object"]; domains=ENDPOINTS[p["predicate"]]
+   if not SAFE_ID.fullmatch(str(subj["entity_id"])) or not SAFE_ID.fullmatch(str(obj["entity_id"])) or subj["type"] not in domains[0] or obj["type"] not in domains[1]: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_endpoints"}); continue
    if p["predicate"]=="caused" and not CAUSAL.search(c.get("value","")): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"chronology_only_cause"}); continue
    assertions.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
