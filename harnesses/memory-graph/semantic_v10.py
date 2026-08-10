@@ -409,6 +409,19 @@ def reconcile(snapshot,current,api):
  current_hash=sha(current); transaction_id=sha({"snapshot":snapshot["snapshot_hash"],"current_graph_hash":current_hash,"operations":ops})[:24]
  return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"current_graph_hash":current_hash,"target_snapshot_hash":snapshot["snapshot_hash"],"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":transaction_id,"state":"pending" if ops else "verified","dispatch_index":0,"next_operation_hash":ops[0]["operation_hash"] if ops else None,"retry_safe":True,"resume_requires_fresh_current_view":True,"resume_contract":"discard_prior_index_and_regenerate_from_fresh_view"}}
 
+def reconcile_receipts(plan,receipts,api):
+ """Seal exact backend outcomes without treating duplicate or partial responses as success."""
+ if not isinstance(plan,dict) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1" or not isinstance(receipts,list) or len(receipts)>len(plan.get("operations",[])): fail(api,"invalid_operation_receipts","receipts must be a bounded prefix of the sealed operation plan")
+ completed=[]
+ for index,receipt in enumerate(receipts):
+  operation=plan["operations"][index]
+  if not closed(receipt,{"operation_index","operation_hash","outcome","semantic_id","readback_hash"}) or receipt["operation_index"]!=index or receipt["operation_hash"]!=operation.get("operation_hash") or receipt["semantic_id"]!=operation.get("semantic_id") or receipt["outcome"] not in {"applied","duplicate"}: fail(api,"operation_receipt_mismatch","backend response does not identify the exact planned operation",operation_index=index)
+  expected_readback=sha({"semantic_id":operation["semantic_id"],"absent":True}) if operation["op"]=="delete" else sha(operation["value"])
+  if receipt["readback_hash"]!=expected_readback: fail(api,"operation_readback_mismatch","backend readback does not prove the requested postcondition",operation_index=index)
+  completed.append({"operation_index":index,"operation_hash":operation["operation_hash"],"outcome":receipt["outcome"],"readback_hash":receipt["readback_hash"]})
+ remaining=plan["operations"][len(completed):]
+ return {"schema_version":"memory-graph-semantic-operation-receipts/v1","transaction_id":plan["journal"]["transaction_id"],"completed":completed,"completed_count":len(completed),"remaining_count":len(remaining),"complete":not remaining,"next_operation_hash":remaining[0]["operation_hash"] if remaining else None,"requires_fresh_current_view_before_resume":bool(remaining),"receipts_hash":sha(completed)}
+
 def verify_reconcile(snapshot,plan,current,api):
  required={"schema_version","namespace","current_graph_hash","target_snapshot_hash","operations","foreign_entities_preserved","foreign_relations_preserved","canonical_markdown_mutated","inference_applied","idempotent","journal"}
  if not closed(plan,required) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1": fail(api,"invalid_reconcile_plan","closed reconcile plan required")

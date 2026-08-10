@@ -197,6 +197,18 @@ class SemanticV10(unittest.TestCase):
   verified=self.cli('semantic-reconcile-verify','--input','s.json','--plan','plan.json','--current','c2.json')['data']; self.assertTrue(verified['verified']); self.assertEqual(verified['remaining_operations'],0); self.assertEqual(verified['transaction_id'],plan['journal']['transaction_id'])
   tampered=copy.deepcopy(plan); tampered['operations'][0]['operation_hash']='0'*64; self.write('bad-plan.json',tampered); self.assertEqual(self.cli('semantic-reconcile-verify','--input','s.json','--plan','bad-plan.json','--current','c2.json',code=2)['error']['code'],'invalid_reconcile_plan')
   tampered=copy.deepcopy(plan); tampered['journal']['dispatch_index']=1; self.write('bad-plan.json',tampered); self.assertEqual(self.cli('semantic-reconcile-verify','--input','s.json','--plan','bad-plan.json','--current','c2.json',code=2)['error']['code'],'invalid_reconcile_plan')
+ def test_reconcile_receipts_bind_partial_duplicate_outcomes_and_readback(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  operations=[{'op':'delete','kind':'entity','semantic_id':'old','operation_index':0},{'op':'create','kind':'entity','semantic_id':'new','value':{'semantic_id':'new'},'operation_index':1}]
+  for op in operations: op['operation_hash']=module.sha({'op':op['op'],'id':op['semantic_id']})
+  plan={'schema_version':'memory-graph-semantic-reconcile/v1','operations':operations,'journal':{'transaction_id':'tx'}}
+  receipts=[{'operation_index':0,'operation_hash':operations[0]['operation_hash'],'outcome':'duplicate','semantic_id':'old','readback_hash':module.sha({'semantic_id':'old','absent':True})}]
+  partial=module.reconcile_receipts(plan,receipts,{'error':ValueError}); self.assertFalse(partial['complete']); self.assertEqual(partial['remaining_count'],1); self.assertTrue(partial['requires_fresh_current_view_before_resume'])
+  bad=copy.deepcopy(receipts); bad[0]['readback_hash']='0'*64
+  with self.assertRaises(ValueError): module.reconcile_receipts(plan,bad,{'error':ValueError})
+  receipts.append({'operation_index':1,'operation_hash':operations[1]['operation_hash'],'outcome':'applied','semantic_id':'new','readback_hash':module.sha(operations[1]['value'])})
+  self.assertTrue(module.reconcile_receipts(plan,receipts,{'error':ValueError})['complete'])
  def test_reconcile_orders_dependency_operations_and_blocks_foreign_dangling_edges(self):
   snap={'schema_version':'memory-graph-semantic-snapshot/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'entities':[],'assertions':[],'candidates':[],'revoked':[],'quarantine':[],'inference_overlays':[]}; snap['snapshot_hash']=hashlib.sha256(json.dumps(snap,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('s.json',snap)
   owned_entity={'semantic_id':'owned-e','entity_id':'person:a','namespace':snap['namespace'],'semantic_owner':snap['namespace']}; owned_relation={'semantic_id':'owned-r','namespace':snap['namespace'],'semantic_owner':snap['namespace'],'from':{'entity_id':'person:a'},'to':{'entity_id':'project:b'}}; current={'schema_version':'memory-mcp/v1','entities':[owned_entity],'relations':[owned_relation]}; self.write('c.json',current); operations=self.cli('semantic-reconcile','--input','s.json','--current','c.json')['data']['operations']; self.assertEqual([(x['kind'],x['op']) for x in operations],[('relation','delete'),('entity','delete')])
