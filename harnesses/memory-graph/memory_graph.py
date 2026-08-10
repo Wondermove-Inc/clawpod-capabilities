@@ -1250,8 +1250,27 @@ def load_semantic_bundle(path: str, root: Path) -> Any:
     if target.is_symlink() or not target.is_file(): raise InputError("invalid_semantic_bundle", "Semantic input must be a regular non-symlink file")
     raw = target.read_bytes()
     if len(raw) > MAX_INFERENCE_BUNDLE_BYTES: raise InputError("oversized_semantic_bundle", "Semantic input exceeds the 1 MiB byte limit", {"limit":MAX_INFERENCE_BUNDLE_BYTES})
-    try: return json.loads(raw)
+    try: value = json.loads(raw)
     except (json.JSONDecodeError, UnicodeDecodeError) as exc: raise InputError("malformed_semantic_bundle", "Semantic input is not valid UTF-8 JSON") from exc
+    # Bound parser output as well as bytes.  Small, deeply nested JSON can exhaust
+    # recursion, and huge collections/strings make later canonicalization costly.
+    items = 0
+    def check(node: Any, depth: int = 0) -> None:
+        nonlocal items
+        if depth > 32: raise InputError("complex_semantic_bundle", "Semantic input nesting exceeds 32 levels")
+        items += 1
+        if items > 10000: raise InputError("complex_semantic_bundle", "Semantic input exceeds 10000 JSON values")
+        if isinstance(node, str) and len(node) > 16384: raise InputError("complex_semantic_bundle", "Semantic string exceeds 16384 characters")
+        if isinstance(node, dict):
+            if len(node) > 256: raise InputError("complex_semantic_bundle", "Semantic object exceeds 256 members")
+            for key, child in node.items():
+                if len(key) > 256: raise InputError("complex_semantic_bundle", "Semantic object key exceeds 256 characters")
+                check(child, depth + 1)
+        elif isinstance(node, list):
+            if len(node) > 2000: raise InputError("complex_semantic_bundle", "Semantic array exceeds 2000 items")
+            for child in node: check(child, depth + 1)
+    check(value)
+    return value
 
 
 def atomic_private_json(path: Path, value: Any) -> None:

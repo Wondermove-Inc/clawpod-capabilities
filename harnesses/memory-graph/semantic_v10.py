@@ -28,7 +28,7 @@ def proposal_id(namespace, raw, extractor):
  return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
 
 def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
- if not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be 1..20")
+ if isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be an integer from 1..20")
  plan,claims=fresh(api,root,agent,workspace); ordered=sorted(claims.values(),key=lambda c:(c["path"],c["line"],c["claim_id"]))
  start=0
  if cursor:

@@ -40,6 +40,15 @@ class SemanticV10(unittest.TestCase):
  def test_semantic_inputs_reject_symlinks_and_oversize_before_parse(self):
   (self.t/'linked.json').symlink_to(self.t/'bundle.json'); self.assertEqual(self.cli('semantic-validate-proposals','--input','linked.json',code=2)['error']['code'],'invalid_semantic_bundle')
   (self.t/'huge.json').write_bytes(b' '*((1024*1024)+1)); self.assertEqual(self.cli('semantic-validate-proposals','--input','huge.json',code=2)['error']['code'],'oversized_semantic_bundle')
+ def test_semantic_inputs_bound_depth_items_strings_and_integer_types(self):
+  deep={}; cursor=deep
+  for _ in range(34): cursor['x']={}; cursor=cursor['x']
+  self.write('deep.json',deep); self.assertEqual(self.cli('semantic-build','--input','deep.json',code=2)['error']['code'],'complex_semantic_bundle')
+  self.write('many.json',[None]*2001); self.assertEqual(self.cli('semantic-build','--input','many.json',code=2)['error']['code'],'complex_semantic_bundle')
+  self.write('long.json','x'*16385); self.assertEqual(self.cli('semantic-build','--input','long.json',code=2)['error']['code'],'complex_semantic_bundle')
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  with self.assertRaises(Exception) as caught: module.extractor_input(self.t,'test-agent','test-workspace',{'error':ValueError},True)
  def test_malformed_stale_and_secret_quarantine(self):
   bad=copy.deepcopy(self.bundle); bad['extra']=1; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json',code=2)['error']['code'],'malformed_model_output')
   bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['claim_content_hash']='b'*64; self.write('bad.json',self.reseal(bad)); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine'][0]['reason_code'],'stale_provenance')
