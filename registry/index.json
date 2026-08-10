@@ -455,7 +455,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2deca0aed05e1fd1be4d71f409591e2f2eb60bdc8c5a14bea913dc13fd38c312"
+          "sha256": "c75d3cd46c4d19fe291b9107fbdb62582536a0ded54ee7c3ed4adb896b4d7663"
         }
       ],
       "linkedHarness": {
@@ -1186,7 +1186,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "0ce99d368c3aed366a5a8f3d7bbd522ae60342c5e083fb3c1fd6517c6e1941ec"
+          "sha256": "665a5094c18f10be4ecb32a657c58e4460c259d004d50464860c96bdb5139940"
         },
         {
           "path": "memory_graph.py",
