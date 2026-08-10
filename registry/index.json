@@ -437,7 +437,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2a3b61a2165f2d539d64ac540ce8ddb32f5c8e54010ac9a5e3ec94fcde3efb80"
+          "sha256": "8663d51aa115a5871e480da4c0dcf51b72ef195c693274682afcbed30a4b608a"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.9.0"
+        "version": "0.10.0"
       }
     },
     {
@@ -1164,7 +1164,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1182,19 +1182,31 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "ab63bb901fe9f8f5d8b80afdeeb925a20946d86633dce27cc822fec638be419c"
+          "sha256": "340d450346ab91fbfca97340cae9a4f837e939b25f4488dcc9b278ac0c84ccbd"
         },
         {
           "path": "harness.json",
-          "sha256": "9199d8f5b7a0053fd8d7b86a6b2f4c59a471dcca491b72aba236ef2231054fb4"
+          "sha256": "312c987667fd233f0f832e798c27738740dc752322f4d2c067a7a48f3c05f1c6"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "2f8109f0aba34613b408519f7488582cb3ff95cbd0dca68296f6f200d5db5b64"
+          "sha256": "63c5ef62ac995c5adc958662a67c33cdb4bc1d7ebb1f3d2cfb49bde24fa5730e"
         },
         {
           "path": "ontology.py",
           "sha256": "981c75db4ee8b4455e313c6ac4a5f4249437c3add698125841baaca1642d76f5"
+        },
+        {
+          "path": "release_inventory.py",
+          "sha256": "c0788ad6183d567f800ce58b9e71144183fe65185486db836edf438e1bba9e1f"
+        },
+        {
+          "path": "semantic_contract_inventory.py",
+          "sha256": "7a27e6a22d194800e5003806f7876856801f20b588265ea2b10d37b3a630464a"
+        },
+        {
+          "path": "semantic_v10.py",
+          "sha256": "8195a4acc1b2c781c2c5a4f20733209bf61aaa663a09dfe0edcecacf6669080d"
         }
       ]
     },

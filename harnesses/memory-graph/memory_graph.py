@@ -27,9 +27,14 @@ if _ONTOLOGY_SPEC is None or _ONTOLOGY_SPEC.loader is None:  # pragma: no cover 
     raise RuntimeError("Unable to load local ontology module")
 ontology = importlib.util.module_from_spec(_ONTOLOGY_SPEC)
 _ONTOLOGY_SPEC.loader.exec_module(ontology)
+_SEMANTIC_V10_SPEC = importlib.util.spec_from_file_location("memory_graph_semantic_v10", Path(__file__).with_name("semantic_v10.py"))
+if _SEMANTIC_V10_SPEC is None or _SEMANTIC_V10_SPEC.loader is None:
+    raise RuntimeError("Unable to load local semantic v0.10 module")
+semantic_v10 = importlib.util.module_from_spec(_SEMANTIC_V10_SPEC)
+_SEMANTIC_V10_SPEC.loader.exec_module(semantic_v10)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.9.0"
+CONTRACT_VERSION = "0.10.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
@@ -132,6 +137,22 @@ def safe_resolve(root: Path, raw: str) -> Path:
     except ValueError as exc:
         raise InputError("path_outside_root", "Input path must remain within workspace root", {"path": raw}) from exc
     return candidate
+
+
+def safe_output_resolve(root: Path, raw: str) -> Path:
+    """Resolve an HTML output without following attacker-controlled symlinks."""
+    rel = Path(raw)
+    if rel.is_absolute() or not rel.parts or any(part in {"", ".", ".."} for part in rel.parts) or rel.suffix.lower() != ".html":
+        raise InputError("invalid_output_path", "Output must be a relative .html path without dot segments", {"path": raw})
+    root = root.resolve()
+    cursor = root
+    for part in rel.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("output_symlink", "Output path must not contain symlinks", {"path": raw})
+    if cursor.exists() and not cursor.is_file():
+        raise InputError("invalid_output_path", "Existing output must be a regular file", {"path": raw})
+    return cursor
 
 
 def recognized_files(root: Path) -> list[tuple[Path, str, str, str | None]]:
@@ -1234,6 +1255,40 @@ def load_inference_bundle(path: str, root: Path) -> tuple[Any, str]:
         raise InputError("malformed_bundle", "Inference candidate bundle is not valid UTF-8 JSON") from exc
 
 
+def load_semantic_bundle(path: str, root: Path) -> Any:
+    """Bounded, regular-file-only JSON load for the semantic authoring lane."""
+    raw_path = Path(path); lexical = raw_path if raw_path.is_absolute() else root / raw_path
+    cursor = Path(lexical.anchor) if lexical.is_absolute() else Path()
+    for part in lexical.parts[1:] if lexical.is_absolute() else lexical.parts:
+        cursor = cursor / part
+        if cursor.is_symlink(): raise InputError("invalid_semantic_bundle", "Semantic input must be a regular non-symlink file")
+    target = safe_resolve(root, path)
+    if target.is_symlink() or not target.is_file(): raise InputError("invalid_semantic_bundle", "Semantic input must be a regular non-symlink file")
+    raw = target.read_bytes()
+    if len(raw) > MAX_INFERENCE_BUNDLE_BYTES: raise InputError("oversized_semantic_bundle", "Semantic input exceeds the 1 MiB byte limit", {"limit":MAX_INFERENCE_BUNDLE_BYTES})
+    try: value = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc: raise InputError("malformed_semantic_bundle", "Semantic input is not valid UTF-8 JSON") from exc
+    # Bound parser output as well as bytes.  Small, deeply nested JSON can exhaust
+    # recursion, and huge collections/strings make later canonicalization costly.
+    items = 0
+    def check(node: Any, depth: int = 0) -> None:
+        nonlocal items
+        if depth > 32: raise InputError("complex_semantic_bundle", "Semantic input nesting exceeds 32 levels")
+        items += 1
+        if items > 10000: raise InputError("complex_semantic_bundle", "Semantic input exceeds 10000 JSON values")
+        if isinstance(node, str) and len(node) > 16384: raise InputError("complex_semantic_bundle", "Semantic string exceeds 16384 characters")
+        if isinstance(node, dict):
+            if len(node) > 256: raise InputError("complex_semantic_bundle", "Semantic object exceeds 256 members")
+            for key, child in node.items():
+                if len(key) > 256: raise InputError("complex_semantic_bundle", "Semantic object key exceeds 256 characters")
+                check(child, depth + 1)
+        elif isinstance(node, list):
+            if len(node) > 2000: raise InputError("complex_semantic_bundle", "Semantic array exceeds 2000 items")
+            for child in node: check(child, depth + 1)
+    check(value)
+    return value
+
+
 def atomic_private_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.parent.is_symlink() or path.is_symlink():
@@ -1568,6 +1623,15 @@ def parser() -> argparse.ArgumentParser:
         if name == "semantic-view": c.add_argument("--include-candidates", action="store_true")
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
+    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor")
+    for name in ("semantic-validate-proposals", "semantic-review-queue"):
+        c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+    c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--expected-reviewer-id", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-build"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-migrate-v09"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-reconcile"); c.add_argument("--input", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-reconcile-verify"); c.add_argument("--input", required=True); c.add_argument("--plan", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-export-html"); c.add_argument("--input", required=True); c.add_argument("--output", required=True); c.add_argument("--output-root", required=True); c.add_argument("--root", default="."); c.add_argument("--include-candidates",action="store_true")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1608,6 +1672,23 @@ def main(argv: list[str] | None = None) -> int:
             snapshot = load_json(args.input, root)
             overlay = load_json(args.overlay, root) if args.overlay else None
             data = export_visualization(snapshot, overlay, args.include_inferred)
+        elif args.command == "semantic-extractor-input":
+            api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
+            data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit,args.cursor)
+        elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
+            api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
+            validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
+            data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
+        elif args.command == "semantic-approve":
+            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id,root)
+        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
+        elif args.command == "semantic-migrate-v09": data=semantic_v10.migrate_v09(load_semantic_bundle(args.input,root),{"error":InputError})
+        elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
+        elif args.command == "semantic-reconcile-verify": data=semantic_v10.verify_reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.plan,root),load_semantic_bundle(args.current,root),{"error":InputError})
+        elif args.command == "semantic-export-html":
+            output_root=Path(args.output_root).resolve(); target=safe_output_resolve(output_root,args.output)
+            if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
+            data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError},args.include_candidates)
         else:
             snapshot = load_json(args.input, root)
             if args.query:
@@ -1626,6 +1707,8 @@ def main(argv: list[str] | None = None) -> int:
                 effects.append({"type": "mutate_owned_derived_graph", "namespace": data["namespace"], "batch_count": data["applied_batches"]})
         if args.command == "project-inference-overlay" and args.state_root and not data["cache"]["cache_hit"]:
             effects.append({"type": "write_private_cache", "namespace": data["namespace"], "mode": "0600"})
+        if args.command == "semantic-export-html":
+            effects.append({"type":"write_file","path":target.relative_to(output_root).as_posix(),"sha256":data["sha256"]})
         if args.command in {"inspect", "plan"} and args.output:
             if not args.output_root:
                 raise InputError("invalid_output_path", "--output requires --output-root")

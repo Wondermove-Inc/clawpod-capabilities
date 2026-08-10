@@ -17,3 +17,25 @@ Read [the full contract](../../docs/memory-graph-contract.md) before changing pa
 Inference candidate JSON is bounded and strict. The Harness rebuilds the explicit projection, verifies namespace/snapshot/source/claim/path/line hashes, exact typed endpoints, stable IDs, confidence and extractor provenance, and quarantines invalid candidates without copying prose or secret-like values. It performs no model, network, MCP, or graph mutation in validation/projection paths. Cache entries are disposable and invalidated by every source, extractor, configuration, contract, or bundle change.
 
 Every command emits one stable JSON object. Runtime state belongs in an explicit private state root outside canonical memory and is never part of this package.
+
+## v0.10 semantic refinement
+
+Version 0.10 adds a deterministic offline authoring lane: `semantic-extractor-input` selects at most 20 claims from direct regular non-symlink `memory/*.md` files; `semantic-validate-proposals` validates supplied extractor output without model or network access; `semantic-review-queue` and `semantic-approve` keep candidates inert until an exact human review manifest exists; `semantic-build` emits an approved-only snapshot; `semantic-reconcile` validates the supplied Memory MCP view and creates an owned-only, retry-safe operation journal; and `semantic-export-html` writes an escaped, deterministic offline SVG graph canvas with actual entity nodes and assertion edges, relation labels, search/type/claim-cluster filters, pan/zoom, and click details. Canonical explicit, approved private proposal, and candidate/inert records have distinct labels and colors; candidates never masquerade as approved. Aliases, identity candidates, inference overlays, and unapproved candidates never enter reconciliation. `caused` requires direct causal wording and an explicit human approval reason.
+
+The reconcile result is the bounded dispatch contract for the trusted caller. This offline command does not contact Memory MCP itself. The caller must dispatch the exact journaled operations through its schema-validated Memory MCP surface, persist progress after each operation, re-read the backend, and rerun until `idempotent:true`. Canonical Markdown and foreign namespaces are outside its mutation set.
+
+## Deterministic release and rollback
+
+Run `python3 release_inventory.py` from this directory before packaging. Its one JSON object lists every release artifact, byte length, SHA-256 digest, version, and the closed update/rollback rule. Validate every digest before replacing the complete set. Never mix release files. Rollback restores the prior complete inventory, then reruns validation and read-only smoke tests. The command is inert: it does not install, publish, contact a backend, or mutate state.
+
+## Fresh-agent inert semantic example
+
+This example is a data-flow illustration, not an approval. It never authorizes a reviewer, a file write, or Memory MCP dispatch. A fresh agent must prepare each exact Harness command through the trusted runtime and keep all candidates inert until a separately authenticated human review exists.
+
+1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null.
+2. Give only those bounded pages to the external extractor, then pass its JSON to `semantic-validate-proposals` and `semantic-review-queue`. Stop here for review. Neither command approves or writes.
+3. After an authenticated human supplies an exact manifest, pass the trusted channel identity separately as `expectedReviewerId` to `semantic-approve`, then run `semantic-build`.
+4. Give the snapshot plus a freshly read backend view to `semantic-reconcile`. Its returned operations are an inert plan: never dispatch them automatically. Obtain exact write approval, dispatch only through the schema-validated Memory MCP surface, re-read the backend, and run `semantic-reconcile-verify`.
+5. `semantic-export-html` is the only semantic manifest command that writes a file. Its exact output path requires its own runtime approval when requested.
+
+Run `python3 semantic_contract_inventory.py` to obtain the deterministic, machine-verifiable command-to-handler, safety, output, effects, error-envelope, and redaction inventory for every manifest `semantic-*` command.
