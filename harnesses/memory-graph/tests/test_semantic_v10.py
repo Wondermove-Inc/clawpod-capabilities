@@ -232,7 +232,11 @@ class SemanticV10(unittest.TestCase):
   edges=[{'semantic_id':'r1','subject':{'entity_id':'person:a'},'object':{'entity_id':'project:b'},'claim_id':'c1','source':source}]
   snap={'schema_version':'memory-graph-semantic-snapshot/v1','entities':entities,'assertions':edges}; snap['snapshot_hash']=module.sha(snap)
   out=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1); self.assertFalse(out['canonical']); self.assertTrue(out['locator_only']); self.assertEqual(len(out['entities']),2); self.assertEqual(len(out['hydration_locators']),3)
+  first=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1); self.assertEqual(first['page']['count'],1); self.assertIsNotNone(first['page']['next_cursor'])
+  second=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1,cursor=first['page']['next_cursor']); self.assertNotEqual(first['entities'],second['entities']); self.assertIsNone(second['page']['next_cursor'])
   with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=4)
+  with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,max_degree=0)
+  with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,cursor='0'*64)
  def test_private_state_json_write_is_atomic_mode_0600_and_repeatable(self):
   import importlib.util,os
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
