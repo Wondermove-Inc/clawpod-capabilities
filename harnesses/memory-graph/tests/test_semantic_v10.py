@@ -356,4 +356,14 @@ class SemanticV10(unittest.TestCase):
   referent=outside/'referent.json'; referent.write_text('preserve'); symlink=self.t/'state-link.json'; symlink.symlink_to(referent)
   with self.assertRaises(OSError): module.atomic_write_json(symlink,value)
   self.assertEqual(referent.read_text(),'preserve'); shutil.rmtree(outside)
+ def test_atomic_write_directory_descriptor_prevents_parent_swap_redirection(self):
+  import importlib.util,os
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  safe=self.t/'safe'; moved=self.t/'moved'; safe.mkdir(); real_replace=module.os.replace
+  def swap_then_replace(src,dst,**kwargs):
+   safe.rename(moved); safe.mkdir(); return real_replace(src,dst,**kwargs)
+  module.os.replace=swap_then_replace
+  try: module.atomic_write(safe/'private.html',b'private')
+  finally: module.os.replace=real_replace
+  self.assertFalse((safe/'private.html').exists()); self.assertEqual((moved/'private.html').read_bytes(),b'private'); self.assertEqual((moved/'private.html').stat().st_mode & 0o777,0o600)
 if __name__=='__main__': unittest.main()

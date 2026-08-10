@@ -1,6 +1,6 @@
 """Deterministic, offline semantic authoring pipeline for Memory Graph v0.10."""
 from __future__ import annotations
-import hashlib, html, json, os, re, tempfile, unicodedata
+import hashlib, html, json, os, re, stat, tempfile, unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -61,21 +61,27 @@ def atomic_write(output, data):
  """Durably replace a regular output without exposing a partial document."""
  output=Path(output); parent=output.parent
  if parent.is_symlink() or not parent.is_dir(): raise OSError("private output parent must be an existing non-symlink directory")
- parent_before=parent.stat(follow_symlinks=False)
  if output.is_symlink() or (output.exists() and not output.is_file()): raise OSError("private output target must be a regular non-symlink file")
- fd,tmp=tempfile.mkstemp(prefix="."+output.name+".",suffix=".tmp",dir=output.parent)
+ directory=os.open(parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_NOFOLLOW",0)); tmp=None
  try:
+  # Keep all later operations anchored to the opened directory descriptor.
+  # Renaming or swapping the pathname cannot redirect private bytes elsewhere.
+  for _ in range(100):
+   tmp="."+output.name+"."+next(tempfile._get_candidate_names())+".tmp"
+   try: fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=directory); break
+   except FileExistsError: continue
+  else: raise FileExistsError("unable to allocate private temporary output")
   with os.fdopen(fd,"wb") as stream:
    stream.write(data); stream.flush(); os.fsync(stream.fileno())
-  os.chmod(tmp,0o600)
-  if parent.is_symlink() or not os.path.samestat(parent_before,parent.stat(follow_symlinks=False)) or output.is_symlink() or (output.exists() and not output.is_file()): raise OSError("private output path changed during atomic write")
-  os.replace(tmp,output)
-  directory=os.open(output.parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0))
-  try: os.fsync(directory)
-  finally: os.close(directory)
+  try: target=os.stat(output.name,dir_fd=directory,follow_symlinks=False)
+  except FileNotFoundError: target=None
+  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output path changed during atomic write")
+  os.replace(tmp,output.name,src_dir_fd=directory,dst_dir_fd=directory); tmp=None; os.fsync(directory)
  finally:
-  try: os.unlink(tmp)
-  except FileNotFoundError: pass
+  if tmp is not None:
+   try: os.unlink(tmp,dir_fd=directory)
+   except FileNotFoundError: pass
+  os.close(directory)
 def atomic_write_json(output, value):
  """Persist private workflow state with the same durable 0600 contract."""
  atomic_write(Path(output),canon(value)+b"\n")
