@@ -314,7 +314,7 @@ def build_snapshot(reviewed,api):
  out={"schema_version":SCHEMA_SNAPSHOT,"namespace":reviewed["namespace"],"source_snapshot_hash":reviewed["source_snapshot_hash"],"source_digest":reviewed["source_digest"],"entities":sorted(entities,key=lambda x:x["semantic_id"]),"assertions":sorted(assertions,key=lambda x:x["semantic_id"]),"candidates":[x for x in reviewed["proposals"] if x["lifecycle"] in {"candidate","tentative"}],"revoked":[x for x in reviewed["proposals"] if x["lifecycle"] in {"superseded","rejected","archived"}],"lifecycle_counts":{state:sum(x["lifecycle"]==state for x in reviewed["proposals"]) for state in sorted(allowed)},"entity_rename_policy":{"new_identity_required":True,"supersede_old_proposal":True,"identity_merge_performed":False},"quarantine":reviewed["quarantine"],"inference_overlays":[]}
  out["snapshot_hash"]=sha(out); return out
 
-def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edges=200,max_degree=50,page_size=100,cursor=None):
+def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edges=200,max_degree=50,page_size=100,cursor=None,now_epoch=None,cursor_ttl_seconds=300):
  """Bounded deterministic traversal returning canonical hydration locators."""
  if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
  if isinstance(depth,bool) or not isinstance(depth,int) or not 0<=depth<=3 or not 1<=max_entities<=100 or not 0<=max_edges<=200 or not 1<=max_degree<=50 or not 1<=page_size<=100: fail(api,"invalid_query_bounds","depth/entities/edges/degree/page exceed semantic query bounds")
@@ -335,15 +335,24 @@ def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edg
   frontier=sorted(set(nxt))
  all_entities=[by_id[x] for x in sorted(seen) if x in by_id]; offset=0
  query_contract={"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size}
+ now_epoch=int(datetime.now(timezone.utc).timestamp()) if now_epoch is None else now_epoch
+ if isinstance(now_epoch,bool) or not isinstance(now_epoch,int) or isinstance(cursor_ttl_seconds,bool) or not isinstance(cursor_ttl_seconds,int) or not 1<=cursor_ttl_seconds<=3600: fail(api,"invalid_query_time_policy","cursor time policy must use integer epoch seconds and a TTL from 1 through 3600")
+ cursor_expires_at=None
  if cursor:
-  matches=[i for i in range(len(all_entities)) if sha({"query":query_contract,"offset":i})==cursor]
+  try: expiry_text,digest=cursor.split('.',1); cursor_expires_at=int(expiry_text)
+  except (ValueError,AttributeError): fail(api,"invalid_semantic_query_cursor","query cursor is malformed")
+  if cursor_expires_at<now_epoch: fail(api,"semantic_query_cursor_expired","persisted query cursor exceeded its sealed expiry")
+  matches=[i for i in range(len(all_entities)) if sha({"query":query_contract,"offset":i,"expires_at":cursor_expires_at})==digest]
   if len(matches)!=1: fail(api,"invalid_semantic_query_cursor","query cursor is tampered, stale, foreign, or replayed under different bounds")
   offset=matches[0]+1
  entities=all_entities[offset:offset+page_size]
- next_cursor=sha({"query":query_contract,"offset":offset+len(entities)-1}) if entities and offset+len(entities)<len(all_entities) else None
+ if entities and offset+len(entities)<len(all_entities):
+  cursor_expires_at=cursor_expires_at or now_epoch+cursor_ttl_seconds
+  next_cursor=str(cursor_expires_at)+'.'+sha({"query":query_contract,"offset":offset+len(entities)-1,"expires_at":cursor_expires_at})
+ else: next_cursor=None
  def locator(item):
   source=item["source"]; return {"claim_id":item["claim_id"],"path":source["path"],"line_start":source["line_start"],"line_end":source["line_end"],"source_content_hash":source["source_content_hash"],"claim_content_hash":source["claim_content_hash"]}
- return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
+ return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"cursor_policy":{"ttl_seconds":cursor_ttl_seconds,"expires_at_epoch":cursor_expires_at},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
 
 def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-workspace"):
  """Read canonical lines only when both exact source bytes and claim digest agree."""

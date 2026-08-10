@@ -254,8 +254,9 @@ class SemanticV10(unittest.TestCase):
   edges=[{'semantic_id':'r1','subject':{'entity_id':'person:a'},'object':{'entity_id':'project:b'},'claim_id':'c1','source':source}]
   snap={'schema_version':'memory-graph-semantic-snapshot/v1','entities':entities,'assertions':edges}; snap['snapshot_hash']=module.sha(snap)
   out=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1); self.assertFalse(out['canonical']); self.assertTrue(out['locator_only']); self.assertEqual(len(out['entities']),2); self.assertEqual(len(out['hydration_locators']),3)
-  first=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1); self.assertEqual(first['page']['count'],1); self.assertIsNotNone(first['page']['next_cursor'])
-  second=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1,cursor=first['page']['next_cursor']); self.assertNotEqual(first['entities'],second['entities']); self.assertIsNone(second['page']['next_cursor'])
+  first=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1,now_epoch=100); self.assertEqual(first['page']['count'],1); self.assertIsNotNone(first['page']['next_cursor']); self.assertEqual(first['cursor_policy']['expires_at_epoch'],400)
+  second=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1,cursor=first['page']['next_cursor'],now_epoch=399); self.assertNotEqual(first['entities'],second['entities']); self.assertIsNone(second['page']['next_cursor'])
+  with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=1,cursor=first['page']['next_cursor'],now_epoch=401)
   self.assertEqual(first['query_contract_hash'],second['query_contract_hash'])
   with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=1,page_size=2,cursor=first['page']['next_cursor'])
   with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=2,page_size=1,cursor=first['page']['next_cursor'])
