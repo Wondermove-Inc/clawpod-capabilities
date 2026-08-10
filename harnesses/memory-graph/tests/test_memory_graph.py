@@ -85,8 +85,8 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
 
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
-        self.assertEqual(manifest["version"], "0.5.0")
-        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan"})
+        self.assertEqual(manifest["version"], "0.6.0")
+        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "query-plan"})
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(skill.startswith("---\nname: memory-graph\n")); self.assertIn("description:", skill.split("---", 2)[1])
         self.assertIn("first-class cron surface", skill); self.assertNotIn("UTC fallback", skill)
@@ -599,6 +599,37 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         self.save("old.json", old); (self.tmp / "USER.md").unlink()
         diff = self.run_cli("diff", "--root", str(self.tmp), "--snapshot", "old.json")[1]["data"]
         self.assertTrue(any(name.endswith("document:USER.md") for name in diff["delete_entities"]))
+
+    def test_grounded_semantic_projection_query_and_quarantine(self):
+        ev={"evidence_id":"ev1","path":"memory/evidence.md","content_hash":"a"*64}
+        semantic={"entities":[
+            {"entity_id":"person:mina","type":"Person","canonical_name":"Mina"},
+            {"entity_id":"project:alpha","type":"Project","canonical_name":"Alpha"}],
+            "relations":[{"from":"person:mina","type":"participates_in","to":"project:alpha"}]}
+        self.write_memory(claim(status="current", evidence=[ev], semantic=semantic))
+        plan=self.plan()
+        self.assertEqual([e["entityType"] for e in plan["entities"] if ":semantic:" in e["name"]], ["Person","Project"])
+        self.assertEqual(plan["semantic_relations"][0]["relationType"], "participates_in")
+        self.assertRegex(plan["semantic_relations"][0]["edge_id"], r"^[0-9a-f]{64}$")
+        self.save("plan.json", plan)
+        _, result=self.run_cli("query-plan","--root",str(self.tmp),"--input","plan.json","--entity-id","person:mina","--max-depth","1","--explain")
+        self.assertFalse(result["data"]["canonical"]); self.assertTrue(result["data"]["locator_only"])
+        self.assertEqual(len(result["data"]["hydration_requests"]),1)
+
+    def test_semantic_missing_provenance_is_quarantined_without_breaking_claim(self):
+        semantic={"entities":[{"entity_id":"person:x","type":"Person","canonical_name":"X"}],"relations":[]}
+        self.write_memory(claim(status="current", semantic=semantic))
+        plan=self.plan()
+        self.assertEqual(plan["semantic_quarantine"][0]["reason_code"],"missing_provenance")
+        self.assertTrue(any(e["entityType"]=="MemoryClaim" for e in plan["entities"]))
+        self.assertFalse(any(e["entityType"]=="Person" for e in plan["entities"]))
+
+    def test_semantic_namespace_and_secret_isolation(self):
+        ev={"evidence_id":"ev1","path":"memory/evidence.md","content_hash":"b"*64}
+        semantic={"entities":[{"entity_id":"person:x","type":"Person","canonical_name":"password=supersecretvalue"}],"relations":[]}
+        self.write_memory(claim(status="current", evidence=[ev], semantic=semantic))
+        stdout, result=self.run_cli("plan","--root",str(self.tmp),"--detail",expected=2)
+        self.assertEqual(result["error"]["code"],"secret_like_text"); self.assertNotIn("supersecretvalue",stdout)
 
 
 if __name__ == "__main__":

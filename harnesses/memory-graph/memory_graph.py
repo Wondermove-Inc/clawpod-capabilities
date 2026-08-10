@@ -18,8 +18,9 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-SCHEMA_VERSION = 4
-CONTRACT_VERSION = "0.5.0"
+SCHEMA_VERSION = 5
+CONTRACT_VERSION = "0.6.0"
+SEMANTIC_CONTRACT_VERSION = "1.0.0"
 MAX_SOURCE_FILES = 256
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
 MAX_MCP_OUTPUT_BYTES = 1024 * 1024
@@ -43,6 +44,13 @@ SECRET_PATTERNS = [
 ]
 ALLOWED_STATUS = {"current", "tentative", "superseded", "rejected", "conflicted", "archived", "active"}
 ELIGIBLE_STATUS = {"current", "tentative", "active"}
+SEMANTIC_TYPES = {"Person", "Project", "Decision", "Event"}
+SEMANTIC_RELATIONS = {
+    "participates_in": ({"Person"}, {"Project", "Event"}),
+    "decided": ({"Person"}, {"Decision"}),
+    "caused": ({"Decision", "Event"}, {"Event"}),
+    "supersedes": ({"Decision"}, {"Decision"}),
+}
 
 # OpenClaw's portable workspace contract.  This is intentionally an exact
 # allowlist: adding a Markdown file beside these files must never ingest it.
@@ -206,6 +214,7 @@ def apply_namespace(snapshot: dict[str, Any], ownership: dict[str, str]) -> dict
     ]
     for field in ("explicit_relations", "structural_relations", "inferred_relations"):
         result[field] = [relation(r) for r in snapshot[field]]
+    result["semantic_relations"] = [{**r, "from": mapping[r["from"]], "to": mapping[r["to"]]} for r in snapshot.get("semantic_relations", [])]
     result.pop("snapshot_hash", None)
     result["snapshot_hash"] = digest(result)
     return result
@@ -307,6 +316,105 @@ def validate_claim(raw: Any, path: str, line: int, secret_policy: str, bullets: 
     content["hash"] = claim_hash
     content["content_hash"] = claim_hash
     return content
+
+
+def _quarantine(reason: str, claim: dict[str, Any], candidate: Any) -> dict[str, Any]:
+    candidate_hash = digest(candidate)
+    return {"quarantine_id": digest({"reason": reason, "claim": claim["claim_id"], "candidate": candidate_hash}),
+            "reason_code": reason, "source_claim_id": claim["claim_id"], "path": claim["path"],
+            "line": claim["line"], "candidate_hash": candidate_hash,
+            "remediation": "Correct explicit canonical semantic metadata and provenance."}
+
+
+def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, dict[str, Any]], namespace: str = "") -> dict[str, Any]:
+    """Project only explicit, fully grounded claim metadata. Invalid records are inert."""
+    records: dict[tuple[str, str], list[tuple[dict[str, Any], dict[str, Any]]]] = {}
+    quarantined: list[dict[str, Any]] = []
+    relations_raw: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    for claim in claims:
+        semantic = claim.get("semantic")
+        if semantic is None or claim["status"] not in ELIGIBLE_STATUS:
+            continue
+        if not isinstance(semantic, dict) or set(semantic) - {"entities", "relations"}:
+            quarantined.append(_quarantine("unknown_type", claim, semantic)); continue
+        evidence = claim.get("evidence", [])
+        source = sources.get(claim["path"], {})
+        provenance_ok = (claim.get("line", 0) > 0 and HASH_RE.fullmatch(str(source.get("hash", "")))
+                         and evidence and all(isinstance(e, dict) and e.get("evidence_id")
+                         and isinstance(e.get("path"), str) and HASH_RE.fullmatch(str(e.get("content_hash", ""))) for e in evidence))
+        if not provenance_ok:
+            quarantined.append(_quarantine("missing_provenance", claim, semantic)); continue
+        entities = semantic.get("entities", [])
+        relations = semantic.get("relations", [])
+        if not isinstance(entities, list) or not isinstance(relations, list):
+            quarantined.append(_quarantine("unknown_type", claim, semantic)); continue
+        for entity in entities:
+            if not isinstance(entity, dict) or entity.get("type") not in SEMANTIC_TYPES:
+                quarantined.append(_quarantine("unknown_type", claim, entity)); continue
+            if set(entity) - {"entity_id", "type", "canonical_name", "aliases", "external_ids", "valid_from", "valid_to", "effective_at", "occurred_at", "interval", "time_unknown"}:
+                quarantined.append(_quarantine("unknown_type", claim, entity)); continue
+            eid, name = entity.get("entity_id"), entity.get("canonical_name")
+            if not isinstance(eid, str) or not ID_RE.fullmatch(eid) or not isinstance(name, str) or not name.strip() or secret_like(entity):
+                quarantined.append(_quarantine("identity_conflict", claim, {"entity_id": eid, "type": entity.get("type")})); continue
+            if entity["type"] in {"Decision", "Event"} and not (entity.get("effective_at") or entity.get("occurred_at") or entity.get("interval") or entity.get("time_unknown") is True):
+                quarantined.append(_quarantine("temporal_conflict", claim, entity)); continue
+            records.setdefault((entity["type"], eid), []).append((claim, entity))
+        for relation in relations:
+            relations_raw.append((claim, relation))
+    semantic_entities, lookup = [], {}
+    conflicted_ids = {eid for _, eid in records if len({etype for etype, other in records if other == eid}) > 1}
+    for (etype, eid), grounded in sorted(records.items()):
+        if eid in conflicted_ids:
+            for claim, entity in grounded: quarantined.append(_quarantine("identity_conflict", claim, entity))
+            continue
+        definitions = {canonical_bytes(entity) for _, entity in grounded}
+        if len(definitions) != 1:
+            for claim, entity in grounded: quarantined.append(_quarantine("multiple_current_assertions", claim, entity))
+            continue
+        entity = grounded[0][1]
+        prov = []
+        for claim, _ in grounded:
+            source = sources[claim["path"]]
+            prov.append({"source_claim_id": claim["claim_id"], "claim_key": claim["claim_key"], "status": claim["status"],
+                "content_hash": claim["content_hash"], "path": claim["path"], "line": claim["line"],
+                "source_content_hash": source["hash"], "evidence": claim["evidence"],
+                "writer_version": claim.get("writer_version"), "extraction_version": claim.get("extraction_version"),
+                "semantic_contract_version": SEMANTIC_CONTRACT_VERSION, "semantic_record_hash": digest(entity),
+                "created_at": claim.get("created_at"), "updated_at": claim.get("updated_at"),
+                "confidence": claim.get("confidence"), "captured_at": claim.get("captured_at")})
+        local = f"semantic:{etype}:{eid}"; lookup[eid] = (local, etype)
+        observation = {**entity, "grounding_claim_ids": sorted(x[0]["claim_id"] for x in grounded), "provenance": sorted(prov, key=canonical_bytes)}
+        semantic_entities.append({"name": namespace + local, "entityType": etype, "observations": [json.dumps(observation, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]})
+    semantic_relations = []
+    for claim, relation in relations_raw:
+        if not isinstance(relation, dict) or relation.get("type") not in SEMANTIC_RELATIONS:
+            quarantined.append(_quarantine("unknown_relation", claim, relation)); continue
+        src, dst = lookup.get(relation.get("from"), (None, None)), lookup.get(relation.get("to"), (None, None))
+        if src[0] is None or dst[0] is None:
+            quarantined.append(_quarantine("unresolved_endpoint", claim, relation)); continue
+        domains, ranges = SEMANTIC_RELATIONS[relation["type"]]
+        if src[1] not in domains or dst[1] not in ranges:
+            quarantined.append(_quarantine("invalid_endpoint_type", claim, relation)); continue
+        claim_ids = [claim["claim_id"]]
+        edge_id = hashlib.sha256((namespace + relation["from"] + relation["type"] + relation["to"] + json.dumps(claim_ids)).encode()).hexdigest()
+        semantic_relations.append({"from": namespace + src[0], "to": namespace + dst[0], "relationType": relation["type"],
+            "edge_id": edge_id, "source_claim_ids": claim_ids,
+            "provenance": {"path": claim["path"], "line": claim["line"], "content_hash": claim["content_hash"]}})
+    merged: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for relation in semantic_relations:
+        key = (relation["from"], relation["to"], relation["relationType"])
+        if key not in merged:
+            merged[key] = {**relation, "provenance": [relation["provenance"]]}
+        else:
+            merged[key]["source_claim_ids"] = sorted(set(merged[key]["source_claim_ids"] + relation["source_claim_ids"]))
+            merged[key]["provenance"].append(relation["provenance"])
+    for relation in merged.values():
+        relation["provenance"] = sorted(relation["provenance"], key=canonical_bytes)
+        relation["edge_id"] = hashlib.sha256((namespace + relation["from"] + relation["relationType"] + relation["to"] + json.dumps(relation["source_claim_ids"])).encode()).hexdigest()
+    quarantined.sort(key=lambda x: (x["reason_code"], x["source_claim_id"], x["candidate_hash"]))
+    return {"semantic_contract_version": SEMANTIC_CONTRACT_VERSION, "semantic_entities": semantic_entities,
+            "semantic_relations": sorted(merged.values(), key=lambda x: (x["from"], x["to"], x["relationType"])),
+            "semantic_quarantine": quarantined}
 
 
 def parse_writer_claims(text: str, path: str, secret_policy: str) -> list[dict[str, Any]]:
@@ -418,6 +526,7 @@ def build_plan(inspected: dict[str, Any], include_inferred: bool = False, owners
     key_names = {key: f"claim-key:{key}" for key in grouped}
     reserved_key_names = set(key_names.values())
     source_by_path = {source["path"]: source for source in inspected.get("sources", [])}
+    semantic = build_semantic_projection(claims, source_by_path)
 
     entities["agent:self"] = {"name": "agent:self", "entityType": "Agent", "observations": [json.dumps({"role": "workspace_agent"}, sort_keys=True, separators=(",", ":"))]}
     entities["workspace:self"] = {"name": "workspace:self", "entityType": "Workspace", "observations": [json.dumps({"role": "owner_workspace"}, sort_keys=True, separators=(",", ":"))]}
@@ -471,11 +580,15 @@ def build_plan(inspected: dict[str, Any], include_inferred: bool = False, owners
     for relation in explicit:
         if relation["from"] not in entities or relation["to"] not in entities:
             raise InputError("dangling_relation", "Explicit relation endpoint is absent from the current graph", relation)
+    for entity in semantic["semantic_entities"]:
+        entities[entity["name"]] = entity
+    for relation in semantic["semantic_relations"]:
+        explicit.append({"from": relation["from"], "to": relation["to"], "relationType": relation["relationType"]})
     entity_list = sorted(entities.values(), key=lambda x: x["name"])
     explicit = sorted({tuple(x.values()): x for x in explicit}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
     structural = sorted({tuple(x.values()): x for x in structural}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
     inferred = sorted({tuple(x.values()): x for x in inferred}.values(), key=lambda x: (x["from"], x["to"], x["relationType"]))
-    result = {"schema_version": SCHEMA_VERSION, "canonical": False, "rebuildable": True, "source_digest": inspected["source_digest"], "claims": selected, "core_documents": inspected.get("core_documents", []), "core_sections": inspected.get("core_sections", []), "entities": entity_list, "explicit_relations": explicit, "structural_relations": structural, "inferred_relations": inferred, "conflicts": {"ambiguous_claim_keys": ambiguous_claim_keys}, "excluded_claims": sorted([c["claim_id"] for c in claims if c not in selected])}
+    result = {"schema_version": SCHEMA_VERSION, "canonical": False, "rebuildable": True, "source_digest": inspected["source_digest"], "claims": selected, "core_documents": inspected.get("core_documents", []), "core_sections": inspected.get("core_sections", []), "entities": entity_list, "explicit_relations": explicit, "structural_relations": structural, "inferred_relations": inferred, "conflicts": {"ambiguous_claim_keys": ambiguous_claim_keys}, "excluded_claims": sorted([c["claim_id"] for c in claims if c not in selected]), **{k: semantic[k] for k in ("semantic_contract_version", "semantic_relations", "semantic_quarantine")}}
     result["snapshot_hash"] = digest(result)
     return apply_namespace(result, ownership) if ownership else result
 
@@ -486,7 +599,7 @@ def validate_snapshot(snapshot: Any) -> dict[str, Any]:
     required = {"schema_version", "canonical", "rebuildable", "source_digest", "entities", "explicit_relations", "structural_relations", "inferred_relations", "conflicts", "snapshot_hash"}
     if missing := sorted(required - snapshot.keys()):
         raise InputError("invalid_snapshot", "Snapshot is missing required fields", {"fields": missing})
-    allowed = required | {"claims", "core_documents", "core_sections", "excluded_claims", "ownership"}
+    allowed = required | {"claims", "core_documents", "core_sections", "excluded_claims", "ownership", "semantic_contract_version", "semantic_relations", "semantic_quarantine"}
     if extra := sorted(snapshot.keys() - allowed):
         raise InputError("invalid_snapshot", "Snapshot contains unsupported fields", {"fields": extra})
     if snapshot["schema_version"] != SCHEMA_VERSION or not isinstance(snapshot["source_digest"], str) or not HASH_RE.fullmatch(snapshot["source_digest"]):
@@ -551,6 +664,54 @@ def graph_diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     delete_r = (old_r - new_r) | {r for r in old_r if r[0] in changed_set or r[1] in changed_set}
     create_r = (new_r - old_r) | {r for r in new_r if r[0] in changed_set or r[1] in changed_set}
     return {"schema_version": SCHEMA_VERSION, "ownership": new["ownership"], "from_snapshot_hash": old["snapshot_hash"], "to_snapshot_hash": new["snapshot_hash"], "conflicts": new["conflicts"], "delete_relations": [{"from": a, "to": b, "relationType": c} for a,b,c in sorted(delete_r)], "delete_entities": sorted(deletes), "create_entities": [new_e[name] for name in sorted(creates)], "create_relations": [{"from": a, "to": b, "relationType": c} for a,b,c in sorted(create_r)], "unchanged_entities": sorted((old_e.keys() & new_e.keys()) - changed_set)}
+
+
+def semantic_query(snapshot: dict[str, Any], entity_id: str | None, entity_type: str | None,
+                   relation: str | None, direction: str, statuses: str,
+                   max_depth: int, max_entities: int, max_edges: int, explain: bool) -> dict[str, Any]:
+    validate_snapshot(snapshot)
+    if not 0 <= max_depth <= 3 or not 1 <= max_entities <= 100 or not 1 <= max_edges <= 200:
+        raise InputError("query_bounds", "Semantic query exceeds deterministic bounds")
+    wanted_status = set(statuses.split(",")) if statuses else {"current", "active"}
+    if not wanted_status <= (ALLOWED_STATUS | {"quarantined", "stale_pending_resolution"}):
+        raise InputError("query_status", "Semantic query status is unsupported")
+    prefix = snapshot.get("ownership", {}).get("namespace", "") + "semantic:"
+    entities = {e["name"]: e for e in snapshot["entities"] if e["name"].startswith(prefix)}
+    starts = []
+    for name, entity in entities.items():
+        obs = json.loads(entity["observations"][0])
+        grounding_status = {p["status"] for p in obs.get("provenance", [])}
+        if entity_id and obs.get("entity_id") != entity_id: continue
+        if entity_type and entity["entityType"] != entity_type: continue
+        if grounding_status and not grounding_status & wanted_status: continue
+        starts.append(name)
+    rels = snapshot.get("semantic_relations", [])
+    if relation:
+        requested = set(relation.split(","))
+        if not requested <= set(SEMANTIC_RELATIONS): raise InputError("query_relation", "Unknown semantic relation")
+        rels = [r for r in rels if r["relationType"] in requested]
+    visited, frontier, edges = set(starts), sorted(starts), []
+    for _ in range(max_depth):
+        next_frontier = []
+        for rel in rels:
+            hit = ((direction in {"out", "both"} and rel["from"] in frontier) or
+                   (direction in {"in", "both"} and rel["to"] in frontier))
+            if hit:
+                edges.append(rel)
+                other = rel["to"] if rel["from"] in frontier else rel["from"]
+                if other in entities and other not in visited: visited.add(other); next_frontier.append(other)
+        frontier = sorted(set(next_frontier))
+        if not frontier: break
+    ordered_entities = [entities[n] for n in sorted(visited)[:max_entities]]
+    ordered_edges = sorted({r["edge_id"]: r for r in edges}.values(), key=lambda r: r["edge_id"])[:max_edges]
+    hydration = sorted({(p["source_claim_id"], p["path"], p["line"], p["content_hash"])
+        for e in ordered_entities for p in json.loads(e["observations"][0]).get("provenance", [])})
+    return {"canonical": False, "locator_only": True, "namespace": snapshot.get("ownership", {}).get("namespace"),
+            "source_digest": snapshot["source_digest"], "snapshot_hash": snapshot["snapshot_hash"],
+            "entities": ordered_entities, "edges": ordered_edges,
+            "hydration_requests": [{"source_claim_id": a, "path": b, "line": c, "content_hash": d} for a,b,c,d in hydration] if explain else [],
+            "quarantine": snapshot.get("semantic_quarantine", []) if "quarantined" in wanted_status else [],
+            "truncated": len(visited) > max_entities or len(edges) > max_edges, "conflicts": snapshot["conflicts"]}
 
 
 def _validate_conflicts(conflicts: Any, code: str) -> None:
@@ -981,7 +1142,9 @@ def parser() -> argparse.ArgumentParser:
     c = sub.add_parser("validate-snapshot"); c.add_argument("--snapshot", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("diff"); c.add_argument("--snapshot", required=True); c.add_argument("--root", default="."); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject"); c.add_argument("--include-inferred", action="store_true"); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
     c = sub.add_parser("export-mcp-batch"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--batch-size", type=int, default=100); c.add_argument("--include-inferred", action="store_true")
-    c = sub.add_parser("query-plan"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--query", required=True)
+    c = sub.add_parser("query-plan"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--query")
+    c.add_argument("--entity-id"); c.add_argument("--entity-type"); c.add_argument("--relation"); c.add_argument("--direction", choices=("out","in","both"), default="both")
+    c.add_argument("--statuses", default="current,active"); c.add_argument("--max-depth", type=int, default=1); c.add_argument("--max-entities", type=int, default=100); c.add_argument("--max-edges", type=int, default=200); c.add_argument("--explain", action="store_true")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1002,9 +1165,14 @@ def main(argv: list[str] | None = None) -> int:
             data = onboard(root, args.agent_id, args.workspace_id, Path(args.state_root), args.mcporter, args.timeout_seconds, args.secret_policy)
         elif args.command == "cron-plan": data = cron_plan(root, args.agent_id, args.workspace_id, args.state_root, args.timezone)
         else:
-            snapshot = load_json(args.input, root); validate_snapshot(snapshot); terms = args.query.casefold().split()
-            matches = [e for e in snapshot["entities"] if all(term in json.dumps(e, ensure_ascii=False).casefold() for term in terms)]
-            data = {"query": args.query, "entities": sorted(matches, key=lambda x: x["name"]), "conflicts": snapshot["conflicts"], "canonical_grounding_required": True}
+            snapshot = load_json(args.input, root)
+            if args.query:
+                validate_snapshot(snapshot); terms = args.query.casefold().split()
+                matches = [e for e in snapshot["entities"] if all(term in json.dumps(e, ensure_ascii=False).casefold() for term in terms)]
+                data = {"query": args.query, "entities": sorted(matches, key=lambda x: x["name"]), "conflicts": snapshot["conflicts"], "canonical_grounding_required": True}
+            else:
+                data = semantic_query(snapshot, args.entity_id, args.entity_type, args.relation, args.direction,
+                    args.statuses, args.max_depth, args.max_entities, args.max_edges, args.explain)
         effects = []
         if args.command == "onboard":
             effects.append({"type": "write_private_state", "namespace": data["namespace"]})
