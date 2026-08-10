@@ -48,6 +48,11 @@ def validate_proposals(root,bundle,agent,workspace,api):
  ex=bundle["extractor"]
  if not closed(ex,{"extractor_id","extractor_version","config_hash"}) or not HASH.fullmatch(str(ex["config_hash"])): fail(api,"invalid_extractor","invalid extractor metadata")
  entities=[]; assertions=[]; quarantine=[]
+ known_endpoints={(e.get("type"),e.get("entity_id")) for e in plan.get("semantic_entities",[]) if e.get("type") in TYPES and SAFE_ID.fullmatch(str(e.get("entity_id","")))}
+ for raw in bundle["proposals"]:
+  if isinstance(raw,dict) and raw.get("kind")=="entity" and isinstance(raw.get("payload"),dict):
+   p=raw["payload"]
+   if closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(str(p["entity_id"])): known_endpoints.add((p["type"],p["entity_id"]))
  for raw in bundle["proposals"]:
   if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis"}: quarantine.append({"proposal_id":str(raw.get("proposal_id","?")) if isinstance(raw,dict) else "?","reason_code":"invalid_shape"}); continue
   cid=raw["claim_id"]; c=claims.get(cid); s=raw["source"]
@@ -58,6 +63,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
   elif raw["kind"]=="assertion" and closed(p,{"subject","predicate","object","valid_time"}) and p["predicate"] in PREDICATES and closed(p["subject"],{"entity_id","type"}) and closed(p["object"],{"entity_id","type"}):
    subj,obj=p["subject"],p["object"]; domains=ENDPOINTS[p["predicate"]]
    if not SAFE_ID.fullmatch(str(subj["entity_id"])) or not SAFE_ID.fullmatch(str(obj["entity_id"])) or subj["type"] not in domains[0] or obj["type"] not in domains[1]: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_endpoints"}); continue
+   if (subj["type"],subj["entity_id"]) not in known_endpoints or (obj["type"],obj["entity_id"]) not in known_endpoints: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"dangling_endpoints"}); continue
    if p["predicate"]=="caused" and not CAUSAL.search(c.get("value","")): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"chronology_only_cause"}); continue
    assertions.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})

@@ -27,6 +27,9 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3)
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':'p1','lifecycle':'approved','reason':'direct explicit entity'},{'proposal_id':'p2','lifecycle':'approved','reason':'direct explicit entity'}]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
+ def test_domain_valid_but_dangling_assertion_is_quarantined(self):
+  bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['object']={'entity_id':'project:missing','type':'Project'}; self.write('bundle.json',bad)
+  self.assertIn('dangling_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_approval_rejects_unknown_duplicate_and_malformed_decisions(self):
   v=self.validated(); self.write('v.json',v)
   base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}
@@ -37,6 +40,7 @@ class SemanticV10(unittest.TestCase):
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; reviewed['proposals'][0]['lifecycle']='rejected'; self.write('r.json',reviewed)
   self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'invalid_reviewed_bundle')
  def test_chronology_cause_rejected(self):
+  for i in ('a','b'): self.bundle['proposals'].insert(0,{'proposal_id':'event-'+i,'kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'event:'+i,'type':'Event','temporal':None},'basis':'explicit event'})
   self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'}); self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
  def test_assertion_endpoint_ids_and_domains_are_closed(self):
   for subject,object_,predicate in [({'entity_id':'person:alice','type':'Project'},{'entity_id':'project:alpha','type':'Project'},'participates_in'),({'entity_id':'unsafe id','type':'Person'},{'entity_id':'decision:x','type':'Decision'},'decided')]:
