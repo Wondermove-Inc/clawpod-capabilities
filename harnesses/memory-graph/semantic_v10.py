@@ -79,15 +79,17 @@ def validate_proposals(root,bundle,agent,workspace,api):
    assertions.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
  for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
- return {"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
+ result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
+ result["validated_hash"]=sha(result); return result
 
 def review_queue(validated):
  q=[{"proposal_id":x["proposal_id"],"kind":x["kind"],"claim_id":x["claim_id"],"basis":x["basis"],"lifecycle":x["lifecycle"]} for x in validated["entity_proposals"]+validated["assertion_proposals"]]
  return {"schema_version":"memory-graph-semantic-review-queue/v1","namespace":validated["namespace"],"items":sorted(q,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"automatic_approval":False}
 
 def approve(validated,manifest,api):
- if not closed(manifest,{"schema_version","namespace","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
- if manifest["namespace"]!=validated["namespace"] or not str(manifest["reviewer_id"]).startswith("human:"): fail(api,"invalid_approval_manifest","explicit human reviewer required")
+ if not closed(manifest,{"schema_version","namespace","validated_hash","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
+ if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")
+ if manifest["namespace"]!=validated["namespace"] or manifest["validated_hash"]!=validated["validated_hash"] or not str(manifest["reviewer_id"]).startswith("human:"): fail(api,"invalid_approval_manifest","manifest must bind the exact validated bundle and an explicit human reviewer")
  try: dt=datetime.fromisoformat(manifest["reviewed_at"].replace("Z","+00:00")); assert dt.tzinfo
  except Exception: fail(api,"invalid_approval_manifest","reviewed_at must be timezone-aware ISO-8601")
  proposals=validated["entity_proposals"]+validated["assertion_proposals"]; known={x["proposal_id"] for x in proposals}
