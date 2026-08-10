@@ -1330,6 +1330,78 @@
           "optional": true
         }
       ]
+    },
+    "semantic-reconcile-verify": {
+      "description": "Verify a sealed semantic reconcile plan against a fresh post-dispatch backend view; fail closed while operations remain.",
+      "baseArgv": [
+        "semantic-reconcile-verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "current",
+          "plan"
+        ],
+        "properties": {
+          "input": {
+            "type": "string"
+          },
+          "current": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "plan": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "input",
+          "type": "option",
+          "flag": "--input",
+          "valueType": "path",
+          "pathRole": "input"
+        },
+        {
+          "arg": "plan",
+          "type": "option",
+          "flag": "--plan",
+          "valueType": "path",
+          "pathRole": "input"
+        },
+        {
+          "arg": "current",
+          "type": "option",
+          "flag": "--current",
+          "valueType": "path",
+          "pathRole": "input"
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
+      ]
     }
   }
 }

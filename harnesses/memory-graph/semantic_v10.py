@@ -136,6 +136,19 @@ def reconcile(snapshot,current,api):
  current_hash=sha(current); transaction_id=sha({"snapshot":snapshot["snapshot_hash"],"current_graph_hash":current_hash,"operations":ops})[:24]
  return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"current_graph_hash":current_hash,"target_snapshot_hash":snapshot["snapshot_hash"],"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":transaction_id,"state":"pending" if ops else "verified","dispatch_index":0,"next_operation_hash":ops[0]["operation_hash"] if ops else None,"retry_safe":True,"resume_requires_fresh_current_view":True}}
 
+def verify_reconcile(snapshot,plan,current,api):
+ required={"schema_version","namespace","current_graph_hash","target_snapshot_hash","operations","foreign_entities_preserved","foreign_relations_preserved","canonical_markdown_mutated","inference_applied","idempotent","journal"}
+ if not closed(plan,required) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1": fail(api,"invalid_reconcile_plan","closed reconcile plan required")
+ if plan["namespace"]!=snapshot.get("namespace") or plan["target_snapshot_hash"]!=snapshot.get("snapshot_hash"): fail(api,"reconcile_plan_mismatch","plan does not target this snapshot")
+ for index,op in enumerate(plan["operations"]):
+  if op.get("operation_index")!=index: fail(api,"invalid_reconcile_plan","operation indexes must be contiguous")
+  base={k:v for k,v in op.items() if k not in {"operation_index","operation_hash"}}
+  expected=sha({"namespace":plan["namespace"],"snapshot_hash":plan["target_snapshot_hash"],"operation_index":index,"operation":base})
+  if op.get("operation_hash")!=expected: fail(api,"invalid_reconcile_plan","operation seal mismatch",operation_index=index)
+ post=reconcile(snapshot,current,api)
+ if not post["idempotent"]: fail(api,"semantic_reconcile_incomplete","fresh backend view does not match target",remaining_operations=len(post["operations"]),resume_plan=post)
+ return {"schema_version":"memory-graph-semantic-reconcile-verification/v1","namespace":plan["namespace"],"transaction_id":plan["journal"].get("transaction_id"),"target_snapshot_hash":plan["target_snapshot_hash"],"post_current_graph_hash":post["current_graph_hash"],"verified":True,"remaining_operations":0,"canonical_markdown_mutated":False,"foreign_entities_preserved":post["foreign_entities_preserved"],"foreign_relations_preserved":post["foreign_relations_preserved"]}
+
 def export_html(snapshot,output,api):
  if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
  candidate_entities=sum(x.get("kind")=="entity" for x in snapshot.get("candidates",[])); candidate_assertions=sum(x.get("kind")=="assertion" for x in snapshot.get("candidates",[]))
