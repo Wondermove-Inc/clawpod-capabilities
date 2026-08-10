@@ -1,7 +1,7 @@
 """Deterministic, offline semantic authoring pipeline for Memory Graph v0.10."""
 from __future__ import annotations
 import hashlib, html, json, os, re, tempfile, unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -181,11 +181,15 @@ def approve(validated,manifest,api,expected_reviewer_id):
   if d: y.update(lifecycle=d["lifecycle"],review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":"withdrawn" if d["lifecycle"]=="revoked" else "granted" if d["lifecycle"]=="approved" else "denied"})
   if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
   out.append(y)
- result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest)}
+ expires=(dt.astimezone(timezone.utc)+timedelta(hours=24)).isoformat().replace("+00:00","Z")
+ result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest),"approval_expires_at":expires}
  result["reviewed_hash"]=sha(result); return result
 
 def build_snapshot(reviewed,api):
- if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
+ if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","approval_expires_at","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
+ try: expires=datetime.fromisoformat(reviewed["approval_expires_at"].replace("Z","+00:00")); assert expires.tzinfo
+ except Exception: fail(api,"invalid_reviewed_bundle","approval expiry must be timezone-aware ISO-8601")
+ if expires <= datetime.now(timezone.utc): fail(api,"approval_expired","source-backed approval expired; revalidate sources and obtain a fresh review")
  approved=[x for x in reviewed["proposals"] if x["lifecycle"]=="approved"]
  relation_keys={}
  supersedes={}
