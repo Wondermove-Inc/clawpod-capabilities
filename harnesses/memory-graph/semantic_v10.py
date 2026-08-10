@@ -15,7 +15,15 @@ ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Perso
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
 REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
-CAUSAL=re.compile(r"(?i)\b(?:caused|because|led to|resulted in|due to|원인|때문에|초래)\b")
+# Closed causal phrases.  Bare Korean nouns such as "원인" and English words
+# such as "result" are not evidence that the claim asserts a directed cause.
+CAUSAL=re.compile(r"(?i)(?:\b(?:directly\s+)?caused\b|\bbecause\s+of\b|\bled\s+to\b|\bresulted\s+in\b|\bdue\s+to\b|(?:직접\s*)?원인이\s*(?:되어|돼|되었|됐다)|때문에|초래(?:했|하였|하여|함))")
+
+def causal_review_bound(proposal, decision):
+ """Require the reviewer to bind causal approval to the exact claim digest."""
+ if proposal.get("payload",{}).get("predicate")!="caused": return True
+ expected="causal-evidence:"+str(proposal.get("source",{}).get("claim_content_hash",""))
+ return decision is not None and decision.get("lifecycle")=="approved" and expected in decision.get("reason","").split()
 
 def canon(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()
 def sha(v): return hashlib.sha256(v if isinstance(v,bytes) else canon(v)).hexdigest()
@@ -157,7 +165,7 @@ def approve(validated,manifest,api,expected_reviewer_id):
  for x in validated["entity_proposals"]+validated["assertion_proposals"]:
   d=decisions.get(x["proposal_id"]); y=dict(x)
   if d: y.update(lifecycle=d["lifecycle"],review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":"withdrawn" if d["lifecycle"]=="revoked" else "granted" if d["lifecycle"]=="approved" else "denied"})
-  if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and (not d or "direct" not in d["reason"].lower()): y.update(lifecycle="candidate",review=None)
+  if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
   out.append(y)
  result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest)}
  result["reviewed_hash"]=sha(result); return result

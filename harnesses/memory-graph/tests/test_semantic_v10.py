@@ -115,6 +115,16 @@ class SemanticV10(unittest.TestCase):
   for raw in self.bundle['proposals']:
    material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':self.bundle['namespace'],'proposal':material,'extractor':self.bundle['extractor']},sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
   self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
+ def test_causal_language_and_review_binding_are_exact_in_english_and_korean(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  for text in ('the root cause analysis was reviewed','원인 분석을 검토했다','A happened before B'):
+   self.assertIsNone(module.CAUSAL.search(text))
+  for text in ('A directly caused B','A 때문에 B가 발생했다','A가 B를 초래했다'):
+   self.assertIsNotNone(module.CAUSAL.search(text))
+  proposal={'payload':{'predicate':'caused'},'source':{'claim_content_hash':'a'*64}}
+  self.assertFalse(module.causal_review_bound(proposal,{'lifecycle':'approved','reason':'direct evidence'}))
+  self.assertTrue(module.causal_review_bound(proposal,{'lifecycle':'approved','reason':'verified causal-evidence:'+('a'*64)}))
  def test_assertion_endpoint_ids_and_domains_are_closed(self):
   for subject,object_,predicate in [({'entity_id':'person:alice','type':'Project'},{'entity_id':'project:alpha','type':'Project'},'participates_in'),({'entity_id':'unsafe id','type':'Person'},{'entity_id':'decision:x','type':'Decision'},'decided')]:
    bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload'].update(subject=subject,object=object_,predicate=predicate); self.write('bundle.json',self.reseal(bad))
