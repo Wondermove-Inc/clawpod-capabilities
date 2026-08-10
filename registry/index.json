@@ -455,7 +455,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2cae4afa6c216647a94e1bce0587644cc0847fdd1f5b4a263193380d87621699"
+          "sha256": "604b7dd60a4dc55a20e537a92be74c2a685fb5f134a9be6296ac95bdd0d96dd8"
         }
       ],
       "linkedHarness": {
@@ -1198,7 +1198,7 @@
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "f1e6b4b2e89bae4d8afb39ffddcb78ce2b608953c27150cd9a0290ad7dafe403"
+          "sha256": "362a04af88396a1d6b4c183210ef04ec2f814b4d1f88a8582eaf96e897f7becc"
         }
       ]
     },
