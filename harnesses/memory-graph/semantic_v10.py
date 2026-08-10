@@ -95,8 +95,26 @@ def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
   if SECRET.search(value): value="[REDACTED]"
   rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"],"claim_text":value})
  next_cursor=sha({"snapshot":plan["snapshot_hash"],"claim_id":selected[-1]["claim_id"]}) if selected and start+len(selected)<len(ordered) else None
- out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"remaining":max(0,len(ordered)-start-len(selected))},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
+ out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":start,"count":len(selected),"total":len(ordered),"remaining":max(0,len(ordered)-start-len(selected))},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
  out["bundle_hash"]=sha(out); return out
+
+def assemble_extractor_pages(pages,api):
+ """Seal a complete, single-snapshot extraction manifest from cursor pages."""
+ if not isinstance(pages,list) or not pages: fail(api,"incomplete_extractor_batch","at least one extractor page is required")
+ claims=[]; hashes=[]; expected_cursor=None; identity=None
+ for index,page in enumerate(pages):
+  if not isinstance(page,dict) or page.get("bundle_hash")!=sha({k:v for k,v in page.items() if k!="bundle_hash"}): fail(api,"invalid_extractor_page","extractor page is malformed or tampered",page_index=index)
+  current=(page.get("namespace"),page.get("source_snapshot_hash"),page.get("source_digest"))
+  if identity is None: identity=current
+  if current!=identity: fail(api,"mixed_extractor_snapshot","all pages must bind one namespace and source snapshot",page_index=index)
+  meta=page.get("page",{})
+  if meta.get("cursor")!=expected_cursor or meta.get("offset")!=len(claims) or meta.get("count")!=len(page.get("claims",[])): fail(api,"extractor_page_discontinuity","cursor chain or page offset is discontinuous",page_index=index)
+  claims.extend(page["claims"]); hashes.append(page["bundle_hash"]); expected_cursor=meta.get("next_cursor")
+ if expected_cursor is not None or pages[-1]["page"].get("remaining")!=0 or pages[-1]["page"].get("total")!=len(claims): fail(api,"incomplete_extractor_batch","final page must prove complete cursor exhaustion")
+ ids=[x.get("claim_id") for x in claims]
+ if len(ids)!=len(set(ids)): fail(api,"duplicate_extractor_claim","claim IDs must occur exactly once across the batch")
+ out={"schema_version":"memory-graph-extractor-batch/v1","namespace":identity[0],"source_snapshot_hash":identity[1],"source_digest":identity[2],"page_hashes":hashes,"claim_ids":ids,"claim_count":len(ids),"complete":True}
+ out["batch_hash"]=sha(out); return out
 
 def validate_proposals(root,bundle,agent,workspace,api):
  required={"schema_version","namespace","source_snapshot_hash","source_digest","extractor","proposals"}
