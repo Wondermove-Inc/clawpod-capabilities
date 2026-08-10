@@ -4,7 +4,7 @@
   "name": "memory-graph",
   "title": "Memory Graph",
   "description": "Build, reconcile, and verify a private Memory MCP graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts.",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
   "execution": {
@@ -879,12 +879,12 @@
       ]
     },
     "semantic-extractor-input": {
-      "description": "Select up to 20 canonical claims and emit bounded offline extractor input",
+      "description": "Select up to 20 canonical claims; optionally atomically persist the full bounded page beneath an approved private output root and return only path-safe metadata",
       "baseArgv": [
         "semantic-extractor-input"
       ],
       "safetyClasses": [
-        "readOnly"
+        "writeSafe"
       ],
       "inputSchema": {
         "type": "object",
@@ -906,6 +906,12 @@
             "type": "integer"
           },
           "cursor": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "outputRoot": {
             "type": "string"
           }
         }
@@ -953,6 +959,22 @@
           "type": "option",
           "flag": "--cursor",
           "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "outputRoot",
+          "type": "option",
+          "flag": "--output-root",
+          "valueType": "path",
+          "pathRole": "output",
           "optional": true
         }
       ]

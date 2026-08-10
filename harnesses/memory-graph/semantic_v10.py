@@ -10,6 +10,7 @@ SCHEMA_INPUT="memory-graph-extractor-input/v1"
 SCHEMA_PROPOSAL="memory-graph-extractor-proposals/v1"
 SCHEMA_APPROVAL="memory-graph-approval-manifest/v1"
 SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
+MAX_EXTRACTOR_OUTPUT_BYTES=1024*1024
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
 ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
 # Predicate cardinality is an ontology contract, not an incidental set in the
@@ -105,6 +106,62 @@ def atomic_write(output, data):
 def atomic_write_json(output, value):
  """Persist private workflow state with the same durable 0600 contract."""
  atomic_write(Path(output),canon(value)+b"\n")
+
+def private_extractor_output(output_root, relative_path, value):
+ """Write a bounded extractor page beneath an already-approved private root.
+
+ The relative path is traversed from directory descriptors.  A second traversal
+ immediately before commit detects replacement of the root or any parent; the
+ original descriptors ensure that a residual race can never redirect the write.
+ """
+ if not isinstance(relative_path,str) or relative_path!=unicodedata.normalize("NFC",relative_path) or "\\" in relative_path:
+  raise ValueError("private output path must be normalized relative POSIX text")
+ relative=Path(relative_path)
+ if relative.is_absolute() or relative.as_posix()!=relative_path or re.match(r"^[A-Za-z]:",relative_path) or not relative.parts or any(part in {"",".",".."} for part in relative.parts) or relative.suffix!=".json":
+  raise ValueError("private output path must be a relative .json path without traversal")
+ data=canon(value)+b"\n"
+ if len(data)>MAX_EXTRACTOR_OUTPUT_BYTES: raise OverflowError("extractor page exceeds the private output byte limit")
+ root=Path(os.path.abspath(os.fspath(output_root)))
+ flags=os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_NOFOLLOW",0)
+ opened=[]; tmp=None
+ try:
+  directory=os.open(root,flags); opened.append(directory)
+  identities=[(os.fstat(directory).st_dev,os.fstat(directory).st_ino)]
+  for component in relative.parts[:-1]:
+   directory=os.open(component,flags,dir_fd=directory); opened.append(directory)
+   info=os.fstat(directory); identities.append((info.st_dev,info.st_ino))
+  name=relative.parts[-1]
+  try: target=os.stat(name,dir_fd=directory,follow_symlinks=False)
+  except FileNotFoundError: target=None
+  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output target must be a regular non-symlink file")
+  for _ in range(100):
+   tmp="."+name+"."+next(tempfile._get_candidate_names())+".tmp"
+   try: fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=directory); break
+   except FileExistsError: continue
+  else: raise FileExistsError("unable to allocate private temporary output")
+  with os.fdopen(fd,"wb") as stream:
+   os.fchmod(stream.fileno(),0o600); stream.write(data); stream.flush(); os.fsync(stream.fileno())
+  # Reopen the allowlisted path and compare every directory inode before commit.
+  checked=[]
+  try:
+   check=os.open(root,flags); checked.append(check)
+   if (os.fstat(check).st_dev,os.fstat(check).st_ino)!=identities[0]: raise OSError("private output root changed during write")
+   for index,component in enumerate(relative.parts[:-1],1):
+    check=os.open(component,flags,dir_fd=check); checked.append(check)
+    info=os.fstat(check)
+    if (info.st_dev,info.st_ino)!=identities[index]: raise OSError("private output parent changed during write")
+  finally:
+   for descriptor in reversed(checked): os.close(descriptor)
+  try: target=os.stat(name,dir_fd=directory,follow_symlinks=False)
+  except FileNotFoundError: target=None
+  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output target changed during write")
+  os.replace(tmp,name,src_dir_fd=directory,dst_dir_fd=directory); tmp=None; os.fsync(directory)
+  return {"schema_version":value["schema_version"],"path":relative.as_posix(),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+ finally:
+  if tmp is not None and opened:
+   try: os.unlink(tmp,dir_fd=opened[-1])
+   except FileNotFoundError: pass
+  for descriptor in reversed(opened): os.close(descriptor)
 def html_json(value):
  """Serialize inert script JSON without raw HTML/Unicode parser controls."""
  return json.dumps(value,ensure_ascii=True,sort_keys=True,separators=(",",":")).replace("<","\\u003c").replace(">","\\u003e").replace("&","\\u0026")
