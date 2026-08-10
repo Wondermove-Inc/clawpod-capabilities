@@ -56,7 +56,24 @@
     "openaiTimeoutSeconds": 45,
     "maximumResponseBytes": 26214400,
     "automaticRetries": 0,
-    "liveReadinessRequiresOnboarding": true
+    "liveReadinessRequiresOnboarding": true,
+    "detachedOpenaiJob": {
+      "commands": [
+        "job.start",
+        "job.status",
+        "job.collect"
+      ],
+      "workerTimeoutSeconds": {
+        "minimum": 60,
+        "maximum": 300,
+        "default": 300
+      },
+      "providerDeadlineReserveSeconds": 10,
+      "legacySynchronousTimeoutSeconds": 45,
+      "automaticRetries": 0,
+      "statusAndCollectNetwork": false,
+      "statusAndCollectCredentialFree": true
+    }
   },
   "openaiOptions": {
     "allowlist": [

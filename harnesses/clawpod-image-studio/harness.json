@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-image-studio",
   "title": "ClawPod Image Studio",
-  "description": "Guarded provider workflows plus an offline, deterministic professional AI photo studio production layer.",
-  "version": "0.3.0",
+  "description": "Guarded provider workflows with detached bounded OpenAI jobs plus an offline deterministic professional AI photo studio.",
+  "version": "0.4.0",
   "entrypoint": "./clawpod_image_studio.py",
   "packageRoot": ".",
   "execution": {
@@ -21,6 +21,7 @@
     "protected-secret-bindings",
     "artifact-provenance",
     "openai-images-live-transport",
+    "detached-bounded-openai-generation-jobs",
     "svg-qa",
     "professional-project-and-shot-planning",
     "content-addressed-studio-lineage",
@@ -1190,7 +1191,7 @@
       ]
     },
     "job.status": {
-      "description": "job status for guarded offline-first image workflows.",
+      "description": "Read and conservatively recover a detached local job without credentials or network access.",
       "baseArgv": [
         "job.status"
       ],
@@ -1272,7 +1273,7 @@
       ]
     },
     "job.collect": {
-      "description": "job collect for guarded offline-first image workflows.",
+      "description": "Idempotently validate and collect a terminal detached local job without credentials or network access.",
       "baseArgv": [
         "job.collect"
       ],
@@ -3002,6 +3003,88 @@
       ],
       "safetyClasses": [
         "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "ok",
+          "command",
+          "requestId",
+          "timestamp",
+          "effects",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "effects": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "inout",
+          "optional": true
+        }
+      ]
+    },
+    "job.start": {
+      "description": "Start one detached, bounded OpenAI generation job after exact paid approval checks.",
+      "baseArgv": [
+        "job.start"
+      ],
+      "safetyClasses": [
+        "externalSideEffect"
       ],
       "inputSchema": {
         "type": "object",
