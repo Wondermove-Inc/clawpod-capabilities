@@ -455,7 +455,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "beed194f6101db9ef9ee35558077941b48b06b47796d3446d82357f54976abee"
+          "sha256": "aa4a55dc55094dcf52b59663973e67218cf7116b452b86661568c880a5f8ad24"
         }
       ],
       "linkedHarness": {
@@ -1186,11 +1186,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "bd2b6d435ca08682ca4a20ce9d049d0e2cafd70854eee56a04cc695857754ea0"
+          "sha256": "670fb3e2b0d2437a4eab498596b250d52eb84097e0550f6d490487e443207088"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "f7b05202c38edc816951eca9b8f2ec167865b635be9d5b6edd4f8404d822bce6"
+          "sha256": "2fbdf27a5a6fe455fb75cf2247c8dc13ddbd0c3ac213690afb627f788915a749"
         },
         {
           "path": "ontology.py",
@@ -1198,7 +1198,7 @@
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "6c401a73e54132ff3472ddd110bc5f0fbfaa8d7b57f8a9d9a8bea2ee117d9b07"
+          "sha256": "2d35a92e0534c370ccb5195614388597a35373ddfff296268e0891beac74f6aa"
         }
       ]
     },
