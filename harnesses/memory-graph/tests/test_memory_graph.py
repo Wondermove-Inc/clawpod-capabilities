@@ -778,6 +778,54 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         (self.tmp/"big.json").write_bytes(b"x"*(1024*1024+1)); oversized=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","big.json","--agent-id","x",expected=2)[1]
         self.assertEqual(oversized["error"]["code"],"oversized_bundle")
 
+    def test_inference_rejects_bundle_and_cache_symlink_escape(self):
+        bundle,_=self.inference_bundle(); outside=self.tmp.parent/(self.tmp.name+"-bundle.json")
+        outside.write_text(json.dumps(bundle),encoding="utf-8")
+        try:
+            (self.tmp/"linked.json").symlink_to(outside)
+            result=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input","linked.json",
+                "--agent-id","test-agent","--workspace-id","test-workspace",expected=2)[1]
+            self.assertEqual(result["error"]["code"],"invalid_bundle")
+            self.save("bundle.json",bundle)
+            real_state=self.tmp/"real-state"; real_state.mkdir(); (self.tmp/"linked-state").symlink_to(real_state,target_is_directory=True)
+            result=self.run_cli("project-inference-overlay","--root",str(self.tmp),"--input","bundle.json",
+                "--agent-id","test-agent","--workspace-id","test-workspace","--state-root",str(self.tmp/"linked-state"),expected=2)[1]
+            self.assertEqual(result["error"]["code"],"unsafe_state_path")
+            self.assertEqual(list(real_state.rglob("*")),[])
+        finally:
+            outside.unlink(missing_ok=True)
+
+    def test_inference_cache_reconciles_stale_entries_and_manifest_write_class(self):
+        bundle,_=self.inference_bundle(confidence=0.1); self.save("bundle.json",bundle); state=self.tmp/"state"
+        first=self.run_cli("project-inference-overlay","--root",str(self.tmp),"--input","bundle.json",
+            "--agent-id","test-agent","--workspace-id","test-workspace","--state-root",str(state))[1]["data"]
+        bundle["candidates"][0]["confidence"]=0.2; self.save("bundle.json",bundle)
+        second=self.run_cli("project-inference-overlay","--root",str(self.tmp),"--input","bundle.json",
+            "--agent-id","test-agent","--workspace-id","test-workspace","--state-root",str(state))[1]["data"]
+        self.assertNotEqual(first["cache"]["cache_key"],second["cache"]["cache_key"])
+        self.assertEqual(second["cache"]["removed_stale_entries"],[first["cache"]["cache_key"]+".json"])
+        self.assertEqual(len(list(state.rglob("*.json"))),1)
+        manifest=json.loads((PACKAGE/"harness.json").read_text())
+        self.assertEqual(manifest["commands"]["project-inference-overlay"]["safetyClasses"],["writeSafe"])
+
+    def test_inference_unknown_keys_types_relations_confidence_and_endpoint_fail_closed(self):
+        cases=[]
+        bundle,_=self.inference_bundle(); bundle["extra"]=True; cases.append((bundle,"bundle","invalid_bundle"))
+        for change,reason in (
+            (lambda c: c.update({"relation_type":"invented"}),"unknown_relation"),
+            (lambda c: c.update({"confidence":float("nan")}),"invalid_confidence"),
+            (lambda c: c.update({"confidence":float("inf")}),"invalid_confidence"),
+            (lambda c: c.update({"confidence":1.01}),"invalid_confidence"),
+            (lambda c: c["from"].update({"type":"Project"}),"invalid_endpoint_type"),
+            (lambda c: c["to"].update({"entity_id":"project:missing"}),"unresolved_explicit_endpoint")):
+            candidate_bundle,_=self.inference_bundle(); change(candidate_bundle["candidates"][0]); cases.append((candidate_bundle,"candidate",reason))
+        for index,(value,level,reason) in enumerate(cases):
+            self.save(f"case-{index}.json",value)
+            result=self.run_cli("validate-inference-candidates","--root",str(self.tmp),"--input",f"case-{index}.json",
+                "--agent-id","test-agent","--workspace-id","test-workspace",expected=2 if level=="bundle" else 0)[1]
+            actual=result["error"]["code"] if level=="bundle" else result["data"]["quarantine"][0]["reason_code"]
+            self.assertEqual(actual,reason)
+
     def test_inference_shadowing_causality_and_quarantine_order(self):
         bundle,_=self.inference_bundle(); bundle["candidates"][0]["relation_type"]="caused"; bundle["candidates"][0]["basis"]="direct_statement"
         bundle["candidates"][0]["candidate_id"]="ic_"+("0"*64); self.save("bundle.json",bundle)

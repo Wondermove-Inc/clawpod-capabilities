@@ -278,9 +278,9 @@
       ]
     },
     "project-inference-overlay": {
-      "description": "Project a validated read-only inferred-relation overlay and optionally reconcile its private mode-0600 cache.",
+      "description": "Project a validated inferred-relation overlay and optionally reconcile its private mode-0600 cache.",
       "baseArgv": ["project-inference-overlay"],
-      "safetyClasses": ["readOnly"],
+      "safetyClasses": ["writeSafe"],
       "inputSchema": {
         "type": "object", "additionalProperties": false,
         "required": ["input", "agentId"],

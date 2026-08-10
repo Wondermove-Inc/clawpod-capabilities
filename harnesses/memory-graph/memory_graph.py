@@ -998,15 +998,16 @@ def validate_inference_candidates(root: Path, bundle: Any, agent_id: str,
                     reason = "invalid_endpoint_type"
                 elif any(endpoint["entity_id"].startswith("memory-graph:v1:") for endpoint in (frm, to)):
                     reason = "cross_namespace_endpoint"
-                elif (frm["type"], frm["entity_id"]) not in endpoint_names or (to["type"], to["entity_id"]) not in endpoint_names:
-                    reason = "unresolved_explicit_endpoint"
-                elif frm == to:
-                    reason = "self_relation"
                 else:
                     domains, ranges = SEMANTIC_RELATIONS[candidate["relation_type"]]
                     if frm["type"] not in domains or to["type"] not in ranges:
                         reason = "invalid_endpoint_type"
-                    elif candidate["candidate_id"] != _inference_candidate_id(ownership["namespace"], candidate, extractor):
+                if reason is None and ((frm["type"], frm["entity_id"]) not in endpoint_names or (to["type"], to["entity_id"]) not in endpoint_names):
+                    reason = "unresolved_explicit_endpoint"
+                elif reason is None and frm == to:
+                    reason = "self_relation"
+                elif reason is None:
+                    if candidate["candidate_id"] != _inference_candidate_id(ownership["namespace"], candidate, extractor):
                         reason = "id_mismatch"
                     else:
                         normalized = {**candidate, "confidence": candidate["confidence"] + 0.0,
@@ -1090,8 +1091,14 @@ def cache_inference_overlay(state_root: Path, validated: dict[str, Any], overlay
     owner = namespace.removeprefix("memory-graph:v1:").removesuffix(":")
     if not re.fullmatch(r"[0-9a-f]{24}", owner):
         raise InputError("unsafe_state_path", "Inference cache namespace is invalid")
-    state_root = state_root.resolve()
-    if state_root.exists() and (state_root.is_symlink() or not state_root.is_dir()):
+    lexical_state_root = state_root.absolute()
+    cursor = Path(lexical_state_root.anchor)
+    for part in lexical_state_root.parts[1:]:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("unsafe_state_path", "State root and its parents must not be symlinks")
+    state_root = lexical_state_root.resolve()
+    if state_root.exists() and not state_root.is_dir():
         raise InputError("unsafe_state_path", "State root must be a regular directory")
     extractor = validated["extractor"]
     cache_key = hashlib.sha256("".join((namespace, validated["source_snapshot_hash"], extractor["name"],
@@ -1110,11 +1117,22 @@ def cache_inference_overlay(state_root: Path, validated: dict[str, Any], overlay
             hit = json.loads(target.read_text(encoding="utf-8")) == value
         except json.JSONDecodeError:
             hit = False
+    cache_dir = target.parent
+    removed = []
+    if cache_dir.exists():
+        for entry in sorted(cache_dir.iterdir()):
+            if entry == target:
+                continue
+            if entry.is_symlink() or not entry.is_file() or not re.fullmatch(r"[0-9a-f]{64}\.json", entry.name):
+                raise InputError("unsafe_state_path", "Inference cache contains an unsafe entry")
+            entry.unlink()
+            removed.append(entry.name)
     if not hit:
         atomic_private_json(target, value)
     elif (target.stat().st_mode & 0o777) != 0o600:
         os.chmod(target, 0o600)
-    return {"cache_key": cache_key, "cache_hit": hit, "cache_path": f"{owner}/inference/{cache_key}.json", "mode": "0600"}
+    return {"cache_key": cache_key, "cache_hit": hit, "cache_path": f"{owner}/inference/{cache_key}.json",
+            "removed_stale_entries": removed, "mode": "0600"}
 
 
 def export_visualization(snapshot: dict[str, Any], overlay: dict[str, Any] | None,
@@ -1249,6 +1267,13 @@ def load_json(path: str, root: Path) -> Any:
 
 def load_inference_bundle(path: str, root: Path) -> tuple[Any, str]:
     """Bounded, regular-file-only JSON load for untrusted extractor output."""
+    raw_path = Path(path)
+    lexical = raw_path if raw_path.is_absolute() else root / raw_path
+    cursor = Path(lexical.anchor) if lexical.is_absolute() else Path()
+    for part in lexical.parts[1:] if lexical.is_absolute() else lexical.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("invalid_bundle", "Inference input must be a regular non-symlink file")
     target = safe_resolve(root, path)
     if target.is_symlink() or not target.is_file():
         raise InputError("invalid_bundle", "Inference input must be a regular non-symlink file")
