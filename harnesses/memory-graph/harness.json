@@ -4,7 +4,7 @@
   "name": "memory-graph",
   "title": "Memory Graph",
   "description": "Build, reconcile, and verify a private Memory MCP graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
   "execution": {
@@ -13,7 +13,7 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Immediately after installation for per-agent core-context and memory graph onboarding",
+    "Immediately after installation for per-agent direct-memory graph onboarding",
     "An agent needs connected historical context across decisions, people, projects, causes, or changes that simple Memory Search cannot reconstruct"
   ],
   "capabilities": [
@@ -25,6 +25,8 @@
     "grounded-semantic-projection",
     "bounded-semantic-query",
     "provenance-bearing-assertions",
+    "claim-grounded-entity-proposals",
+    "human-reviewed-private-endpoint-bootstrap",
     "closed-shape-validation",
     "competency-question-evaluation",
     "semantic-first-visualization"

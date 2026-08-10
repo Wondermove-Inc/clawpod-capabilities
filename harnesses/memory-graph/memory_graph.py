@@ -29,13 +29,13 @@ ontology = importlib.util.module_from_spec(_ONTOLOGY_SPEC)
 _ONTOLOGY_SPEC.loader.exec_module(ontology)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.8.0"
+CONTRACT_VERSION = "0.9.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
-ASSERTION_SCHEMA_VERSION = "memory-graph-assertions/v1"
-ASSERTION_SHAPE_VERSION = "memory-graph-ontology-shapes/v1"
-ASSERTION_CONTRACT_VERSION = "0.8"
+ASSERTION_SCHEMA_VERSION = "memory-graph-assertions/v2"
+ASSERTION_SHAPE_VERSION = "memory-graph-ontology-shapes/v2"
+ASSERTION_CONTRACT_VERSION = "0.9"
 MAX_INFERENCE_BUNDLE_BYTES = 1024 * 1024
 MAX_INFERENCE_CANDIDATES = 1000
 MAX_SOURCE_FILES = 256
@@ -48,7 +48,6 @@ BLOCK_RE = re.compile(r"^```memory-claim\s*$\n(.*?)^```\s*$", re.MULTILINE | re.
 WRITER_ID_RE = re.compile(r"^<!--\s*openclaw-memory-claim:([^\s>]+)\s*-->\s*$", re.MULTILINE)
 WRITER_JSON_RE = re.compile(r"^<!--\s*openclaw-memory-claim-json:(.*?)\s*-->\s*$", re.MULTILINE)
 HEADING_RE = re.compile(r"^#{2,6}\s+.+$", re.MULTILINE)
-CORE_HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILINE)
 FIELD_RE = re.compile(r"^- (Status|Claim|Confidence|Evidence|Updated):(?:\s+(.*))?$", re.MULTILINE)
 ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 AGENT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -69,18 +68,8 @@ SEMANTIC_RELATIONS = {
     "supersedes": ({"Decision"}, {"Decision"}),
 }
 
-# OpenClaw's portable workspace contract.  This is intentionally an exact
-# allowlist: adding a Markdown file beside these files must never ingest it.
-CORE_SOURCES = {
-    "SOUL.md": ("persona", "follows_persona", "workspace_persona"),
-    "IDENTITY.md": ("identity", "has_identity", "workspace_identity"),
-    "USER.md": ("user_profile", "has_user_profile", "workspace_user_context"),
-    "AGENTS.md": ("agent_policy", "follows_policy", "workspace_agent_policy"),
-    "ORGANIZATIONS.md": ("organization", "belongs_to_organization_context", "workspace_organization_context"),
-    "WORKFLOW.md": ("workflow", "follows_workflow", "workspace_workflow"),
-}
+# Canonical graph inputs are only direct memory/*.md topic files.
 MEMORY_AUTHORITY = "canonical_memory"
-
 
 class InputError(Exception):
     def __init__(self, code: str, message: str, details: dict[str, Any] | None = None):
@@ -146,24 +135,14 @@ def safe_resolve(root: Path, raw: str) -> Path:
 
 
 def recognized_files(root: Path) -> list[tuple[Path, str, str, str | None]]:
+    """Return only direct, regular, non-symlink ``memory/*.md`` files.
+
+    Root/context Markdown and nested memory metadata/evidence are deliberately
+    outside the canonical graph source boundary. A direct Markdown symlink or
+    non-regular entry fails closed instead of being followed.
+    """
     root = root.resolve()
     paths: list[tuple[Path, str, str, str | None]] = []
-    for name, (source_class, relation, authority) in CORE_SOURCES.items():
-        p = root / name
-        if p.is_symlink():
-            raise InputError("unsafe_core_path", "Core workspace sources must not be symlinks", {"path": name})
-        if p.exists() and not p.is_file():
-            raise InputError("unsafe_core_path", "Core workspace sources must be regular files", {"path": name})
-        if p.is_file():
-            paths.append((p, source_class, authority, relation))
-    for name in ("MEMORY.md", "memory.md"):
-        p = root / name
-        if p.is_symlink():
-            raise InputError("unsafe_memory_path", "Memory sources must not be symlinks", {"path": name})
-        if p.exists() and not p.is_file():
-            raise InputError("unsafe_memory_path", "Memory sources must be regular files", {"path": name})
-        if p.is_file():
-            paths.append((p, "memory_index", MEMORY_AUTHORITY, None))
     folder = root / "memory"
     if folder.is_symlink():
         raise InputError("unsafe_memory_path", "Memory directory must not be a symlink", {"path": "memory"})
@@ -171,40 +150,16 @@ def recognized_files(root: Path) -> list[tuple[Path, str, str, str | None]]:
         raise InputError("unsafe_memory_path", "Memory directory must be a regular directory", {"path": "memory"})
     if folder.is_dir():
         for p in folder.iterdir():
-            if p.name.endswith(".md"):
-                rel = p.relative_to(root).as_posix()
-                if p.is_symlink() or not p.is_file():
-                    raise InputError("unsafe_memory_path", "Memory topic sources must be regular non-symlink files", {"path": rel})
-                resolved = p.resolve()
-                try:
-                    resolved.relative_to(root)
-                except ValueError as exc:
-                    raise InputError("unsafe_memory_path", "Memory source resolves outside root", {"path": rel}) from exc
-                paths.append((p, "memory_claim", MEMORY_AUTHORITY, None))
+            if not p.name.endswith(".md"):
+                continue
+            rel = p.relative_to(root).as_posix()
+            if p.is_symlink() or not p.is_file():
+                raise InputError("unsafe_memory_path", "Memory topic sources must be regular non-symlink files", {"path": rel})
+            paths.append((p, "memory_claim", MEMORY_AUTHORITY, None))
     result = sorted(paths, key=lambda item: item[0].relative_to(root).as_posix())
     if len(result) > MAX_SOURCE_FILES:
         raise InputError("source_limit", "Too many canonical memory source files", {"limit": MAX_SOURCE_FILES})
     return result
-
-
-def parse_core_sections(text: str, path: str, source_hash: str, source_class: str,
-                        authority: str, secret_policy: str) -> list[dict[str, Any]]:
-    matches = list(CORE_HEADING_RE.finditer(text))
-    sections: list[dict[str, Any]] = []
-    for index, match in enumerate(matches):
-        heading = match.group(2).strip()
-        if secret_like(heading):
-            if secret_policy == "reject":
-                raise InputError("secret_like_text", "Secret-like core workspace text rejected", {"path": path, "line": text.count("\n", 0, match.start()) + 1})
-            heading = "[REDACTED]"
-        start = text.count("\n", 0, match.start()) + 1
-        end_offset = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        end = max(start, text.count("\n", 0, end_offset) + (0 if end_offset and text[end_offset - 1:end_offset] == "\n" else 1))
-        sections.append({"heading": heading, "heading_level": len(match.group(1)), "line_start": start,
-                         "line_end": end, "path": path, "source_content_hash": source_hash,
-                         "source_class": source_class, "authority_class": authority,
-                         "precedence_class": authority})
-    return sections
 
 
 def namespace_for(agent_id: str, root: Path, workspace_id: str | None = None) -> dict[str, str]:
@@ -579,18 +534,9 @@ def inspect_workspace(root: Path, secret_policy: str = "reject") -> dict[str, An
             raise InputError("source_limit", "Canonical memory sources exceed the byte limit", {"limit": MAX_SOURCE_BYTES})
         text = file.read_text(encoding="utf-8")
         source_hash = hashlib.sha256(text.encode()).hexdigest()
-        if source_class not in {"memory_index", "memory_claim"} and secret_like(text) and secret_policy == "reject":
-            raise InputError("secret_like_text", "Secret-like core workspace text rejected", {"path": rel})
         sources.append({"path": rel, "hash": source_hash, "source_class": source_class,
                         "authority_class": authority, "precedence_class": authority})
-        if source_class not in {"memory_index", "memory_claim"}:
-            line_end = max(1, len(text.splitlines()))
-            documents.append({"path": rel, "line_start": 1, "line_end": line_end,
-                              "source_content_hash": source_hash, "source_class": source_class,
-                              "authority_class": authority, "precedence_class": authority,
-                              "structural_relation": relation})
-            sections.extend(parse_core_sections(text, rel, source_hash, source_class, authority, secret_policy))
-        if source_class in {"memory_index", "memory_claim"}:
+        if source_class == "memory_claim":
             writer_claims = parse_writer_claims(text, rel, secret_policy)
             claims.extend(writer_claims)
             for match in BLOCK_RE.finditer(text):
@@ -609,7 +555,7 @@ def inspect_workspace(root: Path, secret_policy: str = "reject") -> dict[str, An
     sources.sort(key=lambda x: x["path"])
     documents.sort(key=lambda x: x["path"])
     sections.sort(key=lambda x: (x["path"], x["line_start"], x["heading_level"], x["heading"]))
-    return {"schema_version": SCHEMA_VERSION, "canonical_source": "openclaw_workspace_markdown",
+    return {"schema_version": SCHEMA_VERSION, "canonical_source": "direct_memory_markdown",
             "claims": claims, "sources": sources, "core_documents": documents,
             "core_sections": sections, "source_digest": digest(sources)}
 
@@ -647,17 +593,6 @@ def build_plan(inspected: dict[str, Any], include_inferred: bool = False, owners
     entities["agent:self"] = {"name": "agent:self", "entityType": "Agent", "observations": [json.dumps({"role": "workspace_agent"}, sort_keys=True, separators=(",", ":"))]}
     entities["workspace:self"] = {"name": "workspace:self", "entityType": "Workspace", "observations": [json.dumps({"role": "owner_workspace"}, sort_keys=True, separators=(",", ":"))]}
     structural.append({"from": "agent:self", "to": "workspace:self", "relationType": "operates_in_workspace"})
-    for document in inspected.get("core_documents", []):
-        doc_name = "document:" + document["path"]
-        observation = {key: value for key, value in document.items() if key != "structural_relation"}
-        entities[doc_name] = {"name": doc_name, "entityType": "CoreDocument", "observations": [json.dumps(observation, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]}
-        structural.append({"from": "agent:self", "to": doc_name, "relationType": document["structural_relation"]})
-        structural.append({"from": "workspace:self", "to": doc_name, "relationType": "contains_core_document"})
-    for section in inspected.get("core_sections", []):
-        section_name = f"section:{section['path']}:{section['line_start']}"
-        doc_name = "document:" + section["path"]
-        entities[section_name] = {"name": section_name, "entityType": "CoreSection", "observations": [json.dumps(section, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]}
-        structural.append({"from": doc_name, "to": section_name, "relationType": "has_section"})
 
     # Resolve the whole claim namespace before insertion so no entity can be
     # silently overwritten. Explicit names are accepted only when globally
@@ -759,7 +694,7 @@ def validate_snapshot(snapshot: Any) -> dict[str, Any]:
             if relation["from"] not in endpoints or relation["to"] not in endpoints:
                 raise InputError("invalid_snapshot", f"{field} contains a dangling relation", relation)
     entity_types = {e["name"]: e["entityType"] for e in snapshot["entities"]}
-    structural_types = {"has_claim_key", "has_memory_claim", "operates_in_workspace", "contains_core_document", "has_section"} | {v[1] for v in CORE_SOURCES.values()}
+    structural_types = {"has_claim_key", "has_memory_claim", "operates_in_workspace", "contains_core_document", "has_section", "follows_persona", "has_identity", "has_user_profile", "follows_policy", "belongs_to_organization_context", "follows_workflow"}  # legacy snapshot cleanup compatibility
     for relation in snapshot["structural_relations"]:
         if relation["relationType"] not in structural_types:
             raise InputError("invalid_snapshot", "structural_relations contains an unsupported structural link", relation)

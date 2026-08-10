@@ -42,7 +42,8 @@ class MemoryGraphTests(unittest.TestCase):
         return proc.stdout, json.loads(proc.stdout)
 
     def write_memory(self, text):
-        (self.tmp / "MEMORY.md").write_text(text, encoding="utf-8")
+        (self.tmp / "memory").mkdir(exist_ok=True)
+        (self.tmp / "memory" / "topic.md").write_text(text, encoding="utf-8")
 
     def save(self, name, value):
         (self.tmp / name).write_text(json.dumps(value), encoding="utf-8")
@@ -85,7 +86,7 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
 
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
-        self.assertEqual(manifest["version"], "0.8.0")
+        self.assertEqual(manifest["version"], "0.9.0")
         self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "validate-inference-candidates", "project-inference-overlay", "ontology-validate", "review-queue", "cq-evaluate", "semantic-view"})
         self.assertNotIn("query-plan", manifest["commands"], "semantic query remains direct-CLI-only in v0.6")
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")
@@ -285,22 +286,11 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         self.assertEqual(result["error"]["code"], "invalid_batch_size")
 
     def test_memory_sources_reject_symlinks(self):
+        (self.tmp / "memory").mkdir()
         outside = self.tmp.parent / (self.tmp.name + "-outside.md")
         outside.write_text(claim(), encoding="utf-8")
         try:
-            (self.tmp / "MEMORY.md").symlink_to(outside)
-            _, result = self.run_cli("inspect", "--root", str(self.tmp), expected=2)
-            self.assertEqual(result["error"]["code"], "unsafe_memory_path")
-            (self.tmp / "MEMORY.md").unlink()
-            topics = self.tmp / "topics"
-            topics.mkdir()
-            (topics / "topic.md").write_text(claim(), encoding="utf-8")
-            (self.tmp / "memory").symlink_to(topics, target_is_directory=True)
-            _, result = self.run_cli("inspect", "--root", str(self.tmp), expected=2)
-            self.assertEqual(result["error"]["code"], "unsafe_memory_path")
-            (self.tmp / "memory").unlink()
-            (self.tmp / "memory").mkdir()
-            (self.tmp / "memory/topic.md").symlink_to(outside)
+            (self.tmp / "memory" / "topic.md").symlink_to(outside)
             _, result = self.run_cli("inspect", "--root", str(self.tmp), expected=2)
             self.assertEqual(result["error"]["code"], "unsafe_memory_path")
         finally:
@@ -374,9 +364,9 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         self.assertNotEqual(recovered["data"]["namespace"], other["data"]["namespace"])
 
     def test_backend_unavailable_records_recoverable_state_without_markdown_change(self):
-        self.write_memory(claim()); before=(self.tmp/"MEMORY.md").read_bytes(); state=self.tmp/"state"
+        self.write_memory(claim()); before=(self.tmp/"memory"/"topic.md").read_bytes(); state=self.tmp/"state"
         _, result = self.run_cli("onboard", "--root", str(self.tmp), "--agent-id", "agent", "--workspace-id", "ws", "--state-root", str(state), "--mcporter", str(self.tmp/"missing"), expected=2)
-        self.assertEqual(result["error"]["code"], "backend_unavailable"); self.assertEqual(before, (self.tmp/"MEMORY.md").read_bytes())
+        self.assertEqual(result["error"]["code"], "backend_unavailable"); self.assertEqual(before, (self.tmp/"memory"/"topic.md").read_bytes())
         self.assertEqual(result["error"]["message"], "Memory MCP backend executable is unavailable")
         self.assertTrue(result["error"]["details"]["mutation_definitely_not_performed"])
         journals=list(state.rglob("journal.json")); self.assertEqual(len(journals), 1)
@@ -462,7 +452,7 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         points = ("prepared", "schema_verified", "backend_discovered", "before_mutation", "after_mutation", "progress_recorded", "verified", "snapshot_committed", "complete")
         for point in points:
             with self.subTest(point=point):
-                case = self.tmp / point; case.mkdir(); (case / "MEMORY.md").write_text(claim(), encoding="utf-8")
+                case = self.tmp / point; case.mkdir(); (case / "memory").mkdir(); (case / "memory" / "topic.md").write_text(claim(), encoding="utf-8")
                 old_db = os.environ["FAKE_MCP_DB"] if "FAKE_MCP_DB" in os.environ else None
                 fake = self.fake_mcp(); os.environ["FAKE_MCP_DB"] = str(case / "mcp.json")
                 args = ("onboard", "--root", str(case), "--agent-id", "agent", "--workspace-id", point, "--state-root", str(case/"state"), "--mcporter", str(fake))
@@ -515,7 +505,7 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
     def test_commit_plus_error_and_timeout_report_ambiguous_effect_and_recover(self):
         for mode, env_key in (("error", "FAKE_COMMIT_ERROR_TOOL"), ("timeout", "FAKE_COMMIT_TIMEOUT_TOOL")):
             with self.subTest(mode=mode):
-                case = self.tmp / mode; case.mkdir(); (case / "MEMORY.md").write_text(claim(), encoding="utf-8")
+                case = self.tmp / mode; case.mkdir(); (case / "memory").mkdir(); (case / "memory" / "topic.md").write_text(claim(), encoding="utf-8")
                 fake = self.fake_mcp(); os.environ["FAKE_MCP_DB"] = str(case / "mcp.json")
                 os.environ[env_key] = "create_entities"
                 args = ("onboard", "--root", str(case), "--agent-id", "agent", "--workspace-id", mode,
@@ -549,57 +539,54 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         self.assertLess(__import__("time").monotonic() - started, 2)
         self.assertEqual(capped["error"]["code"], "backend_output_limit")
 
-    def test_all_core_classes_provenance_allowlist_and_authority(self):
-        core = {
-            "SOUL.md": ("persona", "follows_persona", "workspace_persona"),
-            "IDENTITY.md": ("identity", "has_identity", "workspace_identity"),
-            "USER.md": ("user_profile", "has_user_profile", "workspace_user_context"),
-            "AGENTS.md": ("agent_policy", "follows_policy", "workspace_agent_policy"),
-            "ORGANIZATIONS.md": ("organization", "belongs_to_organization_context", "workspace_organization_context"),
-            "WORKFLOW.md": ("workflow", "follows_workflow", "workspace_workflow"),
-        }
-        for path in core:
-            (self.tmp / path).write_text(f"# {path}\nintro\n## Rules\nbody\n", encoding="utf-8")
-        excluded = {"BOOTSTRAP.md", "HEARTBEAT.md", "TOOLS.md", "NOTES.md"}
-        for path in excluded:
-            (self.tmp / path).write_text("# must not scan\nsk_live_12345678901234567890\n")
-        self.write_memory(claim())
+    def test_memory_only_source_boundary_and_stale_core_cleanup(self):
+        ignored = ["MEMORY.md", "memory.md", "AGENTS.md", "SOUL.md", "IDENTITY.md", "USER.md",
+                   "ORGANIZATIONS.md", "WORKFLOW.md", "BOOTSTRAP.md", "HEARTBEAT.md", "TOOLS.md"]
+        for name in ignored:
+            (self.tmp / name).write_text(claim(claim_id="ignored-" + name.replace(".", "-")), encoding="utf-8")
+        nested = self.tmp / "memory" / ".evidence"; nested.mkdir(parents=True)
+        (nested / "ignored.md").write_text(claim(claim_id="nested-evidence"), encoding="utf-8")
+        registry = self.tmp / "memory" / ".registry"; registry.mkdir()
+        (registry / "ignored.md").write_text(claim(claim_id="nested-registry"), encoding="utf-8")
+        self.write_memory(claim(claim_id="direct"))
         inspected = self.run_cli("inspect", "--root", str(self.tmp), "--detail")[1]["data"]
-        self.assertEqual({d["source_class"] for d in inspected["core_documents"]}, {v[0] for v in core.values()})
-        source_paths = {s["path"] for s in inspected["sources"]}
-        self.assertTrue(excluded.isdisjoint(source_paths))
-        self.assertEqual(len(inspected["core_sections"]), 12)
-        plan = self.plan(); prefix = plan["ownership"]["namespace"]
-        relations = {(r["from"].removeprefix(prefix), r["to"].removeprefix(prefix), r["relationType"]) for r in plan["structural_relations"]}
-        for path, (_, relation, authority) in core.items():
-            self.assertIn(("agent:self", f"document:{path}", relation), relations)
-            doc = next(e for e in plan["entities"] if e["name"].endswith(f"document:{path}"))
-            observation = json.loads(doc["observations"][0])
-            self.assertEqual(observation["authority_class"], authority)
-            self.assertEqual(observation["precedence_class"], authority)
-            self.assertEqual(observation["line_start"], 1); self.assertEqual(observation["line_end"], 4)
-            self.assertEqual(observation["source_content_hash"], hashlib.sha256((self.tmp/path).read_bytes()).hexdigest())
+        self.assertEqual([s["path"] for s in inspected["sources"]], ["memory/topic.md"])
+        self.assertEqual([c["claim_id"] for c in inspected["claims"]], ["direct"])
+        self.assertEqual(inspected["core_documents"], []); self.assertEqual(inspected["core_sections"], [])
+        compact = self.run_cli("inspect", "--root", str(self.tmp))[1]["data"]
+        self.assertEqual(compact["source_count"], 1); self.assertEqual(compact["core_source_count"], 0)
+        self.assertEqual(compact["core_document_count"], 0); self.assertEqual(compact["core_section_count"], 0)
+        old = self.plan(); prefix = old["ownership"]["namespace"]
+        old_core = {"name": prefix + "document:SOUL.md", "entityType": "CoreDocument", "observations": ["{}"]}
+        old["entities"].append(old_core)
+        old["structural_relations"].append({"from":prefix+"workspace:self","to":old_core["name"],"relationType":"contains_core_document"})
+        old["snapshot_hash"] = memory_graph_digest = __import__("hashlib").sha256(json.dumps({k:v for k,v in old.items() if k != "snapshot_hash"}, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        self.save("old.json", old)
+        diff = self.run_cli("diff", "--root", str(self.tmp), "--snapshot", "old.json")[1]["data"]
+        self.assertIn(old_core["name"], diff["delete_entities"])
+        fake = self.fake_mcp()
+        foreign = {"name":"foreign:document:SOUL.md","entityType":"Foreign","observations":["keep"]}
+        (self.tmp / "mcp.json").write_text(json.dumps({"entities":[old_core, foreign], "relations":[]}), encoding="utf-8")
+        result = self.run_cli("onboard", "--root", str(self.tmp), "--agent-id", "test-agent",
+                              "--workspace-id", "test-workspace", "--state-root", str(self.tmp / "state"),
+                              "--mcporter", str(fake))[1]["data"]
+        graph = json.loads((self.tmp / "mcp.json").read_text(encoding="utf-8"))
+        self.assertTrue(result["verified"])
+        self.assertNotIn(old_core["name"], {e["name"] for e in graph["entities"]})
+        self.assertIn(foreign, graph["entities"])
 
-    def test_core_optional_symlink_secret_redaction_and_stale_cleanup(self):
-        self.assertEqual(self.run_cli("inspect", "--root", str(self.tmp))[1]["data"]["core_source_count"], 0)
-        outside = self.tmp.parent / (self.tmp.name + "-core.md"); outside.write_text("# Outside\n")
+    def test_direct_memory_symlink_fails_closed_but_root_and_nested_symlinks_are_ignored(self):
+        outside = self.tmp.parent / (self.tmp.name + "-outside.md"); outside.write_text(claim(), encoding="utf-8")
         try:
-            (self.tmp / "SOUL.md").symlink_to(outside)
+            (self.tmp / "MEMORY.md").symlink_to(outside)
+            nested = self.tmp / "memory" / ".evidence"; nested.mkdir(parents=True)
+            (nested / "nested.md").symlink_to(outside)
+            self.assertEqual(self.run_cli("inspect", "--root", str(self.tmp))[1]["data"]["source_count"], 0)
+            (self.tmp / "memory" / "direct.md").symlink_to(outside)
             result = self.run_cli("inspect", "--root", str(self.tmp), expected=2)[1]
-            self.assertEqual(result["error"]["code"], "unsafe_core_path")
-            (self.tmp / "SOUL.md").unlink()
+            self.assertEqual(result["error"]["code"], "unsafe_memory_path")
         finally:
             outside.unlink(missing_ok=True)
-        secret = "sk_live_12345678901234567890"
-        (self.tmp / "USER.md").write_text(f"# {secret}\n")
-        rejected = self.run_cli("inspect", "--root", str(self.tmp), expected=2)[1]
-        self.assertEqual(rejected["error"]["code"], "secret_like_text")
-        stdout, redacted = self.run_cli("inspect", "--root", str(self.tmp), "--secret-policy", "redact", "--detail")
-        self.assertNotIn(secret, stdout); self.assertEqual(redacted["data"]["core_sections"][0]["heading"], "[REDACTED]")
-        old = self.run_cli("plan", "--root", str(self.tmp), "--secret-policy", "redact", "--detail")[1]["data"]
-        self.save("old.json", old); (self.tmp / "USER.md").unlink()
-        diff = self.run_cli("diff", "--root", str(self.tmp), "--snapshot", "old.json")[1]["data"]
-        self.assertTrue(any(name.endswith("document:USER.md") for name in diff["delete_entities"]))
 
     def test_grounded_semantic_projection_query_and_quarantine(self):
         ev={"evidence_id":"ev1","path":"memory/evidence.md","content_hash":"a"*64}
