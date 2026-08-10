@@ -59,6 +59,12 @@ class SemanticV10(unittest.TestCase):
   bad=copy.deepcopy(self.bundle); bad['extra']=1; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json',code=2)['error']['code'],'malformed_model_output')
   bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['claim_content_hash']='b'*64; self.write('bad.json',self.reseal(bad)); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine'][0]['reason_code'],'stale_provenance')
   bad=copy.deepcopy(self.bundle); bad['proposals'][0]['basis']='password=abcdefghijklmnop'; self.write('bad.json',self.reseal(bad)); out=self.cli('semantic-validate-proposals','--input','bad.json'); self.assertNotIn('abcdefghijklmnop',json.dumps(out)); self.assertTrue(out['data']['quarantine'][0]['redacted'])
+ def test_quarantine_diagnostics_are_bounded_redacted_and_deterministic(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  entries=[{'proposal_id':'token='+'x'*100,'reason_code':'bad reason'}]+[{'proposal_id':str(i),'reason_code':'invalid_shape'} for i in range(1005)]
+  first,summary=module.bounded_quarantine(entries); second,_=module.bounded_quarantine(list(reversed(entries)))
+  self.assertEqual(first,second); self.assertEqual(len(first),1000); self.assertTrue(summary['truncated']); self.assertEqual(summary['total'],1006); self.assertNotIn('x'*20,json.dumps(first)); self.assertIn('[REDACTED]',json.dumps(first)); self.assertIn('invalid_output',summary['reason_counts'])
  def test_extractor_provenance_is_exactly_allowlisted_and_rollback_is_reproducible(self):
   out=self.validated(); self.assertEqual(out['extractor_policy']['policy_version'],'memory-graph-extractor-allowlist/v1'); self.assertTrue(out['extractor_policy']['rollback']['revalidate_from_canonical_sources']); self.assertFalse(out['extractor_policy']['rollback']['reuse_prior_approvals'])
   for field,value,code in [('extractor_version','1.0.1','extractor_not_allowlisted'),('config_hash','b'*64,'extractor_config_not_allowlisted')]:

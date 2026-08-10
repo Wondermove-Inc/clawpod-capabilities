@@ -67,6 +67,21 @@ def extractor_policy(extractor,api):
  if extractor["config_hash"] not in allowed: fail(api,"extractor_config_not_allowlisted","extractor config is not approved for this exact version")
  return {"policy_version":"memory-graph-extractor-allowlist/v1","extractor_id":key[0],"extractor_version":key[1],"config_hash":extractor["config_hash"],"rollback":{"revalidate_from_canonical_sources":True,"reuse_prior_proposals":False,"reuse_prior_approvals":False}}
 
+def bounded_quarantine(entries):
+ """Return deterministic, redacted diagnostics with a hard output bound."""
+ cleaned=[]
+ for item in entries:
+  reason=str(item.get("reason_code","invalid_output")) if isinstance(item,dict) else "invalid_output"
+  if not re.fullmatch(r"[a-z][a-z0-9_]{0,63}",reason): reason="invalid_output"
+  pid=str(item.get("proposal_id","?")) if isinstance(item,dict) else "?"
+  redacted=bool(isinstance(item,dict) and item.get("redacted")) or bool(SECRET.search(pid))
+  if redacted: pid="[REDACTED]"
+  else: pid=pid[:80]
+  cleaned.append({"proposal_id":pid,"reason_code":reason,**({"redacted":True} if redacted else {})})
+ cleaned.sort(key=lambda x:(not x.get("redacted",False),x["proposal_id"],x["reason_code"]))
+ counts={reason:sum(x["reason_code"]==reason for x in cleaned) for reason in sorted({x["reason_code"] for x in cleaned})}
+ return cleaned[:1000],{"total":len(cleaned),"returned":min(len(cleaned),1000),"truncated":len(cleaned)>1000,"reason_counts":counts}
+
 def normalized_time(value):
  if value is None: return None
  if not closed(value,{"start","end","timezone","time_unknown"}) or not isinstance(value["time_unknown"],bool): return False
@@ -175,7 +190,8 @@ def validate_proposals(root,bundle,agent,workspace,api):
    assertions.append({**raw,"payload":{**p,"valid_time":valid_time},"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
  for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
- result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"extractor_policy":policy,"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
+ quarantine,diagnostics=bounded_quarantine(quarantine)
+ result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"extractor_policy":policy,"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":quarantine,"quarantine_diagnostics":diagnostics,"aliases_inert":True,"identity_merge_performed":False}
  latest_mtime=max((root/c["path"]).stat().st_mtime for c in claims.values())
  if latest_mtime > datetime.now(timezone.utc).timestamp()+300: fail(api,"source_clock_skew","canonical source mtime is more than 5 minutes in the future")
  result["source_latest_mtime"]=datetime.fromtimestamp(latest_mtime,timezone.utc).isoformat().replace("+00:00","Z")
