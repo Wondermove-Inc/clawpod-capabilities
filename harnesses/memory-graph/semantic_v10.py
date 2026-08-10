@@ -27,7 +27,7 @@ def causal_review_bound(proposal, decision):
  """Require the reviewer to bind causal approval to the exact claim digest."""
  if proposal.get("payload",{}).get("predicate")!="caused": return True
  expected="causal-evidence:"+str(proposal.get("source",{}).get("claim_content_hash",""))
- return decision is not None and decision.get("lifecycle")=="approved" and expected in decision.get("reason","").split()
+ return decision is not None and decision.get("lifecycle") in {"approved","current"} and expected in decision.get("reason","").split()
 
 def canon(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()
 def sha(v): return hashlib.sha256(v if isinstance(v,bytes) else canon(v)).hexdigest()
@@ -287,9 +287,12 @@ def approve(validated,manifest,api,expected_reviewer_id,root=None):
   d=decisions.get(x["proposal_id"]); y=dict(x)
   if d:
    lifecycle={"approved":"current","revoked":"archived"}.get(d["lifecycle"],d["lifecycle"])
-   effect="granted" if lifecycle=="current" else "deferred" if lifecycle=="tentative" else "withdrawn" if lifecycle in {"archived","superseded"} else "denied"
-   y.update(lifecycle=lifecycle,review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":effect})
-  if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
+   effects={"current":"granted","tentative":"deferred","superseded":"withdrawn","archived":"withdrawn","rejected":"denied"}
+   y.update(lifecycle=lifecycle,review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":effects[lifecycle]})
+  # Approval aliases normalize to current before this check.  Bind causal
+  # authority after normalization so an unbound approved cause cannot slip
+  # through merely because its lifecycle spelling changed.
+  if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="current" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
   out.append(y)
  expires=(dt.astimezone(timezone.utc)+timedelta(hours=24)).isoformat().replace("+00:00","Z")
  result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest),"approval_expires_at":expires,"review_policy":{"policy_version":"memory-graph-single-reviewer-sod/v1","reviewer_id":expected_reviewer_id,"single_reviewer":True,"producer_distinct":True}}

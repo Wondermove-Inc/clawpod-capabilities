@@ -275,6 +275,22 @@ class SemanticV10(unittest.TestCase):
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
   hostile=module.html_json({'x':'</script>\u202e\u2028\ud800\x00\\00a;'}); self.assertNotIn('</script>',hostile); self.assertNotIn('\u202e',hostile); self.assertNotIn('\u2028',hostile); self.assertIn('\\ud800',hostile); json.loads(hostile)
   self.assertEqual(before,[(p,hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in (self.t/'memory').glob('*.md')])
+ def test_lifecycle_effect_table_and_causal_binding_are_consistent(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  v=self.validated(); now=__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat().replace('+00:00','Z')
+  states=['current','tentative','superseded','rejected','archived']; expected={'current':'granted','tentative':'deferred','superseded':'withdrawn','rejected':'denied','archived':'withdrawn'}
+  for state in states:
+   manifest={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':now,'decisions':[{'proposal_id':v['entity_proposals'][0]['proposal_id'],'lifecycle':state,'reason':'explicit lifecycle property'}]}
+   out=module.approve(v,manifest,{'error':ValueError},'human:r'); item=next(x for x in out['proposals'] if x['proposal_id']==manifest['decisions'][0]['proposal_id'])
+   self.assertEqual(item['lifecycle'],state); self.assertEqual(item['review']['approval_effect'],expected[state])
+  caused=copy.deepcopy(v['assertion_proposals'][0]); caused['payload']['predicate']='caused'; caused['source']['claim_content_hash']='a'*64; caused['lifecycle']='candidate'
+  causal_v={**v,'entity_proposals':[],'assertion_proposals':[caused]}; causal_v['validated_hash']=module.sha({k:x for k,x in causal_v.items() if k!='validated_hash'})
+  base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':causal_v['validated_hash'],'reviewer_id':'human:r','reviewed_at':now}
+  unbound=module.approve(causal_v,{**base,'decisions':[{'proposal_id':caused['proposal_id'],'lifecycle':'approved','reason':'direct'}]},{'error':ValueError},'human:r')
+  self.assertEqual(unbound['proposals'][0]['lifecycle'],'candidate'); self.assertIsNone(unbound['proposals'][0]['review'])
+  bound=module.approve(causal_v,{**base,'decisions':[{'proposal_id':caused['proposal_id'],'lifecycle':'current','reason':'causal-evidence:'+('a'*64)}]},{'error':ValueError},'human:r')
+  self.assertEqual(bound['proposals'][0]['lifecycle'],'current'); self.assertEqual(bound['proposals'][0]['review']['approval_effect'],'granted')
  def test_claim_lifecycle_precedence_is_explicit_and_auditable(self):
   v=self.validated(); self.write('v.json',v); states=['current','tentative','superseded']; decisions=[{'proposal_id':x['proposal_id'],'lifecycle':states[i],'reason':'explicit lifecycle decision'} for i,x in enumerate(v['entity_proposals']+v['assertion_proposals'])]
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':decisions}; self.write('m.json',m)
