@@ -437,8 +437,8 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.8.0",
-      "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from canonical workspace memory.",
+      "version": "0.9.0",
+      "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
       "path": "skills/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6cf9b07177d2471bcb6273bc825b2d06ffb2b071766dd136690727150f1b1ece"
+          "sha256": "2a3b61a2165f2d539d64ac540ce8ddb32f5c8e54010ac9a5e3ec94fcde3efb80"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.8.0"
+        "version": "0.9.0"
       }
     },
     {
@@ -1164,8 +1164,8 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.8.0",
-      "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's canonical workspace memory.",
+      "version": "0.9.0",
+      "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
       "path": "harnesses/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1182,19 +1182,19 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "73b5a0003ab3f09bde111afc1a3e706e09c6e5857f3b6dbea2a0a06534b4b416"
+          "sha256": "ab63bb901fe9f8f5d8b80afdeeb925a20946d86633dce27cc822fec638be419c"
         },
         {
           "path": "harness.json",
-          "sha256": "317dda6577be74d75d8c417db82f539dcacc6f376bea0e19adb0dc6c846f3a8c"
+          "sha256": "9199d8f5b7a0053fd8d7b86a6b2f4c59a471dcca491b72aba236ef2231054fb4"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "d2e2e87002d853df0e3393c184a1fe9c558b890b120430e4e0a53eb0b5930f7b"
+          "sha256": "2f8109f0aba34613b408519f7488582cb3ff95cbd0dca68296f6f200d5db5b64"
         },
         {
           "path": "ontology.py",
-          "sha256": "a3c9b7088d7d8dd7b88815432c0a73122776ba37fb6ccbefc08549631192bc59"
+          "sha256": "981c75db4ee8b4455e313c6ac4a5f4249437c3add698125841baaca1642d76f5"
         }
       ]
     },
