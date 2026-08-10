@@ -1239,6 +1239,21 @@ def load_inference_bundle(path: str, root: Path) -> tuple[Any, str]:
         raise InputError("malformed_bundle", "Inference candidate bundle is not valid UTF-8 JSON") from exc
 
 
+def load_semantic_bundle(path: str, root: Path) -> Any:
+    """Bounded, regular-file-only JSON load for the semantic authoring lane."""
+    raw_path = Path(path); lexical = raw_path if raw_path.is_absolute() else root / raw_path
+    cursor = Path(lexical.anchor) if lexical.is_absolute() else Path()
+    for part in lexical.parts[1:] if lexical.is_absolute() else lexical.parts:
+        cursor = cursor / part
+        if cursor.is_symlink(): raise InputError("invalid_semantic_bundle", "Semantic input must be a regular non-symlink file")
+    target = safe_resolve(root, path)
+    if target.is_symlink() or not target.is_file(): raise InputError("invalid_semantic_bundle", "Semantic input must be a regular non-symlink file")
+    raw = target.read_bytes()
+    if len(raw) > MAX_INFERENCE_BUNDLE_BYTES: raise InputError("oversized_semantic_bundle", "Semantic input exceeds the 1 MiB byte limit", {"limit":MAX_INFERENCE_BUNDLE_BYTES})
+    try: return json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc: raise InputError("malformed_semantic_bundle", "Semantic input is not valid UTF-8 JSON") from exc
+
+
 def atomic_private_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.parent.is_symlink() or path.is_symlink():
@@ -1625,16 +1640,16 @@ def main(argv: list[str] | None = None) -> int:
             data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit)
         elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
-            validated=semantic_v10.validate_proposals(root,load_json(args.input,root),args.agent_id,args.workspace_id,api)
+            validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
             data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
         elif args.command == "semantic-approve":
-            data=semantic_v10.approve(load_json(args.input,root),load_json(args.manifest,root),{"error":InputError})
-        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_json(args.input,root),{"error":InputError})
-        elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_json(args.input,root),load_json(args.current,root),{"error":InputError})
+            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError})
+        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
+        elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
         elif args.command == "semantic-export-html":
             output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
             if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
-            data=semantic_v10.export_html(load_json(args.input,root),target,{"error":InputError})
+            data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError})
         else:
             snapshot = load_json(args.input, root)
             if args.query:
