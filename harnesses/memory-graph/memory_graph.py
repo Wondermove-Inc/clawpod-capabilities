@@ -27,9 +27,14 @@ if _ONTOLOGY_SPEC is None or _ONTOLOGY_SPEC.loader is None:  # pragma: no cover 
     raise RuntimeError("Unable to load local ontology module")
 ontology = importlib.util.module_from_spec(_ONTOLOGY_SPEC)
 _ONTOLOGY_SPEC.loader.exec_module(ontology)
+_SEMANTIC_V10_SPEC = importlib.util.spec_from_file_location("memory_graph_semantic_v10", Path(__file__).with_name("semantic_v10.py"))
+if _SEMANTIC_V10_SPEC is None or _SEMANTIC_V10_SPEC.loader is None:
+    raise RuntimeError("Unable to load local semantic v0.10 module")
+semantic_v10 = importlib.util.module_from_spec(_SEMANTIC_V10_SPEC)
+_SEMANTIC_V10_SPEC.loader.exec_module(semantic_v10)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.9.0"
+CONTRACT_VERSION = "0.10.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
@@ -1568,6 +1573,13 @@ def parser() -> argparse.ArgumentParser:
         if name == "semantic-view": c.add_argument("--include-candidates", action="store_true")
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
+    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20)
+    for name in ("semantic-validate-proposals", "semantic-review-queue"):
+        c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+    c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-build"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-reconcile"); c.add_argument("--input", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-export-html"); c.add_argument("--input", required=True); c.add_argument("--output", required=True); c.add_argument("--output-root", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1608,6 +1620,21 @@ def main(argv: list[str] | None = None) -> int:
             snapshot = load_json(args.input, root)
             overlay = load_json(args.overlay, root) if args.overlay else None
             data = export_visualization(snapshot, overlay, args.include_inferred)
+        elif args.command == "semantic-extractor-input":
+            api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
+            data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit)
+        elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
+            api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
+            validated=semantic_v10.validate_proposals(root,load_json(args.input,root),args.agent_id,args.workspace_id,api)
+            data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
+        elif args.command == "semantic-approve":
+            data=semantic_v10.approve(load_json(args.input,root),load_json(args.manifest,root),{"error":InputError})
+        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_json(args.input,root))
+        elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_json(args.input,root),load_json(args.current,root),{"error":InputError})
+        elif args.command == "semantic-export-html":
+            output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
+            if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
+            data=semantic_v10.export_html(load_json(args.input,root),target)
         else:
             snapshot = load_json(args.input, root)
             if args.query:

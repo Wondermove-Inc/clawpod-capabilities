@@ -437,7 +437,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2a3b61a2165f2d539d64ac540ce8ddb32f5c8e54010ac9a5e3ec94fcde3efb80"
+          "sha256": "beed194f6101db9ef9ee35558077941b48b06b47796d3446d82357f54976abee"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.9.0"
+        "version": "0.10.0"
       }
     },
     {
@@ -1164,7 +1164,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1182,19 +1182,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "ab63bb901fe9f8f5d8b80afdeeb925a20946d86633dce27cc822fec638be419c"
+          "sha256": "7b567fee16c12bcfa2518120906e49d07fd400330b8dd9ee573e4a6e72a4a1fa"
         },
         {
           "path": "harness.json",
-          "sha256": "9199d8f5b7a0053fd8d7b86a6b2f4c59a471dcca491b72aba236ef2231054fb4"
+          "sha256": "df9930f9c68cb05b39ce87dc04983cdae1f4b5186513cfdf992977a7a73610b3"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "2f8109f0aba34613b408519f7488582cb3ff95cbd0dca68296f6f200d5db5b64"
+          "sha256": "4ee20c66d97b1d33b989c2779c1df6c5e0b3219dd8a0aac69297b4c99add3688"
         },
         {
           "path": "ontology.py",
           "sha256": "981c75db4ee8b4455e313c6ac4a5f4249437c3add698125841baaca1642d76f5"
+        },
+        {
+          "path": "semantic_v10.py",
+          "sha256": "2910367e286341dab5d54a8a6ac0922f88f7bc9d3400e30c526af73b04b05b6b"
         }
       ]
     },
