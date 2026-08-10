@@ -165,6 +165,18 @@ def approve(validated,manifest,api,expected_reviewer_id):
 def build_snapshot(reviewed,api):
  if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
  approved=[x for x in reviewed["proposals"] if x["lifecycle"]=="approved"]
+ relation_keys={}
+ supersedes={}
+ for x in approved:
+  if x.get("kind")!="assertion": continue
+  p=x.get("payload",{}); key=(p.get("subject",{}).get("entity_id"),p.get("predicate"),p.get("object",{}).get("entity_id"))
+  if key in relation_keys: fail(api,"duplicate_semantic_assertion","multiple approved assertions express the same semantic edge",first=relation_keys[key],duplicate=x.get("proposal_id"))
+  relation_keys[key]=x.get("proposal_id")
+  if p.get("predicate")=="supersedes": supersedes.setdefault(key[0],set()).add(key[2])
+ def cyclic(node,path):
+  if node in path: return True
+  return any(cyclic(n,path|{node}) for n in supersedes.get(node,set()))
+ if any(cyclic(n,set()) for n in supersedes): fail(api,"supersession_cycle","approved supersedes assertions must form an acyclic graph")
  entities=[]; assertions=[]
  for x in approved:
   item={"semantic_id":x["proposal_id"],"namespace":reviewed["namespace"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"],"label":"approved/private"}
