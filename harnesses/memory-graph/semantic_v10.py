@@ -438,10 +438,13 @@ def reconcile_receipts(plan,receipts,api):
  completed=[]
  for index,receipt in enumerate(receipts):
   operation=plan["operations"][index]
-  if not closed(receipt,{"operation_index","operation_hash","outcome","semantic_id","readback_hash"}) or receipt["operation_index"]!=index or receipt["operation_hash"]!=operation.get("operation_hash") or receipt["semantic_id"]!=operation.get("semantic_id") or receipt["outcome"] not in {"applied","duplicate"}: fail(api,"operation_receipt_mismatch","backend response does not identify the exact planned operation",operation_index=index)
+  keys={"operation_index","operation_hash","outcome","effect","reason_code","semantic_id","readback_hash"}
+  if not closed(receipt,keys) or receipt["operation_index"]!=index or receipt["operation_hash"]!=operation.get("operation_hash") or receipt["semantic_id"]!=operation.get("semantic_id") or receipt["outcome"] not in {"applied","duplicate"}: fail(api,"operation_receipt_mismatch","backend response does not identify the exact planned operation",operation_index=index)
+  expected_semantics={"applied":("changed","backend_applied"),"duplicate":("unchanged","already_satisfied")}
+  if (receipt["effect"],receipt["reason_code"])!=expected_semantics[receipt["outcome"]]: fail(api,"operation_result_inconsistent","backend outcome, effect, and reason code disagree",operation_index=index)
   expected_readback=sha({"semantic_id":operation["semantic_id"],"absent":True}) if operation["op"]=="delete" else sha(operation["value"])
   if receipt["readback_hash"]!=expected_readback: fail(api,"operation_readback_mismatch","backend readback does not prove the requested postcondition",operation_index=index)
-  completed.append({"operation_index":index,"operation_hash":operation["operation_hash"],"outcome":receipt["outcome"],"readback_hash":receipt["readback_hash"]})
+  completed.append({"operation_index":index,"operation_hash":operation["operation_hash"],"outcome":receipt["outcome"],"effect":receipt["effect"],"reason_code":receipt["reason_code"],"readback_hash":receipt["readback_hash"]})
  remaining=plan["operations"][len(completed):]
  return {"schema_version":"memory-graph-semantic-operation-receipts/v1","transaction_id":plan["journal"]["transaction_id"],"completed":completed,"completed_count":len(completed),"remaining_count":len(remaining),"complete":not remaining,"next_operation_hash":remaining[0]["operation_hash"] if remaining else None,"requires_fresh_current_view_before_resume":bool(remaining),"receipts_hash":sha(completed)}
 

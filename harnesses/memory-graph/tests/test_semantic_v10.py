@@ -221,12 +221,16 @@ class SemanticV10(unittest.TestCase):
   operations=[{'op':'delete','kind':'entity','semantic_id':'old','operation_index':0},{'op':'create','kind':'entity','semantic_id':'new','value':{'semantic_id':'new'},'operation_index':1}]
   for op in operations: op['operation_hash']=module.sha({'op':op['op'],'id':op['semantic_id']})
   plan={'schema_version':'memory-graph-semantic-reconcile/v1','operations':operations,'journal':{'transaction_id':'tx'}}
-  receipts=[{'operation_index':0,'operation_hash':operations[0]['operation_hash'],'outcome':'duplicate','semantic_id':'old','readback_hash':module.sha({'semantic_id':'old','absent':True})}]
+  receipts=[{'operation_index':0,'operation_hash':operations[0]['operation_hash'],'outcome':'duplicate','effect':'unchanged','reason_code':'already_satisfied','semantic_id':'old','readback_hash':module.sha({'semantic_id':'old','absent':True})}]
   partial=module.reconcile_receipts(plan,receipts,{'error':ValueError}); self.assertFalse(partial['complete']); self.assertEqual(partial['remaining_count'],1); self.assertTrue(partial['requires_fresh_current_view_before_resume'])
   bad=copy.deepcopy(receipts); bad[0]['readback_hash']='0'*64
   with self.assertRaises(ValueError): module.reconcile_receipts(plan,bad,{'error':ValueError})
-  receipts.append({'operation_index':1,'operation_hash':operations[1]['operation_hash'],'outcome':'applied','semantic_id':'new','readback_hash':module.sha(operations[1]['value'])})
-  self.assertTrue(module.reconcile_receipts(plan,receipts,{'error':ValueError})['complete'])
+  inconsistent=copy.deepcopy(receipts); inconsistent[0].update(effect='changed',reason_code='backend_applied')
+  with self.assertRaises(ValueError): module.reconcile_receipts(plan,inconsistent,{'error':ValueError})
+  out_of_order=[{'operation_index':1,'operation_hash':operations[1]['operation_hash'],'outcome':'applied','effect':'changed','reason_code':'backend_applied','semantic_id':'new','readback_hash':module.sha(operations[1]['value'])}]
+  with self.assertRaises(ValueError): module.reconcile_receipts(plan,out_of_order,{'error':ValueError})
+  receipts.append({'operation_index':1,'operation_hash':operations[1]['operation_hash'],'outcome':'applied','effect':'changed','reason_code':'backend_applied','semantic_id':'new','readback_hash':module.sha(operations[1]['value'])})
+  complete=module.reconcile_receipts(plan,receipts,{'error':ValueError}); self.assertTrue(complete['complete']); self.assertEqual([x['effect'] for x in complete['completed']],['unchanged','changed'])
  def test_reconcile_orders_dependency_operations_and_blocks_foreign_dangling_edges(self):
   snap={'schema_version':'memory-graph-semantic-snapshot/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'entities':[],'assertions':[],'candidates':[],'revoked':[],'quarantine':[],'inference_overlays':[]}; snap['snapshot_hash']=hashlib.sha256(json.dumps(snap,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('s.json',snap)
   owned_entity={'semantic_id':'owned-e','entity_id':'person:a','namespace':snap['namespace'],'semantic_owner':snap['namespace']}; owned_relation={'semantic_id':'owned-r','namespace':snap['namespace'],'semantic_owner':snap['namespace'],'from':{'entity_id':'person:a'},'to':{'entity_id':'project:b'}}; current={'schema_version':'memory-mcp/v1','entities':[owned_entity],'relations':[owned_relation]}; self.write('c.json',current); operations=self.cli('semantic-reconcile','--input','s.json','--current','c.json')['data']['operations']; self.assertEqual([(x['kind'],x['op']) for x in operations],[('relation','delete'),('entity','delete')])
