@@ -1,6 +1,6 @@
 # Memory Graph Harness
 
-Memory Graph 0.5.0 deterministically parses one agent's recognized core workspace Markdown and canonical memory into a private, namespaced, disposable Memory MCP graph. Canonical Markdown is always read-only.
+Memory Graph 0.6.0 deterministically parses one agent's recognized core workspace Markdown and canonical memory into a private, namespaced, disposable Memory MCP graph. Canonical Markdown is always read-only.
 
 The fixed core allowlist is exactly `SOUL.md`, `IDENTITY.md`, `USER.md`, `AGENTS.md`, `ORGANIZATIONS.md`, and `WORKFLOW.md`. Root `MEMORY.md`/`memory.md` and direct `memory/*.md` are the only additional inputs. Arbitrary Markdown, secrets, configuration, symlinks, and other agents' workspaces are excluded.
 

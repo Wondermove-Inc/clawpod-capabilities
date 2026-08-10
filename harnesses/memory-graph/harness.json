@@ -4,55 +4,428 @@
   "name": "memory-graph",
   "title": "Memory Graph",
   "description": "Build, reconcile, and verify a private Memory MCP graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
-  "execution": {"cwd": ".", "timeoutMs": 35000, "requiresJson": true},
-  "whenToUse": ["Immediately after installation for per-agent core-context and memory graph onboarding", "An agent needs connected historical context across decisions, people, projects, causes, or changes that simple Memory Search cannot reconstruct"],
-  "capabilities": ["autonomous-memory-onboarding", "agent-namespace-isolation", "rebuildable-graph-planning", "safe-resumable-reconciliation", "memory-mcp-verification"],
-  "authModel": {"type": "none", "storesSecrets": false, "requiresHumanAccount": false},
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 35000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Immediately after installation for per-agent core-context and memory graph onboarding",
+    "An agent needs connected historical context across decisions, people, projects, causes, or changes that simple Memory Search cannot reconstruct"
+  ],
+  "capabilities": [
+    "autonomous-memory-onboarding",
+    "agent-namespace-isolation",
+    "rebuildable-graph-planning",
+    "safe-resumable-reconciliation",
+    "memory-mcp-verification",
+    "grounded-semantic-projection",
+    "bounded-semantic-query"
+  ],
+  "authModel": {
+    "type": "none",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
   "commands": {
     "inspect": {
       "description": "Parse and validate memory and return a bounded count/digest summary suitable for Gateway preview.",
-      "baseArgv": ["inspect"], "safetyClasses": ["readOnly"],
-      "inputSchema": {"type":"object","additionalProperties":false,"properties":{"root":{"type":"string"},"secretPolicy":{"type":"string"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true},{"arg":"secretPolicy","type":"option","flag":"--secret-policy","valueType":"string","optional":true}]
+      "baseArgv": [
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "root": {
+            "type": "string"
+          },
+          "secretPolicy": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "secretPolicy",
+          "type": "option",
+          "flag": "--secret-policy",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
     },
     "plan": {
       "description": "Build a graph plan and return a bounded count/hash summary suitable for Gateway preview.",
-      "baseArgv": ["plan"], "safetyClasses": ["readOnly"],
-      "inputSchema": {"type":"object","additionalProperties":false,"required":["agentId"],"properties":{"root":{"type":"string"},"agentId":{"type":"string"},"workspaceId":{"type":"string"},"secretPolicy":{"type":"string"},"includeInferred":{"type":"boolean"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true},{"arg":"agentId","type":"option","flag":"--agent-id","valueType":"string"},{"arg":"workspaceId","type":"option","flag":"--workspace-id","valueType":"string","optional":true},{"arg":"secretPolicy","type":"option","flag":"--secret-policy","valueType":"string","optional":true},{"arg":"includeInferred","type":"booleanFlag","flag":"--include-inferred","valueType":"boolean","optional":true}]
+      "baseArgv": [
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "agentId"
+        ],
+        "properties": {
+          "root": {
+            "type": "string"
+          },
+          "agentId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          },
+          "secretPolicy": {
+            "type": "string"
+          },
+          "includeInferred": {
+            "type": "boolean"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "agentId",
+          "type": "option",
+          "flag": "--agent-id",
+          "valueType": "string"
+        },
+        {
+          "arg": "workspaceId",
+          "type": "option",
+          "flag": "--workspace-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "secretPolicy",
+          "type": "option",
+          "flag": "--secret-policy",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "includeInferred",
+          "type": "booleanFlag",
+          "flag": "--include-inferred",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
     },
     "validate-plan": {
       "description": "Validate a saved plan/snapshot and its deterministic hash.",
-      "baseArgv": ["validate-plan"], "safetyClasses": ["readOnly"],
-      "inputSchema": {"type":"object","additionalProperties":false,"required":["plan"],"properties":{"plan":{"type":"string"},"root":{"type":"string"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"plan","type":"option","flag":"--plan","valueType":"path","pathRole":"input"},{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true}]
+      "baseArgv": [
+        "validate-plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan"
+        ],
+        "properties": {
+          "plan": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "plan",
+          "type": "option",
+          "flag": "--plan",
+          "valueType": "path",
+          "pathRole": "input"
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
+      ]
     },
     "validate-snapshot": {
       "description": "Validate snapshot structure, invariants, and content hash.",
-      "baseArgv": ["validate-snapshot"], "safetyClasses": ["readOnly"],
-      "inputSchema": {"type":"object","additionalProperties":false,"required":["snapshot"],"properties":{"snapshot":{"type":"string"},"root":{"type":"string"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"snapshot","type":"option","flag":"--snapshot","valueType":"path","pathRole":"input"},{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true}]
+      "baseArgv": [
+        "validate-snapshot"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "snapshot"
+        ],
+        "properties": {
+          "snapshot": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "snapshot",
+          "type": "option",
+          "flag": "--snapshot",
+          "valueType": "path",
+          "pathRole": "input"
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
+      ]
     },
     "onboard": {
       "description": "Autonomously reconcile and verify only this agent's namespaced derived graph through a schema-verified direct Memory MCP backend.",
-      "baseArgv": ["onboard"], "safetyClasses": ["writeSafe"],
-      "inputSchema": {"type":"object","additionalProperties":false,"required":["agentId","stateRoot"],"properties":{"root":{"type":"string"},"agentId":{"type":"string"},"workspaceId":{"type":"string"},"stateRoot":{"type":"string"},"timeoutSeconds":{"type":"integer"},"secretPolicy":{"type":"string"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true},{"arg":"agentId","type":"option","flag":"--agent-id","valueType":"string"},{"arg":"workspaceId","type":"option","flag":"--workspace-id","valueType":"string","optional":true},{"arg":"stateRoot","type":"option","flag":"--state-root","valueType":"path","pathRole":"output"},{"arg":"timeoutSeconds","type":"option","flag":"--timeout-seconds","valueType":"integer","optional":true},{"arg":"secretPolicy","type":"option","flag":"--secret-policy","valueType":"string","optional":true}]
+      "baseArgv": [
+        "onboard"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "agentId",
+          "stateRoot"
+        ],
+        "properties": {
+          "root": {
+            "type": "string"
+          },
+          "agentId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "timeoutSeconds": {
+            "type": "integer"
+          },
+          "secretPolicy": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "agentId",
+          "type": "option",
+          "flag": "--agent-id",
+          "valueType": "string"
+        },
+        {
+          "arg": "workspaceId",
+          "type": "option",
+          "flag": "--workspace-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "output"
+        },
+        {
+          "arg": "timeoutSeconds",
+          "type": "option",
+          "flag": "--timeout-seconds",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "secretPolicy",
+          "type": "option",
+          "flag": "--secret-policy",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
     },
     "cron-plan": {
       "description": "Return an idempotent deterministic job name and a current Gateway cron.add agentTurn payload.",
-      "baseArgv": ["cron-plan"], "safetyClasses": ["readOnly"],
-      "inputSchema": {"type":"object","additionalProperties":false,"required":["agentId","stateRoot","timezone"],"properties":{"root":{"type":"string"},"agentId":{"type":"string"},"workspaceId":{"type":"string"},"stateRoot":{"type":"string"},"timezone":{"type":"string"}}},
-      "outputSchema": {"type":"object","required":["ok","schema_version","command","effects"]},
-      "argMap": [{"arg":"root","type":"option","flag":"--root","valueType":"path","pathRole":"input","optional":true},{"arg":"agentId","type":"option","flag":"--agent-id","valueType":"string"},{"arg":"workspaceId","type":"option","flag":"--workspace-id","valueType":"string","optional":true},{"arg":"stateRoot","type":"option","flag":"--state-root","valueType":"path","pathRole":"output"},{"arg":"timezone","type":"option","flag":"--timezone","valueType":"string"}]
+      "baseArgv": [
+        "cron-plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "agentId",
+          "stateRoot",
+          "timezone"
+        ],
+        "properties": {
+          "root": {
+            "type": "string"
+          },
+          "agentId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schema_version",
+          "command",
+          "effects"
+        ]
+      },
+      "argMap": [
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "agentId",
+          "type": "option",
+          "flag": "--agent-id",
+          "valueType": "string"
+        },
+        {
+          "arg": "workspaceId",
+          "type": "option",
+          "flag": "--workspace-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "pathRole": "output"
+        },
+        {
+          "arg": "timezone",
+          "type": "option",
+          "flag": "--timezone",
+          "valueType": "string"
+        }
+      ]
     }
   }
 }
