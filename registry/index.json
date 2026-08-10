@@ -1190,7 +1190,7 @@
         },
         {
           "path": "memory_graph.py",
-          "sha256": "4e01514a45ae5e492a8a66c6b44fd58414dffcffec775e9f3e6f336fa56a6928"
+          "sha256": "e09ad549f679d47022d033c72273c6818dde345c68b806e364d4fb896534b713"
         },
         {
           "path": "ontology.py",
@@ -1198,7 +1198,7 @@
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "0336175a1cb5d636f3f343b288de03f4f141ef44fed4d4db8b5e31d0d03a0e43"
+          "sha256": "0de153ce1835d98057cc7bfafd911ce01dda404bd8e3ec7027b48503d8e8de6c"
         }
       ]
     },
