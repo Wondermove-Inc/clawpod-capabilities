@@ -12,8 +12,15 @@ class SemanticV10(unittest.TestCase):
  def write(self,name,v): (self.t/name).write_text(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':')))
  def source(self): return {k:self.claim[k] for k in ('path','line_start','line_end','source_content_hash','claim_content_hash')}
  def make_bundle(self):
-  props=[{'proposal_id':'p1','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'person:alice','type':'Person','temporal':None},'basis':'claim explicitly names Alice'}, {'proposal_id':'p2','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'project:alpha','type':'Project','temporal':None},'basis':'claim explicitly names Alpha'}, {'proposal_id':'r1','kind':'assertion','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'subject':{'entity_id':'person:alice','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:alpha','type':'Project'},'valid_time':None},'basis':'direct wording'}]
-  return {'schema_version':'memory-graph-extractor-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':self.input['source_snapshot_hash'],'source_digest':self.input['source_digest'],'extractor':{'extractor_id':'test','extractor_version':'1.0.0','config_hash':'a'*64},'proposals':props}
+  props=[{'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'person:alice','type':'Person','temporal':None},'basis':'claim explicitly names Alice'}, {'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'project:alpha','type':'Project','temporal':None},'basis':'claim explicitly names Alpha'}, {'proposal_id':'','kind':'assertion','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'subject':{'entity_id':'person:alice','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:alpha','type':'Project'},'valid_time':None},'basis':'direct wording'}]
+  bundle={'schema_version':'memory-graph-extractor-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':self.input['source_snapshot_hash'],'source_digest':self.input['source_digest'],'extractor':{'extractor_id':'test','extractor_version':'1.0.0','config_hash':'a'*64},'proposals':props}
+  for raw in props:
+   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
+  return bundle
+ def reseal(self,bundle):
+  for raw in bundle['proposals']:
+   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
+  return bundle
  def validated(self): return self.cli('semantic-validate-proposals','--input','bundle.json')['data']
  def test_selection_boundary_provenance_bound_prompt_data_redaction(self):
   self.assertLessEqual(len(self.input['claims']),20); self.assertTrue(self.input['constraints']['may_invent_entities'] is False); self.assertTrue(all(x['path'].startswith('memory/') and '/.' not in x['path'] for x in self.input['claims']))
@@ -24,30 +31,34 @@ class SemanticV10(unittest.TestCase):
   (self.t/'huge.json').write_bytes(b' '*((1024*1024)+1)); self.assertEqual(self.cli('semantic-validate-proposals','--input','huge.json',code=2)['error']['code'],'oversized_semantic_bundle')
  def test_malformed_stale_and_secret_quarantine(self):
   bad=copy.deepcopy(self.bundle); bad['extra']=1; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json',code=2)['error']['code'],'malformed_model_output')
-  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['claim_content_hash']='b'*64; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine'][0]['reason_code'],'stale_provenance')
-  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['basis']='password=abcdefghijklmnop'; self.write('bad.json',bad); out=self.cli('semantic-validate-proposals','--input','bad.json'); self.assertNotIn('abcdefghijklmnop',json.dumps(out)); self.assertTrue(out['data']['quarantine'][0]['redacted'])
+  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['claim_content_hash']='b'*64; self.write('bad.json',self.reseal(bad)); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine'][0]['reason_code'],'stale_provenance')
+  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['basis']='password=abcdefghijklmnop'; self.write('bad.json',self.reseal(bad)); out=self.cli('semantic-validate-proposals','--input','bad.json'); self.assertNotIn('abcdefghijklmnop',json.dumps(out)); self.assertTrue(out['data']['quarantine'][0]['redacted'])
  def test_review_approval_build_unapproved_inert_aliases(self):
   v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3)
-  m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':'p1','lifecycle':'approved','reason':'direct explicit entity'},{'proposal_id':'p2','lifecycle':'approved','reason':'direct explicit entity'}]}; self.write('manifest.json',m)
+  m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit entity'} for x in v['entity_proposals']]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
  def test_domain_valid_but_dangling_assertion_is_quarantined(self):
-  bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['object']={'entity_id':'project:missing','type':'Project'}; self.write('bundle.json',bad)
+  bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['object']={'entity_id':'project:missing','type':'Project'}; self.write('bundle.json',self.reseal(bad))
   self.assertIn('dangling_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_approval_rejects_unknown_duplicate_and_malformed_decisions(self):
   v=self.validated(); self.write('v.json',v)
   base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}
-  for decisions in [[{'proposal_id':'unknown','lifecycle':'approved','reason':'direct'}],[{'proposal_id':'p1','lifecycle':'approved','reason':'direct'}]*2,[{'proposal_id':'p1','lifecycle':'approved','reason':''}]]:
+  pid=v['entity_proposals'][0]['proposal_id']
+  for decisions in [[{'proposal_id':'unknown','lifecycle':'approved','reason':'direct'}],[{'proposal_id':pid,'lifecycle':'approved','reason':'direct'}]*2,[{'proposal_id':pid,'lifecycle':'approved','reason':''}]]:
    self.write('m.json',{**base,'decisions':decisions}); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
  def test_build_rejects_tampered_reviewed_bundle(self):
-  v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':'p1','lifecycle':'approved','reason':'direct'}]}; self.write('m.json',m)
+  v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':v['entity_proposals'][0]['proposal_id'],'lifecycle':'approved','reason':'direct'}]}; self.write('m.json',m)
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; reviewed['proposals'][0]['lifecycle']='rejected'; self.write('r.json',reviewed)
   self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'invalid_reviewed_bundle')
  def test_chronology_cause_rejected(self):
-  for i in ('a','b'): self.bundle['proposals'].insert(0,{'proposal_id':'event-'+i,'kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'event:'+i,'type':'Event','temporal':None},'basis':'explicit event'})
-  self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'}); self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
+  for i in ('a','b'): self.bundle['proposals'].insert(0,{'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'event:'+i,'type':'Event','temporal':None},'basis':'explicit event'})
+  self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'})
+  for raw in self.bundle['proposals']:
+   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':self.bundle['namespace'],'proposal':material,'extractor':self.bundle['extractor']},sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
+  self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
  def test_assertion_endpoint_ids_and_domains_are_closed(self):
   for subject,object_,predicate in [({'entity_id':'person:alice','type':'Project'},{'entity_id':'project:alpha','type':'Project'},'participates_in'),({'entity_id':'unsafe id','type':'Person'},{'entity_id':'decision:x','type':'Decision'},'decided')]:
-   bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload'].update(subject=subject,object=object_,predicate=predicate); self.write('bundle.json',bad)
+   bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload'].update(subject=subject,object=object_,predicate=predicate); self.write('bundle.json',self.reseal(bad))
    self.assertIn('invalid_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_reconcile_idempotency_stale_owned_delete_foreign_preserved(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit evidence'} for x in v['entity_proposals']+v['assertion_proposals']]}; self.write('m.json',m); r=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; self.write('r.json',r); s=self.cli('semantic-build','--input','r.json')['data']; self.write('s.json',s)

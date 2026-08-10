@@ -23,6 +23,9 @@ def closed(v, keys): return isinstance(v,dict) and set(v)==set(keys)
 def fresh(api,root,agent,workspace):
  p=api["plan"](api["inspect"](root,"reject"),False,api["namespace"](agent,root,workspace)); return p,{c["claim_id"]:c for c in p["claims"]}
 def source_hash(root,path): return hashlib.sha256((root/path).read_bytes()).hexdigest()
+def proposal_id(namespace, raw, extractor):
+ material={k:raw[k] for k in ("kind","claim_id","source","payload","basis")}
+ return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
 
 def extractor_input(root,agent,workspace,api,limit=20):
  if not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be 1..20")
@@ -48,6 +51,14 @@ def validate_proposals(root,bundle,agent,workspace,api):
  ex=bundle["extractor"]
  if not closed(ex,{"extractor_id","extractor_version","config_hash"}) or not HASH.fullmatch(str(ex["config_hash"])): fail(api,"invalid_extractor","invalid extractor metadata")
  entities=[]; assertions=[]; quarantine=[]
+ if not isinstance(bundle["proposals"],list): fail(api,"malformed_model_output","proposals must be an array")
+ seen_ids=set()
+ for raw in bundle["proposals"]:
+  if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis"}: continue
+  expected=proposal_id(bundle["namespace"],raw,ex)
+  if raw["proposal_id"]!=expected: fail(api,"unstable_proposal_id","proposal_id must equal the deterministic content-derived ID",expected_proposal_id=expected)
+  if expected in seen_ids: fail(api,"duplicate_proposal_id","duplicate proposal IDs are ambiguous")
+  seen_ids.add(expected)
  known_endpoints={(e.get("type"),e.get("entity_id")) for e in plan.get("semantic_entities",[]) if e.get("type") in TYPES and SAFE_ID.fullmatch(str(e.get("entity_id","")))}
  for raw in bundle["proposals"]:
   if isinstance(raw,dict) and raw.get("kind")=="entity" and isinstance(raw.get("payload"),dict):
