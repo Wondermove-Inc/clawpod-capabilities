@@ -340,16 +340,18 @@ def build_snapshot(reviewed,api):
  out={"schema_version":SCHEMA_SNAPSHOT,"namespace":reviewed["namespace"],"source_snapshot_hash":reviewed["source_snapshot_hash"],"source_digest":reviewed["source_digest"],"entities":sorted(entities,key=lambda x:x["semantic_id"]),"assertions":sorted(assertions,key=lambda x:x["semantic_id"]),"candidates":[x for x in reviewed["proposals"] if x["lifecycle"] in {"candidate","tentative"}],"revoked":[x for x in reviewed["proposals"] if x["lifecycle"] in {"superseded","rejected","archived"}],"lifecycle_counts":{state:sum(x["lifecycle"]==state for x in reviewed["proposals"]) for state in sorted(allowed)},"entity_rename_policy":{"new_identity_required":True,"supersede_old_proposal":True,"identity_merge_performed":False},"quarantine":reviewed["quarantine"],"inference_overlays":[]}
  out["snapshot_hash"]=sha(out); return out
 
-def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edges=200,max_degree=50,page_size=100,cursor=None,now_epoch=None,cursor_ttl_seconds=300):
+def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edges=200,max_degree=50,page_size=100,cursor=None,now_epoch=None,cursor_ttl_seconds=300,direction="both"):
  """Bounded deterministic traversal returning canonical hydration locators."""
  if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
- if isinstance(depth,bool) or not isinstance(depth,int) or not 0<=depth<=3 or not 1<=max_entities<=100 or not 0<=max_edges<=200 or not 1<=max_degree<=50 or not 1<=page_size<=100: fail(api,"invalid_query_bounds","depth/entities/edges/degree/page exceed semantic query bounds")
+ if isinstance(depth,bool) or not isinstance(depth,int) or not 0<=depth<=3 or not 1<=max_entities<=100 or not 0<=max_edges<=200 or not 1<=max_degree<=50 or not 1<=page_size<=100 or direction not in {"in","out","both"}: fail(api,"invalid_query_bounds","depth/entities/edges/degree/page/direction exceed semantic query bounds")
  by_id={x.get("entity_id"):x for x in snapshot.get("entities",[])}
  if start_entity_id not in by_id: fail(api,"semantic_entity_not_found","start entity is absent from the approved projection")
  adjacency={}
  for edge in sorted(snapshot.get("assertions",[]),key=lambda x:x["semantic_id"]):
   s=edge["subject"]["entity_id"]; o=edge["object"]["entity_id"]
-  adjacency.setdefault(s,[]).append((o,edge)); adjacency.setdefault(o,[]).append((s,edge))
+  if s not in by_id or o not in by_id: fail(api,"dangling_semantic_assertion","approved query projection contains an assertion with a missing endpoint",semantic_id=edge.get("semantic_id"))
+  if direction in {"out","both"}: adjacency.setdefault(s,[]).append((o,edge))
+  if direction in {"in","both"}: adjacency.setdefault(o,[]).append((s,edge))
  if any(len(v)>max_degree for v in adjacency.values()): fail(api,"semantic_query_degree_exceeded","an entity exceeds the requested deterministic degree bound",max_degree=max_degree)
  seen={start_entity_id}; frontier=[start_entity_id]; edges=[]; edge_ids=set()
  for _ in range(depth):
@@ -360,7 +362,7 @@ def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edg
     if neighbor not in seen and len(seen)<max_entities: seen.add(neighbor); nxt.append(neighbor)
   frontier=sorted(set(nxt))
  all_entities=[by_id[x] for x in sorted(seen) if x in by_id]; offset=0
- query_contract={"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size}
+ query_contract={"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"depth":depth,"direction":direction,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size}
  now_epoch=int(datetime.now(timezone.utc).timestamp()) if now_epoch is None else now_epoch
  if isinstance(now_epoch,bool) or not isinstance(now_epoch,int) or isinstance(cursor_ttl_seconds,bool) or not isinstance(cursor_ttl_seconds,int) or not 1<=cursor_ttl_seconds<=3600: fail(api,"invalid_query_time_policy","cursor time policy must use integer epoch seconds and a TTL from 1 through 3600")
  cursor_expires_at=None
@@ -378,7 +380,7 @@ def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edg
  else: next_cursor=None
  def locator(item):
   source=item["source"]; return {"claim_id":item["claim_id"],"path":source["path"],"line_start":source["line_start"],"line_end":source["line_end"],"source_content_hash":source["source_content_hash"],"claim_content_hash":source["claim_content_hash"]}
- return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"cursor_policy":{"ttl_seconds":cursor_ttl_seconds,"expires_at_epoch":cursor_expires_at},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
+ return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"direction":direction,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"cursor_policy":{"ttl_seconds":cursor_ttl_seconds,"expires_at_epoch":cursor_expires_at},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
 
 def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-workspace"):
  """Read canonical lines only when both exact source bytes and claim digest agree."""
