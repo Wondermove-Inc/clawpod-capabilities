@@ -1182,7 +1182,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "7b567fee16c12bcfa2518120906e49d07fd400330b8dd9ee573e4a6e72a4a1fa"
+          "sha256": "0389df5f3fb4c5f5ff664e3d3cd0fb0ff05eb45f44c7cf631893b917a7018a2d"
         },
         {
           "path": "harness.json",
@@ -1197,8 +1197,12 @@
           "sha256": "981c75db4ee8b4455e313c6ac4a5f4249437c3add698125841baaca1642d76f5"
         },
         {
+          "path": "release_inventory.py",
+          "sha256": "060a704226fec5ba85d5115418e704a067de26b2a2008567f7d3e5d765556a20"
+        },
+        {
           "path": "semantic_v10.py",
-          "sha256": "320cfdae3a8eb14ed194831ca588bbbdd7e11f23d0e2ed0f0c2e65722faebe15"
+          "sha256": "8195a4acc1b2c781c2c5a4f20733209bf61aaa663a09dfe0edcecacf6669080d"
         }
       ]
     },

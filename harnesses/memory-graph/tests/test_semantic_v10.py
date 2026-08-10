@@ -366,4 +366,52 @@ class SemanticV10(unittest.TestCase):
   try: module.atomic_write(safe/'private.html',b'private')
   finally: module.os.replace=real_replace
   self.assertFalse((safe/'private.html').exists()); self.assertEqual((moved/'private.html').read_bytes(),b'private'); self.assertEqual((moved/'private.html').stat().st_mode & 0o777,0o600)
+ def test_source_descriptor_rejects_mid_read_inode_metadata_change(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  real_fstat=module.os.fstat; calls=0
+  def changed(fd):
+   nonlocal calls
+   value=real_fstat(fd); calls+=1
+   if calls==2:
+    class S: pass
+    altered=S()
+    for name in ('st_mode','st_dev','st_ino','st_size','st_mtime_ns'): setattr(altered,name,getattr(value,name))
+    altered.st_mtime_ns+=1; return altered
+   return value
+  module.os.fstat=changed
+  try:
+   with self.assertRaises(OSError): module.source_bytes(self.t,self.claim['path'])
+  finally: module.os.fstat=real_fstat
+ def test_cursor_and_timestamp_fuzz_corpus_fails_closed(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  source={'path':'memory/source.md','line_start':1,'line_end':1,'source_content_hash':'a'*64,'claim_content_hash':'b'*64}
+  entities=[{'semantic_id':'e1','entity_id':'person:a','claim_id':'c','source':source},{'semantic_id':'e2','entity_id':'project:b','claim_id':'c','source':source}]
+  snap={'schema_version':module.SCHEMA_SNAPSHOT,'entities':entities,'assertions':[]}; snap['snapshot_hash']=module.sha(snap)
+  for cursor in ['', '.', 'x.y', '1.', '1.0', '1.'+'g'*64, '999999999999999999999999999999999999999999999999999999999999.x', '\x00.abc']:
+   if cursor:
+    with self.assertRaises(Exception,msg=repr(cursor)): module.semantic_query(snap,'person:a',{'error':ValueError},cursor=cursor,now_epoch=2)
+  for value in ('', '2026-01-01', 'not-a-time', 1, None, '2026-02-30T00:00:00Z'):
+   self.assertFalse(module.normalized_time({'start':value,'end':value,'timezone':'UTC','time_unknown':False}))
+ def test_reconcile_verify_exact_owned_snapshot_allows_concurrent_foreign_change(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  ns='memory:test:'; snap={'schema_version':module.SCHEMA_SNAPSHOT,'namespace':ns,'entities':[],'assertions':[]}; snap['snapshot_hash']=module.sha(snap)
+  before={'schema_version':'memory-mcp/v1','entities':[],'relations':[]}; plan=module.reconcile(snap,before,{'error':ValueError})
+  after={'schema_version':'memory-mcp/v1','entities':[{'semantic_id':'foreign:new','namespace':'foreign','semantic_owner':'foreign'}],'relations':[]}
+  verified=module.verify_reconcile(snap,plan,after,{'error':ValueError}); self.assertTrue(verified['verified']); self.assertEqual(verified['foreign_entities_preserved'],1)
+ def test_html_max_graph_is_deterministic_and_bounded(self):
+  import importlib.util,time
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  entities=[{'semantic_id':f'e{i:03}','entity_id':f'project:{i}','type':'Project','claim_id':'c','label':'approved/private'} for i in range(500)]
+  assertions=[{'semantic_id':f'a{i:04}','subject':{'entity_id':f'project:{i%500}'},'object':{'entity_id':f'project:{(i+1)%500}'},'predicate':'supersedes','claim_id':'c'} for i in range(1000)]
+  snap={'schema_version':module.SCHEMA_SNAPSHOT,'namespace':'n','entities':entities,'assertions':assertions,'candidates':[],'quarantine':[]}; snap['snapshot_hash']=module.sha(snap)
+  a=self.t/'a.html'; b=self.t/'b.html'; started=time.monotonic(); one=module.export_html(snap,a,{'error':ValueError}); two=module.export_html(snap,b,{'error':ValueError})
+  self.assertEqual(a.read_bytes(),b.read_bytes()); self.assertEqual(one['sha256'],two['sha256']); self.assertEqual((one['node_count'],one['edge_count']),(500,1000)); self.assertLess(time.monotonic()-started,5)
+ def test_release_inventory_is_deterministic_complete_and_inert(self):
+  cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
+  out=json.loads(one); self.assertEqual(out['version'],'0.10.0'); self.assertIn('rollback',out); self.assertIn('update',out)
+  self.assertEqual([x['path'] for x in out['files']],['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','release_inventory.py','tests/TEST.md'])
+  for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])
 if __name__=='__main__': unittest.main()

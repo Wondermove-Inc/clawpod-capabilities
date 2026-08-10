@@ -45,13 +45,33 @@ def canonical_path(value):
 
 def fresh(api,root,agent,workspace):
  p=api["plan"](api["inspect"](root,"reject"),False,api["namespace"](agent,root,workspace)); return p,{c["claim_id"]:c for c in p["claims"]}
-def source_hash(root,path): return hashlib.sha256((root/path).read_bytes()).hexdigest()
 def source_bytes(root,path):
- data=(root/path).read_bytes()
+ """Read one canonical source from a stable regular-file descriptor.
+
+ Path checks alone have a rename/symlink race.  Open without following links,
+ require a regular inode, and reject metadata changes observed across the read.
+ """
+ target=Path(root)/path
+ flags=os.O_RDONLY|getattr(os,"O_NOFOLLOW",0)
+ fd=os.open(target,flags)
+ try:
+  before=os.fstat(fd)
+  if not stat.S_ISREG(before.st_mode): raise OSError("canonical source must be a regular non-symlink file")
+  chunks=[]
+  while True:
+   chunk=os.read(fd,65536)
+   if not chunk: break
+   chunks.append(chunk)
+  after=os.fstat(fd)
+  stable=(before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns)
+  if not stable or sum(map(len,chunks))!=after.st_size: raise OSError("canonical source changed during read")
+  data=b"".join(chunks)
+ finally: os.close(fd)
  # Provenance hashes the exact bytes.  Text decoding is separately normalized
  # so BOM and CRLF cannot be mistaken for byte-identical source evidence.
  text=data.decode("utf-8-sig")
  return data,text.replace("\r\n","\n").replace("\r","\n")
+def source_hash(root,path): return hashlib.sha256(source_bytes(root,path)[0]).hexdigest()
 def line_provenance(root,path,line_start,line_end):
  data,text=source_bytes(root,path); lines=text.splitlines(keepends=True)
  if not (1<=line_start<=line_end<=len(lines)): return None
@@ -162,7 +182,7 @@ def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
   value=c.get("value","")
   if SECRET.search(value): value="[REDACTED]"
   provenance=line_provenance(root,c["path"],c["line"],c["line"])
-  rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"],"claim_text":value,"source_byte_length":provenance["source_byte_length"],"normalized_line_hash":provenance["normalized_line_hash"],"line_normalization":provenance["line_normalization"]})
+  rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":provenance["source_content_hash"],"claim_content_hash":c["content_hash"],"claim_text":value,"source_byte_length":provenance["source_byte_length"],"normalized_line_hash":provenance["normalized_line_hash"],"line_normalization":provenance["line_normalization"]})
  next_cursor=sha({"snapshot":plan["snapshot_hash"],"claim_id":selected[-1]["claim_id"]}) if selected and start+len(selected)<len(ordered) else None
  out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":start,"count":len(selected),"total":len(ordered),"remaining":max(0,len(ordered)-start-len(selected))},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
  out["bundle_hash"]=sha(out); return out
