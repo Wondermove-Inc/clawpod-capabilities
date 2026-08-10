@@ -113,7 +113,7 @@ def normalized_time(value):
  if not closed(value,{"start","end","timezone","time_unknown"}) or not isinstance(value["time_unknown"],bool): return False
  if value["time_unknown"] is True:
   return value if value["start"] is None and value["end"] is None and value["timezone"] is None else False
- if not isinstance(value["timezone"],str) or value["timezone"] in {"UTC","Etc/UTC"}: return False
+ if not isinstance(value["timezone"],str) or not value["timezone"]: return False
  try: zone=ZoneInfo(value["timezone"])
  except (ZoneInfoNotFoundError,ValueError): return False
  parsed=[]

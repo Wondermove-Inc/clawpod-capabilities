@@ -120,7 +120,7 @@ class SemanticV10(unittest.TestCase):
   self.assertIn('dangling_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_temporal_intervals_require_iana_zone_and_normalize_to_utc(self):
   good=copy.deepcopy(self.bundle); good['proposals'][0]['payload']['temporal']={'start':'2026-08-10T21:00:00+09:00','end':'2026-08-10T22:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False}; self.write('bundle.json',self.reseal(good)); temporal=next(x for x in self.validated()['entity_proposals'] if x['payload']['entity_id']=='person:alice')['payload']['temporal']; self.assertEqual(temporal['start'],'2026-08-10T12:00:00Z')
-  for temporal in ({'start':'2026-08-10T22:00:00+09:00','end':'2026-08-10T21:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False},{'start':'2026-08-10T12:00:00Z','end':None,'timezone':'UTC','time_unknown':False},{'start':None,'end':None,'timezone':'Asia/Seoul','time_unknown':False}):
+  for temporal in ({'start':'2026-08-10T22:00:00+09:00','end':'2026-08-10T21:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False},{'start':None,'end':None,'timezone':'Asia/Seoul','time_unknown':False}):
    bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['valid_time']=temporal; self.write('bundle.json',self.reseal(bad)); self.assertIn('invalid_temporal_interval',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_temporal_dst_fold_is_explicit_and_nonexistent_wall_time_rejected(self):
   import importlib.util
@@ -130,6 +130,15 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(first['start'],'2026-11-01T05:30:00Z'); self.assertEqual(second['start'],'2026-11-01T06:30:00Z')
   self.assertFalse(module.normalized_time({'start':'2026-03-08T02:30:00-05:00','end':None,'timezone':'America/New_York','time_unknown':False}))
   self.assertFalse(module.normalized_time({'start':'2026-11-01T01:30:00-06:00','end':None,'timezone':'America/New_York','time_unknown':False}))
+ def test_temporal_interval_ordering_uses_instants_across_dst_and_supports_utc(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  valid=module.normalized_time({'start':'2026-11-01T01:45:00-04:00','end':'2026-11-01T01:15:00-05:00','timezone':'America/New_York','time_unknown':False})
+  self.assertEqual((valid['start'],valid['end']),('2026-11-01T05:45:00Z','2026-11-01T06:15:00Z'))
+  self.assertFalse(module.normalized_time({'start':'2026-11-01T01:15:00-05:00','end':'2026-11-01T01:45:00-04:00','timezone':'America/New_York','time_unknown':False}))
+  utc=module.normalized_time({'start':'2026-11-01T05:45:00Z','end':'2026-11-01T06:15:00+00:00','timezone':'UTC','time_unknown':False})
+  self.assertEqual((utc['start'],utc['end']),('2026-11-01T05:45:00Z','2026-11-01T06:15:00Z'))
+  self.assertFalse(module.normalized_time({'start':'2026-11-01T05:45:00+01:00','end':None,'timezone':'UTC','time_unknown':False}))
  def test_approval_rejects_unknown_duplicate_and_malformed_decisions(self):
   v=self.validated(); self.write('v.json',v)
   base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':self.reviewed_at,'decisions':[]}
