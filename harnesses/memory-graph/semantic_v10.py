@@ -4,6 +4,7 @@ import hashlib, html, json, os, re, unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 SCHEMA_INPUT="memory-graph-extractor-input/v1"
 SCHEMA_PROPOSAL="memory-graph-extractor-proposals/v1"
@@ -32,6 +33,26 @@ def source_hash(root,path): return hashlib.sha256((root/path).read_bytes()).hexd
 def proposal_id(namespace, raw, extractor):
  material={k:raw[k] for k in ("kind","claim_id","source","payload","basis")}
  return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
+
+def normalized_time(value):
+ if value is None: return None
+ if not closed(value,{"start","end","timezone","time_unknown"}) or not isinstance(value["time_unknown"],bool): return False
+ if value["time_unknown"] is True:
+  return value if value["start"] is None and value["end"] is None and value["timezone"] is None else False
+ if not isinstance(value["timezone"],str) or value["timezone"] in {"UTC","Etc/UTC"}: return False
+ try: zone=ZoneInfo(value["timezone"])
+ except (ZoneInfoNotFoundError,ValueError): return False
+ parsed=[]
+ for raw in (value["start"],value["end"]):
+  if raw is None: parsed.append(None); continue
+  if not isinstance(raw,str): return False
+  try: dt=datetime.fromisoformat(raw.replace("Z","+00:00"))
+  except ValueError: return False
+  if dt.tzinfo is None or dt.utcoffset()!=zone.utcoffset(dt): return False
+  parsed.append(dt.astimezone(timezone.utc))
+ if parsed[0] is None and parsed[1] is None or parsed[0] and parsed[1] and parsed[0]>parsed[1]: return False
+ iso=lambda dt: dt.isoformat().replace("+00:00","Z") if dt else None
+ return {"start":iso(parsed[0]),"end":iso(parsed[1]),"timezone":value["timezone"],"time_unknown":False}
 
 def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
  if isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be an integer from 1..20")
@@ -83,13 +104,16 @@ def validate_proposals(root,bundle,agent,workspace,api):
   if not c or not closed(s,{"path","line_start","line_end","source_content_hash","claim_content_hash"}) or canonical_path(s.get("path"))!=c["path"] or s!={"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"]}: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"stale_provenance"}); continue
   if SECRET.search(json.dumps(raw,ensure_ascii=False)): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"secret_like_input","redacted":True}); continue
   p=raw["payload"]
-  if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]): entities.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
+  temporal=normalized_time(p.get("temporal") if isinstance(p,dict) else None)
+  if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]) and temporal is not False: entities.append({**raw,"payload":{**p,"temporal":temporal},"lifecycle":"candidate","review":None,"extractor":ex})
   elif raw["kind"]=="assertion" and closed(p,{"subject","predicate","object","valid_time"}) and p["predicate"] in PREDICATES and closed(p["subject"],{"entity_id","type"}) and closed(p["object"],{"entity_id","type"}):
    subj,obj=p["subject"],p["object"]; domains=ENDPOINTS[p["predicate"]]
    if not SAFE_ID.fullmatch(str(subj["entity_id"])) or not SAFE_ID.fullmatch(str(obj["entity_id"])) or subj["type"] not in domains[0] or obj["type"] not in domains[1]: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_endpoints"}); continue
    if (subj["type"],subj["entity_id"]) not in known_endpoints or (obj["type"],obj["entity_id"]) not in known_endpoints: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"dangling_endpoints"}); continue
    if p["predicate"]=="caused" and not CAUSAL.search(c.get("value","")): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"chronology_only_cause"}); continue
-   assertions.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
+   valid_time=normalized_time(p["valid_time"])
+   if valid_time is False: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_temporal_interval"}); continue
+   assertions.append({**raw,"payload":{**p,"valid_time":valid_time},"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
  for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
  result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
