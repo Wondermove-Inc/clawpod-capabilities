@@ -59,6 +59,10 @@ class SemanticV10(unittest.TestCase):
   bad=copy.deepcopy(self.bundle); bad['extra']=1; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json',code=2)['error']['code'],'malformed_model_output')
   bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['claim_content_hash']='b'*64; self.write('bad.json',self.reseal(bad)); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine'][0]['reason_code'],'stale_provenance')
   bad=copy.deepcopy(self.bundle); bad['proposals'][0]['basis']='password=abcdefghijklmnop'; self.write('bad.json',self.reseal(bad)); out=self.cli('semantic-validate-proposals','--input','bad.json'); self.assertNotIn('abcdefghijklmnop',json.dumps(out)); self.assertTrue(out['data']['quarantine'][0]['redacted'])
+ def test_extractor_provenance_is_exactly_allowlisted_and_rollback_is_reproducible(self):
+  out=self.validated(); self.assertEqual(out['extractor_policy']['policy_version'],'memory-graph-extractor-allowlist/v1'); self.assertTrue(out['extractor_policy']['rollback']['revalidate_from_canonical_sources']); self.assertFalse(out['extractor_policy']['rollback']['reuse_prior_approvals'])
+  for field,value,code in [('extractor_version','1.0.1','extractor_not_allowlisted'),('config_hash','b'*64,'extractor_config_not_allowlisted')]:
+   bad=copy.deepcopy(self.bundle); bad['extractor'][field]=value; self.write('bad.json',self.reseal(bad)); self.assertEqual(self.cli('semantic-validate-proposals','--input','bad.json',code=2)['error']['code'],code)
  def test_unicode_and_path_confusables_fail_closed(self):
   for path in ('memory\\source.md','memory/../memory/source.md','/memory/source.md','C:memory/source.md','memo\u0301ry/source.md'):
    bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['path']=path; self.write('bad.json',self.reseal(bad)); self.assertIn('stale_provenance',{x['reason_code'] for x in self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine']})

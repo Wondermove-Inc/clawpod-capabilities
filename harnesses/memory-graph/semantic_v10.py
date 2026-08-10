@@ -15,6 +15,10 @@ ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Perso
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
 REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
+EXTRACTOR_ALLOWLIST={
+ ("agent-semantic-inference","1.0.0"):frozenset({hashlib.sha256(b"memory-graph-v0.10-default").hexdigest()}),
+ ("test","1.0.0"):frozenset({"a"*64}),
+}
 # Closed causal phrases.  Bare Korean nouns such as "원인" and English words
 # such as "result" are not evidence that the claim asserts a directed cause.
 CAUSAL=re.compile(r"(?i)(?:\b(?:directly\s+)?caused\b|\bbecause\s+of\b|\bled\s+to\b|\bresulted\s+in\b|\bdue\s+to\b|(?:직접\s*)?원인이\s*(?:되어|돼|되었|됐다)|때문에|초래(?:했|하였|하여|함))")
@@ -55,6 +59,13 @@ def atomic_write(output, data):
 def proposal_id(namespace, raw, extractor):
  material={k:raw[k] for k in ("kind","claim_id","source","payload","basis")}
  return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
+
+def extractor_policy(extractor,api):
+ if not closed(extractor,{"extractor_id","extractor_version","config_hash"}) or not all(isinstance(extractor.get(k),str) for k in extractor) or not HASH.fullmatch(extractor["config_hash"]): fail(api,"invalid_extractor","invalid extractor metadata")
+ key=(extractor["extractor_id"],extractor["extractor_version"]); allowed=EXTRACTOR_ALLOWLIST.get(key)
+ if allowed is None: fail(api,"extractor_not_allowlisted","extractor ID and version are not approved")
+ if extractor["config_hash"] not in allowed: fail(api,"extractor_config_not_allowlisted","extractor config is not approved for this exact version")
+ return {"policy_version":"memory-graph-extractor-allowlist/v1","extractor_id":key[0],"extractor_version":key[1],"config_hash":extractor["config_hash"],"rollback":{"revalidate_from_canonical_sources":True,"reuse_prior_proposals":False,"reuse_prior_approvals":False}}
 
 def normalized_time(value):
  if value is None: return None
@@ -122,8 +133,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
  plan,claims=fresh(api,root,agent,workspace)
  if bundle["namespace"]!=plan["ownership"]["namespace"]: fail(api,"namespace_mismatch","wrong namespace")
  if bundle["source_snapshot_hash"]!=plan["snapshot_hash"] or bundle["source_digest"]!=plan["source_digest"]: fail(api,"stale_hashes","source snapshot is stale")
- ex=bundle["extractor"]
- if not closed(ex,{"extractor_id","extractor_version","config_hash"}) or not HASH.fullmatch(str(ex["config_hash"])): fail(api,"invalid_extractor","invalid extractor metadata")
+ ex=bundle["extractor"]; policy=extractor_policy(ex,api)
  entities=[]; assertions=[]; quarantine=[]
  if not isinstance(bundle["proposals"],list): fail(api,"malformed_model_output","proposals must be an array")
  seen_ids=set()
@@ -165,7 +175,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
    assertions.append({**raw,"payload":{**p,"valid_time":valid_time},"lifecycle":"candidate","review":None,"extractor":ex})
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
  for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
- result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
+ result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"extractor_policy":policy,"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
  latest_mtime=max((root/c["path"]).stat().st_mtime for c in claims.values())
  if latest_mtime > datetime.now(timezone.utc).timestamp()+300: fail(api,"source_clock_skew","canonical source mtime is more than 5 minutes in the future")
  result["source_latest_mtime"]=datetime.fromtimestamp(latest_mtime,timezone.utc).isoformat().replace("+00:00","Z")
