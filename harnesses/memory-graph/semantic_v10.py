@@ -205,6 +205,7 @@ def build_snapshot(reviewed,api):
  for x in approved:
   if x.get("kind")!="assertion": continue
   p=x.get("payload",{}); key=(p.get("subject",{}).get("entity_id"),p.get("predicate"),p.get("object",{}).get("entity_id"))
+  if key[0]==key[2]: fail(api,"semantic_self_loop","approved semantic relations must connect distinct entity IDs",proposal_id=x.get("proposal_id"),predicate=key[1])
   if key in relation_keys: fail(api,"duplicate_semantic_assertion","multiple approved assertions express the same semantic edge",first=relation_keys[key],duplicate=x.get("proposal_id"))
   relation_keys[key]=x.get("proposal_id")
   if p.get("predicate")=="supersedes": supersedes.setdefault(key[0],set()).add(key[2])
