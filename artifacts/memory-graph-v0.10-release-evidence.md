@@ -28,3 +28,11 @@ Verification completed on 2026-08-10:
 - `python3 scripts/sync_registry.py`: registry synchronized.
 
 No publication, install, restart, credential use, live graph mutation, or canonical memory mutation was performed.
+
+## Independent round 10, loops 40-43
+
+- `5a7da60`: exact source-byte length/hash plus explicit UTF-8 BOM and universal-newline line normalization evidence.
+- `8327da7`: complete extraction assembly rejects per-page total drift and same-path source-version drift.
+- `78d5a44`: hydration performs fresh canonical parse readback and rejects source-byte or claim-locator drift.
+- `3bb55aa`: traversal adds bounded degree, linear edge de-duplication, and snapshot-bound deterministic entity pagination with stale-cursor rejection.
+- Verification: Memory Graph 120/120 tests passed. Repository and registry checks are recorded after digest synchronization. No install, publish, live graph, or canonical Markdown mutation occurred.
