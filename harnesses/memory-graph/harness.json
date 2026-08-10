@@ -904,6 +904,9 @@
           },
           "limit": {
             "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
           }
         }
       },
@@ -943,6 +946,13 @@
           "type": "option",
           "flag": "--limit",
           "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "cursor",
+          "type": "option",
+          "flag": "--cursor",
+          "valueType": "string",
           "optional": true
         }
       ]

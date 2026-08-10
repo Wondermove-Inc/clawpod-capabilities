@@ -27,9 +27,15 @@ def proposal_id(namespace, raw, extractor):
  material={k:raw[k] for k in ("kind","claim_id","source","payload","basis")}
  return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
 
-def extractor_input(root,agent,workspace,api,limit=20):
+def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
  if not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be 1..20")
- plan,claims=fresh(api,root,agent,workspace); selected=sorted(claims.values(),key=lambda c:(c["path"],c["line"],c["claim_id"]))[:limit]
+ plan,claims=fresh(api,root,agent,workspace); ordered=sorted(claims.values(),key=lambda c:(c["path"],c["line"],c["claim_id"]))
+ start=0
+ if cursor:
+  matches=[i for i,c in enumerate(ordered) if sha({"snapshot":plan["snapshot_hash"],"claim_id":c["claim_id"]})==cursor]
+  if len(matches)!=1: fail(api,"invalid_extractor_cursor","cursor is stale or does not belong to this snapshot")
+  start=matches[0]+1
+ selected=ordered[start:start+limit]
  endpoints=[]
  for e in sorted(plan.get("semantic_entities",[]),key=lambda x:(x.get("type",""),x.get("entity_id",""))):
   if e.get("type") in TYPES and SAFE_ID.fullmatch(e.get("entity_id","")): endpoints.append({"type":e["type"],"entity_id":e["entity_id"]})
@@ -39,7 +45,8 @@ def extractor_input(root,agent,workspace,api,limit=20):
   value=c.get("value","")
   if SECRET.search(value): value="[REDACTED]"
   rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"],"claim_text":value})
- out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
+ next_cursor=sha({"snapshot":plan["snapshot_hash"],"claim_id":selected[-1]["claim_id"]}) if selected and start+len(selected)<len(ordered) else None
+ out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"remaining":max(0,len(ordered)-start-len(selected))},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
  out["bundle_hash"]=sha(out); return out
 
 def validate_proposals(root,bundle,agent,workspace,api):

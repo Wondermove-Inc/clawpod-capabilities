@@ -1588,7 +1588,7 @@ def parser() -> argparse.ArgumentParser:
         if name == "semantic-view": c.add_argument("--include-candidates", action="store_true")
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
-    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20)
+    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor")
     for name in ("semantic-validate-proposals", "semantic-review-queue"):
         c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
     c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--root", default=".")
@@ -1638,7 +1638,7 @@ def main(argv: list[str] | None = None) -> int:
             data = export_visualization(snapshot, overlay, args.include_inferred)
         elif args.command == "semantic-extractor-input":
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
-            data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit)
+            data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit,args.cursor)
         elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
             validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
