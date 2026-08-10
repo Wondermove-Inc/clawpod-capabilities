@@ -55,12 +55,17 @@ def line_provenance(root,path,line_start,line_end):
  return {"source_content_hash":hashlib.sha256(data).hexdigest(),"source_byte_length":len(data),"normalized_line_hash":hashlib.sha256(normalized.encode()).hexdigest(),"line_normalization":"utf8-bom-strip+universal-newlines/v1"}
 def atomic_write(output, data):
  """Durably replace a regular output without exposing a partial document."""
- output.parent.mkdir(parents=False,exist_ok=True)
+ output=Path(output); parent=output.parent
+ if parent.is_symlink() or not parent.is_dir(): raise OSError("private output parent must be an existing non-symlink directory")
+ parent_before=parent.stat(follow_symlinks=False)
+ if output.is_symlink() or (output.exists() and not output.is_file()): raise OSError("private output target must be a regular non-symlink file")
  fd,tmp=tempfile.mkstemp(prefix="."+output.name+".",suffix=".tmp",dir=output.parent)
  try:
   with os.fdopen(fd,"wb") as stream:
    stream.write(data); stream.flush(); os.fsync(stream.fileno())
-  os.chmod(tmp,0o600); os.replace(tmp,output)
+  os.chmod(tmp,0o600)
+  if parent.is_symlink() or not os.path.samestat(parent_before,parent.stat(follow_symlinks=False)) or output.is_symlink() or (output.exists() and not output.is_file()): raise OSError("private output path changed during atomic write")
+  os.replace(tmp,output)
   directory=os.open(output.parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0))
   try: os.fsync(directory)
   finally: os.close(directory)
