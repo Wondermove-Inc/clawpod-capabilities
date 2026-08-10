@@ -15,14 +15,19 @@ import sys
 import tempfile
 import time
 import unicodedata
+import math
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 SCHEMA_VERSION = 5
-CONTRACT_VERSION = "0.6.0"
+CONTRACT_VERSION = "0.7.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
+INFERENCE_CONTRACT_VERSION = "0.7"
+INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
+MAX_INFERENCE_BUNDLE_BYTES = 1024 * 1024
+MAX_INFERENCE_CANDIDATES = 1000
 MAX_SOURCE_FILES = 256
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
 MAX_MCP_OUTPUT_BYTES = 1024 * 1024
@@ -769,7 +774,8 @@ def graph_diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
 
 def semantic_query(snapshot: dict[str, Any], entity_id: str | None, entity_type: str | None,
                    relation: str | None, direction: str, statuses: str,
-                   max_depth: int, max_entities: int, max_edges: int, explain: bool) -> dict[str, Any]:
+                   max_depth: int, max_entities: int, max_edges: int, explain: bool,
+                   overlay: dict[str, Any] | None = None, include_inferred: bool = False) -> dict[str, Any]:
     validate_snapshot(snapshot)
     if not 0 <= max_depth <= 3 or not 1 <= max_entities <= 100 or not 1 <= max_edges <= 200:
         raise InputError("query_bounds", "Semantic query exceeds deterministic bounds")
@@ -787,11 +793,19 @@ def semantic_query(snapshot: dict[str, Any], entity_id: str | None, entity_type:
         if grounding_status and not grounding_status & wanted_status: continue
         starts.append(name)
     rels = snapshot.get("semantic_relations", [])
+    inferred_rels: list[dict[str, Any]] = []
+    if include_inferred and overlay is not None:
+        if (not isinstance(overlay, dict) or overlay.get("namespace") != snapshot.get("ownership", {}).get("namespace")
+                or overlay.get("source_snapshot_hash") != snapshot["snapshot_hash"]
+                or overlay.get("overlay_hash") != digest({k: v for k, v in overlay.items() if k != "overlay_hash"})):
+            raise InputError("stale_overlay", "Inference overlay is invalid, stale, or cross-namespace")
+        inferred_rels = list(overlay.get("inferred_relations", []))
     if relation:
         requested = set(relation.split(","))
         if not requested <= set(SEMANTIC_RELATIONS): raise InputError("query_relation", "Unknown semantic relation")
         rels = [r for r in rels if r["relationType"] in requested]
-    visited, frontier, edges = set(starts), sorted(starts), []
+        inferred_rels = [r for r in inferred_rels if r["relationType"] in requested]
+    visited, frontier, edges, inferred_edges = set(starts), sorted(starts), [], []
     for _ in range(max_depth):
         next_frontier = []
         for rel in rels:
@@ -801,18 +815,346 @@ def semantic_query(snapshot: dict[str, Any], entity_id: str | None, entity_type:
                 edges.append(rel)
                 other = rel["to"] if rel["from"] in frontier else rel["from"]
                 if other in entities and other not in visited: visited.add(other); next_frontier.append(other)
+        if include_inferred:
+            for rel in inferred_rels:
+                hit = ((direction in {"out", "both"} and rel["from"] in frontier) or
+                       (direction in {"in", "both"} and rel["to"] in frontier))
+                if hit:
+                    inferred_edges.append(rel)
+                    other = rel["to"] if rel["from"] in frontier else rel["from"]
+                    if other in entities and other not in visited: visited.add(other); next_frontier.append(other)
         frontier = sorted(set(next_frontier))
         if not frontier: break
     ordered_entities = [entities[n] for n in sorted(visited)[:max_entities]]
     ordered_edges = sorted({r["edge_id"]: r for r in edges}.values(), key=lambda r: r["edge_id"])[:max_edges]
     hydration = sorted({(p["source_claim_id"], p["path"], p["line"], p["content_hash"])
         for e in ordered_entities for p in json.loads(e["observations"][0]).get("provenance", [])})
+    inferred_hits = sorted({edge["inferred_edge_id"]: edge for edge in inferred_edges}.values(),
+                           key=lambda edge: (-edge["confidence"], edge["inferred_edge_id"]))[:max_edges]
     return {"canonical": False, "locator_only": True, "namespace": snapshot.get("ownership", {}).get("namespace"),
             "source_digest": snapshot["source_digest"], "snapshot_hash": snapshot["snapshot_hash"],
-            "entities": ordered_entities, "edges": ordered_edges,
+            "entities": ordered_entities, "edges": ordered_edges, "explicit_relations": ordered_edges,
+            "inferred_relations": inferred_hits, "include_inferred": include_inferred,
+            "path_classification": "inferred" if inferred_hits else "explicit",
             "hydration_requests": [{"source_claim_id": a, "path": b, "line": c, "content_hash": d} for a,b,c,d in hydration] if explain else [],
             "quarantine": snapshot.get("semantic_quarantine", []) if "quarantined" in wanted_status else [],
-            "truncated": len(visited) > max_entities or len(edges) > max_edges, "conflicts": snapshot["conflicts"]}
+            "truncated": len(visited) > max_entities or len(edges) > max_edges or len(inferred_edges) > max_edges,
+            "conflicts": snapshot["conflicts"]}
+
+
+def _inference_candidate_id(namespace: str, candidate: dict[str, Any], extractor: dict[str, str]) -> str:
+    parts = (namespace, candidate["source_claim_id"], candidate["source"]["claim_content_hash"],
+             candidate["from"]["type"], candidate["from"]["entity_id"], candidate["relation_type"],
+             candidate["to"]["type"], candidate["to"]["entity_id"], extractor["name"],
+             extractor["version"], extractor["config_hash"])
+    return "ic_" + hashlib.sha256("".join(parts).encode("utf-8")).hexdigest()
+
+
+def _safe_candidate_hash(value: Any) -> str:
+    return hashlib.sha256(canonical_bytes(value)).hexdigest()
+
+
+def _inference_quarantine(namespace: str, reason: str, candidate: Any) -> dict[str, Any]:
+    candidate_hash = _safe_candidate_hash(candidate)
+    candidate_id = candidate.get("candidate_id") if isinstance(candidate, dict) else None
+    if not isinstance(candidate_id, str) or not re.fullmatch(r"ic_[0-9a-f]{64}", candidate_id):
+        candidate_id = "ic_" + candidate_hash
+    claim_id = candidate.get("source_claim_id", "") if isinstance(candidate, dict) else ""
+    if not isinstance(claim_id, str) or secret_like(claim_id):
+        claim_id = ""
+    source = candidate.get("source", {}) if isinstance(candidate, dict) else {}
+    locator = {}
+    if isinstance(source, dict):
+        if isinstance(source.get("path"), str) and re.fullmatch(r"memory/[^/]+\.md", source["path"]):
+            locator["path"] = source["path"]
+        for field in ("line_start", "line_end"):
+            if isinstance(source.get(field), int) and source[field] > 0:
+                locator[field] = source[field]
+    safe_key = candidate_id if candidate_id else candidate_hash
+    return {"quarantine_id": "iq_" + hashlib.sha256((namespace + safe_key + reason).encode()).hexdigest(),
+            "reason_code": reason, "source_claim_id": claim_id,
+            "candidate_id": candidate_id, "candidate_hash": candidate_hash, "locator": locator}
+
+
+def _candidate_shape_reason(candidate: Any) -> str | None:
+    if not isinstance(candidate, dict):
+        return "id_mismatch"
+    if set(candidate) != {"candidate_id", "source_claim_id", "source", "from", "relation_type", "to", "confidence", "basis"}:
+        return "id_mismatch"
+    source = candidate.get("source")
+    endpoint_keys = {"entity_id", "type"}
+    if (not isinstance(candidate.get("candidate_id"), str) or not isinstance(candidate.get("source_claim_id"), str)
+            or not isinstance(candidate.get("relation_type"), str) or not isinstance(candidate.get("basis"), str)):
+        return "id_mismatch"
+    if not isinstance(source, dict) or set(source) != {"path", "line_start", "line_end", "source_content_hash", "claim_content_hash"}:
+        return "line_mismatch"
+    if any(not isinstance(candidate.get(k), dict) or set(candidate[k]) != endpoint_keys for k in ("from", "to")):
+        return "invalid_endpoint_type"
+    if any(not all(isinstance(endpoint.get(field), str) for field in endpoint_keys)
+           for endpoint in (candidate["from"], candidate["to"])):
+        return "invalid_endpoint_type"
+    return None
+
+
+def validate_inference_candidates(root: Path, bundle: Any, agent_id: str,
+                                  workspace_id: str | None) -> dict[str, Any]:
+    """Validate extractor output without repairing, resolving, calling a model, or mutating state."""
+    allowed = {"schema_version", "semantic_contract_version", "namespace", "source_snapshot_hash",
+               "source_digest", "extractor", "candidates"}
+    if not isinstance(bundle, dict) or set(bundle) != allowed:
+        raise InputError("invalid_bundle", "Inference bundle has missing or unknown keys")
+    extractor = bundle.get("extractor")
+    if (bundle.get("schema_version") != INFERENCE_SCHEMA_VERSION
+            or bundle.get("semantic_contract_version") != INFERENCE_CONTRACT_VERSION
+            or not isinstance(extractor, dict) or set(extractor) != {"name", "version", "config_hash"}
+            or extractor.get("name") != "agent-semantic-inference"
+            or not isinstance(extractor.get("version"), str) or not ID_RE.fullmatch(extractor["version"])
+            or not isinstance(extractor.get("config_hash"), str) or not HASH_RE.fullmatch(extractor["config_hash"])):
+        raise InputError("invalid_extractor", "Inference schema or immutable extractor identity is invalid")
+    metadata = {key: value for key, value in bundle.items() if key != "candidates"}
+    if secret_like(metadata):
+        raise InputError("secret_like_bundle", "Secret-like inference bundle metadata rejected")
+    candidates = bundle.get("candidates")
+    if not isinstance(candidates, list) or len(candidates) > MAX_INFERENCE_CANDIDATES:
+        raise InputError("invalid_bundle", "candidates must be a bounded array", {"limit": MAX_INFERENCE_CANDIDATES})
+    ownership = namespace_for(agent_id, root, workspace_id)
+    if bundle.get("namespace") != ownership["namespace"]:
+        raise InputError("namespace_mismatch", "Inference namespace does not match explicit identity")
+    inspected = inspect_workspace(root)
+    snapshot = build_plan(inspected, False, ownership)
+    if bundle.get("source_snapshot_hash") != snapshot["snapshot_hash"] or bundle.get("source_digest") != inspected["source_digest"]:
+        raise InputError("stale_snapshot", "Inference bundle does not match the current source snapshot")
+    ids: dict[str, bytes] = {}
+    for candidate in candidates:
+        if isinstance(candidate, dict) and isinstance(candidate.get("candidate_id"), str):
+            rendered = canonical_bytes(candidate)
+            if candidate["candidate_id"] in ids and ids[candidate["candidate_id"]] != rendered:
+                raise InputError("duplicate_candidate_id", "A candidate ID has differing content")
+            ids[candidate["candidate_id"]] = rendered
+    claims = {claim["claim_id"]: claim for claim in inspected["claims"]}
+    sources = {source["path"]: source for source in inspected["sources"]}
+    endpoint_names: dict[tuple[str, str], str] = {}
+    for entity in snapshot["entities"]:
+        if entity["entityType"] not in SEMANTIC_TYPES or not entity["name"].startswith(ownership["namespace"] + "semantic:"):
+            continue
+        observation = json.loads(entity["observations"][0])
+        endpoint_names[(entity["entityType"], observation["entity_id"])] = entity["name"]
+    explicit_tuples = {(r["from"], r["relationType"], r["to"]) for r in snapshot["semantic_relations"]}
+    checked: list[tuple[dict[str, Any], str | None, dict[str, Any] | None]] = []
+    checked_bytes: set[bytes] = set()
+    for candidate in candidates:
+        rendered_candidate = canonical_bytes(candidate)
+        if rendered_candidate in checked_bytes:
+            continue
+        checked_bytes.add(rendered_candidate)
+        reason = _candidate_shape_reason(candidate)
+        normalized = None
+        if reason is None:
+            source = candidate["source"]
+            if secret_like(candidate):
+                reason = "secret_like_candidate"
+            elif candidate["relation_type"] not in SEMANTIC_RELATIONS:
+                reason = "unknown_relation"
+            elif candidate["basis"] not in {"direct_statement", "direct_causal_statement"}:
+                reason = "causality_not_direct" if candidate["relation_type"] == "caused" else "id_mismatch"
+            elif (not isinstance(candidate["confidence"], (int, float)) or isinstance(candidate["confidence"], bool)
+                  or not math.isfinite(candidate["confidence"]) or not 0 <= candidate["confidence"] <= 1):
+                reason = "invalid_confidence"
+            elif not isinstance(source["path"], str) or not re.fullmatch(r"memory/[^/]+\.md", source["path"]):
+                reason = "stale_source"
+            elif source["path"] not in sources:
+                reason = "stale_source"
+            elif any(not isinstance(source.get(k), int) or isinstance(source[k], bool) or source[k] < 1 for k in ("line_start", "line_end")) or source["line_end"] < source["line_start"]:
+                reason = "line_mismatch"
+            elif any(not isinstance(source.get(k), str) or not HASH_RE.fullmatch(source[k]) for k in ("source_content_hash", "claim_content_hash")):
+                reason = "claim_hash_mismatch"
+            elif candidate["source_claim_id"] not in claims:
+                reason = "ineligible_claim"
+            else:
+                claim = claims[candidate["source_claim_id"]]
+                path = root / source["path"]
+                if path.is_symlink() or not path.is_file() or path.resolve().parent != (root / "memory").resolve():
+                    reason = "stale_source"
+                else:
+                    raw = path.read_bytes()
+                    if hashlib.sha256(raw).hexdigest() != source["source_content_hash"] or source["source_content_hash"] != sources[source["path"]]["hash"]:
+                        reason = "stale_source"
+                    elif claim["path"] != source["path"] or claim["content_hash"] != source["claim_content_hash"]:
+                        reason = "claim_hash_mismatch"
+                    elif claim["status"] not in ELIGIBLE_STATUS or claim not in snapshot["claims"]:
+                        reason = "ineligible_claim"
+                    else:
+                        lines = raw.decode("utf-8").splitlines()
+                        selected = "\n".join(lines[source["line_start"] - 1:source["line_end"]]) if source["line_end"] <= len(lines) else ""
+                        marker = f"openclaw-memory-claim:{claim['claim_id']}"
+                        legacy = "```memory-claim"
+                        if source["line_end"] > len(lines) or claim["line"] < source["line_start"] or claim["line"] > source["line_end"] or (marker not in selected and legacy not in selected):
+                            reason = "line_mismatch"
+                        elif candidate["relation_type"] == "caused" and (candidate["basis"] != "direct_causal_statement" or not re.search(r"(?i)\b(?:caused|because|led to|resulted in|triggered|due to)\b", selected)):
+                            reason = "causality_not_direct"
+            if reason is None:
+                frm, to = candidate["from"], candidate["to"]
+                if frm["type"] not in SEMANTIC_TYPES or to["type"] not in SEMANTIC_TYPES:
+                    reason = "invalid_endpoint_type"
+                elif any(endpoint["entity_id"].startswith("memory-graph:v1:") for endpoint in (frm, to)):
+                    reason = "cross_namespace_endpoint"
+                else:
+                    domains, ranges = SEMANTIC_RELATIONS[candidate["relation_type"]]
+                    if frm["type"] not in domains or to["type"] not in ranges:
+                        reason = "invalid_endpoint_type"
+                if reason is None and ((frm["type"], frm["entity_id"]) not in endpoint_names or (to["type"], to["entity_id"]) not in endpoint_names):
+                    reason = "unresolved_explicit_endpoint"
+                elif reason is None and frm == to:
+                    reason = "self_relation"
+                elif reason is None:
+                    if candidate["candidate_id"] != _inference_candidate_id(ownership["namespace"], candidate, extractor):
+                        reason = "id_mismatch"
+                    else:
+                        normalized = {**candidate, "confidence": candidate["confidence"] + 0.0,
+                            "from_name": endpoint_names[(frm["type"], frm["entity_id"])],
+                            "to_name": endpoint_names[(to["type"], to["entity_id"])]}
+                        if (normalized["from_name"], candidate["relation_type"], normalized["to_name"]) in explicit_tuples:
+                            reason = "shadowed_by_explicit"
+        checked.append((candidate, reason, normalized))
+    # Supersession candidates must remain acyclic as one inert component.
+    supersession_graph: dict[str, set[str]] = {}
+    for _, reason, normalized in checked:
+        if reason is None and normalized and normalized["relation_type"] == "supersedes":
+            supersession_graph.setdefault(normalized["from"]["entity_id"], set()).add(normalized["to"]["entity_id"])
+    cyclic: set[str] = set()
+    def inference_visit(node: str, trail: tuple[str, ...]) -> None:
+        if node in trail:
+            cyclic.update(trail[trail.index(node):]); return
+        for nxt in supersession_graph.get(node, set()):
+            inference_visit(nxt, trail + (node,))
+    for node in sorted(supersession_graph):
+        inference_visit(node, ())
+    checked = [(candidate,
+                "supersession_cycle" if reason is None and normalized and normalized["relation_type"] == "supersedes"
+                and (normalized["from"]["entity_id"] in cyclic or normalized["to"]["entity_id"] in cyclic) else reason,
+                normalized) for candidate, reason, normalized in checked]
+    # Deterministically quarantine all mutually contradictory alternatives.
+    groups: dict[tuple[str, str, str], set[str]] = {}
+    for candidate, reason, normalized in checked:
+        if reason is None and normalized:
+            key = (candidate["source_claim_id"], normalized["from_name"], candidate["relation_type"])
+            groups.setdefault(key, set()).add(normalized["to_name"])
+    contradictory = {key for key, targets in groups.items() if len(targets) > 1}
+    accepted, quarantine = [], []
+    seen = set()
+    for candidate, reason, normalized in checked:
+        if reason is None and normalized and (candidate["source_claim_id"], normalized["from_name"], candidate["relation_type"]) in contradictory:
+            reason = "contradictory_candidates"
+        if reason is None and normalized:
+            canonical = {k: v for k, v in normalized.items() if k not in {"from_name", "to_name"}}
+            key = canonical_bytes(canonical)
+            if key not in seen:
+                seen.add(key); accepted.append(canonical)
+        else:
+            quarantine.append(_inference_quarantine(ownership["namespace"], reason or "id_mismatch", candidate))
+    accepted.sort(key=lambda c: c["candidate_id"])
+    quarantine.sort(key=lambda q: (q["reason_code"], q["source_claim_id"], q["candidate_id"]))
+    normalized_bundle = {**metadata, "candidates": sorted(candidates, key=canonical_bytes)}
+    return {"schema_version": INFERENCE_SCHEMA_VERSION, "semantic_contract_version": INFERENCE_CONTRACT_VERSION,
+            "namespace": ownership["namespace"], "source_snapshot_hash": snapshot["snapshot_hash"],
+            "source_digest": inspected["source_digest"], "extractor": extractor,
+            "candidate_bundle_hash": digest(normalized_bundle), "accepted_candidates": accepted,
+            "quarantine": quarantine, "accepted_count": len(accepted), "quarantine_count": len(quarantine),
+            "fresh": True, "canonical": False, "locator_only": True}
+
+
+def project_inference_overlay(validated: dict[str, Any]) -> dict[str, Any]:
+    inferred = []
+    namespace = validated["namespace"]
+    extractor = validated["extractor"]
+    for candidate in validated["accepted_candidates"]:
+        inferred.append({"inferred_edge_id": "ie_" + hashlib.sha256((namespace + candidate["candidate_id"]).encode()).hexdigest(),
+            "candidate_id": candidate["candidate_id"], "from": namespace + "semantic:" + candidate["from"]["type"] + ":" + candidate["from"]["entity_id"],
+            "to": namespace + "semantic:" + candidate["to"]["type"] + ":" + candidate["to"]["entity_id"],
+            "relationType": candidate["relation_type"], "source_claim_id": candidate["source_claim_id"],
+            "locator": candidate["source"], "confidence": candidate["confidence"], "basis": candidate["basis"],
+            "extractor": extractor, "semantic_contract_version": INFERENCE_CONTRACT_VERSION,
+            "namespace": namespace, "source_snapshot_hash": validated["source_snapshot_hash"],
+            "inferred": True, "canonical": False, "locator_only": True})
+    inferred.sort(key=lambda edge: edge["inferred_edge_id"])
+    payload = {"schema_version": "memory-graph-inference-overlay/v1", "semantic_contract_version": INFERENCE_CONTRACT_VERSION,
+               "namespace": namespace, "source_snapshot_hash": validated["source_snapshot_hash"],
+               "source_digest": validated["source_digest"], "candidate_bundle_hash": validated["candidate_bundle_hash"],
+               "inferred_relations": inferred, "quarantine": validated["quarantine"],
+               "canonical": False, "locator_only": True}
+    payload["overlay_hash"] = digest(payload)
+    return payload
+
+
+def cache_inference_overlay(state_root: Path, validated: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    namespace = validated["namespace"]
+    owner = namespace.removeprefix("memory-graph:v1:").removesuffix(":")
+    if not re.fullmatch(r"[0-9a-f]{24}", owner):
+        raise InputError("unsafe_state_path", "Inference cache namespace is invalid")
+    lexical_state_root = state_root.absolute()
+    cursor = Path(lexical_state_root.anchor)
+    for part in lexical_state_root.parts[1:]:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("unsafe_state_path", "State root and its parents must not be symlinks")
+    state_root = lexical_state_root.resolve()
+    if state_root.exists() and not state_root.is_dir():
+        raise InputError("unsafe_state_path", "State root must be a regular directory")
+    extractor = validated["extractor"]
+    cache_key = hashlib.sha256("".join((namespace, validated["source_snapshot_hash"], extractor["name"],
+        extractor["version"], extractor["config_hash"], validated["candidate_bundle_hash"],
+        INFERENCE_CONTRACT_VERSION)).encode()).hexdigest()
+    target = state_root / owner / "inference" / (cache_key + ".json")
+    value = {"cache_key": cache_key, "namespace": namespace, "source_snapshot_hash": validated["source_snapshot_hash"],
+             "source_digest": validated["source_digest"], "extractor": extractor,
+             "candidate_bundle_hash": validated["candidate_bundle_hash"], "semantic_contract_version": INFERENCE_CONTRACT_VERSION,
+             "overlay": overlay, "quarantine": validated["quarantine"]}
+    hit = False
+    if target.exists():
+        if target.is_symlink() or not target.is_file():
+            raise InputError("unsafe_state_path", "Inference cache entry must be a regular file")
+        try:
+            hit = json.loads(target.read_text(encoding="utf-8")) == value
+        except json.JSONDecodeError:
+            hit = False
+    cache_dir = target.parent
+    removed = []
+    if cache_dir.exists():
+        for entry in sorted(cache_dir.iterdir()):
+            if entry == target:
+                continue
+            if entry.is_symlink() or not entry.is_file() or not re.fullmatch(r"[0-9a-f]{64}\.json", entry.name):
+                raise InputError("unsafe_state_path", "Inference cache contains an unsafe entry")
+            entry.unlink()
+            removed.append(entry.name)
+    if not hit:
+        atomic_private_json(target, value)
+    elif (target.stat().st_mode & 0o777) != 0o600:
+        os.chmod(target, 0o600)
+    return {"cache_key": cache_key, "cache_hit": hit, "cache_path": f"{owner}/inference/{cache_key}.json",
+            "removed_stale_entries": removed, "mode": "0600"}
+
+
+def export_visualization(snapshot: dict[str, Any], overlay: dict[str, Any] | None,
+                         include_inferred: bool) -> dict[str, Any]:
+    validate_snapshot(snapshot)
+    explicit = [{**edge, "line_style": "solid", "label": "Explicit", "inferred": False}
+                for edge in snapshot.get("semantic_relations", [])]
+    inferred: list[dict[str, Any]] = []
+    quarantine: list[dict[str, Any]] = []
+    if include_inferred and overlay is not None:
+        if (overlay.get("namespace") != snapshot.get("ownership", {}).get("namespace")
+                or overlay.get("source_snapshot_hash") != snapshot["snapshot_hash"]
+                or overlay.get("overlay_hash") != digest({k: v for k, v in overlay.items() if k != "overlay_hash"})):
+            raise InputError("stale_overlay", "Inference overlay is invalid, stale, or cross-namespace")
+        inferred = [{**edge, "line_style": "dashed", "label": f"Inferred, noncanonical ({edge['confidence']:.2f})"}
+                    for edge in overlay.get("inferred_relations", [])]
+        quarantine = overlay.get("quarantine", [])
+    return {"schema_version": "memory-graph-visualization/v1", "namespace": snapshot.get("ownership", {}).get("namespace"),
+            "explicit_relations": explicit, "inferred_relations": inferred,
+            "legend": [{"label": "Explicit", "line_style": "solid"},
+                       {"label": "Inferred, noncanonical", "line_style": "dashed"}],
+            "quarantine_panel": quarantine, "color_only": False, "canonical": False}
 
 
 def _validate_conflicts(conflicts: Any, code: str) -> None:
@@ -921,6 +1263,28 @@ def load_json(path: str, root: Path) -> Any:
         return json.loads(target.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise InputError("invalid_json", "Input file contains invalid JSON", {"path": path, "line": exc.lineno, "column": exc.colno}) from exc
+
+
+def load_inference_bundle(path: str, root: Path) -> tuple[Any, str]:
+    """Bounded, regular-file-only JSON load for untrusted extractor output."""
+    raw_path = Path(path)
+    lexical = raw_path if raw_path.is_absolute() else root / raw_path
+    cursor = Path(lexical.anchor) if lexical.is_absolute() else Path()
+    for part in lexical.parts[1:] if lexical.is_absolute() else lexical.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("invalid_bundle", "Inference input must be a regular non-symlink file")
+    target = safe_resolve(root, path)
+    if target.is_symlink() or not target.is_file():
+        raise InputError("invalid_bundle", "Inference input must be a regular non-symlink file")
+    raw = target.read_bytes()
+    if len(raw) > MAX_INFERENCE_BUNDLE_BYTES:
+        raise InputError("oversized_bundle", "Inference candidate bundle exceeds the byte limit",
+                         {"limit": MAX_INFERENCE_BUNDLE_BYTES})
+    try:
+        return json.loads(raw), hashlib.sha256(raw).hexdigest()
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise InputError("malformed_bundle", "Inference candidate bundle is not valid UTF-8 JSON") from exc
 
 
 def atomic_private_json(path: Path, value: Any) -> None:
@@ -1244,8 +1608,15 @@ def parser() -> argparse.ArgumentParser:
     c = sub.add_parser("diff"); c.add_argument("--snapshot", required=True); c.add_argument("--root", default="."); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject"); c.add_argument("--include-inferred", action="store_true"); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
     c = sub.add_parser("export-mcp-batch"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--batch-size", type=int, default=100); c.add_argument("--include-inferred", action="store_true")
     c = sub.add_parser("query-plan"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--query")
+    c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
     c.add_argument("--entity-id"); c.add_argument("--entity-type"); c.add_argument("--relation"); c.add_argument("--direction", choices=("out","in","both"), default="both")
     c.add_argument("--statuses", default="current,active"); c.add_argument("--max-depth", type=int, default=1); c.add_argument("--max-entities", type=int, default=100); c.add_argument("--max-edges", type=int, default=200); c.add_argument("--explain", action="store_true")
+    for name in ("validate-inference-candidates", "project-inference-overlay"):
+        c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+        c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
+        if name == "project-inference-overlay": c.add_argument("--state-root")
+    c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
+    c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1265,6 +1636,18 @@ def main(argv: list[str] | None = None) -> int:
                 raise InputError("invalid_timeout", "timeout-seconds must be between 1 and 30")
             data = onboard(root, args.agent_id, args.workspace_id, Path(args.state_root), args.mcporter, args.timeout_seconds, args.secret_policy)
         elif args.command == "cron-plan": data = cron_plan(root, args.agent_id, args.workspace_id, args.state_root, args.timezone)
+        elif args.command in {"validate-inference-candidates", "project-inference-overlay"}:
+            bundle, _ = load_inference_bundle(args.input, root)
+            validated = validate_inference_candidates(root, bundle, args.agent_id, args.workspace_id)
+            if args.command == "validate-inference-candidates": data = validated
+            else:
+                data = project_inference_overlay(validated)
+                if args.state_root:
+                    data = {**data, "cache": cache_inference_overlay(Path(args.state_root), validated, data)}
+        elif args.command == "export-visualization":
+            snapshot = load_json(args.input, root)
+            overlay = load_json(args.overlay, root) if args.overlay else None
+            data = export_visualization(snapshot, overlay, args.include_inferred)
         else:
             snapshot = load_json(args.input, root)
             if args.query:
@@ -1272,13 +1655,17 @@ def main(argv: list[str] | None = None) -> int:
                 matches = [e for e in snapshot["entities"] if all(term in json.dumps(e, ensure_ascii=False).casefold() for term in terms)]
                 data = {"query": args.query, "entities": sorted(matches, key=lambda x: x["name"]), "conflicts": snapshot["conflicts"], "canonical_grounding_required": True}
             else:
+                overlay = load_json(args.overlay, root) if args.overlay else None
                 data = semantic_query(snapshot, args.entity_id, args.entity_type, args.relation, args.direction,
-                    args.statuses, args.max_depth, args.max_entities, args.max_edges, args.explain)
+                    args.statuses, args.max_depth, args.max_entities, args.max_edges, args.explain,
+                    overlay, args.include_inferred)
         effects = []
         if args.command == "onboard":
             effects.append({"type": "write_private_state", "namespace": data["namespace"]})
             if data["applied_batches"]:
                 effects.append({"type": "mutate_owned_derived_graph", "namespace": data["namespace"], "batch_count": data["applied_batches"]})
+        if args.command == "project-inference-overlay" and args.state_root and not data["cache"]["cache_hit"]:
+            effects.append({"type": "write_private_cache", "namespace": data["namespace"], "mode": "0600"})
         if args.command in {"inspect", "plan"} and args.output:
             if not args.output_root:
                 raise InputError("invalid_output_path", "--output requires --output-root")
