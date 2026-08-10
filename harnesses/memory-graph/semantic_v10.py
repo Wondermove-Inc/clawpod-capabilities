@@ -116,10 +116,18 @@ def validate_proposals(root,bundle,agent,workspace,api):
   if expected in seen_ids: fail(api,"duplicate_proposal_id","duplicate proposal IDs are ambiguous")
   seen_ids.add(expected)
  known_endpoints={(e.get("type"),e.get("entity_id")) for e in plan.get("semantic_entities",[]) if e.get("type") in TYPES and SAFE_ID.fullmatch(str(e.get("entity_id","")))}
+ # An entity ID is an identity key, not merely a (type, ID) tuple. If the
+ # extractor proposes incompatible identities for the same key, quarantine
+ # every alternative rather than letting proposal ordering pick a winner.
+ entity_identities={}
+ for entity_type,entity_id in known_endpoints: entity_identities.setdefault(entity_id,set()).add(entity_type)
  for raw in bundle["proposals"]:
   if isinstance(raw,dict) and raw.get("kind")=="entity" and isinstance(raw.get("payload"),dict):
    p=raw["payload"]
-   if closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(str(p["entity_id"])): known_endpoints.add((p["type"],p["entity_id"]))
+   if closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(str(p["entity_id"])): entity_identities.setdefault(p["entity_id"],set()).add(p["type"])
+ conflicted_entity_ids={entity_id for entity_id,types in entity_identities.items() if len(types)>1}
+ for entity_id,types in entity_identities.items():
+  if len(types)==1: known_endpoints.add((next(iter(types)),entity_id))
  for raw in bundle["proposals"]:
   if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis"}: quarantine.append({"proposal_id":str(raw.get("proposal_id","?")) if isinstance(raw,dict) else "?","reason_code":"invalid_shape"}); continue
   cid=raw["claim_id"]; c=claims.get(cid); s=raw["source"]
@@ -127,6 +135,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
   if SECRET.search(json.dumps(raw,ensure_ascii=False)): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"secret_like_input","redacted":True}); continue
   p=raw["payload"]
   temporal=normalized_time(p.get("temporal") if isinstance(p,dict) else None)
+  if raw["kind"]=="entity" and isinstance(p,dict) and p.get("entity_id") in conflicted_entity_ids: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"entity_identity_conflict"}); continue
   if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]) and temporal is not False: entities.append({**raw,"payload":{**p,"temporal":temporal},"lifecycle":"candidate","review":None,"extractor":ex})
   elif raw["kind"]=="assertion" and closed(p,{"subject","predicate","object","valid_time"}) and p["predicate"] in PREDICATES and closed(p["subject"],{"entity_id","type"}) and closed(p["object"],{"entity_id","type"}):
    subj,obj=p["subject"],p["object"]; domains=ENDPOINTS[p["predicate"]]

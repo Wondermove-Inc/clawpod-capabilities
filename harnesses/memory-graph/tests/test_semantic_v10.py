@@ -63,6 +63,11 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3)
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:reviewer','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit entity'} for x in v['entity_proposals']]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
+ def test_conflicting_entity_types_for_same_id_are_all_quarantined(self):
+  bad=copy.deepcopy(self.bundle); conflict=copy.deepcopy(bad['proposals'][0]); conflict['payload']['type']='Project'; bad['proposals'].append(conflict); self.write('bundle.json',self.reseal(bad))
+  out=self.validated(); conflicts=[x for x in out['quarantine'] if x['reason_code']=='entity_identity_conflict']
+  self.assertEqual(len(conflicts),2); self.assertFalse(any(x['payload']['entity_id']=='person:alice' for x in out['entity_proposals']))
+  self.assertIn('dangling_endpoints',{x['reason_code'] for x in out['quarantine']})
  def test_domain_valid_but_dangling_assertion_is_quarantined(self):
   bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['object']={'entity_id':'project:missing','type':'Project'}; self.write('bundle.json',self.reseal(bad))
   self.assertIn('dangling_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
