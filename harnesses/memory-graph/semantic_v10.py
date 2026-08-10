@@ -118,8 +118,18 @@ def normalized_time(value):
   if not isinstance(raw,str): return False
   try: dt=datetime.fromisoformat(raw.replace("Z","+00:00"))
   except ValueError: return False
-  if dt.tzinfo is None or dt.utcoffset()!=zone.utcoffset(dt): return False
-  parsed.append(dt.astimezone(timezone.utc))
+  if dt.tzinfo is None: return False
+  # Validate the written wall time against both IANA folds.  Comparing only
+  # utcoffset() accepts nonexistent spring-forward times on some zoneinfo
+  # implementations.  A UTC round-trip proves the local instant exists,
+  # while accepting either explicit offset during a genuine fall-back fold.
+  wall=dt.replace(tzinfo=None); matches=[]
+  for fold in (0,1):
+   candidate=wall.replace(tzinfo=zone,fold=fold)
+   roundtrip=candidate.astimezone(timezone.utc).astimezone(zone)
+   if roundtrip.replace(tzinfo=None)==wall and roundtrip.fold==fold and candidate.utcoffset()==dt.utcoffset(): matches.append(candidate)
+  if not matches: return False
+  parsed.append(matches[0].astimezone(timezone.utc))
  if parsed[0] is None and parsed[1] is None or parsed[0] and parsed[1] and parsed[0]>parsed[1]: return False
  iso=lambda dt: dt.isoformat().replace("+00:00","Z") if dt else None
  return {"start":iso(parsed[0]),"end":iso(parsed[1]),"timezone":value["timezone"],"time_unknown":False}
