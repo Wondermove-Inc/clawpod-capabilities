@@ -18,21 +18,20 @@ Implemented: bounded extractor input, strict proposal validation, deterministic 
 
 Adversarial coverage includes source boundary, provenance and stale hashes, malformed output, prompt-like data, secret redaction, inert identity/aliases, chronology-only cause rejection, inert candidates, retry-safe partial reconciliation, idempotency, stale owned deletion, foreign preservation, canonical immutability, HTML escaping/offline behavior, exact graph node/edge dataset parity, no external resource URLs, candidate/inferred non-approval, deterministic HTML bytes, and 20-claim bound.
 
-Verification completed on 2026-08-10:
+Final scope-freeze verification completed on 2026-08-10:
 
-- `python3 -m unittest discover -s harnesses/memory-graph/tests -v`: 91 passed.
-- `python3 -m unittest discover -s tests -v`: 25 passed.
+- Refinement loops completed: 67 across 16 independent audit rounds.
+- `python3 -m unittest discover -s harnesses/memory-graph/tests -q`: 137 passed.
+- `python3 -m unittest discover -s tests -q`: 25 passed.
 - `python3 scripts/validate.py`: 34 capability entries validated.
-- `python3 -m py_compile harnesses/memory-graph/memory_graph.py harnesses/memory-graph/ontology.py harnesses/memory-graph/semantic_v10.py`: passed.
-- `git diff --check`: passed.
-- `python3 scripts/sync_registry.py`: registry synchronized.
+- `python3 -m compileall -q harnesses/memory-graph`: passed.
+- Harness JSON parsing and `git diff --check`: passed.
+- Deterministic release inventory repeated with digest `931e080096f20e4d06cc6720f829c185edbe483b6d25e86028f390eb3b056bf9`.
+- Added-history secret-shaped scan found only deliberate synthetic redaction fixtures (`password=abcdefghijklmnop`); no real credential or secret was added.
+- Registry synchronization and clean-worktree checks passed at candidate head `0b1173a2773229da6bcbfc88d84740e8d74ca039` before this evidence-only commit.
 
-No publication, install, restart, credential use, live graph mutation, or canonical memory mutation was performed.
+Final hardening includes exact byte/BOM/CRLF provenance, complete cursor-page assembly, extractor allowlisting, reviewer separation of duties, approval expiry/revocation/source-drift checks, lifecycle and contradiction matrices, exact backend receipts/readback, foreign namespace preservation, bounded query/hydration, atomic dirfd-anchored private output, inert offline HTML, deterministic release inventory, all 10 semantic command contracts, and fresh-agent workflows that grant no implicit approval or write authority.
 
-## Independent round 10, loops 40-43
+Known limitation: Gateway `harness.run.prepare` cannot exercise this uninstalled working-tree Harness without prohibited install/trust mutation. Static manifest validation and command-contract inventory passed; representative Gateway prepare/run remains an installation-time gate.
 
-- `5a7da60`: exact source-byte length/hash plus explicit UTF-8 BOM and universal-newline line normalization evidence.
-- `8327da7`: complete extraction assembly rejects per-page total drift and same-path source-version drift.
-- `78d5a44`: hydration performs fresh canonical parse readback and rejects source-byte or claim-locator drift.
-- `3bb55aa`: traversal adds bounded degree, linear edge de-duplication, and snapshot-bound deterministic entity pagination with stale-cursor rejection.
-- Verification: Memory Graph 120/120 tests passed. Repository and registry checks are recorded after digest synchronization. No install, publish, live graph, or canonical Markdown mutation occurred.
+No publication, push, PR, install, restart, credential use, live graph mutation, or canonical memory mutation was performed during candidate verification.
