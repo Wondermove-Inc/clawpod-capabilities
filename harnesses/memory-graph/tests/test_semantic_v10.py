@@ -412,6 +412,9 @@ class SemanticV10(unittest.TestCase):
  def test_release_inventory_is_deterministic_complete_and_inert(self):
   cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
   out=json.loads(one); self.assertEqual(out['version'],'0.10.0'); self.assertIn('rollback',out); self.assertIn('update',out)
-  self.assertEqual([x['path'] for x in out['files']],['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','release_inventory.py','tests/TEST.md'])
+  expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py']
+  self.assertEqual([x['path'] for x in out['files']],expected)
   for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])
+  sealed=dict(out); digest=sealed.pop('inventory_sha256')
+  self.assertEqual(digest,hashlib.sha256(json.dumps(sealed,sort_keys=True,separators=(',',':')).encode()).hexdigest())
 if __name__=='__main__': unittest.main()

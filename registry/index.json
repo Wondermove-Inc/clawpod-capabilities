@@ -455,7 +455,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "604b7dd60a4dc55a20e537a92be74c2a685fb5f134a9be6296ac95bdd0d96dd8"
+          "sha256": "8663d51aa115a5871e480da4c0dcf51b72ef195c693274682afcbed30a4b608a"
         }
       ],
       "linkedHarness": {
@@ -1182,7 +1182,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "0389df5f3fb4c5f5ff664e3d3cd0fb0ff05eb45f44c7cf631893b917a7018a2d"
+          "sha256": "340d450346ab91fbfca97340cae9a4f837e939b25f4488dcc9b278ac0c84ccbd"
         },
         {
           "path": "harness.json",
@@ -1198,7 +1198,11 @@
         },
         {
           "path": "release_inventory.py",
-          "sha256": "060a704226fec5ba85d5115418e704a067de26b2a2008567f7d3e5d765556a20"
+          "sha256": "c0788ad6183d567f800ce58b9e71144183fe65185486db836edf438e1bba9e1f"
+        },
+        {
+          "path": "semantic_contract_inventory.py",
+          "sha256": "7a27e6a22d194800e5003806f7876856801f20b588265ea2b10d37b3a630464a"
         },
         {
           "path": "semantic_v10.py",

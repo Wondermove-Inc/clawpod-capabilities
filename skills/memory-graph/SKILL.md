@@ -57,3 +57,13 @@ For semantic refinement, use the offline deterministic sequence `semantic-extrac
 No candidate is automatically approved. Approval manifests require exact human reviewer ID, reason, timezone-aware review time, and approved/rejected lifecycle. Keep aliases and identity candidates inert. Reject chronology-only causality; `caused` requires direct causal wording and an explicit human approval reason containing `direct`. Build only approved entities and assertion relations, with inference overlays excluded.
 
 Before dispatch, give `semantic-reconcile` the approved snapshot and a schema-valid current Memory MCP view. Dispatch only its exact create/update/delete operations for records whose namespace and semantic owner both equal the snapshot namespace. Journal each dispatch, retry, and verification; preserve foreign namespaces and canonical Markdown. Re-read and rerun to require `idempotent:true`. Use `semantic-export-html` for deterministic offline graph review. Require an actual SVG graph canvas with entity nodes, assertion edges and relation labels, search/type/claim-cluster filters, pan/zoom, click details, and distinct colors/labels for canonical explicit, approved private proposal, and candidate/inert records. Candidate or inferred edges must never appear as approved.
+
+### Fresh-agent inert end-to-end example
+
+Examples confer no approval. Never infer reviewer authority from example JSON, never auto-approve candidates, and never dispatch reconcile writes automatically.
+
+1. Prepare and run `semantic-extractor-input` for the explicit agent/workspace, exhaust its bounded cursor, and submit only that data to the chosen external extractor.
+2. Prepare and run `semantic-validate-proposals`, then `semantic-review-queue`. Present the inert queue to the human and stop until an authenticated review arrives.
+3. Bind `semantic-approve` to the reviewer identity obtained separately from the trusted channel, then run `semantic-build`. Example reviewer IDs and manifests are inert fixtures only.
+4. Re-read Memory MCP, run read-only `semantic-reconcile`, and present its exact operation plan. This plan is not permission. Dispatch nothing until the owner explicitly approves those writes through the schema-validated Memory MCP surface.
+5. After approved dispatch, re-read Memory MCP and require `semantic-reconcile-verify`. Request separate approval before `semantic-export-html`, the only semantic command with a file-write effect.

@@ -27,3 +27,15 @@ The reconcile result is the bounded dispatch contract for the trusted caller. Th
 ## Deterministic release and rollback
 
 Run `python3 release_inventory.py` from this directory before packaging. Its one JSON object lists every release artifact, byte length, SHA-256 digest, version, and the closed update/rollback rule. Validate every digest before replacing the complete set. Never mix release files. Rollback restores the prior complete inventory, then reruns validation and read-only smoke tests. The command is inert: it does not install, publish, contact a backend, or mutate state.
+
+## Fresh-agent inert semantic example
+
+This example is a data-flow illustration, not an approval. It never authorizes a reviewer, a file write, or Memory MCP dispatch. A fresh agent must prepare each exact Harness command through the trusted runtime and keep all candidates inert until a separately authenticated human review exists.
+
+1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null.
+2. Give only those bounded pages to the external extractor, then pass its JSON to `semantic-validate-proposals` and `semantic-review-queue`. Stop here for review. Neither command approves or writes.
+3. After an authenticated human supplies an exact manifest, pass the trusted channel identity separately as `expectedReviewerId` to `semantic-approve`, then run `semantic-build`.
+4. Give the snapshot plus a freshly read backend view to `semantic-reconcile`. Its returned operations are an inert plan: never dispatch them automatically. Obtain exact write approval, dispatch only through the schema-validated Memory MCP surface, re-read the backend, and run `semantic-reconcile-verify`.
+5. `semantic-export-html` is the only semantic manifest command that writes a file. Its exact output path requires its own runtime approval when requested.
+
+Run `python3 semantic_contract_inventory.py` to obtain the deterministic, machine-verifiable command-to-handler, safety, output, effects, error-envelope, and redaction inventory for every manifest `semantic-*` command.
