@@ -76,6 +76,10 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('v.json',v); pid=v['entity_proposals'][0]['proposal_id']; base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:alice','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':pid,'lifecycle':'approved','reason':'direct'}]}
   self.write('m.json',base); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json','--expected-reviewer-id','human:mallory',code=2)['error']['code'],'invalid_approval_authority')
   base['reviewed_at']='2000-01-01T00:00:00Z'; self.write('m.json',base); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'stale_approval_manifest')
+ def test_future_source_mtime_skew_fails_before_review(self):
+  import os,time
+  source=next((self.t/'memory').glob('*.md')); future=time.time()+301; os.utime(source,(future,future))
+  self.assertEqual(self.cli('semantic-validate-proposals','--input','bundle.json',code=2)['error']['code'],'source_clock_skew')
  def test_approval_binds_exact_validated_bundle(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':'0'*64,'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
@@ -108,6 +112,7 @@ class SemanticV10(unittest.TestCase):
   current={'schema_version':'memory-mcp/v1','entities':[x['value'] for x in plan['operations'] if x['kind']=='entity' and x['op']!='delete']+[cur['entities'][1]],'relations':[x['value'] for x in plan['operations'] if x['kind']=='relation' and x['op']!='delete']}; self.write('c2.json',current); self.assertTrue(self.cli('semantic-reconcile','--input','s.json','--current','c2.json')['data']['idempotent'])
   verified=self.cli('semantic-reconcile-verify','--input','s.json','--plan','plan.json','--current','c2.json')['data']; self.assertTrue(verified['verified']); self.assertEqual(verified['remaining_operations'],0); self.assertEqual(verified['transaction_id'],plan['journal']['transaction_id'])
   tampered=copy.deepcopy(plan); tampered['operations'][0]['operation_hash']='0'*64; self.write('bad-plan.json',tampered); self.assertEqual(self.cli('semantic-reconcile-verify','--input','s.json','--plan','bad-plan.json','--current','c2.json',code=2)['error']['code'],'invalid_reconcile_plan')
+  tampered=copy.deepcopy(plan); tampered['journal']['dispatch_index']=1; self.write('bad-plan.json',tampered); self.assertEqual(self.cli('semantic-reconcile-verify','--input','s.json','--plan','bad-plan.json','--current','c2.json',code=2)['error']['code'],'invalid_reconcile_plan')
  def test_html_export_rejects_tampered_and_oversized_snapshots(self):
   base={'schema_version':'memory-graph-semantic-snapshot/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'entities':[],'assertions':[],'candidates':[],'quarantine':[],'inference_overlays':[]}; base['snapshot_hash']=hashlib.sha256(json.dumps(base,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
   bad=copy.deepcopy(base); bad['namespace']='tampered'; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-export-html','--input','bad.json','--output','x.html','--output-root',str(self.t),code=2)['error']['code'],'invalid_semantic_snapshot')

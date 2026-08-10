@@ -93,7 +93,9 @@ def validate_proposals(root,bundle,agent,workspace,api):
   else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
  for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
  result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":sorted(quarantine,key=lambda x:(x["proposal_id"],x["reason_code"])),"aliases_inert":True,"identity_merge_performed":False}
- result["source_latest_mtime"]=datetime.fromtimestamp(max((root/c["path"]).stat().st_mtime for c in claims.values()),timezone.utc).isoformat().replace("+00:00","Z")
+ latest_mtime=max((root/c["path"]).stat().st_mtime for c in claims.values())
+ if latest_mtime > datetime.now(timezone.utc).timestamp()+300: fail(api,"source_clock_skew","canonical source mtime is more than 5 minutes in the future")
+ result["source_latest_mtime"]=datetime.fromtimestamp(latest_mtime,timezone.utc).isoformat().replace("+00:00","Z")
  result["validated_hash"]=sha(result); return result
 
 def review_queue(validated):
@@ -162,17 +164,21 @@ def reconcile(snapshot,current,api):
    if a.get(i)!=b[i]: ops.append({"op":"create" if i not in a else "update","kind":kind,"semantic_id":i,"value":b[i]})
  for index,op in enumerate(ops): op.update(operation_index=index,operation_hash=sha({"namespace":ns,"snapshot_hash":snapshot["snapshot_hash"],"operation_index":index,"operation":op}))
  current_hash=sha(current); transaction_id=sha({"snapshot":snapshot["snapshot_hash"],"current_graph_hash":current_hash,"operations":ops})[:24]
- return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"current_graph_hash":current_hash,"target_snapshot_hash":snapshot["snapshot_hash"],"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":transaction_id,"state":"pending" if ops else "verified","dispatch_index":0,"next_operation_hash":ops[0]["operation_hash"] if ops else None,"retry_safe":True,"resume_requires_fresh_current_view":True}}
+ return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"current_graph_hash":current_hash,"target_snapshot_hash":snapshot["snapshot_hash"],"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":transaction_id,"state":"pending" if ops else "verified","dispatch_index":0,"next_operation_hash":ops[0]["operation_hash"] if ops else None,"retry_safe":True,"resume_requires_fresh_current_view":True,"resume_contract":"discard_prior_index_and_regenerate_from_fresh_view"}}
 
 def verify_reconcile(snapshot,plan,current,api):
  required={"schema_version","namespace","current_graph_hash","target_snapshot_hash","operations","foreign_entities_preserved","foreign_relations_preserved","canonical_markdown_mutated","inference_applied","idempotent","journal"}
  if not closed(plan,required) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1": fail(api,"invalid_reconcile_plan","closed reconcile plan required")
  if plan["namespace"]!=snapshot.get("namespace") or plan["target_snapshot_hash"]!=snapshot.get("snapshot_hash"): fail(api,"reconcile_plan_mismatch","plan does not target this snapshot")
+ journal=plan.get("journal")
+ if not closed(journal,{"transaction_id","state","dispatch_index","next_operation_hash","retry_safe","resume_requires_fresh_current_view","resume_contract"}) or journal["dispatch_index"]!=0 or journal["resume_contract"]!="discard_prior_index_and_regenerate_from_fresh_view" or journal["resume_requires_fresh_current_view"] is not True: fail(api,"invalid_reconcile_plan","resume state must use fresh-view regeneration and never trust a persisted dispatch index")
  for index,op in enumerate(plan["operations"]):
   if op.get("operation_index")!=index: fail(api,"invalid_reconcile_plan","operation indexes must be contiguous")
   base={k:v for k,v in op.items() if k not in {"operation_index","operation_hash"}}
   expected=sha({"namespace":plan["namespace"],"snapshot_hash":plan["target_snapshot_hash"],"operation_index":index,"operation":base})
   if op.get("operation_hash")!=expected: fail(api,"invalid_reconcile_plan","operation seal mismatch",operation_index=index)
+ expected_tx=sha({"snapshot":plan["target_snapshot_hash"],"current_graph_hash":plan["current_graph_hash"],"operations":plan["operations"]})[:24]
+ if journal["transaction_id"]!=expected_tx or journal["next_operation_hash"]!=(plan["operations"][0]["operation_hash"] if plan["operations"] else None): fail(api,"invalid_reconcile_plan","journal seal or next operation does not match the plan")
  post=reconcile(snapshot,current,api)
  if not post["idempotent"]: fail(api,"semantic_reconcile_incomplete","fresh backend view does not match target",remaining_operations=len(post["operations"]),resume_plan=post)
  return {"schema_version":"memory-graph-semantic-reconcile-verification/v1","namespace":plan["namespace"],"transaction_id":plan["journal"].get("transaction_id"),"target_snapshot_hash":plan["target_snapshot_hash"],"post_current_graph_hash":post["current_graph_hash"],"verified":True,"remaining_operations":0,"canonical_markdown_mutated":False,"foreign_entities_preserved":post["foreign_entities_preserved"],"foreign_relations_preserved":post["foreign_relations_preserved"]}
