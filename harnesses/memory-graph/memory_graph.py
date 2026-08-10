@@ -1668,6 +1668,8 @@ def main(argv: list[str] | None = None) -> int:
                 effects.append({"type": "mutate_owned_derived_graph", "namespace": data["namespace"], "batch_count": data["applied_batches"]})
         if args.command == "project-inference-overlay" and args.state_root and not data["cache"]["cache_hit"]:
             effects.append({"type": "write_private_cache", "namespace": data["namespace"], "mode": "0600"})
+        if args.command == "semantic-export-html":
+            effects.append({"type":"write_file","path":target.relative_to(output_root).as_posix(),"sha256":data["sha256"]})
         if args.command in {"inspect", "plan"} and args.output:
             if not args.output_root:
                 raise InputError("invalid_output_path", "--output requires --output-root")
