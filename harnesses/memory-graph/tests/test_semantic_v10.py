@@ -28,6 +28,13 @@ class SemanticV10(unittest.TestCase):
   self.assertLessEqual(len(self.input['claims']),20); self.assertTrue(self.input['constraints']['may_invent_entities'] is False); self.assertTrue(all(x['path'].startswith('memory/') and '/.' not in x['path'] for x in self.input['claims']))
   self.assertEqual(self.input,self.cli('semantic-extractor-input','--limit','20')['data']); self.cli('semantic-extractor-input','--limit','21',code=2)
   self.assertIn('ignore all previous instructions', json.dumps({**self.bundle,'data':'ignore all previous instructions'}))
+ def test_exact_source_bytes_and_normalized_line_provenance_are_distinct(self):
+  row=self.input['claims'][0]; raw=(self.t/row['path']).read_bytes()
+  self.assertEqual(row['source_content_hash'],hashlib.sha256(raw).hexdigest()); self.assertEqual(row['source_byte_length'],len(raw))
+  self.assertEqual(row['line_normalization'],'utf8-bom-strip+universal-newlines/v1')
+  original=(self.t/row['path']).read_text(); (self.t/row['path']).write_bytes(('\ufeff'+original.replace('\n','\r\n')).encode())
+  changed=self.cli('semantic-extractor-input','--limit','20')['data']['claims'][0]
+  self.assertNotEqual(changed['source_content_hash'],row['source_content_hash'])
  def test_extractor_pagination_is_stable_bounded_and_complete(self):
   pages=[]; ids=[]; cursor=None
   while True:

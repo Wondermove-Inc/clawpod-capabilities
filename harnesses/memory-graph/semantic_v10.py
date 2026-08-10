@@ -42,6 +42,17 @@ def canonical_path(value):
 def fresh(api,root,agent,workspace):
  p=api["plan"](api["inspect"](root,"reject"),False,api["namespace"](agent,root,workspace)); return p,{c["claim_id"]:c for c in p["claims"]}
 def source_hash(root,path): return hashlib.sha256((root/path).read_bytes()).hexdigest()
+def source_bytes(root,path):
+ data=(root/path).read_bytes()
+ # Provenance hashes the exact bytes.  Text decoding is separately normalized
+ # so BOM and CRLF cannot be mistaken for byte-identical source evidence.
+ text=data.decode("utf-8-sig")
+ return data,text.replace("\r\n","\n").replace("\r","\n")
+def line_provenance(root,path,line_start,line_end):
+ data,text=source_bytes(root,path); lines=text.splitlines(keepends=True)
+ if not (1<=line_start<=line_end<=len(lines)): return None
+ normalized="".join(lines[line_start-1:line_end]).rstrip("\n")
+ return {"source_content_hash":hashlib.sha256(data).hexdigest(),"source_byte_length":len(data),"normalized_line_hash":hashlib.sha256(normalized.encode()).hexdigest(),"line_normalization":"utf8-bom-strip+universal-newlines/v1"}
 def atomic_write(output, data):
  """Durably replace a regular output without exposing a partial document."""
  output.parent.mkdir(parents=False,exist_ok=True)
@@ -122,7 +133,8 @@ def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
  for c in selected:
   value=c.get("value","")
   if SECRET.search(value): value="[REDACTED]"
-  rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"],"claim_text":value})
+  provenance=line_provenance(root,c["path"],c["line"],c["line"])
+  rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"],"claim_text":value,"source_byte_length":provenance["source_byte_length"],"normalized_line_hash":provenance["normalized_line_hash"],"line_normalization":provenance["line_normalization"]})
  next_cursor=sha({"snapshot":plan["snapshot_hash"],"claim_id":selected[-1]["claim_id"]}) if selected and start+len(selected)<len(ordered) else None
  out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":start,"count":len(selected),"total":len(ordered),"remaining":max(0,len(ordered)-start-len(selected))},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"network_allowed":False,"max_claims":20}}
  out["bundle_hash"]=sha(out); return out
