@@ -1634,7 +1634,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "semantic-export-html":
             output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
             if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
-            data=semantic_v10.export_html(load_json(args.input,root),target)
+            data=semantic_v10.export_html(load_json(args.input,root),target,{"error":InputError})
         else:
             snapshot = load_json(args.input, root)
             if args.query:

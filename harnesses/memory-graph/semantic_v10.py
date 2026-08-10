@@ -121,7 +121,10 @@ def reconcile(snapshot,current,api):
    if a.get(i)!=b[i]: ops.append({"op":"create" if i not in a else "update","kind":kind,"semantic_id":i,"value":b[i]})
  return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":sha({"snapshot":snapshot["snapshot_hash"],"operations":ops})[:24],"state":"pending" if ops else "verified","dispatch_index":0,"retry_safe":True}}
 
-def export_html(snapshot,output):
+def export_html(snapshot,output,api):
+ if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
+ candidate_entities=sum(x.get("kind")=="entity" for x in snapshot.get("candidates",[])); candidate_assertions=sum(x.get("kind")=="assertion" for x in snapshot.get("candidates",[]))
+ if len(snapshot.get("entities",[]))+candidate_entities>500 or len(snapshot.get("assertions",[]))+candidate_assertions>1000: fail(api,"semantic_visualization_too_large","visualization is bounded to 500 nodes and 1000 edges")
  def endpoint_id(value): return value.get("entity_id","") if isinstance(value,dict) else str(value)
  nodes=[]
  for e in snapshot.get("entities",[]):
