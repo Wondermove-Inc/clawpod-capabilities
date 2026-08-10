@@ -49,6 +49,11 @@ class SemanticV10(unittest.TestCase):
   with self.assertRaises(ValueError): module.assemble_extractor_pages(pages[:-1],{'error':ValueError})
   mixed=copy.deepcopy(pages); mixed[-1]['source_digest']='0'*64; mixed[-1]['bundle_hash']=module.sha({k:v for k,v in mixed[-1].items() if k!='bundle_hash'})
   with self.assertRaises(ValueError): module.assemble_extractor_pages(mixed,{'error':ValueError})
+  drift=copy.deepcopy(pages); drift[-1]['page']['total']+=1; drift[-1]['bundle_hash']=module.sha({k:v for k,v in drift[-1].items() if k!='bundle_hash'})
+  with self.assertRaises(ValueError): module.assemble_extractor_pages(drift,{'error':ValueError})
+  if len(pages)>1:
+   changed=copy.deepcopy(pages); changed[-1]['claims'][0]['path']=pages[0]['claims'][0]['path']; changed[-1]['claims'][0]['source_content_hash']='f'*64; changed[-1]['bundle_hash']=module.sha({k:v for k,v in changed[-1].items() if k!='bundle_hash'})
+   with self.assertRaises(ValueError): module.assemble_extractor_pages(changed,{'error':ValueError})
   self.cli('semantic-extractor-input','--cursor','0'*64,code=2)
  def test_semantic_inputs_reject_symlinks_and_oversize_before_parse(self):
   (self.t/'linked.json').symlink_to(self.t/'bundle.json'); self.assertEqual(self.cli('semantic-validate-proposals','--input','linked.json',code=2)['error']['code'],'invalid_semantic_bundle')

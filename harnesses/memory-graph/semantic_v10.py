@@ -142,14 +142,20 @@ def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
 def assemble_extractor_pages(pages,api):
  """Seal a complete, single-snapshot extraction manifest from cursor pages."""
  if not isinstance(pages,list) or not pages: fail(api,"incomplete_extractor_batch","at least one extractor page is required")
- claims=[]; hashes=[]; expected_cursor=None; identity=None
+ claims=[]; hashes=[]; expected_cursor=None; identity=None; expected_total=None; source_versions={}
  for index,page in enumerate(pages):
   if not isinstance(page,dict) or page.get("bundle_hash")!=sha({k:v for k,v in page.items() if k!="bundle_hash"}): fail(api,"invalid_extractor_page","extractor page is malformed or tampered",page_index=index)
   current=(page.get("namespace"),page.get("source_snapshot_hash"),page.get("source_digest"))
   if identity is None: identity=current
   if current!=identity: fail(api,"mixed_extractor_snapshot","all pages must bind one namespace and source snapshot",page_index=index)
   meta=page.get("page",{})
+  if expected_total is None: expected_total=meta.get("total")
+  if meta.get("total")!=expected_total or meta.get("remaining")!=meta.get("total")-meta.get("offset")-meta.get("count"): fail(api,"extractor_page_total_drift","page totals changed during extraction",page_index=index)
   if meta.get("cursor")!=expected_cursor or meta.get("offset")!=len(claims) or meta.get("count")!=len(page.get("claims",[])): fail(api,"extractor_page_discontinuity","cursor chain or page offset is discontinuous",page_index=index)
+  for claim in page.get("claims",[]):
+   version=(claim.get("source_content_hash"),claim.get("source_byte_length"))
+   prior=source_versions.setdefault(claim.get("path"),version)
+   if prior!=version: fail(api,"extractor_source_drift","one source path changed between extraction pages",page_index=index,path=claim.get("path"))
   claims.extend(page["claims"]); hashes.append(page["bundle_hash"]); expected_cursor=meta.get("next_cursor")
  if expected_cursor is not None or pages[-1]["page"].get("remaining")!=0 or pages[-1]["page"].get("total")!=len(claims): fail(api,"incomplete_extractor_batch","final page must prove complete cursor exhaustion")
  ids=[x.get("claim_id") for x in claims]
