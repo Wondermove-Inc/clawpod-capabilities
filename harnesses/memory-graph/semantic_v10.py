@@ -161,12 +161,18 @@ def assemble_extractor_pages(pages,api):
  """Seal a complete, single-snapshot extraction manifest from cursor pages."""
  if not isinstance(pages,list) or not pages: fail(api,"incomplete_extractor_batch","at least one extractor page is required")
  claims=[]; hashes=[]; expected_cursor=None; identity=None; expected_total=None; source_versions={}
+ if len(pages)>500: fail(api,"extractor_batch_too_large","extractor batches are bounded to 500 pages and 10000 claims")
+ seen_page_hashes=set()
  for index,page in enumerate(pages):
   if not isinstance(page,dict) or page.get("bundle_hash")!=sha({k:v for k,v in page.items() if k!="bundle_hash"}): fail(api,"invalid_extractor_page","extractor page is malformed or tampered",page_index=index)
+  if page["bundle_hash"] in seen_page_hashes: fail(api,"duplicate_extractor_page","an extractor page may occur only once",page_index=index)
+  seen_page_hashes.add(page["bundle_hash"])
+  meta=page.get("page"); page_claims=page.get("claims")
+  if not isinstance(meta,dict) or not isinstance(page_claims,list) or len(page_claims)>20 or any(isinstance(meta.get(k),bool) or not isinstance(meta.get(k),int) or meta.get(k)<0 for k in ("offset","count","total","remaining")): fail(api,"invalid_extractor_page","page metadata and claims must be bounded non-negative values",page_index=index)
+  if meta["total"]>10000: fail(api,"extractor_batch_too_large","extractor batches are bounded to 500 pages and 10000 claims")
   current=(page.get("namespace"),page.get("source_snapshot_hash"),page.get("source_digest"))
   if identity is None: identity=current
   if current!=identity: fail(api,"mixed_extractor_snapshot","all pages must bind one namespace and source snapshot",page_index=index)
-  meta=page.get("page",{})
   if expected_total is None: expected_total=meta.get("total")
   if meta.get("total")!=expected_total or meta.get("remaining")!=meta.get("total")-meta.get("offset")-meta.get("count"): fail(api,"extractor_page_total_drift","page totals changed during extraction",page_index=index)
   if meta.get("cursor")!=expected_cursor or meta.get("offset")!=len(claims) or meta.get("count")!=len(page.get("claims",[])): fail(api,"extractor_page_discontinuity","cursor chain or page offset is discontinuous",page_index=index)
