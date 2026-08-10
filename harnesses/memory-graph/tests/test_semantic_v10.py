@@ -32,6 +32,10 @@ class SemanticV10(unittest.TestCase):
   base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[]}
   for decisions in [[{'proposal_id':'unknown','lifecycle':'approved','reason':'direct'}],[{'proposal_id':'p1','lifecycle':'approved','reason':'direct'}]*2,[{'proposal_id':'p1','lifecycle':'approved','reason':''}]]:
    self.write('m.json',{**base,'decisions':decisions}); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
+ def test_build_rejects_tampered_reviewed_bundle(self):
+  v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':'p1','lifecycle':'approved','reason':'direct'}]}; self.write('m.json',m)
+  reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; reviewed['proposals'][0]['lifecycle']='rejected'; self.write('r.json',reviewed)
+  self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'invalid_reviewed_bundle')
  def test_chronology_cause_rejected(self):
   self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'}); self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
  def test_assertion_endpoint_ids_and_domains_are_closed(self):

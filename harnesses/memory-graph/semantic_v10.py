@@ -86,9 +86,11 @@ def approve(validated,manifest,api):
   if d: y.update(lifecycle=d["lifecycle"],review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"]})
   if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="approved" and (not d or "direct" not in d["reason"].lower()): y.update(lifecycle="candidate",review=None)
   out.append(y)
- return {"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest)}
+ result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest)}
+ result["reviewed_hash"]=sha(result); return result
 
-def build_snapshot(reviewed):
+def build_snapshot(reviewed,api):
+ if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","proposals","quarantine","manifest_hash","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
  approved=[x for x in reviewed["proposals"] if x["lifecycle"]=="approved"]
  entities=[]; assertions=[]
  for x in approved:

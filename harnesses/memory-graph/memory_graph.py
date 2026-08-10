@@ -1629,7 +1629,7 @@ def main(argv: list[str] | None = None) -> int:
             data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
         elif args.command == "semantic-approve":
             data=semantic_v10.approve(load_json(args.input,root),load_json(args.manifest,root),{"error":InputError})
-        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_json(args.input,root))
+        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_json(args.input,root),{"error":InputError})
         elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_json(args.input,root),load_json(args.current,root),{"error":InputError})
         elif args.command == "semantic-export-html":
             output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
