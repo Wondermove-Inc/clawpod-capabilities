@@ -102,7 +102,7 @@ class SemanticV10(unittest.TestCase):
    self.write('m.json',{**base,'decisions':decisions}); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_manifest')
  def test_revocation_is_preserved_as_audit_evidence_and_removed_on_rebuild(self):
   v=self.validated(); self.write('v.json',v); pid=v['entity_proposals'][0]['proposal_id']; m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':pid,'lifecycle':'revoked','reason':'withdraw approval after evidence review'}]}; self.write('m.json',m)
-  reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; revoked=next(x for x in reviewed['proposals'] if x['proposal_id']==pid); self.assertEqual(revoked['review']['approval_effect'],'withdrawn'); self.write('r.json',reviewed); snapshot=self.cli('semantic-build','--input','r.json')['data']; self.assertFalse(any(x['semantic_id']==pid for x in snapshot['entities'])); self.assertEqual(snapshot['revoked'][0]['proposal_id'],pid)
+  reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; revoked=next(x for x in reviewed['proposals'] if x['proposal_id']==pid); self.assertEqual(revoked['review']['approval_effect'],'withdrawn'); self.assertEqual(revoked['lifecycle'],'archived'); self.write('r.json',reviewed); snapshot=self.cli('semantic-build','--input','r.json')['data']; self.assertFalse(any(x['semantic_id']==pid for x in snapshot['entities'])); self.assertEqual(snapshot['revoked'][0]['proposal_id'],pid)
  def test_approval_rejects_reviewer_spoof_and_temporally_stale_review(self):
   v=self.validated(); self.write('v.json',v); pid=v['entity_proposals'][0]['proposal_id']; base={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:alice','reviewed_at':'2026-08-10T12:00:00Z','decisions':[{'proposal_id':pid,'lifecycle':'approved','reason':'direct'}]}
   self.write('m.json',base); self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json','--expected-reviewer-id','human:mallory',code=2)['error']['code'],'invalid_approval_authority')
@@ -198,4 +198,23 @@ class SemanticV10(unittest.TestCase):
   self.assertTrue(all(len(n['label'])<=81 for n in graph['nodes'])); self.assertNotIn('source',json.dumps([n['detail'] for n in graph['nodes']])); self.assertNotIn('review_reason',json.dumps(graph))
   self.assertNotIn('</script><img',text); self.assertNotRegex(text,r'(?:src|href)=["\'](?:https?:)?//'); self.assertNotIn('http://',text); self.assertNotIn('https://',text); self.assertTrue(out['offline']); self.assertIn('Content-Security-Policy',text); self.assertIn("default-src 'none'",text); self.assertIn("connect-src 'none'",text); self.assertIn('name="referrer" content="no-referrer"',text); self.assertEqual(out['interactions'],['pan','zoom','node_details','edge_details']); self.assertIn('<svg id="stage"',text); self.assertIn('edge-label',text); self.assertIn('canonical explicit',text); self.assertIn('approved private proposal',text); self.assertIn('candidate/inert',text); self.assertIn('cluster',text); self.assertIn('aria-live="polite"',text); self.assertIn('prefers-reduced-motion:reduce',text); self.assertIn('aria-describedby="graph-help"',text); self.assertIn("role:'button'",text); self.assertIn("e.key==='Enter'||e.key===' '",text)
   self.assertEqual(before,[(p,hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in (self.t/'memory').glob('*.md')])
+ def test_claim_lifecycle_precedence_is_explicit_and_auditable(self):
+  v=self.validated(); self.write('v.json',v); states=['current','tentative','superseded']; decisions=[{'proposal_id':x['proposal_id'],'lifecycle':states[i],'reason':'explicit lifecycle decision'} for i,x in enumerate(v['entity_proposals']+v['assertion_proposals'])]
+  m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':'2026-08-10T12:00:00Z','decisions':decisions}; self.write('m.json',m)
+  reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; self.write('r.json',reviewed); snap=self.cli('semantic-build','--input','r.json')['data']
+  self.assertEqual(len(snap['entities']),1); self.assertEqual(len(snap['candidates']),1); self.assertEqual(len(snap['revoked']),1); self.assertEqual(snap['lifecycle_counts']['current'],1); self.assertEqual(snap['lifecycle_counts']['tentative'],1)
+ def test_semantic_query_is_bounded_and_returns_hydration_locators(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  source={'path':'memory/source.md','line_start':1,'line_end':1,'source_content_hash':'a'*64,'claim_content_hash':'b'*64}
+  entities=[{'semantic_id':'e1','entity_id':'person:a','claim_id':'c1','source':source},{'semantic_id':'e2','entity_id':'project:b','claim_id':'c1','source':source}]
+  edges=[{'semantic_id':'r1','subject':{'entity_id':'person:a'},'object':{'entity_id':'project:b'},'claim_id':'c1','source':source}]
+  snap={'schema_version':'memory-graph-semantic-snapshot/v1','entities':entities,'assertions':edges}; snap['snapshot_hash']=module.sha(snap)
+  out=module.semantic_query(snap,'person:a',{'error':ValueError},depth=1); self.assertFalse(out['canonical']); self.assertTrue(out['locator_only']); self.assertEqual(len(out['entities']),2); self.assertEqual(len(out['hydration_locators']),3)
+  with self.assertRaises(ValueError): module.semantic_query(snap,'person:a',{'error':ValueError},depth=4)
+ def test_private_state_json_write_is_atomic_mode_0600_and_repeatable(self):
+  import importlib.util,os
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  target=self.t/'journal.json'; value={'state':'pending','operation':1}; module.atomic_write_json(target,value); first=target.read_bytes(); module.atomic_write_json(target,value)
+  self.assertEqual(first,target.read_bytes()); self.assertEqual(target.stat().st_mode & 0o777,0o600); self.assertFalse(list(self.t.glob('.journal.json.*.tmp')))
 if __name__=='__main__': unittest.main()
