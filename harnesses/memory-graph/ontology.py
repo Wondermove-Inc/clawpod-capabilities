@@ -67,9 +67,10 @@ def temporal(value: Any) -> bool:
     values = []
     for key in ("start", "end"):
         if value[key] is None: values.append(None); continue
-        if not isinstance(value[key], str): return False
+        if not timestamp(value[key]): return False
         try: values.append(datetime.fromisoformat(value[key].replace("Z", "+00:00")))
         except ValueError: return False
+    if value["start"] is None and value["end"] is not None: return False
     return not (values[0] is not None and values[1] is not None and values[0] > values[1])
 
 
@@ -107,7 +108,7 @@ def shape_reason(item: Any, hash_re: Any, id_re: Any, secret_like: Callable[[Any
     if item["method"] == "explicit" and (review is not None or item["status"] not in {"approved", "quarantined", "superseded"}): return "invalid_lifecycle"
     if item["status"] == "approved" and item["method"] == "extracted_candidate": return "invalid_lifecycle"
     if item["predicate"] == "caused" and (item["method"] != "human_approved" or item["status"] != "approved" or review is None): return "causality_requires_human_approval"
-    if item["predicate"] == "caused" and review.get("review_reason") != "direct_causal_statement": return "causality_not_direct"
+    if item["predicate"] == "caused" and review is not None and review.get("review_reason") != "direct_causal_statement": return "causality_not_direct"
     if not temporal(item["valid_time"]): return "invalid_temporal_shape"
     if secret_like(item): return "secret_like_assertion"
     return None
@@ -142,12 +143,43 @@ def validate_bundle(root: Path, bundle: Any, agent_id: str, workspace_id: str | 
         if reason: rejected.append(quarantine(reason, item)); continue
         value = json.loads(canonical_bytes(item)); value.update({"canonical": item["method"] == "explicit", "locator_only": True, "rehydration_required": True,
             "subject_name": entities[(item["subject"]["type"], item["subject"]["entity_id"])], "object_name": entities[(item["object"]["type"], item["object"]["entity_id"])]}); accepted.append(value)
+    # Supersession is explicit but must still be acyclic within a validated bundle.
+    supersedes = [(x["subject"]["entity_id"], x["object"]["entity_id"], x["assertion_id"]) for x in accepted if x["predicate"] == "supersedes"]
+    graph: dict[str, set[str]] = {}
+    for left, right, _ in supersedes: graph.setdefault(left, set()).add(right)
+    def cyclic(start: str) -> bool:
+        stack = [(start, iter(graph.get(start, ())))]; active = {start}
+        while stack:
+            node, children = stack[-1]
+            try: child = next(children)
+            except StopIteration: active.remove(node); stack.pop(); continue
+            if child in active: return True
+            stack.append((child, iter(graph.get(child, ())))); active.add(child)
+        return False
+    cycle_ids = {aid for left, _, aid in supersedes if cyclic(left)}
+    if cycle_ids:
+        rejected.extend(quarantine("supersession_cycle", x) for x in accepted if x["assertion_id"] in cycle_ids)
+        accepted = [x for x in accepted if x["assertion_id"] not in cycle_ids]
     accepted = sorted({x["assertion_id"]: x for x in accepted}.values(), key=lambda x: x["assertion_id"])
     identity = bundle.get("identity_candidates", []); safe_identity = []
-    if not isinstance(identity, list): raise api["error"]("invalid_identity_candidates", "identity_candidates must be an array")
+    if not isinstance(identity, list) or len(identity) > 256: raise api["error"]("invalid_identity_candidates", "identity_candidates must be a bounded array")
+    epkeys = {"entity_id", "type"}
     for candidate in identity:
         keys = {"candidate_id", "left", "right", "feature_codes", "score", "method", "version", "config_hash", "source_claim_ids"}
-        if (not isinstance(candidate, dict) or set(candidate) != keys or api["secret_like"](candidate) or not isinstance(candidate["score"], (int, float)) or not 0 <= candidate["score"] <= 1 or candidate["left"] == candidate["right"] or not api["hash_re"].fullmatch(str(candidate["config_hash"]))): rejected.append(quarantine("invalid_identity_candidate", candidate)); continue
+        endpoints_ok = isinstance(candidate, dict) and all(isinstance(candidate.get(k), dict) and set(candidate[k]) == epkeys for k in ("left", "right"))
+        endpoint_values = endpoints_ok and all((ep["type"], ep["entity_id"]) in entities for ep in (candidate["left"], candidate["right"]))
+        feature_ok = isinstance(candidate, dict) and isinstance(candidate.get("feature_codes"), list) and candidate["feature_codes"] and all(isinstance(x, str) and api["id_re"].fullmatch(x) for x in candidate["feature_codes"])
+        claims_ok = isinstance(candidate, dict) and isinstance(candidate.get("source_claim_ids"), list) and candidate["source_claim_ids"] and all(x in claims for x in candidate["source_claim_ids"])
+        score = candidate.get("score") if isinstance(candidate, dict) else None
+        if (not isinstance(candidate, dict) or set(candidate) != keys or api["secret_like"](candidate)
+                or not isinstance(candidate.get("candidate_id"), str) or not api["id_re"].fullmatch(candidate["candidate_id"])
+                or not isinstance(score, (int, float)) or isinstance(score, bool) or not math.isfinite(score) or not 0 <= score <= 1
+                or not endpoints_ok or not endpoint_values or candidate["left"] == candidate["right"]
+                or candidate["left"]["type"] != candidate["right"]["type"] or not feature_ok or not claims_ok
+                or not isinstance(candidate.get("method"), str) or not candidate["method"]
+                or not isinstance(candidate.get("version"), str) or not candidate["version"]
+                or not isinstance(candidate.get("config_hash"), str) or not api["hash_re"].fullmatch(candidate["config_hash"])):
+            rejected.append(quarantine("invalid_identity_candidate", candidate)); continue
         safe_identity.append({**candidate, "status": "candidate", "auto_merge": False, "projected": False})
     rejected.sort(key=lambda x: (x["reason_code"], x.get("source_claim_id", ""), x["assertion_id"]))
     report = {"conforms": not rejected, "shape_version": ASSERTION_SHAPE_VERSION, "namespace": ownership["namespace"], "source_snapshot_hash": snapshot["snapshot_hash"], "source_digest": snapshot["source_digest"], "accepted_assertions": accepted, "quarantine": rejected, "identity_candidates": sorted(safe_identity, key=lambda x: x["candidate_id"])}
@@ -161,8 +193,8 @@ def review_queue(validated: dict[str, Any]) -> dict[str, Any]:
 def semantic_view(validated: dict[str, Any], include_candidates: bool = False) -> dict[str, Any]:
     def edge(item: dict[str, Any], label: str, style: str) -> dict[str, Any]:
         return {"assertion_id": item["assertion_id"], "from": item["subject_name"], "to": item["object_name"], "predicate": item["predicate"], "label": label, "style": style, "status": item["status"], "method": item["method"], "valid_time": item["valid_time"], "why_this_edge": {"source_claim_id": item["source_claim_id"], **item["source"]}, "canonical": item["canonical"], "locator_only": True, "rehydration_required": True}
-    approved = [edge(x, "Approved explicit", "solid") for x in validated["accepted_assertions"] if x["status"] == "approved"]
-    candidates = [edge(x, "Candidate, noncanonical", "dashed") for x in validated["accepted_assertions"] if include_candidates and x["status"] == "candidate"]
+    approved = [edge(x, "Approved explicit", "solid") for x in validated["accepted_assertions"] if x["status"] == "approved"][:200]
+    candidates = [edge(x, "Candidate, noncanonical", "dashed") for x in validated["accepted_assertions"] if include_candidates and x["status"] == "candidate"][:max(0, 200 - len(approved))]
     result = {"schema_version": "memory-graph-semantic-view/v1", "namespace": validated["namespace"], "view_types": ["path", "ego", "timeline"], "structural_relations": [], "nodes": sorted({e[k] for e in approved + candidates for k in ("from", "to")}), "approved_assertions": approved, "candidate_assertions": candidates, "legends": [{"label":"Approved explicit","style":"solid"},{"label":"Candidate, noncanonical","style":"dashed"}], "canonical_grounding_required": True}
     result["view_hash"] = digest(result); return result
 

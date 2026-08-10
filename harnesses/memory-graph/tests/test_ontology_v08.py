@@ -79,10 +79,35 @@ class OntologyV08Tests(unittest.TestCase):
         result = self.cli("ontology-validate")["data"]
         self.assertIn("causality_requires_human_approval", {x["reason_code"] for x in result["quarantine"]})
 
+    def test_naive_temporal_timestamp_is_quarantined(self):
+        item = self.bundle["assertions"][0]
+        item["valid_time"]["start"] = "2026-01-01T00:00:00"
+        self.save()
+        result = self.cli("ontology-validate")["data"]
+        self.assertIn("invalid_temporal_shape", {x["reason_code"] for x in result["quarantine"]})
+
+    def test_supersession_cycle_is_inert(self):
+        original = next(x for x in self.bundle["assertions"] if x["predicate"] == "supersedes" and x["subject"]["type"] == "Decision")
+        reverse = copy.deepcopy(original)
+        reverse["subject"], reverse["object"] = reverse["object"], reverse["subject"]
+        reverse["assertion_id"] = ontology.assertion_id(self.bundle["namespace"], reverse)
+        self.bundle["assertions"].append(reverse); self.save()
+        result = self.cli("ontology-validate")["data"]
+        self.assertIn("supersession_cycle", {x["reason_code"] for x in result["quarantine"]})
+        accepted_ids = {x["assertion_id"] for x in result["accepted_assertions"]}
+        self.assertNotIn(original["assertion_id"], accepted_ids); self.assertNotIn(reverse["assertion_id"], accepted_ids)
+
     def test_identity_ambiguity_is_candidate_only(self):
-        self.bundle["identity_candidates"] = [{"candidate_id":"idc_1","left":{"type":"Person","entity_id":"person:mina"},"right":{"type":"Person","entity_id":"person:lee"},"feature_codes":["same_display"],"score":0.91,"method":"deterministic-blocking","version":"1","config_hash":"c"*64,"source_claim_ids":["ontology_seed"]}]; self.save()
+        claim_id = self.plan()["claims"][0]["claim_id"]
+        self.bundle["identity_candidates"] = [{"candidate_id":"idc_1","left":{"type":"Person","entity_id":"person:mina"},"right":{"type":"Person","entity_id":"person:lee"},"feature_codes":["same_display"],"score":0.91,"method":"deterministic-blocking","version":"1","config_hash":"c"*64,"source_claim_ids":[claim_id]}]; self.save()
         queue = self.cli("review-queue")["data"]; candidate = queue["identity_candidates"][0]
         self.assertFalse(candidate["auto_merge"]); self.assertFalse(candidate["projected"]); self.assertEqual(candidate["status"], "candidate")
+
+    def test_identity_candidate_unknown_endpoint_is_quarantined(self):
+        claim_id = self.plan()["claims"][0]["claim_id"]
+        self.bundle["identity_candidates"] = [{"candidate_id":"idc_1","left":{"type":"Person","entity_id":"person:mina"},"right":{"type":"Person","entity_id":"person:missing"},"feature_codes":["same_display"],"score":0.91,"method":"deterministic-blocking","version":"1","config_hash":"c"*64,"source_claim_ids":[claim_id]}]; self.save()
+        result = self.cli("ontology-validate")["data"]
+        self.assertFalse(result["identity_candidates"]); self.assertIn("invalid_identity_candidate", {x["reason_code"] for x in result["quarantine"]})
 
     def test_lifecycle_and_candidate_separation(self):
         item = self.bundle["assertions"][0]; item.update({"method":"extracted_candidate","status":"approved","extractor":{"extractor_id":"local","extractor_version":"1","config_hash":"d"*64},"confidence":0.8}); item["assertion_id"] = ontology.assertion_id(self.bundle["namespace"], item); self.save()
