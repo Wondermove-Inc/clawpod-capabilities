@@ -321,15 +321,16 @@ def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edg
     if neighbor not in seen and len(seen)<max_entities: seen.add(neighbor); nxt.append(neighbor)
   frontier=sorted(set(nxt))
  all_entities=[by_id[x] for x in sorted(seen) if x in by_id]; offset=0
+ query_contract={"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size}
  if cursor:
-  matches=[i for i in range(len(all_entities)) if sha({"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"offset":i})==cursor]
-  if len(matches)!=1: fail(api,"invalid_semantic_query_cursor","query cursor is stale or foreign")
+  matches=[i for i in range(len(all_entities)) if sha({"query":query_contract,"offset":i})==cursor]
+  if len(matches)!=1: fail(api,"invalid_semantic_query_cursor","query cursor is tampered, stale, foreign, or replayed under different bounds")
   offset=matches[0]+1
  entities=all_entities[offset:offset+page_size]
- next_cursor=sha({"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"offset":offset+len(entities)-1}) if entities and offset+len(entities)<len(all_entities) else None
+ next_cursor=sha({"query":query_contract,"offset":offset+len(entities)-1}) if entities and offset+len(entities)<len(all_entities) else None
  def locator(item):
   source=item["source"]; return {"claim_id":item["claim_id"],"path":source["path"],"line_start":source["line_start"],"line_end":source["line_end"],"source_content_hash":source["source_content_hash"],"claim_content_hash":source["claim_content_hash"]}
- return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
+ return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
 
 def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-workspace"):
  """Read canonical lines only when both exact source bytes and claim digest agree."""
