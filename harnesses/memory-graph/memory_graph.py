@@ -14,6 +14,8 @@ import subprocess
 import sys
 import tempfile
 import time
+import unicodedata
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -310,6 +312,24 @@ def validate_claim(raw: Any, path: str, line: int, secret_policy: str, bullets: 
     content["superseded_by"] = superseded_by
     content["evidence"] = sorted(content["evidence"], key=lambda x: canonical_bytes(x))
     content["relations"] = sorted(content["relations"], key=lambda x: (x["to"], x["type"]))
+    # Normalize nested semantic arrays before claim hashing so harmless JSON
+    # reordering cannot perturb semantic IDs or provenance content hashes.
+    semantic = content.get("semantic")
+    if isinstance(semantic, dict):
+        normalized_semantic = dict(semantic)
+        if isinstance(normalized_semantic.get("entities"), list):
+            normalized_entities = []
+            for item in normalized_semantic["entities"]:
+                item = dict(item) if isinstance(item, dict) else item
+                if isinstance(item, dict):
+                    for field in ("aliases", "external_ids"):
+                        if isinstance(item.get(field), list):
+                            item[field] = sorted(set(item[field]), key=canonical_bytes)
+                normalized_entities.append(item)
+            normalized_semantic["entities"] = sorted(normalized_entities, key=canonical_bytes)
+        if isinstance(normalized_semantic.get("relations"), list):
+            normalized_semantic["relations"] = sorted(normalized_semantic["relations"], key=canonical_bytes)
+        content["semantic"] = normalized_semantic
     claim_hash = digest(content)
     content["path"] = path
     content["line"] = line
@@ -324,6 +344,59 @@ def _quarantine(reason: str, claim: dict[str, Any], candidate: Any) -> dict[str,
             "reason_code": reason, "source_claim_id": claim["claim_id"], "path": claim["path"],
             "line": claim["line"], "candidate_hash": candidate_hash,
             "remediation": "Correct explicit canonical semantic metadata and provenance."}
+
+
+def _normalized_display(value: str) -> str:
+    return " ".join(unicodedata.normalize("NFKC", value).strip().split()).casefold()
+
+
+def _temporal_value(value: Any) -> tuple[str, str] | None:
+    """Validate contract time syntax and return (kind, normalized value)."""
+    if not isinstance(value, str):
+        return None
+    try:
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            date.fromisoformat(value)
+            return ("date", value)
+        # RFC 3339 requires an explicit Z or numeric offset.
+        if not re.search(r"(?:Z|[+-]\d{2}:\d{2})$", value):
+            return None
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            return None
+        return ("timestamp", parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"))
+    except ValueError:
+        return None
+
+
+def _normalize_semantic_entity(entity: dict[str, Any]) -> dict[str, Any] | None:
+    result = dict(entity)
+    aliases = result.get("aliases", [])
+    external = result.get("external_ids", [])
+    if (not isinstance(aliases, list) or not all(isinstance(x, str) and x.strip() for x in aliases)
+            or not isinstance(external, list) or not all(isinstance(x, str) and x.strip() for x in external)):
+        return None
+    result["aliases"] = sorted(set(aliases), key=lambda x: (_normalized_display(x), x))
+    result["external_ids"] = sorted(set(external))
+    for field in ("valid_from", "valid_to", "effective_at", "occurred_at"):
+        if field in result:
+            parsed = _temporal_value(result[field])
+            if parsed is None:
+                return None
+            result[field + "_normalized"] = parsed[1]
+    if "interval" in result:
+        interval = result["interval"]
+        if not isinstance(interval, dict) or set(interval) != {"start", "end"}:
+            return None
+        start, end = _temporal_value(interval["start"]), _temporal_value(interval["end"])
+        if start is None or end is None or start[0] != end[0] or start[1] > end[1]:
+            return None
+        result["interval_normalized"] = {"start": start[1], "end": end[1]}
+    if "valid_from" in result and "valid_to" in result:
+        start, end = _temporal_value(result["valid_from"]), _temporal_value(result["valid_to"])
+        if start is None or end is None or start[0] != end[0] or start[1] > end[1]:
+            return None
+    return result
 
 
 def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, dict[str, Any]], namespace: str = "") -> dict[str, Any]:
@@ -358,6 +431,10 @@ def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, d
                 quarantined.append(_quarantine("identity_conflict", claim, {"entity_id": eid, "type": entity.get("type")})); continue
             if entity["type"] in {"Decision", "Event"} and not (entity.get("effective_at") or entity.get("occurred_at") or entity.get("interval") or entity.get("time_unknown") is True):
                 quarantined.append(_quarantine("temporal_conflict", claim, entity)); continue
+            normalized = _normalize_semantic_entity(entity)
+            if normalized is None:
+                quarantined.append(_quarantine("temporal_conflict", claim, entity)); continue
+            entity = normalized
             records.setdefault((entity["type"], eid), []).append((claim, entity))
         for relation in relations:
             relations_raw.append((claim, relation))
@@ -385,6 +462,20 @@ def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, d
         local = f"semantic:{etype}:{eid}"; lookup[eid] = (local, etype)
         observation = {**entity, "grounding_claim_ids": sorted(x[0]["claim_id"] for x in grounded), "provenance": sorted(prov, key=canonical_bytes)}
         semantic_entities.append({"name": namespace + local, "entityType": etype, "observations": [json.dumps(observation, ensure_ascii=False, sort_keys=True, separators=(",", ":"))]})
+    # Reject semantic supersession cycles as complete inert components.
+    supersession_candidates = [(claim, rel) for claim, rel in relations_raw
+        if isinstance(rel, dict) and rel.get("type") == "supersedes"
+        and rel.get("from") in lookup and rel.get("to") in lookup]
+    supersession_graph: dict[str, set[str]] = {}
+    for _, rel in supersession_candidates:
+        supersession_graph.setdefault(rel["from"], set()).add(rel["to"])
+    cyclic_nodes: set[str] = set()
+    def visit(node: str, trail: tuple[str, ...]) -> None:
+        if node in trail:
+            cyclic_nodes.update(trail[trail.index(node):]); return
+        for nxt in supersession_graph.get(node, set()): visit(nxt, trail + (node,))
+    for node in sorted(supersession_graph): visit(node, ())
+
     semantic_relations = []
     for claim, relation in relations_raw:
         if not isinstance(relation, dict) or relation.get("type") not in SEMANTIC_RELATIONS:
@@ -395,6 +486,14 @@ def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, d
         domains, ranges = SEMANTIC_RELATIONS[relation["type"]]
         if src[1] not in domains or dst[1] not in ranges:
             quarantined.append(_quarantine("invalid_endpoint_type", claim, relation)); continue
+        if relation["type"] == "supersedes":
+            if relation.get("from") == relation.get("to") or relation.get("from") in cyclic_nodes or relation.get("to") in cyclic_nodes:
+                quarantined.append(_quarantine("supersession_cycle", claim, relation)); continue
+            source_obs = json.loads(next(e["observations"][0] for e in semantic_entities if e["name"] == namespace + src[0]))
+            target_obs = json.loads(next(e["observations"][0] for e in semantic_entities if e["name"] == namespace + dst[0]))
+            newer, older = source_obs.get("effective_at_normalized"), target_obs.get("effective_at_normalized")
+            if newer and older and newer < older:
+                quarantined.append(_quarantine("temporal_conflict", claim, relation)); continue
         claim_ids = [claim["claim_id"]]
         edge_id = hashlib.sha256((namespace + relation["from"] + relation["type"] + relation["to"] + json.dumps(claim_ids)).encode()).hexdigest()
         semantic_relations.append({"from": namespace + src[0], "to": namespace + dst[0], "relationType": relation["type"],
@@ -410,7 +509,9 @@ def build_semantic_projection(claims: list[dict[str, Any]], sources: dict[str, d
             merged[key]["provenance"].append(relation["provenance"])
     for relation in merged.values():
         relation["provenance"] = sorted(relation["provenance"], key=canonical_bytes)
-        relation["edge_id"] = hashlib.sha256((namespace + relation["from"] + relation["relationType"] + relation["to"] + json.dumps(relation["source_claim_ids"])).encode()).hexdigest()
+        from_id = relation["from"].rsplit(":semantic:", 1)[-1].split(":", 1)[-1] if ":semantic:" in relation["from"] else relation["from"].split(":", 2)[-1]
+        to_id = relation["to"].rsplit(":semantic:", 1)[-1].split(":", 1)[-1] if ":semantic:" in relation["to"] else relation["to"].split(":", 2)[-1]
+        relation["edge_id"] = hashlib.sha256((namespace + from_id + relation["relationType"] + to_id + json.dumps(relation["source_claim_ids"])).encode()).hexdigest()
     quarantined.sort(key=lambda x: (x["reason_code"], x["source_claim_id"], x["candidate_hash"]))
     return {"semantic_contract_version": SEMANTIC_CONTRACT_VERSION, "semantic_entities": semantic_entities,
             "semantic_relations": sorted(merged.values(), key=lambda x: (x["from"], x["to"], x["relationType"])),

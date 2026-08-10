@@ -1186,11 +1186,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f309bfd87b0ecf06d7da6438c2a5c73e8181ccc8bc6df3c6e02fa2c8bdeab258"
+          "sha256": "a063447080623a3baf2c3d3605cfd293b6b6bc70eef5d0b84c45716d69bf82cf"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "13a7ab516d0799f3241a32f109a64a90ac2628cbba7c80e23eccb7d04c076c6a"
+          "sha256": "72687543c71afe477d32d15a4ac5207004e5ee3adc4fb908030038f9ca80d50a"
         }
       ]
     },

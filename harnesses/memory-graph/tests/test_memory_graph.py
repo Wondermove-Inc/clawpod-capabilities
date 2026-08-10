@@ -86,7 +86,8 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
         self.assertEqual(manifest["version"], "0.6.0")
-        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "query-plan"})
+        self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan"})
+        self.assertNotIn("query-plan", manifest["commands"], "semantic query remains direct-CLI-only in v0.6")
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(skill.startswith("---\nname: memory-graph\n")); self.assertIn("description:", skill.split("---", 2)[1])
         self.assertIn("first-class cron surface", skill); self.assertNotIn("UTC fallback", skill)
@@ -630,6 +631,86 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
         self.write_memory(claim(status="current", evidence=[ev], semantic=semantic))
         stdout, result=self.run_cli("plan","--root",str(self.tmp),"--detail",expected=2)
         self.assertEqual(result["error"]["code"],"secret_like_text"); self.assertNotIn("supersecretvalue",stdout)
+
+    def test_semantic_unknown_type_relation_and_endpoint_violations_are_inert(self):
+        ev={"evidence_id":"ev","path":"memory/e.md","content_hash":"a"*64}
+        semantic={"entities":[
+            {"entity_id":"person:p","type":"Person","canonical_name":"P"},
+            {"entity_id":"project:x","type":"Project","canonical_name":"X"},
+            {"entity_id":"alien:x","type":"Alien","canonical_name":"X"}],
+            "relations":[
+                {"from":"project:x","type":"decided","to":"person:p"},
+                {"from":"person:p","type":"invented","to":"project:x"}]}
+        self.write_memory(claim(status="current", evidence=[ev], semantic=semantic))
+        plan=self.plan(); reasons=[q["reason_code"] for q in plan["semantic_quarantine"]]
+        self.assertEqual(reasons,["invalid_endpoint_type","unknown_relation","unknown_type"])
+        self.assertEqual(plan["semantic_relations"],[])
+
+    def test_semantic_temporal_validation_normalization_and_interval_order(self):
+        ev={"evidence_id":"ev","path":"memory/e.md","content_hash":"b"*64}
+        semantic={"entities":[
+            {"entity_id":"decision:good","type":"Decision","canonical_name":"Good","effective_at":"2026-08-10T10:00:00+09:00"},
+            {"entity_id":"event:date","type":"Event","canonical_name":"Date","occurred_at":"2026-08-10"},
+            {"entity_id":"event:naive","type":"Event","canonical_name":"Naive","occurred_at":"2026-08-10T01:00:00"},
+            {"entity_id":"event:reverse","type":"Event","canonical_name":"Reverse","interval":{"start":"2026-08-11","end":"2026-08-10"}}],"relations":[]}
+        self.write_memory(claim(status="current", evidence=[ev], semantic=semantic))
+        plan=self.plan(); obs={json.loads(e["observations"][0])["entity_id"]:json.loads(e["observations"][0]) for e in plan["entities"] if ":semantic:" in e["name"]}
+        self.assertEqual(obs["decision:good"]["effective_at_normalized"],"2026-08-10T01:00:00Z")
+        self.assertEqual(obs["event:date"]["occurred_at_normalized"],"2026-08-10")
+        self.assertEqual([q["reason_code"] for q in plan["semantic_quarantine"]],["temporal_conflict","temporal_conflict"])
+
+    def test_semantic_supersession_cycle_self_and_backwards_time_are_quarantined(self):
+        ev={"evidence_id":"ev","path":"memory/e.md","content_hash":"c"*64}
+        entities=[
+            {"entity_id":"decision:a","type":"Decision","canonical_name":"A","effective_at":"2026-08-10T00:00:00Z"},
+            {"entity_id":"decision:b","type":"Decision","canonical_name":"B","effective_at":"2026-08-11T00:00:00Z"},
+            {"entity_id":"decision:c","type":"Decision","canonical_name":"C","effective_at":"2026-08-09T00:00:00Z"}]
+        relations=[
+            {"from":"decision:a","type":"supersedes","to":"decision:b"},
+            {"from":"decision:b","type":"supersedes","to":"decision:a"},
+            {"from":"decision:c","type":"supersedes","to":"decision:c"}]
+        self.write_memory(claim(status="current", evidence=[ev], semantic={"entities":entities,"relations":relations}))
+        plan=self.plan(); self.assertEqual(plan["semantic_relations"],[])
+        self.assertEqual({q["reason_code"] for q in plan["semantic_quarantine"]},{"supersession_cycle"})
+
+    def test_semantic_alias_evidence_and_input_order_are_deterministic(self):
+        ev1={"evidence_id":"z","path":"memory/z.md","content_hash":"d"*64}; ev2={"evidence_id":"a","path":"memory/a.md","content_hash":"e"*64}
+        entity={"entity_id":"person:p","type":"Person","canonical_name":"P","aliases":["  ALICE  ","Alice"],"external_ids":["z:2","a:1"]}
+        self.write_memory(claim(status="current", evidence=[ev1,ev2], semantic={"entities":[entity],"relations":[]}))
+        first=self.plan()
+        entity["aliases"].reverse(); entity["external_ids"].reverse()
+        self.write_memory(claim(status="current", evidence=[ev2,ev1], semantic={"relations":[],"entities":[entity]}))
+        second=self.plan()
+        # Canonical source hashes intentionally change with file bytes, while the
+        # derived semantic projection must remain byte-for-byte deterministic.
+        for field in ("semantic_relations","semantic_quarantine"):
+            self.assertEqual(first[field],second[field])
+        first_entities=[e for e in first["entities"] if ":semantic:" in e["name"]]
+        second_entities=[e for e in second["entities"] if ":semantic:" in e["name"]]
+        self.assertEqual([(e["name"],e["entityType"]) for e in first_entities],
+                         [(e["name"],e["entityType"]) for e in second_entities])
+        first_obs=json.loads(first_entities[0]["observations"][0]); second_obs=json.loads(second_entities[0]["observations"][0])
+        self.assertEqual({k:v for k,v in first_obs.items() if k!="provenance"},
+                         {k:v for k,v in second_obs.items() if k!="provenance"})
+        self.assertEqual(first_obs["provenance"][0]["content_hash"],second_obs["provenance"][0]["content_hash"])
+
+    def test_semantic_status_query_cycle_bounds_and_manifest_schema_subset(self):
+        ev={"evidence_id":"ev","path":"memory/e.md","content_hash":"f"*64}
+        sem={"entities":[{"entity_id":"person:p","type":"Person","canonical_name":"P"}],"relations":[]}
+        self.write_memory(claim(status="tentative", evidence=[ev], semantic=sem)); plan=self.plan(); self.save("p.json",plan)
+        default=self.run_cli("query-plan","--root",str(self.tmp),"--input","p.json","--entity-id","person:p")[1]["data"]
+        opted=self.run_cli("query-plan","--root",str(self.tmp),"--input","p.json","--entity-id","person:p","--statuses","tentative")[1]["data"]
+        self.assertEqual(default["entities"],[]); self.assertEqual(len(opted["entities"]),1)
+        bad=self.run_cli("query-plan","--root",str(self.tmp),"--input","p.json","--max-depth","4",expected=2)[1]
+        self.assertEqual(bad["error"]["code"],"query_bounds")
+        manifest=json.loads((PACKAGE/"harness.json").read_text())
+        forbidden={"enum","minimum","maximum","minLength"}
+        def keys(value):
+            if isinstance(value,dict):
+                return set(value)|set().union(*(keys(v) for v in value.values()),set())
+            if isinstance(value,list): return set().union(*(keys(v) for v in value),set())
+            return set()
+        self.assertTrue(forbidden.isdisjoint(keys(manifest)))
 
 
 if __name__ == "__main__":
