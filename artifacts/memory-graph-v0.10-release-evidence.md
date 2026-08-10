@@ -1,5 +1,15 @@
 # Memory Graph v0.10 Release Evidence
 
+## Fresh-agent inert update and rollback example
+
+A fresh agent must treat an update package as inert until package digest validation,
+Gateway validation/trust, and a representative prepare path succeed. If any gate
+fails, restore the exact pre-update paired Skill/Harness backup, verify its digest,
+and do not reuse proposal IDs, approval manifests, journals, or semantic snapshots.
+Entity renames create a new explicit identity and supersede the old proposal; they
+never merge identities or rewrite canonical Markdown. These are examples only and
+perform no install, graph mutation, publication, or canonical write.
+
 Status: implementation candidate, not published or installed.
 
 Registry-first classification: `refine`, starting from merged `origin/main` commit `efe7c7d`.
