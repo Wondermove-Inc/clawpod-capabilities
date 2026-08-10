@@ -1321,6 +1321,9 @@
           "outputRoot": {
             "type": "string"
           },
+          "includeCandidates": {
+            "type": "boolean"
+          },
           "root": {
             "type": "string"
           }
@@ -1356,6 +1359,13 @@
           "flag": "--output-root",
           "valueType": "path",
           "pathRole": "output"
+        },
+        {
+          "arg": "includeCandidates",
+          "type": "booleanFlag",
+          "flag": "--include-candidates",
+          "valueType": "boolean",
+          "optional": true
         },
         {
           "arg": "root",

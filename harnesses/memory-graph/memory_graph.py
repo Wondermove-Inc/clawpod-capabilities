@@ -1615,7 +1615,7 @@ def parser() -> argparse.ArgumentParser:
     c = sub.add_parser("semantic-migrate-v09"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-reconcile"); c.add_argument("--input", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-reconcile-verify"); c.add_argument("--input", required=True); c.add_argument("--plan", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default=".")
-    c = sub.add_parser("semantic-export-html"); c.add_argument("--input", required=True); c.add_argument("--output", required=True); c.add_argument("--output-root", required=True); c.add_argument("--root", default=".")
+    c = sub.add_parser("semantic-export-html"); c.add_argument("--input", required=True); c.add_argument("--output", required=True); c.add_argument("--output-root", required=True); c.add_argument("--root", default="."); c.add_argument("--include-candidates",action="store_true")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1672,7 +1672,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "semantic-export-html":
             output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
             if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
-            data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError})
+            data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError},args.include_candidates)
         else:
             snapshot = load_json(args.input, root)
             if args.query:
