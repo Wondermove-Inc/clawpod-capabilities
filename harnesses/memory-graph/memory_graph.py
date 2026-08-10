@@ -139,6 +139,22 @@ def safe_resolve(root: Path, raw: str) -> Path:
     return candidate
 
 
+def safe_output_resolve(root: Path, raw: str) -> Path:
+    """Resolve an HTML output without following attacker-controlled symlinks."""
+    rel = Path(raw)
+    if rel.is_absolute() or not rel.parts or any(part in {"", ".", ".."} for part in rel.parts) or rel.suffix.lower() != ".html":
+        raise InputError("invalid_output_path", "Output must be a relative .html path without dot segments", {"path": raw})
+    root = root.resolve()
+    cursor = root
+    for part in rel.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise InputError("output_symlink", "Output path must not contain symlinks", {"path": raw})
+    if cursor.exists() and not cursor.is_file():
+        raise InputError("invalid_output_path", "Existing output must be a regular file", {"path": raw})
+    return cursor
+
+
 def recognized_files(root: Path) -> list[tuple[Path, str, str, str | None]]:
     """Return only direct, regular, non-symlink ``memory/*.md`` files.
 
@@ -1670,7 +1686,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
         elif args.command == "semantic-reconcile-verify": data=semantic_v10.verify_reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.plan,root),load_semantic_bundle(args.current,root),{"error":InputError})
         elif args.command == "semantic-export-html":
-            output_root=Path(args.output_root).resolve(); target=safe_resolve(output_root,args.output)
+            output_root=Path(args.output_root).resolve(); target=safe_output_resolve(output_root,args.output)
             if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
             data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError},args.include_candidates)
         else:
