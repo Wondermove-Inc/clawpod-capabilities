@@ -1186,11 +1186,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "daf7ed8c11be20cf1d662dc43d42fc343324463e2f941b71ccff0b9da07fcc8c"
+          "sha256": "312c987667fd233f0f832e798c27738740dc752322f4d2c067a7a48f3c05f1c6"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "8b9b95a9fc9d34f9d9e5374db6d4d991a73fe8df4d0af9a8df537ca52d5632ae"
+          "sha256": "4e01514a45ae5e492a8a66c6b44fd58414dffcffec775e9f3e6f336fa56a6928"
         },
         {
           "path": "ontology.py",
@@ -1198,7 +1198,7 @@
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "362a04af88396a1d6b4c183210ef04ec2f814b4d1f88a8582eaf96e897f7becc"
+          "sha256": "0336175a1cb5d636f3f343b288de03f4f141ef44fed4d4db8b5e31d0d03a0e43"
         }
       ]
     },
