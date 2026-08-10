@@ -1,6 +1,6 @@
 """Deterministic, offline semantic authoring pipeline for Memory Graph v0.10."""
 from __future__ import annotations
-import hashlib, html, json, os, re
+import hashlib, html, json, os, re, unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -12,6 +12,7 @@ SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
 ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
+REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
 CAUSAL=re.compile(r"(?i)\b(?:caused|because|led to|resulted in|due to|원인|때문에|초래)\b")
 
@@ -19,6 +20,11 @@ def canon(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(
 def sha(v): return hashlib.sha256(v if isinstance(v,bytes) else canon(v)).hexdigest()
 def fail(api,code,msg,**details): raise api["error"](code,msg,details)
 def closed(v, keys): return isinstance(v,dict) and set(v)==set(keys)
+def canonical_path(value):
+ if not isinstance(value,str) or value!=unicodedata.normalize("NFC",value) or "\\" in value: return None
+ p=Path(value)
+ if p.is_absolute() or re.match(r"^[A-Za-z]:",value) or p.parts!=("memory",p.name) or p.suffix!=".md" or any(x in {".",".."} for x in p.parts): return None
+ return p.as_posix()
 
 def fresh(api,root,agent,workspace):
  p=api["plan"](api["inspect"](root,"reject"),False,api["namespace"](agent,root,workspace)); return p,{c["claim_id"]:c for c in p["claims"]}
@@ -74,7 +80,7 @@ def validate_proposals(root,bundle,agent,workspace,api):
  for raw in bundle["proposals"]:
   if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis"}: quarantine.append({"proposal_id":str(raw.get("proposal_id","?")) if isinstance(raw,dict) else "?","reason_code":"invalid_shape"}); continue
   cid=raw["claim_id"]; c=claims.get(cid); s=raw["source"]
-  if not c or not closed(s,{"path","line_start","line_end","source_content_hash","claim_content_hash"}) or s!={"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"]}: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"stale_provenance"}); continue
+  if not c or not closed(s,{"path","line_start","line_end","source_content_hash","claim_content_hash"}) or canonical_path(s.get("path"))!=c["path"] or s!={"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"]}: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"stale_provenance"}); continue
   if SECRET.search(json.dumps(raw,ensure_ascii=False)): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"secret_like_input","redacted":True}); continue
   p=raw["payload"]
   if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]): entities.append({**raw,"lifecycle":"candidate","review":None,"extractor":ex})
@@ -98,7 +104,7 @@ def approve(validated,manifest,api,expected_reviewer_id):
  if not closed(manifest,{"schema_version","namespace","validated_hash","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
  if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")
  if manifest["namespace"]!=validated["namespace"] or manifest["validated_hash"]!=validated["validated_hash"]: fail(api,"invalid_approval_manifest","manifest must bind the exact validated bundle")
- if manifest["reviewer_id"]!=expected_reviewer_id or not str(expected_reviewer_id).startswith("human:"): fail(api,"invalid_approval_authority","authenticated reviewer must exactly match the manifest reviewer")
+ if manifest["reviewer_id"]!=expected_reviewer_id or not isinstance(expected_reviewer_id,str) or expected_reviewer_id!=unicodedata.normalize("NFC",expected_reviewer_id) or not REVIEWER_ID.fullmatch(expected_reviewer_id): fail(api,"invalid_approval_authority","authenticated reviewer must be an exact canonical ASCII human ID matching the manifest")
  try: dt=datetime.fromisoformat(manifest["reviewed_at"].replace("Z","+00:00")); assert dt.tzinfo
  except Exception: fail(api,"invalid_approval_manifest","reviewed_at must be timezone-aware ISO-8601")
  source_dt=datetime.fromisoformat(validated["source_latest_mtime"].replace("Z","+00:00"))
