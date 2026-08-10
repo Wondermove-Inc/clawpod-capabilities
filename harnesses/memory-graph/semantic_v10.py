@@ -12,6 +12,10 @@ SCHEMA_APPROVAL="memory-graph-approval-manifest/v1"
 SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
 ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
+# Predicate cardinality is an ontology contract, not an incidental set in the
+# conflict detector. Participation and causation are intentionally many-valued;
+# a decision-maker has one current decision and an item one direct successor.
+FUNCTIONAL_PREDICATES={"decided","supersedes"}
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
 REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
@@ -329,7 +333,7 @@ def build_snapshot(reviewed,api):
  # mechanism; input order is never precedence.
  slots={}
  for (subject,predicate,obj),proposal in relation_keys.items(): slots.setdefault((subject,predicate),[]).append((obj,proposal))
- conflicts={slot:sorted(values) for slot,values in slots.items() if len({x[0] for x in values})>1 and slot[1] in {"decided","participates_in"}}
+ conflicts={slot:sorted(values) for slot,values in slots.items() if len({x[0] for x in values})>1 and slot[1] in FUNCTIONAL_PREDICATES}
  if conflicts:
   slot=sorted(conflicts)[0]; fail(api,"contradictory_current_claims","multiple current claims occupy the same functional semantic slot; demote or supersede explicitly",subject=slot[0],predicate=slot[1],proposals=[x[1] for x in conflicts[slot]])
  entities=[]; assertions=[]

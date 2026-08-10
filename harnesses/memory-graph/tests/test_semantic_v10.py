@@ -297,6 +297,20 @@ class SemanticV10(unittest.TestCase):
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':self.reviewed_at,'decisions':decisions}; self.write('m.json',m)
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; self.write('r.json',reviewed); snap=self.cli('semantic-build','--input','r.json')['data']
   self.assertEqual(len(snap['entities']),1); self.assertEqual(len(snap['candidates']),1); self.assertEqual(len(snap['revoked']),1); self.assertEqual(snap['lifecycle_counts']['current'],1); self.assertEqual(snap['lifecycle_counts']['tentative'],1)
+ def test_functional_predicate_contradiction_matrix_is_explicit(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  def reviewed(predicate):
+   proposals=[]
+   for i,target in enumerate(('target:a','target:b')):
+    proposals.append({'proposal_id':'p'+str(i),'kind':'assertion','claim_id':'c','source':{},'payload':{'subject':{'entity_id':'subject:a'},'predicate':predicate,'object':{'entity_id':target}},'lifecycle':'current','review':{}})
+   value={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':'n','source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{}}
+   value['reviewed_hash']=module.sha(value); return value
+  for predicate in module.PREDICATES:
+   if predicate in module.FUNCTIONAL_PREDICATES:
+    with self.assertRaises(ValueError,msg=predicate): module.build_snapshot(reviewed(predicate),{'error':ValueError})
+   else:
+    self.assertEqual(len(module.build_snapshot(reviewed(predicate),{'error':ValueError})['assertions']),2,predicate)
  def test_semantic_query_is_bounded_and_returns_hydration_locators(self):
   import importlib.util
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
