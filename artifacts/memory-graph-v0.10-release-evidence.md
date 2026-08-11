@@ -1,20 +1,20 @@
 # Memory Graph v0.10 Release Evidence
 
-## v0.10.1 private full-output refinement
+## v0.10.2 Gateway relative-output integration fix
 
 Workboard: `6fde1a44-35fe-490e-92b1-efc97cf3cd5c`. Classification: `refine`; the canonical registry already contained the paired Memory Graph Skill/Harness v0.10.0 and no separate capability was created.
 
-The optional `semantic-extractor-input` private-output lane writes deterministic canonical page bytes beneath an existing allowlisted private root, returns short relative-path metadata with exact bytes and SHA-256, and preserves legacy full stdout when output is absent. Directory-FD traversal and revalidation, no-follow opens, regular-target checks, atomic replace/fsync, mode `0600`, a 1 MiB bound, and temporary-file cleanup cover invalid/outside paths, symlinks, replacement races, and partial failures. Canonical memory Markdown remains read-only.
+The optional `semantic-extractor-input` private-output lane now maps `output` as a validated string without `pathRole`, preventing Gateway from canonicalizing its required relative filename before Harness execution. `outputRoot` remains the sole approved output path with `valueType: path` and `pathRole: output`. Harness containment and private-write behavior are unchanged, and canonical memory Markdown remains read-only. Gateway was not modified.
 
-Status: v0.10.1 implementation candidate, not published, installed, trusted, or dispatched.
+Status: v0.10.2 implementation candidate, not published, installed, trusted, or dispatched.
 
 Verification completed on 2026-08-11:
 
-- `python3 -m unittest discover -s harnesses/memory-graph/tests -p 'test_*.py' -q`: 142 passed.
+- `python3 -m unittest discover -s harnesses/memory-graph/tests -p 'test_*.py' -q`: 143 passed.
 - `python3 -m unittest discover -s tests -p 'test_*.py' -q`: 25 passed.
 - Skill quick validation, `python3 scripts/validate.py` (34 capability entries), compileall, JSON parsing, and `git diff --check`: passed.
-- Registry synchronization/check: passed for paired Skill/Harness v0.10.1 metadata and package digests.
-- Deterministic release inventory digest: `c27a9191601c2d039d77a379ee20067e309524e8d8d39314669767ad44dd1529`.
+- Registry synchronization/check: passed for paired Skill/Harness v0.10.2 metadata and package digests.
+- Deterministic release inventory digest: `1dcc4776f28affd6a1a080fc7d27c1b106acc314a2a31ffffdf5477d16679f37`.
 - Semantic command-contract inventory digest: `a7f34c33790cf6c77064266d3c5dac12fe258e6c3f0c62a32cee13a764d15405`.
 
 ## Fresh-agent inert update and rollback example
