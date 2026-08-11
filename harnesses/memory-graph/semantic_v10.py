@@ -16,9 +16,9 @@ MAX_EXTRACTOR_OUTPUT_BYTES=MAX_PRIVATE_OUTPUT_BYTES
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
 ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
 # Predicate cardinality is an ontology contract, not an incidental set in the
-# conflict detector. Participation and causation are intentionally many-valued;
-# a decision-maker has one current decision and an item one direct successor.
-FUNCTIONAL_PREDICATES={"decided","supersedes"}
+# conflict detector. Participation, decision-making, and causation are many-valued;
+# only an item may have one direct current successor.
+FUNCTIONAL_PREDICATES={"supersedes"}
 HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
 REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
 SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")

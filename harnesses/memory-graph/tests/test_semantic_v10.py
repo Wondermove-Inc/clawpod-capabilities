@@ -391,6 +391,19 @@ class SemanticV10(unittest.TestCase):
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':self.reviewed_at,'decisions':decisions}; self.write('m.json',m)
   reviewed=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; self.write('r.json',reviewed); snap=self.cli('semantic-build','--input','r.json')['data']
   self.assertEqual(len(snap['entities']),1); self.assertEqual(len(snap['candidates']),1); self.assertEqual(len(snap['revoked']),1); self.assertEqual(snap['lifecycle_counts']['current'],1); self.assertEqual(snap['lifecycle_counts']['tentative'],1)
+ def test_decided_allows_multiple_distinct_decisions_for_one_person(self):
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  source={'path':'memory/decisions.md','line_start':1,'line_end':1,'source_content_hash':'a'*64,'claim_content_hash':'b'*64}
+  proposals=[]
+  for i,decision in enumerate(('decision:adopt-alpha','decision:adopt-beta')):
+   proposals.append({'proposal_id':f'assertion:decided:{i}','kind':'assertion','claim_id':f'claim:decision:{i}','source':source,'payload':{'subject':{'entity_id':'person:alice','type':'Person'},'predicate':'decided','object':{'entity_id':decision,'type':'Decision'},'valid_time':None},'lifecycle':'current','review':{}})
+  reviewed={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':'memory:test','source_snapshot_hash':'c'*64,'source_digest':'d'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'e'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{}}
+  reviewed['reviewed_hash']=module.sha(reviewed)
+  snapshot=module.build_snapshot(reviewed,{'error':ValueError})
+  self.assertEqual([x['object']['entity_id'] for x in snapshot['assertions']],['decision:adopt-alpha','decision:adopt-beta'])
+  duplicate=copy.deepcopy(reviewed); duplicate['proposals'].append(copy.deepcopy(duplicate['proposals'][0])); duplicate['proposals'][-1]['proposal_id']='assertion:duplicate'; duplicate['reviewed_hash']=module.sha({k:v for k,v in duplicate.items() if k!='reviewed_hash'})
+  with self.assertRaises(ValueError): module.build_snapshot(duplicate,{'error':ValueError})
  def test_functional_predicate_contradiction_matrix_is_explicit(self):
   import importlib.util
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -496,7 +509,7 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(a.read_bytes(),b.read_bytes()); self.assertEqual(one['sha256'],two['sha256']); self.assertEqual((one['node_count'],one['edge_count']),(500,1000)); self.assertLess(time.monotonic()-started,5)
  def test_release_inventory_is_deterministic_complete_and_inert(self):
   cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
-  out=json.loads(one); self.assertEqual(out['version'],'0.10.4'); self.assertIn('rollback',out); self.assertIn('update',out)
+  out=json.loads(one); self.assertEqual(out['version'],'0.10.5'); self.assertIn('rollback',out); self.assertIn('update',out)
   expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py']
   self.assertEqual([x['path'] for x in out['files']],expected)
   for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])

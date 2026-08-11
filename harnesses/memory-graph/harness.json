@@ -4,7 +4,7 @@
   "name": "memory-graph",
   "title": "Memory Graph",
   "description": "Build, reconcile, and verify a private Memory MCP graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts.",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
   "execution": {
