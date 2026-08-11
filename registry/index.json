@@ -437,7 +437,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b22356a853d6fd14ba2e55e1e26955c069fac166440d38a3fcc02ebb8a9d57f2"
+          "sha256": "324a80aa5c6b5342264a259e8b0e87ec3b6d6ff502ed8ebeca8ca2fea73303f0"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.10.3"
+        "version": "0.10.4"
       }
     },
     {
@@ -1164,7 +1164,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1182,15 +1182,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "7a8cafd592463ca088b98b483acf7347948e1cdab19af579a2e9d81bc237c255"
+          "sha256": "62427d578226b517cbace4ffa800547dfe0230b775a2368344a19083f5f6730b"
         },
         {
           "path": "harness.json",
-          "sha256": "256e25f2a8d93207d65f86d5be3cd628ed00d8a7564831d88a0c469215cc7315"
+          "sha256": "2d385aee4734bec75e55d7ffea9d0b09d0c3d9e80f21a0743e75f492e197f574"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "ecee00471b0d60e97a3065e91879d6915c1fbec057b10eb3a371d628dc6af6cb"
+          "sha256": "cbe1dd14d49b261782cc51068139557af0b6ca149984f0a9cb953bf242b7e9b9"
         },
         {
           "path": "ontology.py",
@@ -1202,11 +1202,11 @@
         },
         {
           "path": "semantic_contract_inventory.py",
-          "sha256": "77b47dec79f8d6f8267156a21fd70df37a1c66ff71ddbfcf42c54d66eb629692"
+          "sha256": "98bc48270da40af8f66b849672398e3dca64ef999e9fb8ab67656b45959f2b08"
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "6cdf4924490d89acfa99ec6057936911c25dcf2c2858472b3ae748c3a6fb9144"
+          "sha256": "c94d08345a4573557a73442dda8ef7ab408017e255fc855d8499b7ccd2ade5b7"
         }
       ]
     },
