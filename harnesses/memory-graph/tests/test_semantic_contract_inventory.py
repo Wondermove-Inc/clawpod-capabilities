@@ -13,7 +13,8 @@ class SemanticContractInventory(unittest.TestCase):
    self.assertEqual(item['required_output_fields'],['ok','schema_version','command','effects'])
    self.assertEqual(item['safety_classes'],spec['safetyClasses'])
    self.assertIn(item['handler'].split('.')[-1],source)
-   self.assertEqual(item['effects'],['write_file'] if item['command']=='semantic-export-html' else [])
+   expected={'semantic-export-html':['write_file'],'semantic-extractor-input':['write_private_output']}.get(item['command'],[])
+   self.assertEqual(item['effects'],expected)
    self.assertFalse(item['error_envelope']['secret_values_allowed']); self.assertTrue(item['redaction']['stdout_must_not_echo_secret'])
  def test_inventory_digest_and_cli_are_deterministic(self):
   first=subprocess.check_output(['python3',str(P/'semantic_contract_inventory.py')]); second=subprocess.check_output(['python3',str(P/'semantic_contract_inventory.py')]); self.assertEqual(first,second)

@@ -1,5 +1,7 @@
 # Memory Graph Harness
 
+Version 0.10.1 refines `semantic-extractor-input` with an optional private full-output contract. Trusted Gateway prepare→run may supply both `output` and `outputRoot`; the root must already exist and the output must be a normalized relative `.json` path beneath it. The Harness writes the complete canonical extractor page plus one newline atomically with mode `0600`, a 1 MiB hard limit, directory-FD traversal, symlink rejection, and parent-replacement detection. Stdout contains only the relative path, exact byte count, SHA-256 digest, and schema version. Supplying neither argument preserves the v0.10 full-stdout response. Canonical Markdown is never written.
+
 Version 0.9 adds private claim-grounded Entity Proposals to the local read-only assertion ontology commands: `ontology-validate`, `review-queue`, `cq-evaluate`, and `semantic-view`. Fresh, explicitly human-approved proposals may bootstrap `Person`, `Project`, `Decision`, or `Event` assertion endpoints while canonical explicit entities remain higher trust. Closed shapes, content-addressed IDs, deterministic quarantine, inert aliases/identity candidates, temporal precision, direct human-approved causality, and v0.8 read-only migration are enforced. These paths do not call models, networks, MCP, or the live graph and never write canonical files. See `../../artifacts/memory-graph-v0.9-entity-proposal-contract.md`.
 
 Memory Graph 0.9.0 deterministically parses only one agent's direct canonical `memory/*.md` topic files into a private, namespaced, disposable Memory MCP graph. Canonical Markdown is always read-only. It also validates and projects agent-proposed relations into a separate, noncanonical read-only inference overlay.
@@ -32,7 +34,7 @@ Run `python3 release_inventory.py` from this directory before packaging. Its one
 
 This example is a data-flow illustration, not an approval. It never authorizes a reviewer, a file write, or Memory MCP dispatch. A fresh agent must prepare each exact Harness command through the trusted runtime and keep all candidates inert until a separately authenticated human review exists.
 
-1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null.
+1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null. For trusted private transfer, also supply an existing allowlisted private `outputRoot` outside canonical memory and a relative `.json` `output`; verify stdout `bytes` and `sha256` before consuming the file.
 2. Give only those bounded pages to the external extractor, then pass its JSON to `semantic-validate-proposals` and `semantic-review-queue`. Stop here for review. Neither command approves or writes.
 3. After an authenticated human supplies an exact manifest, pass the trusted channel identity separately as `expectedReviewerId` to `semantic-approve`, then run `semantic-build`.
 4. Give the snapshot plus a freshly read backend view to `semantic-reconcile`. Its returned operations are an inert plan: never dispatch them automatically. Obtain exact write approval, dispatch only through the schema-validated Memory MCP surface, re-read the backend, and run `semantic-reconcile-verify`.

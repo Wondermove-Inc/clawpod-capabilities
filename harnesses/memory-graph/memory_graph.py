@@ -34,7 +34,7 @@ semantic_v10 = importlib.util.module_from_spec(_SEMANTIC_V10_SPEC)
 _SEMANTIC_V10_SPEC.loader.exec_module(semantic_v10)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.10.0"
+CONTRACT_VERSION = "0.10.1"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
@@ -1623,7 +1623,7 @@ def parser() -> argparse.ArgumentParser:
         if name == "semantic-view": c.add_argument("--include-candidates", action="store_true")
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
-    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor")
+    c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor"); c.add_argument("--output"); c.add_argument("--output-root")
     for name in ("semantic-validate-proposals", "semantic-review-queue"):
         c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id")
     c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--expected-reviewer-id", required=True); c.add_argument("--root", default=".")
@@ -1675,6 +1675,13 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "semantic-extractor-input":
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
             data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit,args.cursor)
+            if bool(args.output)!=bool(args.output_root): raise InputError("invalid_output_path","output and output-root must be supplied together")
+            if args.output:
+                try: data=semantic_v10.private_extractor_output(args.output_root,args.output,data)
+                except (ValueError,OverflowError,OSError) as exc:
+                    code="extractor_output_too_large" if isinstance(exc,OverflowError) else "invalid_output_path"
+                    message=str(exc) if not isinstance(exc,OSError) else "Private output path failed containment or atomic-write validation"
+                    raise InputError(code,message,{"limit":semantic_v10.MAX_EXTRACTOR_OUTPUT_BYTES} if isinstance(exc,OverflowError) else {}) from exc
         elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
             validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
@@ -1709,6 +1716,8 @@ def main(argv: list[str] | None = None) -> int:
             effects.append({"type": "write_private_cache", "namespace": data["namespace"], "mode": "0600"})
         if args.command == "semantic-export-html":
             effects.append({"type":"write_file","path":target.relative_to(output_root).as_posix(),"sha256":data["sha256"]})
+        if args.command == "semantic-extractor-input" and args.output:
+            effects.append({"type":"write_private_output","path":data["path"],"bytes":data["bytes"],"sha256":data["sha256"],"mode":"0600"})
         if args.command in {"inspect", "plan"} and args.output:
             if not args.output_root:
                 raise InputError("invalid_output_path", "--output requires --output-root")
