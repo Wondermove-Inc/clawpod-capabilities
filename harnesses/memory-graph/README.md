@@ -1,6 +1,6 @@
 # Memory Graph Harness
 
-Version 0.10.3 maps canonical claim prose from the planner's `claim` field into `semantic-extractor-input` `claim_text`. Exact nonempty prose is preserved, while secret-like prose retains whole-value `[REDACTED]` handling and non-string values are not coerced. The v0.10.2 private-output contract and containment behavior are unchanged, and Gateway is untouched.
+Version 0.10.4 extends the metadata-only private JSON output contract to every semantic stage whose full result feeds another stage: extractor input, validation, review queue, approval, build, reconcile, and reconcile verification. Paired `output`/`outputRoot` arguments create a new normalized relative `.json` file atomically at mode 0600 beneath an existing approved non-symlink root; stdout contains only path, exact bytes, SHA-256, and mode. Collisions, mismatches, traversal, escapes, malformed extensions, and symlink roots, parents, or targets fail closed. Omitting both arguments preserves full stdout. Gateway, semantic authority boundaries, canonical memory, MCP dispatch, and no-network behavior are unchanged.
 
 Version 0.9 adds private claim-grounded Entity Proposals to the local read-only assertion ontology commands: `ontology-validate`, `review-queue`, `cq-evaluate`, and `semantic-view`. Fresh, explicitly human-approved proposals may bootstrap `Person`, `Project`, `Decision`, or `Event` assertion endpoints while canonical explicit entities remain higher trust. Closed shapes, content-addressed IDs, deterministic quarantine, inert aliases/identity candidates, temporal precision, direct human-approved causality, and v0.8 read-only migration are enforced. These paths do not call models, networks, MCP, or the live graph and never write canonical files. See `../../artifacts/memory-graph-v0.9-entity-proposal-contract.md`.
 
@@ -12,7 +12,7 @@ Read [the full contract](../../docs/memory-graph-contract.md) before changing pa
 
 ## Commands
 
-- `inspect`, `plan`, `validate-plan`, `validate-snapshot`, `validate-inference-candidates`, `project-inference-overlay`, `ontology-validate`, `review-queue`, `cq-evaluate`, `semantic-view`, and `cron-plan` are read-only. The inference projection command may optionally reconcile only its private mode-0600 cache under an explicit `state-root`.
+- `inspect`, `plan`, `validate-plan`, `validate-snapshot`, `validate-inference-candidates`, `ontology-validate`, `review-queue`, `cq-evaluate`, `semantic-view`, and `cron-plan` are read-only. Semantic pipeline commands are `writeSafe` because their optional paired output contract writes only new private JSON; without those arguments their prior full-stdout behavior remains read-only. Inference projection may optionally reconcile only its private mode-0600 cache under an explicit `state-root`.
 - `onboard` is `writeSafe` and reconciles only the exact namespace derived from the explicit agent and workspace identity.
 - Larger `diff`, `export-mcp-batch`, `query-plan`, and `export-visualization` surfaces remain direct CLI operations and are intentionally absent from the Gateway manifest. Query and visualization exclude inference by default and require both `--include-inferred` and a fresh `--overlay`; explicit and inferred relations remain separate in output.
 
@@ -34,10 +34,10 @@ Run `python3 release_inventory.py` from this directory before packaging. Its one
 
 This example is a data-flow illustration, not an approval. It never authorizes a reviewer, a file write, or Memory MCP dispatch. A fresh agent must prepare each exact Harness command through the trusted runtime and keep all candidates inert until a separately authenticated human review exists.
 
-1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null. For trusted private transfer, also supply an existing allowlisted private `outputRoot` outside canonical memory and a relative `.json` `output`; verify stdout `bytes` and `sha256` before consuming the file.
+1. Run `semantic-extractor-input` with the explicit `root`, `agentId`, and `workspaceId`; page until `next_cursor` is null. For trusted private transfer between semantic stages, supply both an existing allowlisted private `outputRoot` outside canonical memory and a fresh relative `.json` `output`; verify stdout path, bytes, SHA-256, and mode before consuming the file.
 2. Give only those bounded pages to the external extractor, then pass its JSON to `semantic-validate-proposals` and `semantic-review-queue`. Stop here for review. Neither command approves or writes.
 3. After an authenticated human supplies an exact manifest, pass the trusted channel identity separately as `expectedReviewerId` to `semantic-approve`, then run `semantic-build`.
 4. Give the snapshot plus a freshly read backend view to `semantic-reconcile`. Its returned operations are an inert plan: never dispatch them automatically. Obtain exact write approval, dispatch only through the schema-validated Memory MCP surface, re-read the backend, and run `semantic-reconcile-verify`.
-5. `semantic-export-html` is the only semantic manifest command that writes a file. Its exact output path requires its own runtime approval when requested.
+5. `semantic-export-html` writes a review artifact under its separate contract. Private JSON stage outputs never confer approval or dispatch authority.
 
 Run `python3 semantic_contract_inventory.py` to obtain the deterministic, machine-verifiable command-to-handler, safety, output, effects, error-envelope, and redaction inventory for every manifest `semantic-*` command.

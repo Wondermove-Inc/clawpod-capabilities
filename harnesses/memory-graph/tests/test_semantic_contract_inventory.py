@@ -13,16 +13,18 @@ class SemanticContractInventory(unittest.TestCase):
    self.assertEqual(item['required_output_fields'],['ok','schema_version','command','effects'])
    self.assertEqual(item['safety_classes'],spec['safetyClasses'])
    self.assertIn(item['handler'].split('.')[-1],source)
-   expected={'semantic-export-html':['write_file'],'semantic-extractor-input':['write_private_output']}.get(item['command'],[])
+   private={'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
+   expected=['write_file'] if item['command']=='semantic-export-html' else ['write_private_output'] if item['command'] in private else []
    self.assertEqual(item['effects'],expected)
    self.assertFalse(item['error_envelope']['secret_values_allowed']); self.assertTrue(item['redaction']['stdout_must_not_echo_secret'])
  def test_extractor_output_name_remains_relative_string_and_root_is_gateway_output_path(self):
   manifest=json.loads((P/'harness.json').read_text())
-  args={item['arg']:item for item in manifest['commands']['semantic-extractor-input']['argMap']}
-  self.assertEqual(args['output']['valueType'],'string')
-  self.assertNotIn('pathRole',args['output'])
-  self.assertEqual(args['outputRoot']['valueType'],'path')
-  self.assertEqual(args['outputRoot']['pathRole'],'output')
+  private={'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
+  for command in private:
+   args={item['arg']:item for item in manifest['commands'][command]['argMap']}
+   self.assertEqual(args['output']['valueType'],'string'); self.assertNotIn('pathRole',args['output'])
+   self.assertEqual(args['outputRoot']['valueType'],'path'); self.assertEqual(args['outputRoot']['pathRole'],'output')
+   self.assertEqual(manifest['commands'][command]['safetyClasses'],['writeSafe'])
  def test_inventory_digest_and_cli_are_deterministic(self):
   first=subprocess.check_output(['python3',str(P/'semantic_contract_inventory.py')]); second=subprocess.check_output(['python3',str(P/'semantic_contract_inventory.py')]); self.assertEqual(first,second)
   out=json.loads(first); digest=out.pop('inventory_sha256'); self.assertEqual(digest,hashlib.sha256(json.dumps(out,sort_keys=True,separators=(',',':')).encode()).hexdigest())

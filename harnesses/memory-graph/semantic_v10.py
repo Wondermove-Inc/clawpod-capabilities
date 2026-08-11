@@ -10,7 +10,9 @@ SCHEMA_INPUT="memory-graph-extractor-input/v1"
 SCHEMA_PROPOSAL="memory-graph-extractor-proposals/v1"
 SCHEMA_APPROVAL="memory-graph-approval-manifest/v1"
 SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
-MAX_EXTRACTOR_OUTPUT_BYTES=1024*1024
+MAX_PRIVATE_OUTPUT_BYTES=1024*1024
+# Backward-compatible name for callers which enforce the extractor page bound.
+MAX_EXTRACTOR_OUTPUT_BYTES=MAX_PRIVATE_OUTPUT_BYTES
 TYPES={"Person","Project","Decision","Event"}; PREDICATES={"participates_in","decided","caused","supersedes"}
 ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"caused":({"Decision","Event"},{"Event"}),"supersedes":({"Decision","Event","Project"},{"Decision","Event","Project"})}
 # Predicate cardinality is an ontology contract, not an incidental set in the
@@ -107,8 +109,8 @@ def atomic_write_json(output, value):
  """Persist private workflow state with the same durable 0600 contract."""
  atomic_write(Path(output),canon(value)+b"\n")
 
-def private_extractor_output(output_root, relative_path, value):
- """Write a bounded extractor page beneath an already-approved private root.
+def private_json_output(output_root, relative_path, value):
+ """Create bounded JSON beneath an already-approved private root.
 
  The relative path is traversed from directory descriptors.  A second traversal
  immediately before commit detects replacement of the root or any parent; the
@@ -120,7 +122,7 @@ def private_extractor_output(output_root, relative_path, value):
  if relative.is_absolute() or relative.as_posix()!=relative_path or re.match(r"^[A-Za-z]:",relative_path) or not relative.parts or any(part in {"",".",".."} for part in relative.parts) or relative.suffix!=".json":
   raise ValueError("private output path must be a relative .json path without traversal")
  data=canon(value)+b"\n"
- if len(data)>MAX_EXTRACTOR_OUTPUT_BYTES: raise OverflowError("extractor page exceeds the private output byte limit")
+ if len(data)>MAX_PRIVATE_OUTPUT_BYTES: raise OverflowError("semantic JSON exceeds the private output byte limit")
  root=Path(os.path.abspath(os.fspath(output_root)))
  flags=os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_NOFOLLOW",0)
  opened=[]; tmp=None
@@ -133,7 +135,7 @@ def private_extractor_output(output_root, relative_path, value):
   name=relative.parts[-1]
   try: target=os.stat(name,dir_fd=directory,follow_symlinks=False)
   except FileNotFoundError: target=None
-  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output target must be a regular non-symlink file")
+  if target is not None: raise FileExistsError("private output target already exists")
   for _ in range(100):
    tmp="."+name+"."+next(tempfile._get_candidate_names())+".tmp"
    try: fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=directory); break
@@ -152,16 +154,20 @@ def private_extractor_output(output_root, relative_path, value):
     if (info.st_dev,info.st_ino)!=identities[index]: raise OSError("private output parent changed during write")
   finally:
    for descriptor in reversed(checked): os.close(descriptor)
-  try: target=os.stat(name,dir_fd=directory,follow_symlinks=False)
-  except FileNotFoundError: target=None
-  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output target changed during write")
-  os.replace(tmp,name,src_dir_fd=directory,dst_dir_fd=directory); tmp=None; os.fsync(directory)
-  return {"schema_version":value["schema_version"],"path":relative.as_posix(),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+  # link() is an atomic create-without-replacement commit.  It fails closed if
+  # another writer, symlink, directory, or regular file claims the target.
+  os.link(tmp,name,src_dir_fd=directory,dst_dir_fd=directory,follow_symlinks=False)
+  os.unlink(tmp,dir_fd=directory); tmp=None; os.fsync(directory)
+  return {"path":relative.as_posix(),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"mode":"0600"}
  finally:
   if tmp is not None and opened:
    try: os.unlink(tmp,dir_fd=opened[-1])
    except FileNotFoundError: pass
   for descriptor in reversed(opened): os.close(descriptor)
+
+def private_extractor_output(output_root, relative_path, value):
+ """Compatibility alias for the shared semantic JSON output contract."""
+ return private_json_output(output_root,relative_path,value)
 def html_json(value):
  """Serialize inert script JSON without raw HTML/Unicode parser controls."""
  return json.dumps(value,ensure_ascii=True,sort_keys=True,separators=(",",":")).replace("<","\\u003c").replace(">","\\u003e").replace("&","\\u0026")
