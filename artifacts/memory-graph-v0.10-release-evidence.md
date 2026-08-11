@@ -1,5 +1,21 @@
 # Memory Graph v0.10 Release Evidence
 
+## v0.10.3 canonical claim prose mapping fix
+
+The `semantic-extractor-input` mapper now reads canonical prose from the planner's `claim` field instead of the obsolete `value` field. Exact nonempty prose is emitted as `claim_text`; the existing whole-value `[REDACTED]` secret handling and strict non-string failure behavior are preserved. Regression coverage uses canonical `claim`-shaped fixtures and proves exact prose, nonempty output, secret removal, and no type coercion. Gateway was not modified.
+
+Status: v0.10.3 implementation candidate, not published, installed, trusted, restarted, or dispatched. No semantic/MCP or canonical-memory writes were performed.
+
+Verification completed on 2026-08-11:
+
+- `python3 -m unittest discover -s harnesses/memory-graph/tests -p 'test_*.py' -v`: 144 passed.
+- `python3 -m unittest discover -s tests -p 'test_*.py' -v`: 25 passed.
+- `python3 scripts/validate.py`: 34 capability entries validated.
+- `python3 scripts/sync_registry.py --check`: paired Skill/Harness v0.10.3 metadata and package digests synchronized.
+- Compileall, JSON parsing, and `git diff --check`: passed.
+- Deterministic release inventory digest: `8a7bd2180c825028078ea79c96ab002f077ad6d500d5da68f0479a8e50221ed1`.
+- Semantic command-contract inventory digest: `a7f34c33790cf6c77064266d3c5dac12fe258e6c3f0c62a32cee13a764d15405`.
+
 ## v0.10.2 Gateway relative-output integration fix
 
 Workboard: `6fde1a44-35fe-490e-92b1-efc97cf3cd5c`. Classification: `refine`; the canonical registry already contained the paired Memory Graph Skill/Harness v0.10.0 and no separate capability was created.

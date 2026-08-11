@@ -437,7 +437,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.10.2",
+      "version": "0.10.3",
       "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -460,7 +460,7 @@
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.10.2"
+        "version": "0.10.3"
       }
     },
     {
@@ -1164,7 +1164,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.10.2",
+      "version": "0.10.3",
       "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1182,11 +1182,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "fb1fb6243f8e1cea9ee1b28f62a3ff9a121407afdf7bd0ea89a179169a933f9c"
+          "sha256": "7a8cafd592463ca088b98b483acf7347948e1cdab19af579a2e9d81bc237c255"
         },
         {
           "path": "harness.json",
-          "sha256": "81b6c9d78b37e5a03bf217ab5a177df706046709541bb9b91b88f373d166ed13"
+          "sha256": "256e25f2a8d93207d65f86d5be3cd628ed00d8a7564831d88a0c469215cc7315"
         },
         {
           "path": "memory_graph.py",
@@ -1206,7 +1206,7 @@
         },
         {
           "path": "semantic_v10.py",
-          "sha256": "b4357b6a0531797ae9fa02b6545c37a3adc2349ab9500b013da2a584e6c75297"
+          "sha256": "6cdf4924490d89acfa99ec6057936911c25dcf2c2858472b3ae748c3a6fb9144"
         }
       ]
     },

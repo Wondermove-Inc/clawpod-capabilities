@@ -236,7 +236,7 @@ def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
  endpoints=endpoints[:100]
  rows=[]
  for c in selected:
-  value=c.get("value","")
+  value=c.get("claim","")
   if SECRET.search(value): value="[REDACTED]"
   provenance=line_provenance(root,c["path"],c["line"],c["line"])
   rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":provenance["source_content_hash"],"claim_content_hash":c["content_hash"],"claim_text":value,"source_byte_length":provenance["source_byte_length"],"normalized_line_hash":provenance["normalized_line_hash"],"line_normalization":provenance["line_normalization"]})
