@@ -50,9 +50,10 @@ class SemanticV10(unittest.TestCase):
   response=self.cli('semantic-extractor-input','--limit','20','--output','pages/page.json','--output-root',str(private))
   metadata=response['data']; raw=(private/'pages/page.json').read_bytes(); full=json.loads(raw)
   self.assertEqual(full,self.input); self.assertEqual(metadata['bytes'],len(raw)); self.assertEqual(metadata['sha256'],hashlib.sha256(raw).hexdigest())
-  self.assertEqual(metadata['path'],'pages/page.json'); self.assertNotIn('claims',metadata); self.assertLess(len(json.dumps(response)),1000)
-  first=raw; again=self.cli('semantic-extractor-input','--limit','20','--output','pages/page.json','--output-root',str(private))
-  self.assertEqual(first,(private/'pages/page.json').read_bytes()); self.assertEqual(metadata,again['data'])
+  self.assertEqual(metadata['path'],'pages/page.json'); self.assertEqual(metadata['mode'],'0600'); self.assertNotIn('claims',metadata); self.assertLess(len(json.dumps(response)),1000)
+  first=raw; again=self.cli('semantic-extractor-input','--limit','20','--output','pages/repeat.json','--output-root',str(private))
+  self.assertEqual(first,(private/'pages/repeat.json').read_bytes()); self.assertEqual({**metadata,'path':'pages/repeat.json'},again['data'])
+  self.assertEqual(self.cli('semantic-extractor-input','--limit','20','--output','pages/page.json','--output-root',str(private),code=2)['error']['code'],'invalid_output_path')
   self.assertEqual(stat.S_IMODE((private/'pages/page.json').stat().st_mode),0o600); self.assertFalse(list((private/'pages').glob('.page.json.*.tmp')))
   self.assertEqual(before,{p:(hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in (self.t/'memory').glob('*.md')})
  def test_private_full_output_is_optional_for_compatibility(self):
@@ -73,7 +74,7 @@ class SemanticV10(unittest.TestCase):
   private=self.t/'private'; private.mkdir()
   with self.assertRaises(OverflowError): module.private_extractor_output(private,'large.json',{'schema_version':'x','payload':'x'*(module.MAX_EXTRACTOR_OUTPUT_BYTES+1)})
   self.assertFalse(list(private.iterdir()))
-  with mock.patch.object(module.os,'replace',side_effect=OSError('injected replacement failure')):
+  with mock.patch.object(module.os,'link',side_effect=OSError('injected commit failure')):
    with self.assertRaises(OSError): module.private_extractor_output(private,'page.json',self.input)
   self.assertFalse((private/'page.json').exists()); self.assertFalse(list(private.glob('.page.json.*.tmp')))
  def test_private_full_output_detects_root_replacement_race(self):
@@ -169,6 +170,28 @@ class SemanticV10(unittest.TestCase):
   v=self.validated(); self.write('validated.json',v); q=self.cli('semantic-review-queue','--input','bundle.json')['data']; self.assertFalse(q['automatic_approval']); self.assertEqual(len(q['items']),3); self.assertTrue(q['review_policy']['single_reviewer_per_manifest']); self.assertFalse(q['review_policy']['producer_may_review'])
   m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:reviewer','reviewed_at':self.reviewed_at,'decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit entity'} for x in v['entity_proposals']]}; self.write('manifest.json',m)
   r=self.cli('semantic-approve','--input','validated.json','--manifest','manifest.json')['data']; self.write('reviewed.json',r); s=self.cli('semantic-build','--input','reviewed.json')['data']; self.assertEqual(len(s['entities']),2); self.assertFalse(s['assertions']); self.assertEqual(len(s['candidates']),1); self.assertFalse(s['inference_overlays'])
+ def test_private_semantic_stage_outputs_chain_with_exact_metadata(self):
+  private=self.t/'private'; private.mkdir()
+  def persisted(command,name,*args):
+   full=self.cli(command,*args)['data']
+   response=self.cli(command,*args,'--output',name,'--output-root',str(private)); metadata=response['data']; raw=(private/name).read_bytes()
+   self.assertEqual(json.loads(raw),full); self.assertEqual(set(metadata),{'path','bytes','sha256','mode'}); self.assertEqual(metadata,{'path':name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'mode':'0600'})
+   self.assertEqual(stat.S_IMODE((private/name).stat().st_mode),0o600); self.assertEqual(response['effects'],[{'type':'write_private_output',**metadata}]); self.assertLess(len(response.stdout) if hasattr(response,'stdout') else len(json.dumps(response)),1000)
+   return full
+  validated=persisted('semantic-validate-proposals','validated.json','--input','bundle.json')
+  queue=persisted('semantic-review-queue','queue.json','--input','bundle.json'); self.assertFalse(queue['automatic_approval'])
+  manifest={'schema_version':'memory-graph-approval-manifest/v1','namespace':validated['namespace'],'validated_hash':validated['validated_hash'],'reviewer_id':'human:reviewer','reviewed_at':self.reviewed_at,'decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit evidence'} for x in validated['entity_proposals']+validated['assertion_proposals']]}; self.write('manifest.json',manifest)
+  reviewed=persisted('semantic-approve','reviewed.json','--input','private/validated.json','--manifest','manifest.json'); self.assertTrue(reviewed['proposals'])
+  snapshot=persisted('semantic-build','snapshot.json','--input','private/reviewed.json'); self.assertTrue(snapshot['snapshot_hash'])
+  self.write('current.json',{'schema_version':'memory-mcp/v1','entities':[],'relations':[]})
+  plan=persisted('semantic-reconcile','plan.json','--input','private/snapshot.json','--current','current.json'); self.assertTrue(plan['operations'])
+  current={'schema_version':'memory-mcp/v1','entities':[x['value'] for x in plan['operations'] if x['kind']=='entity' and x['op']!='delete'],'relations':[x['value'] for x in plan['operations'] if x['kind']=='relation' and x['op']!='delete']}; self.write('post.json',current)
+  verified=persisted('semantic-reconcile-verify','verified.json','--input','private/snapshot.json','--plan','private/plan.json','--current','post.json'); self.assertTrue(verified['verified'])
+  repeat=self.cli('semantic-build','--input','private/reviewed.json','--output','snapshot-repeat.json','--output-root',str(private)); self.assertEqual((private/'snapshot.json').read_bytes(),(private/'snapshot-repeat.json').read_bytes()); self.assertEqual(repeat['data']['sha256'],hashlib.sha256((private/'snapshot.json').read_bytes()).hexdigest())
+  self.assertEqual(self.cli('semantic-build','--input','private/reviewed.json','--output','snapshot.json','--output-root',str(private),code=2)['error']['code'],'invalid_output_path')
+  self.assertEqual(self.cli('semantic-build','--input','private/reviewed.json','--output','../escape.json','--output-root',str(private),code=2)['error']['code'],'invalid_output_path')
+  self.assertEqual(self.cli('semantic-build','--input','private/reviewed.json','--output','missing-root.json',code=2)['error']['code'],'invalid_output_path')
+  self.write('invalid.json',{'bad':True}); self.assertEqual(self.cli('semantic-build','--input','invalid.json','--output','never.json','--output-root',str(private),code=2)['error']['code'],'invalid_reviewed_bundle'); self.assertFalse((private/'never.json').exists())
  def test_extractor_producer_cannot_serve_as_human_reviewer(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:test','reviewed_at':self.reviewed_at,'decisions':[]}; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'separation_of_duties_violation')
@@ -473,7 +496,7 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(a.read_bytes(),b.read_bytes()); self.assertEqual(one['sha256'],two['sha256']); self.assertEqual((one['node_count'],one['edge_count']),(500,1000)); self.assertLess(time.monotonic()-started,5)
  def test_release_inventory_is_deterministic_complete_and_inert(self):
   cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
-  out=json.loads(one); self.assertEqual(out['version'],'0.10.3'); self.assertIn('rollback',out); self.assertIn('update',out)
+  out=json.loads(one); self.assertEqual(out['version'],'0.10.4'); self.assertIn('rollback',out); self.assertIn('update',out)
   expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py']
   self.assertEqual([x['path'] for x in out['files']],expected)
   for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])
