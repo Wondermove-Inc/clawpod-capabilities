@@ -27,14 +27,14 @@ if _ONTOLOGY_SPEC is None or _ONTOLOGY_SPEC.loader is None:  # pragma: no cover 
     raise RuntimeError("Unable to load local ontology module")
 ontology = importlib.util.module_from_spec(_ONTOLOGY_SPEC)
 _ONTOLOGY_SPEC.loader.exec_module(ontology)
-_SEMANTIC_V10_SPEC = importlib.util.spec_from_file_location("memory_graph_semantic_v10", Path(__file__).with_name("semantic_v10.py"))
-if _SEMANTIC_V10_SPEC is None or _SEMANTIC_V10_SPEC.loader is None:
-    raise RuntimeError("Unable to load local semantic v0.10 module")
-semantic_v10 = importlib.util.module_from_spec(_SEMANTIC_V10_SPEC)
-_SEMANTIC_V10_SPEC.loader.exec_module(semantic_v10)
+_SEMANTIC_V11_SPEC = importlib.util.spec_from_file_location("memory_graph_semantic_v11", Path(__file__).with_name("semantic_v11.py"))
+if _SEMANTIC_V11_SPEC is None or _SEMANTIC_V11_SPEC.loader is None:
+    raise RuntimeError("Unable to load local semantic v0.11 module")
+semantic_v11 = importlib.util.module_from_spec(_SEMANTIC_V11_SPEC)
+_SEMANTIC_V11_SPEC.loader.exec_module(semantic_v11)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.10.6"
+CONTRACT_VERSION = "0.11.0"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
@@ -65,12 +65,14 @@ SECRET_PATTERNS = [
 ]
 ALLOWED_STATUS = {"current", "tentative", "superseded", "rejected", "conflicted", "archived", "active"}
 ELIGIBLE_STATUS = {"current", "tentative", "active"}
-SEMANTIC_TYPES = {"Person", "Project", "Decision", "Event"}
+SEMANTIC_TYPES = {"Person", "Project", "Decision", "Cause", "Effect", "Event"}
 SEMANTIC_RELATIONS = {
     "participates_in": ({"Person"}, {"Project", "Event"}),
     "decided": ({"Person"}, {"Decision"}),
-    "caused": ({"Decision", "Event"}, {"Event"}),
-    "supersedes": ({"Decision"}, {"Decision"}),
+    "motivated_by": ({"Decision"}, {"Cause"}),
+    "caused": ({"Cause", "Decision", "Event"}, {"Effect", "Event"}),
+    "affected": ({"Decision", "Effect", "Event"}, {"Project", "Effect", "Event"}),
+    "supersedes": ({"Decision", "Effect", "Event", "Project"}, {"Decision", "Effect", "Event", "Project"}),
 }
 
 # Canonical graph inputs are only direct memory/*.md topic files.
@@ -1624,14 +1626,19 @@ def parser() -> argparse.ArgumentParser:
     c = sub.add_parser("export-visualization"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c.add_argument("--overlay"); c.add_argument("--include-inferred", action="store_true")
     c = sub.add_parser("semantic-extractor-input"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor"); c.add_argument("--output"); c.add_argument("--output-root")
+    c = sub.add_parser("semantic-seal-extraction"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--output"); c.add_argument("--output-root")
     for name in ("semantic-validate-proposals", "semantic-review-queue"):
         c = sub.add_parser(name); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--output"); c.add_argument("--output-root")
+        if name == "semantic-review-queue": c.add_argument("--limit", type=int, default=20); c.add_argument("--cursor")
     c = sub.add_parser("semantic-approve"); c.add_argument("--input", required=True); c.add_argument("--manifest", required=True); c.add_argument("--expected-reviewer-id", required=True); c.add_argument("--root", default="."); c.add_argument("--output"); c.add_argument("--output-root")
     c = sub.add_parser("semantic-build"); c.add_argument("--input", required=True); c.add_argument("--root", default="."); c.add_argument("--output"); c.add_argument("--output-root")
     c = sub.add_parser("semantic-migrate-v09"); c.add_argument("--input", required=True); c.add_argument("--root", default=".")
     c = sub.add_parser("semantic-reconcile"); c.add_argument("--input", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default="."); c.add_argument("--output"); c.add_argument("--output-root")
     c = sub.add_parser("semantic-reconcile-verify"); c.add_argument("--input", required=True); c.add_argument("--plan", required=True); c.add_argument("--current", required=True); c.add_argument("--root", default="."); c.add_argument("--output"); c.add_argument("--output-root")
     c = sub.add_parser("semantic-export-html"); c.add_argument("--input", required=True); c.add_argument("--output", required=True); c.add_argument("--output-root", required=True); c.add_argument("--root", default="."); c.add_argument("--include-candidates",action="store_true")
+    for name in ("semantic-decisions-by-person","semantic-decision-why","semantic-decision-impacts","semantic-decision-evidence"):
+        c=sub.add_parser(name); c.add_argument("--input",required=True); c.add_argument("--root",default="."); c.add_argument("--person-id"); c.add_argument("--decision-id"); c.add_argument("--limit",type=int,default=100)
+    c=sub.add_parser("semantic-hydrate"); c.add_argument("--input",required=True); c.add_argument("--root",default="."); c.add_argument("--agent-id",required=True); c.add_argument("--workspace-id")
     c = sub.add_parser("onboard"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--mcporter", default="mcporter"); c.add_argument("--timeout-seconds", type=int, default=10); c.add_argument("--secret-policy", choices=("reject", "redact"), default="reject")
     c = sub.add_parser("cron-plan"); c.add_argument("--root", default="."); c.add_argument("--agent-id", required=True); c.add_argument("--workspace-id"); c.add_argument("--state-root", required=True); c.add_argument("--timezone", required=True)
     return p
@@ -1641,7 +1648,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
         root = Path(args.root).resolve()
-        private_commands={"semantic-extractor-input","semantic-validate-proposals","semantic-review-queue","semantic-approve","semantic-build","semantic-reconcile","semantic-reconcile-verify"}
+        private_commands={"semantic-extractor-input","semantic-seal-extraction","semantic-validate-proposals","semantic-review-queue","semantic-approve","semantic-build","semantic-reconcile","semantic-reconcile-verify"}
         if args.command in private_commands and bool(args.output)!=bool(args.output_root):
             raise InputError("invalid_output_path","output and output-root must be supplied together")
         if args.command == "inspect": data = inspect_workspace(root, args.secret_policy)
@@ -1677,21 +1684,30 @@ def main(argv: list[str] | None = None) -> int:
             data = export_visualization(snapshot, overlay, args.include_inferred)
         elif args.command == "semantic-extractor-input":
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
-            data=semantic_v10.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit,args.cursor)
+            data=semantic_v11.extractor_input(root,args.agent_id,args.workspace_id,api,args.limit,args.cursor)
+        elif args.command == "semantic-seal-extraction":
+            api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
+            data=semantic_v11.seal_extraction(load_semantic_bundle(args.input,root),api,root,args.agent_id,args.workspace_id)
         elif args.command in {"semantic-validate-proposals","semantic-review-queue"}:
             api={"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan}
-            validated=semantic_v10.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
-            data=validated if args.command=="semantic-validate-proposals" else semantic_v10.review_queue(validated)
+            validated=semantic_v11.validate_proposals(root,load_semantic_bundle(args.input,root),args.agent_id,args.workspace_id,api)
+            data=validated if args.command=="semantic-validate-proposals" else semantic_v11.review_queue(validated,args.limit,args.cursor,{"error":InputError})
         elif args.command == "semantic-approve":
-            data=semantic_v10.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id,root)
-        elif args.command == "semantic-build": data=semantic_v10.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
-        elif args.command == "semantic-migrate-v09": data=semantic_v10.migrate_v09(load_semantic_bundle(args.input,root),{"error":InputError})
-        elif args.command == "semantic-reconcile": data=semantic_v10.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
-        elif args.command == "semantic-reconcile-verify": data=semantic_v10.verify_reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.plan,root),load_semantic_bundle(args.current,root),{"error":InputError})
+            data=semantic_v11.approve(load_semantic_bundle(args.input,root),load_semantic_bundle(args.manifest,root),{"error":InputError},args.expected_reviewer_id,root)
+        elif args.command == "semantic-build": data=semantic_v11.build_snapshot(load_semantic_bundle(args.input,root),{"error":InputError})
+        elif args.command == "semantic-migrate-v09": data=semantic_v11.migrate_v09(load_semantic_bundle(args.input,root),{"error":InputError})
+        elif args.command == "semantic-reconcile": data=semantic_v11.reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.current,root),{"error":InputError})
+        elif args.command == "semantic-reconcile-verify": data=semantic_v11.verify_reconcile(load_semantic_bundle(args.input,root),load_semantic_bundle(args.plan,root),load_semantic_bundle(args.current,root),{"error":InputError})
         elif args.command == "semantic-export-html":
             output_root=Path(args.output_root).resolve(); target=safe_output_resolve(output_root,args.output)
             if target.is_symlink() or (target.exists() and not target.is_file()): raise InputError("invalid_output_path","Output must be a regular non-symlink file")
-            data=semantic_v10.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError},args.include_candidates)
+            data=semantic_v11.export_html(load_semantic_bundle(args.input,root),target,{"error":InputError},args.include_candidates)
+        elif args.command.startswith("semantic-decision"):
+            modes={"semantic-decisions-by-person":"by-person","semantic-decision-why":"why","semantic-decision-impacts":"impacts","semantic-decision-evidence":"evidence"}
+            data=semantic_v11.decision_lookup(load_semantic_bundle(args.input,root),modes[args.command],{"error":InputError},args.person_id,args.decision_id,args.limit)
+        elif args.command == "semantic-hydrate":
+            value=load_semantic_bundle(args.input,root); locators=value.get("hydration_locators") if isinstance(value,dict) else None
+            data=semantic_v11.hydrate_locators(root,locators,{"error":InputError,"inspect":inspect_workspace,"namespace":namespace_for,"plan":build_plan},args.agent_id,args.workspace_id)
         else:
             snapshot = load_json(args.input, root)
             if args.query:
@@ -1705,11 +1721,11 @@ def main(argv: list[str] | None = None) -> int:
                     overlay, args.include_inferred)
         if args.command in private_commands:
             if args.output:
-                try: data=semantic_v10.private_json_output(args.output_root,args.output,data)
+                try: data=semantic_v11.private_json_output(args.output_root,args.output,data)
                 except (ValueError,OverflowError,OSError) as exc:
                     code="semantic_output_too_large" if isinstance(exc,OverflowError) else "invalid_output_path"
                     message=str(exc) if not isinstance(exc,OSError) else "Private output path failed containment, collision, or atomic-write validation"
-                    raise InputError(code,message,{"limit":semantic_v10.MAX_PRIVATE_OUTPUT_BYTES} if isinstance(exc,OverflowError) else {}) from exc
+                    raise InputError(code,message,{"limit":semantic_v11.MAX_PRIVATE_OUTPUT_BYTES} if isinstance(exc,OverflowError) else {}) from exc
         effects = []
         if args.command == "onboard":
             effects.append({"type": "write_private_state", "namespace": data["namespace"]})

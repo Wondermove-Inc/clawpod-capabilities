@@ -1,8 +1,8 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.10.6",
-  "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
+  "version": "0.11.0",
+  "description": "Page and validate external-agent natural-language candidates for an explicit-evidence causal memory graph with hydrated decision provenance.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [

@@ -6,15 +6,21 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 CONTRACTS={
  "semantic-view":("ontology.semantic_view",()),
- "semantic-extractor-input":("semantic_v10.extractor_input",("write_private_output",)),
- "semantic-validate-proposals":("semantic_v10.validate_proposals",("write_private_output",)),
- "semantic-review-queue":("semantic_v10.review_queue",("write_private_output",)),
- "semantic-approve":("semantic_v10.approve",("write_private_output",)),
- "semantic-build":("semantic_v10.build_snapshot",("write_private_output",)),
- "semantic-migrate-v09":("semantic_v10.migrate_v09",()),
- "semantic-reconcile":("semantic_v10.reconcile",("write_private_output",)),
- "semantic-reconcile-verify":("semantic_v10.verify_reconcile",("write_private_output",)),
- "semantic-export-html":("semantic_v10.export_html",("write_file",)),
+ "semantic-extractor-input":("semantic_v11.extractor_input",("write_private_output",)),
+ "semantic-seal-extraction":("semantic_v11.seal_extraction",("write_private_output",)),
+ "semantic-validate-proposals":("semantic_v11.validate_proposals",("write_private_output",)),
+ "semantic-review-queue":("semantic_v11.review_queue",("write_private_output",)),
+ "semantic-approve":("semantic_v11.approve",("write_private_output",)),
+ "semantic-build":("semantic_v11.build_snapshot",("write_private_output",)),
+ "semantic-migrate-v09":("semantic_v11.migrate_v09",()),
+ "semantic-reconcile":("semantic_v11.reconcile",("write_private_output",)),
+ "semantic-reconcile-verify":("semantic_v11.verify_reconcile",("write_private_output",)),
+ "semantic-export-html":("semantic_v11.export_html",("write_file",)),
+ "semantic-decisions-by-person":("semantic_v11.decision_lookup",()),
+ "semantic-decision-why":("semantic_v11.decision_lookup",()),
+ "semantic-decision-impacts":("semantic_v11.decision_lookup",()),
+ "semantic-decision-evidence":("semantic_v11.decision_lookup",()),
+ "semantic-hydrate":("semantic_v11.hydrate_locators",()),
 }
 
 def inventory():
