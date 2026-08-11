@@ -437,8 +437,8 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.10.6",
-      "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
+      "version": "0.11.0",
+      "description": "Orchestrate bounded natural-language candidate authoring for an explicit-evidence causal memory graph with hydrated decision provenance.",
       "path": "skills/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "324a80aa5c6b5342264a259e8b0e87ec3b6d6ff502ed8ebeca8ca2fea73303f0"
+          "sha256": "1b993daebb5880521aa12df7d82e3b6a1021f84da6727ba1e654fd480df17b71"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.10.6"
+        "version": "0.11.0"
       }
     },
     {
@@ -1164,8 +1164,8 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.10.6",
-      "description": "Build, reconcile, and verify an isolated noncanonical Memory MCP graph from one agent's direct canonical memory topic files.",
+      "version": "0.11.0",
+      "description": "Page and validate external-agent natural-language candidates for an explicit-evidence causal memory graph with hydrated decision provenance.",
       "path": "harnesses/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1182,31 +1182,43 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "06f4b2016144b95c30f1f16514cfecfcc7cd2447229c436acafda417cd63d1fd"
+          "sha256": "9fc5777139c239a1759cbfa46174073738f8fe8d0ecb526aee74d533d0989951"
+        },
+        {
+          "path": "agent_authoring_driver.py",
+          "sha256": "8782352939cd8224314d26a5f369abe8e00b27498453dc686d363299506e174b"
         },
         {
           "path": "harness.json",
-          "sha256": "404dae29bdf18946546dfebf4f713956c764c33f617225b4af3198b7ac721f0b"
+          "sha256": "66a739fe6366323abb15471509cccd14a34afa3f9fd2c3261215035f9cb67ffb"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "90118ab2332914bd524c6e61a343149bf9000e69d145ede67b03741eb3111217"
+          "sha256": "531d4dfc9a664033c10d248295374fdf459184d20eb286a91e4271a48cde8c7f"
         },
         {
           "path": "ontology.py",
           "sha256": "981c75db4ee8b4455e313c6ac4a5f4249437c3add698125841baaca1642d76f5"
         },
         {
+          "path": "real_corpus_smoke.py",
+          "sha256": "4f3771764940f4b740611b7f627fc10b784c5cf44b22e10b144d82f574dd7f76"
+        },
+        {
           "path": "release_inventory.py",
-          "sha256": "c0788ad6183d567f800ce58b9e71144183fe65185486db836edf438e1bba9e1f"
+          "sha256": "7d15521b9f3d8aac635c69ab702d0a28ab846db6c8d5de27e2adc79660a8241e"
         },
         {
           "path": "semantic_contract_inventory.py",
-          "sha256": "98bc48270da40af8f66b849672398e3dca64ef999e9fb8ab67656b45959f2b08"
+          "sha256": "1ba9213d9dcdca94293598a907266bb96fbea6e735b93fe780b21b65dfe98b69"
         },
         {
           "path": "semantic_v10.py",
           "sha256": "b9e10f1786d29810f1ac1ba41558a09c183dcb8b4795c12332b4491be54d6529"
+        },
+        {
+          "path": "semantic_v11.py",
+          "sha256": "641a4900577117d430882162c62b48e3d73a2e68b92ece852740eb1a5a4810c5"
         }
       ]
     },

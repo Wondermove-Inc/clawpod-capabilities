@@ -170,4 +170,4 @@ provider.
 
 ### Memory Graph 0.7.0
 
-Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. v0.7 adds deterministic validation, quarantine, projection, private caching, bounded querying, and labeled visualization of separate noncanonical inference overlays; those paths never call a model, network, MCP, or live graph mutation surface.
+Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. Version 0.11.0 adds complete lifecycle-aware extractor paging, external-agent natural-language candidate authoring, explicit-evidence-only Person/Project/Decision/Cause/Effect/Event causal graphs, bounded review pages, hydrated decision recall, and full offline semantic HTML. The Harness itself never calls a model, network, MCP, or live graph mutation surface.

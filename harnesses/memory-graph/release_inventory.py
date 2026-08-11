@@ -4,7 +4,7 @@ import hashlib, json
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
-FILES=("README.md","capability.json","harness.json","memory_graph.py","ontology.py","semantic_v10.py","semantic_contract_inventory.py","release_inventory.py","tests/TEST.md","tests/test_semantic_contract_inventory.py","tests/test_semantic_v10.py")
+FILES=("README.md","capability.json","harness.json","memory_graph.py","ontology.py","semantic_v10.py","semantic_v11.py","agent_authoring_driver.py","real_corpus_smoke.py","semantic_contract_inventory.py","release_inventory.py","tests/TEST.md","tests/test_semantic_contract_inventory.py","tests/test_semantic_v10.py","tests/test_semantic_v11.py")
 items=[]
 for name in FILES:
  data=(ROOT/name).read_bytes()

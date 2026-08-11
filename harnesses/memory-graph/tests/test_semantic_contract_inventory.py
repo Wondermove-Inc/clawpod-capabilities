@@ -13,13 +13,13 @@ class SemanticContractInventory(unittest.TestCase):
    self.assertEqual(item['required_output_fields'],['ok','schema_version','command','effects'])
    self.assertEqual(item['safety_classes'],spec['safetyClasses'])
    self.assertIn(item['handler'].split('.')[-1],source)
-   private={'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
+   private={'semantic-extractor-input','semantic-seal-extraction','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
    expected=['write_file'] if item['command']=='semantic-export-html' else ['write_private_output'] if item['command'] in private else []
    self.assertEqual(item['effects'],expected)
    self.assertFalse(item['error_envelope']['secret_values_allowed']); self.assertTrue(item['redaction']['stdout_must_not_echo_secret'])
  def test_extractor_output_name_remains_relative_string_and_root_is_gateway_output_path(self):
   manifest=json.loads((P/'harness.json').read_text())
-  private={'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
+  private={'semantic-extractor-input','semantic-seal-extraction','semantic-validate-proposals','semantic-review-queue','semantic-approve','semantic-build','semantic-reconcile','semantic-reconcile-verify'}
   for command in private:
    args={item['arg']:item for item in manifest['commands'][command]['argMap']}
    self.assertEqual(args['output']['valueType'],'string'); self.assertNotIn('pathRole',args['output'])

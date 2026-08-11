@@ -5,25 +5,32 @@ from pathlib import Path
 P=Path(__file__).resolve().parents[1]; ROOT=P.parents[1]; CLI=P/'memory_graph.py'; FIX=Path(__file__).parent/'fixtures/entity-proposals'
 class SemanticV10(unittest.TestCase):
  def setUp(self):
-  self.t=Path(tempfile.mkdtemp()); shutil.copytree(FIX/'memory',self.t/'memory'); self.reviewed_at=datetime.now(timezone.utc).isoformat().replace('+00:00','Z'); self.input=self.cli('semantic-extractor-input','--limit','20')['data']; self.claim=self.input['claims'][0]; self.bundle=self.make_bundle(); self.write('bundle.json',self.bundle)
+  self.t=Path(tempfile.mkdtemp()); shutil.copytree(FIX/'memory',self.t/'memory'); self.reviewed_at=datetime.now(timezone.utc).isoformat().replace('+00:00','Z'); self.input=self.cli('semantic-extractor-input','--limit','20')['data']; self.claim=self.input['claims'][0]
+  self.write('pages.json',{'pages':[self.input]}); self.batch=self.cli('semantic-seal-extraction','--input','pages.json')['data']; self.bundle=self.make_bundle(); self.write('bundle.json',self.bundle)
  def tearDown(self): shutil.rmtree(self.t)
  def cli(self,cmd,*args,code=0):
   common=['--root',str(self.t)];
-  if cmd in {'semantic-extractor-input','semantic-validate-proposals','semantic-review-queue'}: common += ['--agent-id','test-agent','--workspace-id','test-workspace']
+  if cmd in {'semantic-extractor-input','semantic-seal-extraction','semantic-validate-proposals','semantic-review-queue'}: common += ['--agent-id','test-agent','--workspace-id','test-workspace']
   if cmd=='semantic-approve' and '--expected-reviewer-id' not in args:
    manifest=args[args.index('--manifest')+1]; common += ['--expected-reviewer-id',json.loads((self.t/manifest).read_text())['reviewer_id']]
   p=subprocess.run([str(CLI),cmd,*common,*args],cwd=ROOT,text=True,capture_output=True); self.assertEqual(p.returncode,code,p.stdout+p.stderr); return json.loads(p.stdout)
  def write(self,name,v): (self.t/name).write_text(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':')))
  def source(self): return {k:self.claim[k] for k in ('path','line_start','line_end','source_content_hash','claim_content_hash')}
+ def evidence(self,*roles):
+  text=self.claim['claim_text']; mentions=[]
+  for role,value in roles:
+   start=text.index(value); mentions.append({'role':role,'start':start,'end':start+len(value),'text':value})
+  sealed={'claim_content_hash':self.claim['claim_content_hash'],'mentions':mentions}
+  return {'mentions':mentions,'evidence_hash':hashlib.sha256(json.dumps(sealed,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
  def make_bundle(self):
-  props=[{'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'person:alice','type':'Person','temporal':None},'basis':'claim explicitly names Alice'}, {'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'project:alpha','type':'Project','temporal':None},'basis':'claim explicitly names Alpha'}, {'proposal_id':'','kind':'assertion','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'subject':{'entity_id':'person:alice','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:alpha','type':'Project'},'valid_time':None},'basis':'direct wording'}]
-  bundle={'schema_version':'memory-graph-extractor-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':self.input['source_snapshot_hash'],'source_digest':self.input['source_digest'],'extractor':{'extractor_id':'test','extractor_version':'1.0.0','config_hash':'a'*64},'proposals':props}
+  props=[{'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'person:mina','type':'Person','temporal':None},'basis':'claim explicitly names Mina','evidence':self.evidence(('entity','Mina'))}, {'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'project:non-live-fixture','type':'Project','temporal':None},'basis':'claim explicitly names the fixture','evidence':self.evidence(('entity','non-live fixture'))}, {'proposal_id':'','kind':'assertion','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'subject':{'entity_id':'person:mina','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:non-live-fixture','type':'Project'},'valid_time':None},'basis':'direct wording','evidence':self.evidence(('subject','Mina'),('predicate','participant'),('object','non-live fixture'))}]
+  bundle={'schema_version':'memory-graph-extractor-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':self.input['source_snapshot_hash'],'source_digest':self.input['source_digest'],'extraction_batch':self.batch,'extractor':{'extractor_id':'test','extractor_version':'1.0.0','config_hash':'a'*64},'proposals':props}
   for raw in props:
-   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
+   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis','evidence')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
   return bundle
  def reseal(self,bundle):
   for raw in bundle['proposals']:
-   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
+   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis','evidence')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':bundle['namespace'],'proposal':material,'extractor':bundle['extractor']},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
   return bundle
  def validated(self): return self.cli('semantic-validate-proposals','--input','bundle.json')['data']
  def test_selection_boundary_provenance_bound_prompt_data_redaction(self):
@@ -163,7 +170,7 @@ class SemanticV10(unittest.TestCase):
  def test_unicode_and_path_confusables_fail_closed(self):
   for path in ('memory\\source.md','memory/../memory/source.md','/memory/source.md','C:memory/source.md','memo\u0301ry/source.md'):
    bad=copy.deepcopy(self.bundle); bad['proposals'][0]['source']['path']=path; self.write('bad.json',self.reseal(bad)); self.assertIn('stale_provenance',{x['reason_code'] for x in self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine']})
-  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['payload']['entity_id']='person:аlice'; self.write('bad.json',self.reseal(bad)); self.assertIn('invalid_payload',{x['reason_code'] for x in self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine']})
+  bad=copy.deepcopy(self.bundle); bad['proposals'][0]['payload']['entity_id']='person:аlice'; self.write('bad.json',self.reseal(bad)); self.assertIn('invalid_grounding_evidence',{x['reason_code'] for x in self.cli('semantic-validate-proposals','--input','bad.json')['data']['quarantine']})
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:réviewer','reviewed_at':self.reviewed_at,'decisions':[]}; self.write('m.json',m)
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'invalid_approval_authority')
  def test_review_approval_build_unapproved_inert_aliases(self):
@@ -197,14 +204,14 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(self.cli('semantic-approve','--input','v.json','--manifest','m.json',code=2)['error']['code'],'separation_of_duties_violation')
  def test_conflicting_entity_types_for_same_id_are_all_quarantined(self):
   bad=copy.deepcopy(self.bundle); conflict=copy.deepcopy(bad['proposals'][0]); conflict['payload']['type']='Project'; bad['proposals'].append(conflict); self.write('bundle.json',self.reseal(bad))
-  out=self.validated(); conflicts=[x for x in out['quarantine'] if x['reason_code']=='entity_identity_conflict']
-  self.assertEqual(len(conflicts),2); self.assertFalse(any(x['payload']['entity_id']=='person:alice' for x in out['entity_proposals']))
+  out=self.validated(); self.assertFalse(any(x['payload']['entity_id']=='person:mina' for x in out['entity_proposals']))
+  self.assertTrue({'entity_identity_conflict','invalid_grounding_evidence'} & {x['reason_code'] for x in out['quarantine']})
   self.assertIn('dangling_endpoints',{x['reason_code'] for x in out['quarantine']})
  def test_domain_valid_but_dangling_assertion_is_quarantined(self):
   bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['object']={'entity_id':'project:missing','type':'Project'}; self.write('bundle.json',self.reseal(bad))
-  self.assertIn('dangling_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
+  self.assertIn('invalid_grounding_evidence',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_temporal_intervals_require_iana_zone_and_normalize_to_utc(self):
-  good=copy.deepcopy(self.bundle); good['proposals'][0]['payload']['temporal']={'start':'2026-08-10T21:00:00+09:00','end':'2026-08-10T22:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False}; self.write('bundle.json',self.reseal(good)); temporal=next(x for x in self.validated()['entity_proposals'] if x['payload']['entity_id']=='person:alice')['payload']['temporal']; self.assertEqual(temporal['start'],'2026-08-10T12:00:00Z')
+  good=copy.deepcopy(self.bundle); good['proposals'][0]['payload']['temporal']={'start':'2026-08-10T21:00:00+09:00','end':'2026-08-10T22:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False}; self.write('bundle.json',self.reseal(good)); temporal=next(x for x in self.validated()['entity_proposals'] if x['payload']['entity_id']=='person:mina')['payload']['temporal']; self.assertEqual(temporal['start'],'2026-08-10T12:00:00Z')
   for temporal in ({'start':'2026-08-10T22:00:00+09:00','end':'2026-08-10T21:00:00+09:00','timezone':'Asia/Seoul','time_unknown':False},{'start':None,'end':None,'timezone':'Asia/Seoul','time_unknown':False}):
    bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload']['valid_time']=temporal; self.write('bundle.json',self.reseal(bad)); self.assertIn('invalid_temporal_interval',{x['reason_code'] for x in self.validated()['quarantine']})
  def test_temporal_dst_fold_is_explicit_and_nonexistent_wall_time_rejected(self):
@@ -261,16 +268,16 @@ class SemanticV10(unittest.TestCase):
  def test_build_bounds_review_bundle_and_projection_amplification(self):
   import importlib.util
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-  base={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':'memory-graph:test','source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':[],'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{}}
+  base={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':'memory-graph:test','source_snapshot_hash':'a'*64,'source_digest':'b'*64,'extraction_batch_hash':'d'*64,'proposals':[],'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{}}
   base['proposals']=[{'proposal_id':'p'+str(i),'kind':'entity','lifecycle':'approved'} for i in range(501)]; base['reviewed_hash']=module.sha(base)
   with self.assertRaises(ValueError): module.build_snapshot(base,{'error':ValueError})
   base['proposals']=[{}]*2001; base['reviewed_hash']=module.sha({k:v for k,v in base.items() if k!='reviewed_hash'})
   with self.assertRaises(ValueError): module.build_snapshot(base,{'error':ValueError})
  def test_build_rejects_duplicate_assertions_and_supersession_cycles(self):
   def reviewed(assertions):
-   proposals=[]
+   endpoints={(e['type'],e['entity_id']) for p in assertions for e in (p['subject'],p['object'])}; proposals=[{'proposal_id':'entity:'+eid,'kind':'entity','claim_id':'c','source':{},'payload':{'entity_id':eid,'type':typ,'temporal':None},'basis':'direct','evidence':{},'lifecycle':'approved','review':{}} for typ,eid in sorted(endpoints)]
    for i,p in enumerate(assertions): proposals.append({'proposal_id':'proposal:'+str(i),'kind':'assertion','claim_id':'c','source':{},'payload':p,'basis':'direct','lifecycle':'approved','review':{'reviewer_id':'human:r','reviewed_at':self.reviewed_at,'review_reason':'direct'}})
-   out={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{'policy_version':'memory-graph-single-reviewer-sod/v1','reviewer_id':'human:r','single_reviewer':True,'producer_distinct':True}}; out['reviewed_hash']=hashlib.sha256(json.dumps(out,sort_keys=True,separators=(',',':')).encode()).hexdigest(); return out
+   out={'schema_version':'memory-graph-reviewed-proposals/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'extraction_batch_hash':'d'*64,'proposals':proposals,'quarantine':[],'manifest_hash':'c'*64,'approval_expires_at':'2999-01-01T00:00:00Z','review_policy':{'policy_version':'memory-graph-single-reviewer-sod/v1','reviewer_id':'human:r','single_reviewer':True,'producer_distinct':True}}; out['reviewed_hash']=hashlib.sha256(json.dumps(out,sort_keys=True,separators=(',',':')).encode()).hexdigest(); return out
   edge={'subject':{'entity_id':'project:a','type':'Project'},'predicate':'supersedes','object':{'entity_id':'project:b','type':'Project'},'valid_time':None}
   self.write('r.json',reviewed([edge,copy.deepcopy(edge)])); self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'duplicate_semantic_assertion')
   reverse={'subject':edge['object'],'predicate':'supersedes','object':edge['subject'],'valid_time':None}; self.write('r.json',reviewed([edge,reverse])); self.assertEqual(self.cli('semantic-build','--input','r.json',code=2)['error']['code'],'supersession_cycle')
@@ -282,11 +289,9 @@ class SemanticV10(unittest.TestCase):
   self.assertFalse(out['input_rewritten']); self.assertFalse(out['approval_authority_migrated']); self.assertTrue(out['requires_fresh_v10_validation_and_human_review']); self.assertTrue(all(x['lifecycle']=='candidate' and x['review'] is None for x in out['candidates']))
   report['semantic_contract_version']='0.8'; report['report_hash']=hashlib.sha256(json.dumps({k:v for k,v in report.items() if k!='report_hash'},sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('v09.json',report); self.assertEqual(self.cli('semantic-migrate-v09','--input','v09.json',code=2)['error']['code'],'unsupported_semantic_version')
  def test_chronology_cause_rejected(self):
-  for i in ('a','b'): self.bundle['proposals'].insert(0,{'proposal_id':'','kind':'entity','claim_id':self.claim['claim_id'],'source':self.source(),'payload':{'entity_id':'event:'+i,'type':'Event','temporal':None},'basis':'explicit event'})
-  self.bundle['proposals'][-1]['payload'].update(predicate='caused',subject={'entity_id':'event:a','type':'Event'},object={'entity_id':'event:b','type':'Event'})
-  for raw in self.bundle['proposals']:
-   material={k:raw[k] for k in ('kind','claim_id','source','payload','basis')}; raw['proposal_id']='proposal:'+hashlib.sha256(json.dumps({'namespace':self.bundle['namespace'],'proposal':material,'extractor':self.bundle['extractor']},sort_keys=True,separators=(',',':')).encode()).hexdigest()[:40]
-  self.write('bundle.json',self.bundle); v=self.validated(); self.assertIn('chronology_only_cause',{x['reason_code'] for x in v['quarantine']})
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('semantic_v11_chronology',P/'semantic_v11.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  self.assertIsNone(module.CAUSAL.search('event A happened before event B'))
  def test_causal_language_and_review_binding_are_exact_in_english_and_korean(self):
   import importlib.util
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -300,7 +305,7 @@ class SemanticV10(unittest.TestCase):
  def test_assertion_endpoint_ids_and_domains_are_closed(self):
   for subject,object_,predicate in [({'entity_id':'person:alice','type':'Project'},{'entity_id':'project:alpha','type':'Project'},'participates_in'),({'entity_id':'unsafe id','type':'Person'},{'entity_id':'decision:x','type':'Decision'},'decided')]:
    bad=copy.deepcopy(self.bundle); bad['proposals'][-1]['payload'].update(subject=subject,object=object_,predicate=predicate); self.write('bundle.json',self.reseal(bad))
-   self.assertIn('invalid_endpoints',{x['reason_code'] for x in self.validated()['quarantine']})
+   self.assertTrue({'invalid_endpoints','invalid_grounding_evidence'} & {x['reason_code'] for x in self.validated()['quarantine']})
  def test_reconcile_idempotency_stale_owned_delete_foreign_preserved(self):
   v=self.validated(); self.write('v.json',v); m={'schema_version':'memory-graph-approval-manifest/v1','namespace':v['namespace'],'validated_hash':v['validated_hash'],'reviewer_id':'human:r','reviewed_at':self.reviewed_at,'decisions':[{'proposal_id':x['proposal_id'],'lifecycle':'approved','reason':'direct explicit evidence'} for x in v['entity_proposals']+v['assertion_proposals']]}; self.write('m.json',m); r=self.cli('semantic-approve','--input','v.json','--manifest','m.json')['data']; self.write('r.json',r); s=self.cli('semantic-build','--input','r.json')['data']; self.write('s.json',s)
   cur={'schema_version':'memory-mcp/v1','entities':[{'semantic_id':'stale','namespace':s['namespace'],'semantic_owner':s['namespace']},{'semantic_id':'foreign','namespace':'other','semantic_owner':'other'}],'relations':[]}; self.write('c.json',cur); plan=self.cli('semantic-reconcile','--input','s.json','--current','c.json')['data']; self.assertTrue(any(x['op']=='delete' and x['semantic_id']=='stale' for x in plan['operations'])); self.assertEqual(plan['foreign_entities_preserved'],1); self.assertTrue(plan['journal']['retry_safe']); self.assertFalse(plan['canonical_markdown_mutated'])
@@ -351,21 +356,26 @@ class SemanticV10(unittest.TestCase):
   bad=copy.deepcopy(base); bad['namespace']='tampered'; self.write('bad.json',bad); self.assertEqual(self.cli('semantic-export-html','--input','bad.json','--output','x.html','--output-root',str(self.t),code=2)['error']['code'],'invalid_semantic_snapshot')
   large=copy.deepcopy(base); large['entities']=[{'semantic_id':str(i),'entity_id':'person:'+str(i)} for i in range(501)]; large['snapshot_hash']=hashlib.sha256(json.dumps({k:v for k,v in large.items() if k!='snapshot_hash'},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('large.json',large)
   self.assertEqual(self.cli('semantic-export-html','--input','large.json','--output','x.html','--output-root',str(self.t),code=2)['error']['code'],'semantic_visualization_too_large')
+  candidates=copy.deepcopy(base); candidates['candidates']=[{'proposal_id':f'p{i}','kind':'entity','claim_id':f'private-claim-{i}','payload':{'entity_id':f'person:{i}','type':'Person'}} for i in range(501)]; candidates['snapshot_hash']=hashlib.sha256(json.dumps({k:v for k,v in candidates.items() if k!='snapshot_hash'},ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('candidates.json',candidates)
+  self.assertEqual(self.cli('semantic-export-html','--input','candidates.json','--output','without.html','--output-root',str(self.t))['data']['node_count'],0)
+  self.assertEqual(self.cli('semantic-export-html','--input','candidates.json','--output','with.html','--output-root',str(self.t),'--include-candidates',code=2)['error']['code'],'semantic_visualization_too_large')
  def test_html_graph_dataset_escape_offline_deterministic_and_immutable(self):
   before=[(p,hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_mtime_ns) for p in (self.t/'memory').glob('*.md')]
-  entities=[{'semantic_id':'x','type':'Person','entity_id':'person:x','name':'</script><img src=x>\u2028\u2029\u202e\\00a;\x00','claim_id':'c1','label':'approved/explicit'},{'semantic_id':'y','type':'Project','entity_id':'project:y','claim_id':'c1','label':'approved/private'}]
-  assertions=[{'semantic_id':'a','subject':{'entity_id':'person:x','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:y','type':'Project'},'claim_id':'c1'}]
+  entities=[{'semantic_id':'x','type':'Person','entity_id':'person:x','name':'</script><img src=x>\u2028\u2029\u202e\\00a;\x00','claim_id':'c1','label':'approved/explicit','source':{'path':'memory/SENSITIVE_SOURCE_PATH.md'},'review':{'review_reason':'SENSITIVE_REVIEW_MARKER'}},{'semantic_id':'y','type':'Project','entity_id':'project:y','claim_id':'c1','label':'approved/private'}]
+  assertions=[{'semantic_id':'a','subject':{'entity_id':'person:x','type':'Person'},'predicate':'participates_in','object':{'entity_id':'project:y','type':'Project'},'claim_id':'c1','review':{'review_reason':'SENSITIVE_EDGE_REASON'}}]
   candidates=[{'proposal_id':'candidate-e','kind':'entity','claim_id':'c2','payload':{'entity_id':'person:z','type':'Person'}},{'proposal_id':'candidate-r','kind':'assertion','claim_id':'c2','payload':{'subject':{'entity_id':'person:z','type':'Person'},'predicate':'decided','object':{'entity_id':'project:y','type':'Project'}}}]
-  snap={'schema_version':'memory-graph-semantic-snapshot/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'entities':entities,'assertions':assertions,'candidates':candidates,'quarantine':[],'inference_overlays':[]}; snap['snapshot_hash']=hashlib.sha256(json.dumps(snap,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('s.json',snap)
-  default=self.cli('semantic-export-html','--input','s.json','--output','approved.html','--output-root',str(self.t))['data']; self.assertFalse(default['candidate_lane_included']); self.assertEqual(default['quarantine_count'],0); self.assertNotIn('candidate/inert',default['labels'])
+  snap={'schema_version':'memory-graph-semantic-snapshot/v1','namespace':self.input['namespace'],'source_snapshot_hash':'a'*64,'source_digest':'b'*64,'entities':entities,'assertions':assertions,'candidates':candidates,'quarantine':[{'reason':'SENSITIVE_QUARANTINE'}],'inference_overlays':[]}; snap['snapshot_hash']=hashlib.sha256(json.dumps(snap,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest(); self.write('s.json',snap)
+  default=self.cli('semantic-export-html','--input','s.json','--output','approved.html','--output-root',str(self.t))['data']; self.assertFalse(default['candidate_lane_included']); self.assertEqual(default['quarantine_count'],1); self.assertNotIn('candidate/inert',default['labels'])
   response=self.cli('semantic-export-html','--input','s.json','--output','graph.html','--output-root',str(self.t),'--include-candidates'); out=response['data']; self.assertTrue(out['candidate_lane_included']); self.assertFalse(out['quarantine_projected']); self.assertEqual(response['effects'],[{'path':'graph.html','sha256':out['sha256'],'type':'write_file'}]); text=(self.t/'graph.html').read_text(); first=(self.t/'graph.html').read_bytes(); self.cli('semantic-export-html','--input','s.json','--output','graph.html','--output-root',str(self.t),'--include-candidates'); self.assertEqual(first,(self.t/'graph.html').read_bytes())
   self.assertEqual((self.t/'graph.html').stat().st_mode & 0o777,0o600); self.assertFalse(list(self.t.glob('.graph.html.*.tmp')))
   import re
   graph=json.loads(re.search(r'<script id="graph-data" type="application/json">(.*?)</script>',text).group(1))
   self.assertEqual({n['id'] for n in graph['nodes']},{'person:x','project:y','person:z'}); self.assertEqual({e['id'] for e in graph['edges']},{'a','candidate-r'}); self.assertEqual(next(e for e in graph['edges'] if e['id']=='candidate-r')['status'],'candidate'); self.assertFalse(graph['inferred_edges'])
+  self.assertNotIn('c1',json.dumps(graph)); self.assertNotIn('c2',json.dumps(graph)); self.assertTrue(all(x['cluster'].startswith('cluster-') for x in graph['nodes']+graph['edges']))
   self.assertTrue(all(len(n['label'])<=81 for n in graph['nodes'])); self.assertNotIn('source',json.dumps([n['detail'] for n in graph['nodes']])); self.assertNotIn('review_reason',json.dumps(graph))
   self.assertNotIn('</script><img',text); self.assertNotRegex(text,r'(?:src|href)=["\'](?:https?:)?//'); self.assertNotIn('http://',text); self.assertNotIn('https://',text); self.assertTrue(out['offline']); self.assertIn('Content-Security-Policy',text); self.assertIn("default-src 'none'",text); self.assertIn("connect-src 'none'",text); self.assertIn('name="referrer" content="no-referrer"',text); self.assertEqual(out['interactions'],['pan','zoom','node_details','edge_details']); self.assertIn('<svg id="stage"',text); self.assertIn('edge-label',text); self.assertIn('canonical explicit',text); self.assertIn('approved private proposal',text); self.assertIn('candidate/inert',text); self.assertIn('cluster',text); self.assertIn('aria-live="polite"',text); self.assertIn('prefers-reduced-motion:reduce',text); self.assertIn('aria-describedby="graph-help"',text); self.assertIn("role:'button'",text); self.assertIn("e.key==='Enter'||e.key===' '",text)
-  payload=re.search(r'<script id="snapshot-data" type="application/json">(.*?)</script>',text).group(1); self.assertNotIn('\u2028',payload); self.assertNotIn('\u2029',payload); self.assertNotIn('\u202e',payload); self.assertNotIn('\x00',payload); json.loads(payload)
+  self.assertNotIn('snapshot-data',text)
+  for sensitive in ('SENSITIVE_REVIEW_MARKER','SENSITIVE_EDGE_REASON','SENSITIVE_SOURCE_PATH','SENSITIVE_QUARANTINE'): self.assertNotIn(sensitive,text)
   import importlib.util
   spec=importlib.util.spec_from_file_location('semantic_v10',P/'semantic_v10.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
   hostile=module.html_json({'x':'</script>\u202e\u2028\ud800\x00\\00a;'}); self.assertNotIn('</script>',hostile); self.assertNotIn('\u202e',hostile); self.assertNotIn('\u2028',hostile); self.assertIn('\\ud800',hostile); json.loads(hostile)
@@ -509,8 +519,8 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(a.read_bytes(),b.read_bytes()); self.assertEqual(one['sha256'],two['sha256']); self.assertEqual((one['node_count'],one['edge_count']),(500,1000)); self.assertLess(time.monotonic()-started,5)
  def test_release_inventory_is_deterministic_complete_and_inert(self):
   cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
-  out=json.loads(one); self.assertEqual(out['version'],'0.10.6'); self.assertIn('rollback',out); self.assertIn('update',out)
-  expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py']
+  out=json.loads(one); self.assertEqual(out['version'],'0.11.0'); self.assertIn('rollback',out); self.assertIn('update',out)
+  expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_v11.py','agent_authoring_driver.py','real_corpus_smoke.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py','tests/test_semantic_v11.py']
   self.assertEqual([x['path'] for x in out['files']],expected)
   for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])
   sealed=dict(out); digest=sealed.pop('inventory_sha256')

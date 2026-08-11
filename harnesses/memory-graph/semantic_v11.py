@@ -1,0 +1,736 @@
+"""Deterministic, offline semantic authoring pipeline for Memory Graph v0.11."""
+from __future__ import annotations
+import hashlib, html, json, os, re, stat, tempfile, unicodedata
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+SCHEMA_INPUT="memory-graph-extractor-input/v1"
+SCHEMA_PROPOSAL="memory-graph-extractor-proposals/v1"
+SCHEMA_APPROVAL="memory-graph-approval-manifest/v1"
+SCHEMA_SNAPSHOT="memory-graph-semantic-snapshot/v1"
+MAX_PRIVATE_OUTPUT_BYTES=1024*1024
+# Backward-compatible name for callers which enforce the extractor page bound.
+MAX_EXTRACTOR_OUTPUT_BYTES=MAX_PRIVATE_OUTPUT_BYTES
+TYPES={"Person","Project","Decision","Cause","Effect","Event"}; PREDICATES={"participates_in","decided","motivated_by","caused","affected","supersedes"}
+ENDPOINTS={"participates_in":({"Person"},{"Project","Event"}),"decided":({"Person"},{"Decision"}),"motivated_by":({"Decision"},{"Cause"}),"caused":({"Cause","Decision","Event"},{"Effect","Event"}),"affected":({"Decision","Effect","Event"},{"Project","Effect","Event"}),"supersedes":({"Decision","Effect","Event","Project"},{"Decision","Effect","Event","Project"})}
+# Predicate cardinality is an ontology contract, not an incidental set in the
+# conflict detector. Participation, decision-making, and causation are many-valued;
+# only an item may have one direct current successor.
+FUNCTIONAL_PREDICATES={"supersedes"}
+HASH=re.compile(r"^[0-9a-f]{64}$"); SAFE_ID=re.compile(r"^[a-z][a-z0-9_-]{0,31}:[A-Za-z0-9._:-]{1,128}$")
+REVIEWER_ID=re.compile(r"^human:[A-Za-z0-9._:-]{1,128}$")
+SECRET=re.compile(r"(?i)(?:sk|api[_-]?key|token|password|secret)[_:= -]+[A-Za-z0-9_./+\-=]{12,}")
+EXTRACTOR_ALLOWLIST={
+ ("agent-semantic-inference","1.0.0"):frozenset({hashlib.sha256(b"memory-graph-v0.10-default").hexdigest()}),
+ ("test","1.0.0"):frozenset({"a"*64}),
+}
+# Closed causal phrases.  Bare Korean nouns such as "원인" and English words
+# such as "result" are not evidence that the claim asserts a directed cause.
+CAUSAL=re.compile(r"(?i)(?:\b(?:directly\s+)?caused\b|\bbecause\s+of\b|\bbecause\b|\bled\s+to\b|\bresulted\s+in\b|\bdue\s+to\b|\bblocked\s+(?:because|by)\b|(?:직접\s*)?원인이\s*(?:되어|돼|되었|됐다)|때문에|왜냐하면|초래(?:했|하였|하여|함)|(?:로|으로)\s*인해)")
+DECISION=re.compile(r"(?i)(?:\bdecid(?:e|ed|es|ing)\b|\bchose\b|\b(?:stopped|cancelled|canceled|abandoned|approved|prohibited|required|adopted|updated)\b|\bprohibits\b|\brequires?\b|\bmust\b|\bshould\b|\bstanding rule\b|결정|선택|중단|취소|포기|승인|금지|요구한다|채택|수정|업데이트|해야\s*한다|허용하지)")
+EFFECT=re.compile(r"(?i)(?:\bresult(?:ed)?\b|\boutcome\b|\bimpact(?:ed)?\b|\baffect(?:ed)?\b|\bblocked\b|\bfailed\b|\bsucceeded\b|\bmerged\b|\binstalled\b|\bpublished\b|\bremoved\b|결과|영향|차단|실패|성공|병합|설치|발행|삭제)")
+PARTICIPATION=re.compile(r"(?i)(?:\bowns?\b|\bowned by\b|\bworks? on\b|\bparticip(?:ate|ates|ated|ating|ation|ant|ants)\b|\bleads?\b|\bmaintains?\b|담당|참여|소유)")
+SUPERSESSION=re.compile(r"(?i)(?:\bsupersed(?:e|es|ed|ing)\b|\breplac(?:e|es|ed|ing)\b|\bobsolet(?:e|es|ed|ing)\b|대체|폐기)")
+
+def causal_review_bound(proposal, decision):
+ """Require the reviewer to bind causal approval to the exact claim digest."""
+ if proposal.get("payload",{}).get("predicate")!="caused": return True
+ expected="causal-evidence:"+str(proposal.get("source",{}).get("claim_content_hash",""))
+ return decision is not None and decision.get("lifecycle") in {"approved","current"} and expected in decision.get("reason","").split()
+
+def canon(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()
+def sha(v): return hashlib.sha256(v if isinstance(v,bytes) else canon(v)).hexdigest()
+def fail(api,code,msg,**details): raise api["error"](code,msg,details)
+def closed(v, keys): return isinstance(v,dict) and set(v)==set(keys)
+def canonical_path(value):
+ if not isinstance(value,str) or value!=unicodedata.normalize("NFC",value) or "\\" in value: return None
+ p=Path(value)
+ if p.is_absolute() or re.match(r"^[A-Za-z]:",value) or p.parts!=("memory",p.name) or p.suffix!=".md" or any(x in {".",".."} for x in p.parts): return None
+ return p.as_posix()
+
+def fresh(api,root,agent,workspace):
+ p=api["plan"](api["inspect"](root,"reject"),False,api["namespace"](agent,root,workspace)); return p,{c["claim_id"]:c for c in p["claims"]}
+def source_bytes(root,path):
+ """Read one canonical source from a stable regular-file descriptor.
+
+ Path checks alone have a rename/symlink race.  Open without following links,
+ require a regular inode, and reject metadata changes observed across the read.
+ """
+ target=Path(root)/path
+ flags=os.O_RDONLY|getattr(os,"O_NOFOLLOW",0)
+ fd=os.open(target,flags)
+ try:
+  before=os.fstat(fd)
+  if not stat.S_ISREG(before.st_mode): raise OSError("canonical source must be a regular non-symlink file")
+  chunks=[]
+  while True:
+   chunk=os.read(fd,65536)
+   if not chunk: break
+   chunks.append(chunk)
+  after=os.fstat(fd)
+  stable=(before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns)
+  if not stable or sum(map(len,chunks))!=after.st_size: raise OSError("canonical source changed during read")
+  data=b"".join(chunks)
+ finally: os.close(fd)
+ # Provenance hashes the exact bytes.  Text decoding is separately normalized
+ # so BOM and CRLF cannot be mistaken for byte-identical source evidence.
+ text=data.decode("utf-8-sig")
+ return data,text.replace("\r\n","\n").replace("\r","\n")
+def source_hash(root,path): return hashlib.sha256(source_bytes(root,path)[0]).hexdigest()
+def line_provenance(root,path,line_start,line_end):
+ data,text=source_bytes(root,path); lines=text.splitlines(keepends=True)
+ if not (1<=line_start<=line_end<=len(lines)): return None
+ normalized="".join(lines[line_start-1:line_end]).rstrip("\n")
+ return {"source_content_hash":hashlib.sha256(data).hexdigest(),"source_byte_length":len(data),"normalized_line_hash":hashlib.sha256(normalized.encode()).hexdigest(),"line_normalization":"utf8-bom-strip+universal-newlines/v1"}
+def atomic_write(output, data):
+ """Durably replace a regular output without exposing a partial document."""
+ output=Path(output); parent=output.parent
+ if parent.is_symlink() or not parent.is_dir(): raise OSError("private output parent must be an existing non-symlink directory")
+ if output.is_symlink() or (output.exists() and not output.is_file()): raise OSError("private output target must be a regular non-symlink file")
+ directory=os.open(parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_NOFOLLOW",0)); tmp=None
+ try:
+  # Keep all later operations anchored to the opened directory descriptor.
+  # Renaming or swapping the pathname cannot redirect private bytes elsewhere.
+  for _ in range(100):
+   tmp="."+output.name+"."+next(tempfile._get_candidate_names())+".tmp"
+   try: fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=directory); break
+   except FileExistsError: continue
+  else: raise FileExistsError("unable to allocate private temporary output")
+  with os.fdopen(fd,"wb") as stream:
+   stream.write(data); stream.flush(); os.fsync(stream.fileno())
+  try: target=os.stat(output.name,dir_fd=directory,follow_symlinks=False)
+  except FileNotFoundError: target=None
+  if target is not None and not stat.S_ISREG(target.st_mode): raise OSError("private output path changed during atomic write")
+  os.replace(tmp,output.name,src_dir_fd=directory,dst_dir_fd=directory); tmp=None; os.fsync(directory)
+ finally:
+  if tmp is not None:
+   try: os.unlink(tmp,dir_fd=directory)
+   except FileNotFoundError: pass
+  os.close(directory)
+def atomic_write_json(output, value):
+ """Persist private workflow state with the same durable 0600 contract."""
+ atomic_write(Path(output),canon(value)+b"\n")
+
+def private_json_output(output_root, relative_path, value):
+ """Create bounded JSON beneath an already-approved private root.
+
+ The relative path is traversed from directory descriptors.  A second traversal
+ immediately before commit detects replacement of the root or any parent; the
+ original descriptors ensure that a residual race can never redirect the write.
+ """
+ if not isinstance(relative_path,str) or relative_path!=unicodedata.normalize("NFC",relative_path) or "\\" in relative_path:
+  raise ValueError("private output path must be normalized relative POSIX text")
+ relative=Path(relative_path)
+ if relative.is_absolute() or relative.as_posix()!=relative_path or re.match(r"^[A-Za-z]:",relative_path) or not relative.parts or any(part in {"",".",".."} for part in relative.parts) or relative.suffix!=".json":
+  raise ValueError("private output path must be a relative .json path without traversal")
+ data=canon(value)+b"\n"
+ if len(data)>MAX_PRIVATE_OUTPUT_BYTES: raise OverflowError("semantic JSON exceeds the private output byte limit")
+ root=Path(os.path.abspath(os.fspath(output_root)))
+ flags=os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_NOFOLLOW",0)
+ opened=[]; tmp=None
+ try:
+  directory=os.open(root,flags); opened.append(directory)
+  identities=[(os.fstat(directory).st_dev,os.fstat(directory).st_ino)]
+  for component in relative.parts[:-1]:
+   directory=os.open(component,flags,dir_fd=directory); opened.append(directory)
+   info=os.fstat(directory); identities.append((info.st_dev,info.st_ino))
+  name=relative.parts[-1]
+  try: target=os.stat(name,dir_fd=directory,follow_symlinks=False)
+  except FileNotFoundError: target=None
+  if target is not None: raise FileExistsError("private output target already exists")
+  for _ in range(100):
+   tmp="."+name+"."+next(tempfile._get_candidate_names())+".tmp"
+   try: fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=directory); break
+   except FileExistsError: continue
+  else: raise FileExistsError("unable to allocate private temporary output")
+  with os.fdopen(fd,"wb") as stream:
+   os.fchmod(stream.fileno(),0o600); stream.write(data); stream.flush(); os.fsync(stream.fileno())
+  # Reopen the allowlisted path and compare every directory inode before commit.
+  checked=[]
+  try:
+   check=os.open(root,flags); checked.append(check)
+   if (os.fstat(check).st_dev,os.fstat(check).st_ino)!=identities[0]: raise OSError("private output root changed during write")
+   for index,component in enumerate(relative.parts[:-1],1):
+    check=os.open(component,flags,dir_fd=check); checked.append(check)
+    info=os.fstat(check)
+    if (info.st_dev,info.st_ino)!=identities[index]: raise OSError("private output parent changed during write")
+  finally:
+   for descriptor in reversed(checked): os.close(descriptor)
+  # link() is an atomic create-without-replacement commit.  It fails closed if
+  # another writer, symlink, directory, or regular file claims the target.
+  os.link(tmp,name,src_dir_fd=directory,dst_dir_fd=directory,follow_symlinks=False)
+  os.unlink(tmp,dir_fd=directory); tmp=None; os.fsync(directory)
+  return {"path":relative.as_posix(),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"mode":"0600"}
+ finally:
+  if tmp is not None and opened:
+   try: os.unlink(tmp,dir_fd=opened[-1])
+   except FileNotFoundError: pass
+  for descriptor in reversed(opened): os.close(descriptor)
+
+def private_extractor_output(output_root, relative_path, value):
+ """Compatibility alias for the shared semantic JSON output contract."""
+ return private_json_output(output_root,relative_path,value)
+def html_json(value):
+ """Serialize inert script JSON without raw HTML/Unicode parser controls."""
+ return json.dumps(value,ensure_ascii=True,sort_keys=True,separators=(",",":")).replace("<","\\u003c").replace(">","\\u003e").replace("&","\\u0026")
+def proposal_id(namespace, raw, extractor):
+ material={k:raw[k] for k in ("kind","claim_id","source","payload","basis","evidence")}
+ return "proposal:"+sha({"namespace":namespace,"proposal":material,"extractor":extractor})[:40]
+
+def grounded_entity_id(entity_type,mention):
+ """Derive one conservative stable ID from the exact cited mention."""
+ if entity_type not in TYPES or not isinstance(mention,str): return None
+ normalized=" ".join(unicodedata.normalize("NFKC",mention).strip().casefold().split())
+ if not normalized or len(normalized)>256: return None
+ ascii_text=unicodedata.normalize("NFKD",normalized).encode("ascii","ignore").decode()
+ slug=re.sub(r"[^a-z0-9]+","-",ascii_text).strip("-")[:64]
+ if not slug: slug="u-"+hashlib.sha256(normalized.encode()).hexdigest()[:20]
+ return entity_type.casefold()+":"+slug
+
+def validated_evidence(raw,claim_text):
+ """Validate closed exact character spans and their deterministic seal."""
+ evidence=raw.get("evidence")
+ if not closed(evidence,{"mentions","evidence_hash"}) or not isinstance(evidence["mentions"],list): return None
+ expected_roles=["entity"] if raw.get("kind")=="entity" else ["subject","predicate","object"] if raw.get("kind")=="assertion" else []
+ if len(evidence["mentions"])!=len(expected_roles): return None
+ mentions=[]
+ for role,item in zip(expected_roles,evidence["mentions"]):
+  if not closed(item,{"role","start","end","text"}) or item.get("role")!=role: return None
+  start,end=item.get("start"),item.get("end"); text=item.get("text")
+  if isinstance(start,bool) or isinstance(end,bool) or not isinstance(start,int) or not isinstance(end,int) or not isinstance(text,str) or not 0<=start<end<=len(claim_text) or end-start>256 or claim_text[start:end]!=text or text!=unicodedata.normalize("NFC",text): return None
+  mentions.append(item)
+ if raw.get("kind")=="assertion":
+  spo=mentions[0]["end"]<=mentions[1]["start"] and mentions[1]["end"]<=mentions[2]["start"]
+  korean_sov=raw.get("payload",{}).get("predicate")=="decided" and mentions[1]["text"]=="요구한다" and mentions[0]["end"]<=mentions[2]["start"] and mentions[2]["end"]<=mentions[1]["start"]
+  if not (spo or korean_sov): return None
+ sealed={"claim_content_hash":raw.get("source",{}).get("claim_content_hash"),"mentions":mentions}
+ if evidence["evidence_hash"]!=sha(sealed): return None
+ if raw.get("kind")=="entity":
+  payload=raw.get("payload",{})
+  if payload.get("entity_id")!=grounded_entity_id(payload.get("type"),mentions[0]["text"]): return None
+ else:
+  payload=raw.get("payload",{}); subject=payload.get("subject",{}); obj=payload.get("object",{})
+  if subject.get("entity_id")!=grounded_entity_id(subject.get("type"),mentions[0]["text"]) or obj.get("entity_id")!=grounded_entity_id(obj.get("type"),mentions[2]["text"]): return None
+ return mentions
+
+def extractor_policy(extractor,api):
+ if not closed(extractor,{"extractor_id","extractor_version","config_hash"}) or not all(isinstance(extractor.get(k),str) for k in extractor) or not HASH.fullmatch(extractor["config_hash"]): fail(api,"invalid_extractor","invalid extractor metadata")
+ key=(extractor["extractor_id"],extractor["extractor_version"]); allowed=EXTRACTOR_ALLOWLIST.get(key)
+ if allowed is None: fail(api,"extractor_not_allowlisted","extractor ID and version are not approved")
+ if extractor["config_hash"] not in allowed: fail(api,"extractor_config_not_allowlisted","extractor config is not approved for this exact version")
+ return {"policy_version":"memory-graph-extractor-allowlist/v1","extractor_id":key[0],"extractor_version":key[1],"config_hash":extractor["config_hash"],"rollback":{"revalidate_from_canonical_sources":True,"reuse_prior_proposals":False,"reuse_prior_approvals":False}}
+
+def bounded_quarantine(entries):
+ """Return deterministic, redacted diagnostics with a hard output bound."""
+ cleaned=[]
+ for item in entries:
+  reason=str(item.get("reason_code","invalid_output")) if isinstance(item,dict) else "invalid_output"
+  if not re.fullmatch(r"[a-z][a-z0-9_]{0,63}",reason): reason="invalid_output"
+  pid=str(item.get("proposal_id","?")) if isinstance(item,dict) else "?"
+  redacted=bool(isinstance(item,dict) and item.get("redacted")) or bool(SECRET.search(pid))
+  if redacted: pid="[REDACTED]"
+  else: pid=pid[:80]
+  cleaned.append({"proposal_id":pid,"reason_code":reason,**({"redacted":True} if redacted else {})})
+ cleaned.sort(key=lambda x:(not x.get("redacted",False),x["proposal_id"],x["reason_code"]))
+ counts={reason:sum(x["reason_code"]==reason for x in cleaned) for reason in sorted({x["reason_code"] for x in cleaned})}
+ return cleaned[:1000],{"total":len(cleaned),"returned":min(len(cleaned),1000),"truncated":len(cleaned)>1000,"reason_counts":counts}
+
+def normalized_time(value):
+ if value is None: return None
+ if not closed(value,{"start","end","timezone","time_unknown"}) or not isinstance(value["time_unknown"],bool): return False
+ if value["time_unknown"] is True:
+  return value if value["start"] is None and value["end"] is None and value["timezone"] is None else False
+ if not isinstance(value["timezone"],str) or not value["timezone"]: return False
+ try: zone=ZoneInfo(value["timezone"])
+ except (ZoneInfoNotFoundError,ValueError): return False
+ parsed=[]
+ for raw in (value["start"],value["end"]):
+  if raw is None: parsed.append(None); continue
+  if not isinstance(raw,str): return False
+  try: dt=datetime.fromisoformat(raw.replace("Z","+00:00"))
+  except ValueError: return False
+  if dt.tzinfo is None: return False
+  # Validate the written wall time against both IANA folds.  Comparing only
+  # utcoffset() accepts nonexistent spring-forward times on some zoneinfo
+  # implementations.  A UTC round-trip proves the local instant exists,
+  # while accepting either explicit offset during a genuine fall-back fold.
+  wall=dt.replace(tzinfo=None); matches=[]
+  for fold in (0,1):
+   candidate=wall.replace(tzinfo=zone,fold=fold)
+   roundtrip=candidate.astimezone(timezone.utc).astimezone(zone)
+   if roundtrip.replace(tzinfo=None)==wall and roundtrip.fold==fold and candidate.utcoffset()==dt.utcoffset(): matches.append(candidate)
+  if not matches: return False
+  parsed.append(matches[0].astimezone(timezone.utc))
+ if parsed[0] is None and parsed[1] is None or parsed[0] and parsed[1] and parsed[0]>parsed[1]: return False
+ iso=lambda dt: dt.isoformat().replace("+00:00","Z") if dt else None
+ return {"start":iso(parsed[0]),"end":iso(parsed[1]),"timezone":value["timezone"],"time_unknown":False}
+
+def extractor_input(root,agent,workspace,api,limit=20,cursor=None):
+ if isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=20: fail(api,"invalid_claim_limit","claim limit must be an integer from 1..20")
+ inspected=api["inspect"](root,"reject"); plan=api["plan"](inspected,False,api["namespace"](agent,root,workspace))
+ ordered=sorted(inspected["claims"],key=lambda c:(c["path"],c["line"],c["claim_id"]))
+ start=0
+ if cursor:
+  matches=[i for i,c in enumerate(ordered) if sha({"snapshot":plan["snapshot_hash"],"claim_id":c["claim_id"]})==cursor]
+  if len(matches)!=1: fail(api,"invalid_extractor_cursor","cursor is stale or does not belong to this snapshot")
+  start=matches[0]+1
+ selected=ordered[start:start+limit]
+ endpoints=[]
+ eligible_ids={c["claim_id"] for c in plan.get("claims",[])}
+ for e in sorted(plan.get("semantic_entities",[]),key=lambda x:(x.get("type",""),x.get("entity_id",""))):
+  if e.get("type") in TYPES and SAFE_ID.fullmatch(e.get("entity_id","")): endpoints.append({"type":e["type"],"entity_id":e["entity_id"]})
+ endpoints=endpoints[:100]
+ rows=[]
+ for c in selected:
+  value=c.get("claim","")
+  if SECRET.search(value): value="[REDACTED]"
+  provenance=line_provenance(root,c["path"],c["line"],c["line"])
+  eligible=c["claim_id"] in eligible_ids
+  reason=None if eligible else "ineligible_lifecycle" if c["status"] not in {"current","tentative","active"} else "excluded_by_plan_conflict"
+  rows.append({"claim_id":c["claim_id"],"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":provenance["source_content_hash"],"claim_content_hash":c["content_hash"],"claim_text":value,"lifecycle":c["status"],"proposal_eligible":eligible,"ineligible_reason":reason,"source_byte_length":provenance["source_byte_length"],"normalized_line_hash":provenance["normalized_line_hash"],"line_normalization":provenance["line_normalization"]})
+ next_cursor=sha({"snapshot":plan["snapshot_hash"],"claim_id":selected[-1]["claim_id"]}) if selected and start+len(selected)<len(ordered) else None
+ lifecycle_counts={state:sum(c["status"]==state for c in ordered) for state in sorted({c["status"] for c in ordered})}
+ out={"schema_version":SCHEMA_INPUT,"namespace":plan["ownership"]["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"claims":rows,"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":start,"count":len(selected),"total":len(ordered),"remaining":max(0,len(ordered)-start-len(selected))},"corpus":{"total_claims":len(ordered),"eligible_claims":len(eligible_ids),"lifecycle_counts":lifecycle_counts,"excluded_by_plan_conflict":sum(c["status"] in {"current","tentative","active"} and c["claim_id"] not in eligible_ids for c in ordered),"all_lifecycles_accounted":True},"known_endpoints":endpoints,"constraints":{"may_invent_entities":False,"may_propose_new_entities":True,"new_entities_are_untrusted":True,"proposal_eligible_lifecycles":["active","current","tentative"],"explicit_evidence_required":True,"chronology_only_causality_forbidden":True,"network_allowed":False,"max_claims":20}}
+ out["bundle_hash"]=sha(out); return out
+
+def seal_extraction(bundle,api,root=None,agent=None,workspace=None):
+ """Seal an exhausted set of bounded pages before external candidate authoring."""
+ if not closed(bundle,{"pages"}): fail(api,"invalid_extractor_batch","closed object containing pages is required")
+ sealed=assemble_extractor_pages(bundle["pages"],api)
+ if root is not None:
+  page_limit=bundle["pages"][0].get("page",{}).get("count")
+  if isinstance(page_limit,bool) or not isinstance(page_limit,int) or not 1<=page_limit<=20: fail(api,"invalid_extractor_page","first page must establish a page size from 1 through 20")
+  expected=[]; cursor=None
+  while True:
+   page=extractor_input(root,agent,workspace,api,page_limit,cursor); expected.append(page); cursor=page["page"]["next_cursor"]
+   if cursor is None: break
+  if bundle["pages"]!=expected: fail(api,"extractor_page_source_mismatch","page chain does not exactly match a fresh complete canonical extraction")
+ sealed["fresh_source_verified"]=root is not None
+ sealed["page_size"]=bundle["pages"][0]["page"]["count"]
+ sealed["batch_hash"]=sha({k:v for k,v in sealed.items() if k!="batch_hash"})
+ return sealed
+
+def fresh_extraction_batch(root,agent,workspace,api,page_size):
+ if isinstance(page_size,bool) or not isinstance(page_size,int) or not 1<=page_size<=20: fail(api,"invalid_extractor_batch","sealed page size must be from 1 through 20")
+ pages=[]; cursor=None
+ while True:
+  page=extractor_input(root,agent,workspace,api,page_size,cursor); pages.append(page); cursor=page["page"]["next_cursor"]
+  if cursor is None: break
+ return seal_extraction({"pages":pages},api,root,agent,workspace)
+
+def assemble_extractor_pages(pages,api):
+ """Seal a complete, single-snapshot extraction manifest from cursor pages."""
+ if not isinstance(pages,list) or not pages: fail(api,"incomplete_extractor_batch","at least one extractor page is required")
+ claims=[]; hashes=[]; expected_cursor=None; identity=None; expected_total=None; source_versions={}
+ if len(pages)>500: fail(api,"extractor_batch_too_large","extractor batches are bounded to 500 pages and 10000 claims")
+ seen_page_hashes=set()
+ for index,page in enumerate(pages):
+  if not isinstance(page,dict) or page.get("bundle_hash")!=sha({k:v for k,v in page.items() if k!="bundle_hash"}): fail(api,"invalid_extractor_page","extractor page is malformed or tampered",page_index=index)
+  if page["bundle_hash"] in seen_page_hashes: fail(api,"duplicate_extractor_page","an extractor page may occur only once",page_index=index)
+  seen_page_hashes.add(page["bundle_hash"])
+  meta=page.get("page"); page_claims=page.get("claims")
+  if not isinstance(meta,dict) or not isinstance(page_claims,list) or len(page_claims)>20 or any(isinstance(meta.get(k),bool) or not isinstance(meta.get(k),int) or meta.get(k)<0 for k in ("offset","count","total","remaining")): fail(api,"invalid_extractor_page","page metadata and claims must be bounded non-negative values",page_index=index)
+  if meta["total"]>10000: fail(api,"extractor_batch_too_large","extractor batches are bounded to 500 pages and 10000 claims")
+  current=(page.get("namespace"),page.get("source_snapshot_hash"),page.get("source_digest"))
+  if identity is None: identity=current
+  if current!=identity: fail(api,"mixed_extractor_snapshot","all pages must bind one namespace and source snapshot",page_index=index)
+  if expected_total is None: expected_total=meta.get("total")
+  if meta.get("total")!=expected_total or meta.get("remaining")!=meta.get("total")-meta.get("offset")-meta.get("count"): fail(api,"extractor_page_total_drift","page totals changed during extraction",page_index=index)
+  if meta.get("cursor")!=expected_cursor or meta.get("offset")!=len(claims) or meta.get("count")!=len(page.get("claims",[])): fail(api,"extractor_page_discontinuity","cursor chain or page offset is discontinuous",page_index=index)
+  for claim in page.get("claims",[]):
+   version=(claim.get("source_content_hash"),claim.get("source_byte_length"))
+   prior=source_versions.setdefault(claim.get("path"),version)
+   if prior!=version: fail(api,"extractor_source_drift","one source path changed between extraction pages",page_index=index,path=claim.get("path"))
+  claims.extend(page["claims"]); hashes.append(page["bundle_hash"]); expected_cursor=meta.get("next_cursor")
+ if expected_cursor is not None or pages[-1]["page"].get("remaining")!=0 or pages[-1]["page"].get("total")!=len(claims): fail(api,"incomplete_extractor_batch","final page must prove complete cursor exhaustion")
+ ids=[x.get("claim_id") for x in claims]
+ if len(ids)!=len(set(ids)): fail(api,"duplicate_extractor_claim","claim IDs must occur exactly once across the batch")
+ if any(x.get("lifecycle") not in {"current","tentative","active","superseded","rejected","conflicted","archived"} or not isinstance(x.get("proposal_eligible"),bool) or (x.get("proposal_eligible") and x.get("lifecycle") not in {"current","tentative","active"}) or x.get("ineligible_reason") not in ({None} if x.get("proposal_eligible") else {"ineligible_lifecycle","excluded_by_plan_conflict"}) for x in claims): fail(api,"invalid_extractor_lifecycle","every extracted claim must carry its exact lifecycle, eligibility, and exclusion reason")
+ lifecycle_counts={state:sum(x["lifecycle"]==state for x in claims) for state in sorted({x["lifecycle"] for x in claims})}
+ out={"schema_version":"memory-graph-extractor-batch/v1","namespace":identity[0],"source_snapshot_hash":identity[1],"source_digest":identity[2],"page_hashes":hashes,"claim_ids":ids,"claim_count":len(ids),"eligible_claim_count":sum(x["proposal_eligible"] for x in claims),"excluded_by_plan_conflict":sum(x.get("ineligible_reason")=="excluded_by_plan_conflict" for x in claims),"lifecycle_counts":lifecycle_counts,"all_lifecycles_accounted":True,"complete":True,"authoring_boundary":{"external_agent_required":True,"proposals_untrusted":True,"automatic_approval":False,"exact_provenance_required":True}}
+ out["batch_hash"]=sha(out); return out
+
+def validate_proposals(root,bundle,agent,workspace,api):
+ required={"schema_version","namespace","source_snapshot_hash","source_digest","extraction_batch","extractor","proposals"}
+ if not closed(bundle,required) or bundle["schema_version"]!=SCHEMA_PROPOSAL: fail(api,"malformed_model_output","extractor proposal bundle has unknown/missing fields")
+ plan,claims=fresh(api,root,agent,workspace)
+ if bundle["namespace"]!=plan["ownership"]["namespace"]: fail(api,"namespace_mismatch","wrong namespace")
+ if bundle["source_snapshot_hash"]!=plan["snapshot_hash"] or bundle["source_digest"]!=plan["source_digest"]: fail(api,"stale_hashes","source snapshot is stale")
+ batch=bundle["extraction_batch"]
+ if not isinstance(batch,dict) or batch.get("schema_version")!="memory-graph-extractor-batch/v1" or batch.get("batch_hash")!=sha({k:v for k,v in batch.items() if k!="batch_hash"}) or batch.get("fresh_source_verified") is not True: fail(api,"invalid_extraction_batch","proposal bundle requires an exact fresh semantic-seal-extraction result")
+ expected_batch=fresh_extraction_batch(root,agent,workspace,api,batch.get("page_size"))
+ if batch!=expected_batch: fail(api,"stale_extraction_batch","sealed extraction does not match the fresh complete canonical corpus")
+ ex=bundle["extractor"]; policy=extractor_policy(ex,api)
+ entities=[]; assertions=[]; quarantine=[]
+ if not isinstance(bundle["proposals"],list): fail(api,"malformed_model_output","proposals must be an array")
+ seen_ids=set()
+ for raw in bundle["proposals"]:
+  if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis","evidence"}: continue
+  expected=proposal_id(bundle["namespace"],raw,ex)
+  if raw["proposal_id"]!=expected: fail(api,"unstable_proposal_id","proposal_id must equal the deterministic content-derived ID",expected_proposal_id=expected)
+  if expected in seen_ids: fail(api,"duplicate_proposal_id","duplicate proposal IDs are ambiguous")
+  seen_ids.add(expected)
+ known_endpoints={(e.get("type"),e.get("entity_id")) for e in plan.get("semantic_entities",[]) if e.get("type") in TYPES and SAFE_ID.fullmatch(str(e.get("entity_id","")))}
+ # An entity ID is an identity key, not merely a (type, ID) tuple. If the
+ # extractor proposes incompatible identities for the same key, quarantine
+ # every alternative rather than letting proposal ordering pick a winner.
+ entity_identities={}
+ for entity_type,entity_id in known_endpoints: entity_identities.setdefault(entity_id,set()).add(entity_type)
+ for raw in bundle["proposals"]:
+  if isinstance(raw,dict) and raw.get("kind")=="entity" and isinstance(raw.get("payload"),dict):
+   p=raw["payload"]
+   if closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(str(p["entity_id"])): entity_identities.setdefault(p["entity_id"],set()).add(p["type"])
+ conflicted_entity_ids={entity_id for entity_id,types in entity_identities.items() if len(types)>1}
+ for entity_id,types in entity_identities.items():
+  if len(types)==1: known_endpoints.add((next(iter(types)),entity_id))
+ for raw in bundle["proposals"]:
+  if not isinstance(raw,dict) or set(raw)!={"proposal_id","kind","claim_id","source","payload","basis","evidence"}: quarantine.append({"proposal_id":str(raw.get("proposal_id","?")) if isinstance(raw,dict) else "?","reason_code":"invalid_shape"}); continue
+  cid=raw["claim_id"]; c=claims.get(cid); s=raw["source"]
+  if not c or not closed(s,{"path","line_start","line_end","source_content_hash","claim_content_hash"}) or canonical_path(s.get("path"))!=c["path"] or s!={"path":c["path"],"line_start":c["line"],"line_end":c["line"],"source_content_hash":source_hash(root,c["path"]),"claim_content_hash":c["content_hash"]}: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"stale_provenance"}); continue
+  if SECRET.search(json.dumps(raw,ensure_ascii=False)): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"secret_like_input","redacted":True}); continue
+  p=raw["payload"]
+  temporal=normalized_time(p.get("temporal") if isinstance(p,dict) else None)
+  claim_text=str(c.get("claim",c.get("value","")))
+  mentions=validated_evidence(raw,claim_text)
+  if mentions is None: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_grounding_evidence"}); continue
+  if raw["kind"]=="entity" and isinstance(p,dict) and p.get("entity_id") in conflicted_entity_ids: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"entity_identity_conflict"}); continue
+  if raw["kind"]=="entity" and closed(p,{"entity_id","type","temporal"}) and p["type"] in TYPES and SAFE_ID.fullmatch(p["entity_id"]) and temporal is not False: entities.append({**raw,"payload":{**p,"temporal":temporal},"lifecycle":"candidate","review":None,"extractor":ex})
+  elif raw["kind"]=="assertion" and closed(p,{"subject","predicate","object","valid_time"}) and p["predicate"] in PREDICATES and closed(p["subject"],{"entity_id","type"}) and closed(p["object"],{"entity_id","type"}):
+   subj,obj=p["subject"],p["object"]; domains=ENDPOINTS[p["predicate"]]
+   if not SAFE_ID.fullmatch(str(subj["entity_id"])) or not SAFE_ID.fullmatch(str(obj["entity_id"])) or subj["type"] not in domains[0] or obj["type"] not in domains[1]: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_endpoints"}); continue
+   if (subj["type"],subj["entity_id"]) not in known_endpoints or (obj["type"],obj["entity_id"]) not in known_endpoints: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"dangling_endpoints"}); continue
+   predicate_text=mentions[1]["text"]
+   if p["predicate"]=="decided" and not DECISION.search(predicate_text): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"unsupported_decision"}); continue
+   if p["predicate"]=="participates_in" and not PARTICIPATION.search(predicate_text): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"unsupported_participation"}); continue
+   if p["predicate"] in {"caused","motivated_by"} and not CAUSAL.search(predicate_text): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"chronology_only_cause"}); continue
+   if p["predicate"]=="affected" and not EFFECT.search(predicate_text): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"unsupported_impact"}); continue
+   if p["predicate"]=="supersedes" and not SUPERSESSION.search(predicate_text): quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"unsupported_supersession"}); continue
+   valid_time=normalized_time(p["valid_time"])
+   if valid_time is False: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_temporal_interval"}); continue
+   assertions.append({**raw,"payload":{**p,"valid_time":valid_time},"lifecycle":"candidate","review":None,"extractor":ex})
+  else: quarantine.append({"proposal_id":raw["proposal_id"],"reason_code":"invalid_payload"})
+ for arr in (entities,assertions): arr.sort(key=lambda x:x["proposal_id"])
+ quarantine,diagnostics=bounded_quarantine(quarantine)
+ result={"schema_version":"memory-graph-validated-proposals/v1","namespace":bundle["namespace"],"source_snapshot_hash":plan["snapshot_hash"],"source_digest":plan["source_digest"],"extraction_batch_hash":batch["batch_hash"],"extractor_policy":policy,"entity_proposals":entities,"assertion_proposals":assertions,"quarantine":quarantine,"quarantine_diagnostics":diagnostics,"aliases_inert":True,"identity_merge_performed":False}
+ latest_mtime=max((root/c["path"]).stat().st_mtime for c in claims.values())
+ if latest_mtime > datetime.now(timezone.utc).timestamp()+300: fail(api,"source_clock_skew","canonical source mtime is more than 5 minutes in the future")
+ result["source_latest_mtime"]=datetime.fromtimestamp(latest_mtime,timezone.utc).isoformat().replace("+00:00","Z")
+ result["validated_hash"]=sha(result); return result
+
+def review_queue(validated,limit=20,cursor=None,api=None):
+ if isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=20:
+  if api: fail(api,"invalid_review_limit","review limit must be an integer from 1..20")
+  raise ValueError("review limit must be an integer from 1..20")
+ q=[{"proposal_id":x["proposal_id"],"kind":x["kind"],"claim_id":x["claim_id"],"basis":x["basis"],"lifecycle":x["lifecycle"]} for x in validated["entity_proposals"]+validated["assertion_proposals"]]
+ q=sorted(q,key=lambda x:x["proposal_id"]); offset=0
+ if cursor:
+  matches=[i for i,x in enumerate(q) if sha({"validated_hash":validated["validated_hash"],"proposal_id":x["proposal_id"]})==cursor]
+  if len(matches)!=1:
+   if api: fail(api,"invalid_review_cursor","review cursor is stale or invalid")
+   raise ValueError("review cursor is stale or invalid")
+  offset=matches[0]+1
+ items=q[offset:offset+limit]
+ next_cursor=sha({"validated_hash":validated["validated_hash"],"proposal_id":items[-1]["proposal_id"]}) if items and offset+len(items)<len(q) else None
+ return {"schema_version":"memory-graph-semantic-review-queue/v1","namespace":validated["namespace"],"items":items,"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(items),"total":len(q),"remaining":max(0,len(q)-offset-len(items))},"quarantine":validated["quarantine"] if offset==0 else [],"automatic_approval":False,"review_policy":{"policy_version":"memory-graph-single-reviewer-sod/v1","extractor_role":"producer","reviewer_role":"human-approver","single_reviewer_per_manifest":True,"producer_may_review":False,"mixed_reviewer_decisions_allowed":False,"max_batch_size":20}}
+
+def migrate_v09(bundle,api):
+ """Read-only bridge: preserve supported v0.9 semantics as inert evidence only."""
+ required={"conforms","shape_version","semantic_contract_version","namespace","source_snapshot_hash","source_digest","migration","entity_proposals","approved_endpoint_catalog","accepted_assertions","quarantine","identity_candidates","report_hash"}
+ if not closed(bundle,required) or bundle.get("semantic_contract_version")!="0.9" or bundle.get("shape_version")!="memory-graph-ontology-shapes/v2": fail(api,"unsupported_semantic_version","only a sealed v0.9 validated semantic report can migrate")
+ if bundle.get("report_hash")!=sha({k:v for k,v in bundle.items() if k!="report_hash"}): fail(api,"invalid_v09_bundle","v0.9 report is malformed or tampered")
+ candidates=[]
+ for kind,key in (("entity","entity_proposals"),("assertion","accepted_assertions")):
+  for item in bundle[key]: candidates.append({"legacy_kind":kind,"legacy_id":item.get("entity_proposal_id") if kind=="entity" else item.get("assertion_id"),"legacy_status":item.get("status"),"record":item,"lifecycle":"candidate","review":None})
+ out={"schema_version":"memory-graph-v09-migration/v1","from_semantic_contract":"0.9","to_semantic_contract":"1.0.0","namespace":bundle["namespace"],"source_snapshot_hash":bundle["source_snapshot_hash"],"source_digest":bundle["source_digest"],"candidates":sorted(candidates,key=lambda x:(x["legacy_kind"],str(x["legacy_id"]))),"quarantine":bundle["quarantine"],"input_rewritten":False,"approval_authority_migrated":False,"requires_fresh_v10_validation_and_human_review":True}
+ out["migration_hash"]=sha(out); return out
+
+def approve(validated,manifest,api,expected_reviewer_id,root=None):
+ if not closed(manifest,{"schema_version","namespace","validated_hash","reviewer_id","reviewed_at","decisions"}) or manifest["schema_version"]!=SCHEMA_APPROVAL: fail(api,"invalid_approval_manifest","closed approval manifest required")
+ if validated.get("validated_hash")!=sha({k:v for k,v in validated.items() if k!="validated_hash"}): fail(api,"invalid_validated_bundle","validated bundle is malformed or tampered")
+ if manifest["namespace"]!=validated["namespace"] or manifest["validated_hash"]!=validated["validated_hash"]: fail(api,"invalid_approval_manifest","manifest must bind the exact validated bundle")
+ if root is not None:
+  checked=set()
+  for proposal in validated.get("entity_proposals",[])+validated.get("assertion_proposals",[]):
+   source=proposal.get("source",{}); path=source.get("path")
+   if path in checked: continue
+   checked.add(path); target=Path(root)/str(path)
+   if canonical_path(path) is None or not target.is_file() or target.is_symlink() or source_hash(Path(root),path)!=source.get("source_content_hash"): fail(api,"approval_source_drift","canonical source was deleted, renamed, replaced, or changed after validation",path=path)
+ if manifest["reviewer_id"]!=expected_reviewer_id or not isinstance(expected_reviewer_id,str) or expected_reviewer_id!=unicodedata.normalize("NFC",expected_reviewer_id) or not REVIEWER_ID.fullmatch(expected_reviewer_id): fail(api,"invalid_approval_authority","authenticated reviewer must be an exact canonical ASCII human ID matching the manifest")
+ extractor_ids={x.get("extractor",{}).get("extractor_id") for x in validated["entity_proposals"]+validated["assertion_proposals"]}
+ if expected_reviewer_id.removeprefix("human:") in extractor_ids: fail(api,"separation_of_duties_violation","the extractor producer cannot review its own proposals")
+ try: dt=datetime.fromisoformat(manifest["reviewed_at"].replace("Z","+00:00")); assert dt.tzinfo
+ except Exception: fail(api,"invalid_approval_manifest","reviewed_at must be timezone-aware ISO-8601")
+ source_dt=datetime.fromisoformat(validated["source_latest_mtime"].replace("Z","+00:00"))
+ if dt < source_dt or dt > datetime.now(timezone.utc): fail(api,"stale_approval_manifest","review must be after the latest source change and not in the future")
+ proposals=validated["entity_proposals"]+validated["assertion_proposals"]; known={x["proposal_id"] for x in proposals}
+ if len(known)!=len(proposals): fail(api,"invalid_approval_manifest","proposal IDs must be unique")
+ decisions={}
+ for d in manifest["decisions"]:
+  if not closed(d,{"proposal_id","lifecycle","reason"}) or d["lifecycle"] not in {"approved","current","tentative","superseded","rejected","archived","revoked"} or not isinstance(d["reason"],str) or not d["reason"].strip(): fail(api,"invalid_approval_manifest","every decision must use a supported, reasoned lifecycle transition")
+  if d["proposal_id"] not in known or d["proposal_id"] in decisions: fail(api,"invalid_approval_manifest","decision IDs must be known and unique")
+  decisions[d["proposal_id"]]=d
+ out=[]
+ for x in validated["entity_proposals"]+validated["assertion_proposals"]:
+  d=decisions.get(x["proposal_id"]); y=dict(x)
+  if d:
+   lifecycle={"approved":"current","revoked":"archived"}.get(d["lifecycle"],d["lifecycle"])
+   effects={"current":"granted","tentative":"deferred","superseded":"withdrawn","archived":"withdrawn","rejected":"denied"}
+   y.update(lifecycle=lifecycle,review={"reviewer_id":manifest["reviewer_id"],"reviewed_at":manifest["reviewed_at"],"review_reason":d["reason"],"approval_effect":effects[lifecycle]})
+  # Approval aliases normalize to current before this check.  Bind causal
+  # authority after normalization so an unbound approved cause cannot slip
+  # through merely because its lifecycle spelling changed.
+  if y["payload"].get("predicate")=="caused" and y.get("lifecycle")=="current" and not causal_review_bound(y,d): y.update(lifecycle="candidate",review=None)
+  out.append(y)
+ expires=(dt.astimezone(timezone.utc)+timedelta(hours=24)).isoformat().replace("+00:00","Z")
+ result={"schema_version":"memory-graph-reviewed-proposals/v1","namespace":validated["namespace"],"source_snapshot_hash":validated["source_snapshot_hash"],"source_digest":validated["source_digest"],"extraction_batch_hash":validated["extraction_batch_hash"],"proposals":sorted(out,key=lambda x:x["proposal_id"]),"quarantine":validated["quarantine"],"manifest_hash":sha(manifest),"approval_expires_at":expires,"review_policy":{"policy_version":"memory-graph-single-reviewer-sod/v1","reviewer_id":expected_reviewer_id,"single_reviewer":True,"producer_distinct":True}}
+ result["reviewed_hash"]=sha(result); return result
+
+def build_snapshot(reviewed,api):
+ if not isinstance(reviewed,dict) or set(reviewed)!={"schema_version","namespace","source_snapshot_hash","source_digest","extraction_batch_hash","proposals","quarantine","manifest_hash","approval_expires_at","review_policy","reviewed_hash"} or reviewed.get("schema_version")!="memory-graph-reviewed-proposals/v1" or reviewed.get("reviewed_hash")!=sha({k:v for k,v in reviewed.items() if k!="reviewed_hash"}) or not HASH.fullmatch(str(reviewed.get("extraction_batch_hash"))): fail(api,"invalid_reviewed_bundle","reviewed proposal bundle is malformed or tampered")
+ if not isinstance(reviewed["proposals"],list) or not isinstance(reviewed["quarantine"],list) or len(reviewed["proposals"])>2000 or len(reviewed["quarantine"])>1000: fail(api,"semantic_bundle_too_large","reviewed bundles are bounded to 2000 proposals and 1000 quarantine records")
+ kind_counts={"entity":0,"assertion":0}
+ for item in reviewed["proposals"]:
+  if isinstance(item,dict) and item.get("lifecycle") in {"approved","current"} and item.get("kind") in kind_counts: kind_counts[item["kind"]]+=1
+ if kind_counts["entity"]>500 or kind_counts["assertion"]>1000: fail(api,"semantic_snapshot_too_large","approved projection is bounded to 500 entities and 1000 assertions",counts=kind_counts)
+ try: expires=datetime.fromisoformat(reviewed["approval_expires_at"].replace("Z","+00:00")); assert expires.tzinfo
+ except Exception: fail(api,"invalid_reviewed_bundle","approval expiry must be timezone-aware ISO-8601")
+ if expires <= datetime.now(timezone.utc): fail(api,"approval_expired","source-backed approval expired; revalidate sources and obtain a fresh review")
+ allowed={"candidate","approved","current","tentative","superseded","rejected","archived"}
+ if any(x.get("lifecycle") not in allowed for x in reviewed["proposals"]): fail(api,"invalid_claim_lifecycle","reviewed proposals contain an unsupported lifecycle")
+ approved=[x for x in reviewed["proposals"] if x["lifecycle"] in {"approved","current"}]
+ approved_endpoints={(x.get("payload",{}).get("type"),x.get("payload",{}).get("entity_id")) for x in approved if x.get("kind")=="entity"}
+ for x in approved:
+  if x.get("kind")!="assertion": continue
+  p=x.get("payload",{}); subject=p.get("subject",{}); obj=p.get("object",{})
+  missing=[]
+  if (subject.get("type"),subject.get("entity_id")) not in approved_endpoints: missing.append("subject")
+  if (obj.get("type"),obj.get("entity_id")) not in approved_endpoints: missing.append("object")
+  if missing: fail(api,"approved_assertion_missing_endpoint","approved assertions require approved entity proposals for both endpoints",proposal_id=x.get("proposal_id"),missing=missing)
+ relation_keys={}
+ supersedes={}
+ for x in approved:
+  if x.get("kind")!="assertion": continue
+  p=x.get("payload",{}); key=(p.get("subject",{}).get("entity_id"),p.get("predicate"),p.get("object",{}).get("entity_id"))
+  if key[0]==key[2]: fail(api,"semantic_self_loop","approved semantic relations must connect distinct entity IDs",proposal_id=x.get("proposal_id"),predicate=key[1])
+  if key in relation_keys: fail(api,"duplicate_semantic_assertion","multiple approved assertions express the same semantic edge",first=relation_keys[key],duplicate=x.get("proposal_id"))
+  relation_keys[key]=x.get("proposal_id")
+  if p.get("predicate")=="supersedes": supersedes.setdefault(key[0],set()).add(key[2])
+ def cyclic(node,path):
+  if node in path: return True
+  return any(cyclic(n,path|{node}) for n in supersedes.get(node,set()))
+ if any(cyclic(n,set()) for n in supersedes): fail(api,"supersession_cycle","approved supersedes assertions must form an acyclic graph")
+ # A functional claim slot may not silently select between contradictory
+ # current claims. Explicit lifecycle demotion/supersession is the precedence
+ # mechanism; input order is never precedence.
+ slots={}
+ for (subject,predicate,obj),proposal in relation_keys.items(): slots.setdefault((subject,predicate),[]).append((obj,proposal))
+ conflicts={slot:sorted(values) for slot,values in slots.items() if len({x[0] for x in values})>1 and slot[1] in FUNCTIONAL_PREDICATES}
+ if conflicts:
+  slot=sorted(conflicts)[0]; fail(api,"contradictory_current_claims","multiple current claims occupy the same functional semantic slot; demote or supersede explicitly",subject=slot[0],predicate=slot[1],proposals=[x[1] for x in conflicts[slot]])
+ entities=[]; assertions=[]
+ for x in approved:
+  item={"semantic_id":x["proposal_id"],"namespace":reviewed["namespace"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"],"label":"approved/private"}
+  if x["kind"]=="entity": entities.append({**item,**x["payload"]})
+  else: assertions.append({**item,**x["payload"]})
+ out={"schema_version":SCHEMA_SNAPSHOT,"namespace":reviewed["namespace"],"source_snapshot_hash":reviewed["source_snapshot_hash"],"source_digest":reviewed["source_digest"],"extraction_batch_hash":reviewed["extraction_batch_hash"],"entities":sorted(entities,key=lambda x:x["semantic_id"]),"assertions":sorted(assertions,key=lambda x:x["semantic_id"]),"candidates":[x for x in reviewed["proposals"] if x["lifecycle"] in {"candidate","tentative"}],"revoked":[x for x in reviewed["proposals"] if x["lifecycle"] in {"superseded","rejected","archived"}],"lifecycle_counts":{state:sum(x["lifecycle"]==state for x in reviewed["proposals"]) for state in sorted(allowed)},"entity_rename_policy":{"new_identity_required":True,"supersede_old_proposal":True,"identity_merge_performed":False},"quarantine":reviewed["quarantine"],"inference_overlays":[]}
+ out["snapshot_hash"]=sha(out); return out
+
+def snapshot_entities_and_assertions(snapshot,api):
+ if snapshot.get("schema_version")!=SCHEMA_SNAPSHOT or snapshot.get("snapshot_hash")!=sha({k:v for k,v in snapshot.items() if k!="snapshot_hash"}): fail(api,"invalid_semantic_snapshot","invalid snapshot hash")
+ entities=snapshot.get("entities",[]); assertions=snapshot.get("assertions",[])
+ if not isinstance(entities,list) or not isinstance(assertions,list): fail(api,"invalid_semantic_snapshot","snapshot projection must contain entity and assertion lists")
+ entity_ids={x.get("entity_id") for x in entities if isinstance(x,dict)}
+ for edge in assertions:
+  if not isinstance(edge,dict) or not isinstance(edge.get("subject"),dict) or not isinstance(edge.get("object"),dict) or edge["subject"].get("entity_id") not in entity_ids or edge["object"].get("entity_id") not in entity_ids: fail(api,"dangling_semantic_assertion","approved projection contains an assertion with a missing endpoint",semantic_id=edge.get("semantic_id") if isinstance(edge,dict) else None)
+ return entities,assertions
+
+def semantic_query(snapshot,start_entity_id,api,depth=2,max_entities=100,max_edges=200,max_degree=50,page_size=100,cursor=None,now_epoch=None,cursor_ttl_seconds=300,direction="both"):
+ """Bounded deterministic traversal returning canonical hydration locators."""
+ snapshot_entities,snapshot_assertions=snapshot_entities_and_assertions(snapshot,api)
+ if isinstance(depth,bool) or not isinstance(depth,int) or not 0<=depth<=3 or not 1<=max_entities<=100 or not 0<=max_edges<=200 or not 1<=max_degree<=50 or not 1<=page_size<=100 or direction not in {"in","out","both"}: fail(api,"invalid_query_bounds","depth/entities/edges/degree/page/direction exceed semantic query bounds")
+ by_id={x.get("entity_id"):x for x in snapshot_entities}
+ if start_entity_id not in by_id: fail(api,"semantic_entity_not_found","start entity is absent from the approved projection")
+ adjacency={}
+ for edge in sorted(snapshot_assertions,key=lambda x:x["semantic_id"]):
+  s=edge["subject"]["entity_id"]; o=edge["object"]["entity_id"]
+  if direction in {"out","both"}: adjacency.setdefault(s,[]).append((o,edge))
+  if direction in {"in","both"}: adjacency.setdefault(o,[]).append((s,edge))
+ if any(len(v)>max_degree for v in adjacency.values()): fail(api,"semantic_query_degree_exceeded","an entity exceeds the requested deterministic degree bound",max_degree=max_degree)
+ seen={start_entity_id}; frontier=[start_entity_id]; edges=[]; edge_ids=set()
+ for _ in range(depth):
+  nxt=[]
+  for node in frontier:
+   for neighbor,edge in adjacency.get(node,[]):
+    if len(edges)<max_edges and edge["semantic_id"] not in edge_ids: edges.append(edge); edge_ids.add(edge["semantic_id"])
+    if neighbor not in seen and len(seen)<max_entities: seen.add(neighbor); nxt.append(neighbor)
+  frontier=sorted(set(nxt))
+ all_entities=[by_id[x] for x in sorted(seen) if x in by_id]; offset=0
+ query_contract={"snapshot":snapshot["snapshot_hash"],"start":start_entity_id,"depth":depth,"direction":direction,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size}
+ now_epoch=int(datetime.now(timezone.utc).timestamp()) if now_epoch is None else now_epoch
+ if isinstance(now_epoch,bool) or not isinstance(now_epoch,int) or isinstance(cursor_ttl_seconds,bool) or not isinstance(cursor_ttl_seconds,int) or not 1<=cursor_ttl_seconds<=3600: fail(api,"invalid_query_time_policy","cursor time policy must use integer epoch seconds and a TTL from 1 through 3600")
+ cursor_expires_at=None
+ if cursor:
+  try: expiry_text,digest=cursor.split('.',1); cursor_expires_at=int(expiry_text)
+  except (ValueError,AttributeError): fail(api,"invalid_semantic_query_cursor","query cursor is malformed")
+  if cursor_expires_at<now_epoch: fail(api,"semantic_query_cursor_expired","persisted query cursor exceeded its sealed expiry")
+  matches=[i for i in range(len(all_entities)) if sha({"query":query_contract,"offset":i,"expires_at":cursor_expires_at})==digest]
+  if len(matches)!=1: fail(api,"invalid_semantic_query_cursor","query cursor is tampered, stale, foreign, or replayed under different bounds")
+  offset=matches[0]+1
+ entities=all_entities[offset:offset+page_size]
+ if entities and offset+len(entities)<len(all_entities):
+  cursor_expires_at=cursor_expires_at or now_epoch+cursor_ttl_seconds
+  next_cursor=str(cursor_expires_at)+'.'+sha({"query":query_contract,"offset":offset+len(entities)-1,"expires_at":cursor_expires_at})
+ else: next_cursor=None
+ def locator(item):
+  source=item["source"]; return {"claim_id":item["claim_id"],"path":source["path"],"line_start":source["line_start"],"line_end":source["line_end"],"source_content_hash":source["source_content_hash"],"claim_content_hash":source["claim_content_hash"]}
+ return {"schema_version":"memory-graph-semantic-query/v1","canonical":False,"locator_only":True,"start_entity_id":start_entity_id,"query_contract_hash":sha(query_contract),"bounds":{"depth":depth,"direction":direction,"max_entities":max_entities,"max_edges":max_edges,"max_degree":max_degree,"page_size":page_size},"cursor_policy":{"ttl_seconds":cursor_ttl_seconds,"expires_at_epoch":cursor_expires_at},"page":{"cursor":cursor,"next_cursor":next_cursor,"offset":offset,"count":len(entities),"total":len(all_entities)},"entities":entities,"assertions":edges,"hydration_locators":[locator(x) for x in sorted(entities+edges,key=lambda x:x["semantic_id"])],"truncated":len(seen)>=max_entities or len(edges)>=max_edges or next_cursor is not None}
+
+def decision_lookup(snapshot,mode,api,person_id=None,decision_id=None,limit=100):
+ """First-class bounded decision recall without weakening hydration rules."""
+ snapshot_entities,snapshot_assertions=snapshot_entities_and_assertions(snapshot,api)
+ if mode not in {"by-person","why","impacts","evidence"} or isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=100: fail(api,"invalid_decision_query","unsupported decision query or bound")
+ entities={x.get("entity_id"):x for x in snapshot_entities}; assertions=sorted(snapshot_assertions,key=lambda x:x["semantic_id"])
+ if mode=="by-person":
+  if not person_id or entities.get(person_id,{}).get("type")!="Person": fail(api,"semantic_entity_not_found","approved Person is required")
+  edges=[x for x in assertions if x["predicate"]=="decided" and x["subject"]["entity_id"]==person_id]
+  ids={x["object"]["entity_id"] for x in edges}; selected=[entities[x] for x in sorted(ids) if entities.get(x,{}).get("type")=="Decision"]
+ elif mode in {"why","impacts"}:
+  if not decision_id or entities.get(decision_id,{}).get("type")!="Decision": fail(api,"semantic_entity_not_found","approved Decision is required")
+  predicates={"motivated_by"} if mode=="why" else {"affected","caused"}
+  edges=[x for x in assertions if x["predicate"] in predicates and x["subject"]["entity_id"]==decision_id]
+  ids={x["object"]["entity_id"] for x in edges}; selected=[entities[x] for x in sorted(ids) if x in entities]
+ else:
+  if not decision_id or entities.get(decision_id,{}).get("type")!="Decision": fail(api,"semantic_entity_not_found","approved Decision is required")
+  edges=[x for x in assertions if decision_id in {x["subject"]["entity_id"],x["object"]["entity_id"]}]
+  ids={decision_id}|{endpoint for x in edges for endpoint in (x["subject"]["entity_id"],x["object"]["entity_id"])}; selected=[entities[x] for x in sorted(ids) if x in entities]
+ selected=selected[:limit]; allowed={x["entity_id"] for x in selected}; edges=[x for x in edges if x["subject"]["entity_id"] in allowed or x["object"]["entity_id"] in allowed][:200]
+ def locator(x):
+  s=x["source"]; return {"claim_id":x["claim_id"],"path":s["path"],"line_start":s["line_start"],"line_end":s["line_end"],"source_content_hash":s["source_content_hash"],"claim_content_hash":s["claim_content_hash"]}
+ records=sorted(selected+edges,key=lambda x:x["semantic_id"]); locators=[]; seen=set()
+ for record in records:
+  item=locator(record); key=canon(item)
+  if key not in seen: seen.add(key); locators.append(item)
+ projected_entities=[{"semantic_id":x["semantic_id"],"entity_id":x["entity_id"],"type":x["type"]} for x in selected]
+ projected_assertions=[{"semantic_id":x["semantic_id"],"subject":{"entity_id":x["subject"]["entity_id"],"type":x["subject"]["type"]},"predicate":x["predicate"],"object":{"entity_id":x["object"]["entity_id"],"type":x["object"]["type"]}} for x in edges]
+ return {"schema_version":"memory-graph-decision-query/v1","query":mode,"canonical":False,"locator_only":True,"entities":projected_entities,"assertions":projected_assertions,"hydration_locators":locators,"bounds":{"max_entities":limit,"max_assertions":200},"truncated":len(selected)>=limit or len(edges)>=200}
+
+def hydrate_locators(root,locators,api,agent="test-agent",workspace="test-workspace"):
+ """Read canonical lines only when both exact source bytes and claim digest agree."""
+ if not isinstance(locators,list) or len(locators)>300: fail(api,"invalid_hydration_request","hydration accepts at most 300 locators")
+ _,claims=fresh(api,root,agent,workspace); out=[]
+ for index,x in enumerate(locators):
+  keys={"claim_id","path","line_start","line_end","source_content_hash","claim_content_hash"}
+  if not closed(x,keys) or canonical_path(x.get("path")) is None or not HASH.fullmatch(str(x.get("source_content_hash"))) or not HASH.fullmatch(str(x.get("claim_content_hash"))): fail(api,"invalid_hydration_locator","closed canonical locator required",locator_index=index)
+  p=root/x["path"]
+  if not p.is_file() or p.is_symlink() or source_hash(root,x["path"])!=x["source_content_hash"]: fail(api,"hydration_source_drift","canonical source bytes changed",locator_index=index)
+  claim=claims.get(x["claim_id"])
+  if not claim or claim.get("content_hash")!=x["claim_content_hash"] or claim.get("path")!=x["path"] or claim.get("line")!=x["line_start"] or x["line_end"]!=x["line_start"]: fail(api,"hydration_claim_drift","claim locator no longer matches canonical parsing",locator_index=index)
+  _,text=source_bytes(root,x["path"]); lines=text.splitlines()
+  if not (isinstance(x["line_start"],int) and isinstance(x["line_end"],int) and 1<=x["line_start"]<=x["line_end"]<=len(lines)): fail(api,"hydration_line_drift","canonical line range is unavailable",locator_index=index)
+  value="\n".join(lines[x["line_start"]-1:x["line_end"]])
+  if SECRET.search(value): value="[REDACTED]"
+  out.append({"claim_id":x["claim_id"],"path":x["path"],"line_start":x["line_start"],"line_end":x["line_end"],"claim_content_hash":x["claim_content_hash"],"text":value})
+ return {"schema_version":"memory-graph-semantic-hydration/v1","canonical_readback_verified":True,"items":out}
+
+def reconcile(snapshot,current,api):
+ snapshot_entities_and_assertions(snapshot,api)
+ ns=snapshot["namespace"]
+ if not isinstance(current,dict) or set(current)!={"schema_version","entities","relations"} or current.get("schema_version")!="memory-mcp/v1" or not isinstance(current.get("entities"),list) or not isinstance(current.get("relations"),list) or len(current["entities"])>10000 or len(current["relations"])>20000: fail(api,"invalid_memory_mcp_schema","current backend graph shape invalid")
+ def owned(x): return x.get("namespace")==ns and x.get("semantic_owner")==ns
+ target_e=[{**x,"semantic_owner":ns} for x in snapshot["entities"]]
+ target_r=[{"semantic_id":x["semantic_id"],"namespace":ns,"semantic_owner":ns,"from":x["subject"],"relationType":x["predicate"],"to":x["object"],"claim_id":x["claim_id"],"source":x["source"],"review":x["review"]} for x in snapshot["assertions"]]
+ target_ids={x["semantic_id"] for x in target_e+target_r}; seen=set()
+ for kind,items in (("entity",current["entities"]),("relation",current["relations"])):
+  for index,item in enumerate(items):
+   if not isinstance(item,dict) or not isinstance(item.get("semantic_id"),str) or not item["semantic_id"] or len(item["semantic_id"])>256: fail(api,"invalid_memory_mcp_schema","backend records require bounded semantic IDs",kind=kind,index=index)
+   identity=(kind,item["semantic_id"])
+   if identity in seen: fail(api,"duplicate_backend_semantic_id","backend view contains duplicate semantic IDs",kind=kind,semantic_id=item["semantic_id"])
+   seen.add(identity)
+   owner_fields=(item.get("namespace")==ns,item.get("semantic_owner")==ns)
+   if owner_fields[0]!=owner_fields[1]: fail(api,"ambiguous_semantic_ownership","namespace and semantic_owner must agree for owned records",kind=kind,semantic_id=item["semantic_id"])
+   if item["semantic_id"] in target_ids and not owned(item): fail(api,"foreign_semantic_id_collision","foreign backend record collides with the owned target namespace",kind=kind,semantic_id=item["semantic_id"])
+ ce={x["semantic_id"]:x for x in current["entities"] if owned(x)}; cr={x["semantic_id"]:x for x in current["relations"] if owned(x)}; te={x["semantic_id"]:x for x in target_e}; tr={x["semantic_id"]:x for x in target_r}
+ deleted_entity_ids={ce[i].get("entity_id") for i in ce.keys()-te.keys()}
+ for relation in current["relations"]:
+  if owned(relation): continue
+  endpoints=[]
+  for endpoint in (relation.get("from"),relation.get("to")):
+   endpoints.append(endpoint.get("entity_id") if isinstance(endpoint,dict) else endpoint)
+  if deleted_entity_ids.intersection(endpoints): fail(api,"foreign_relation_dependency","cannot delete an owned entity still referenced by a preserved foreign relation",foreign_relation=relation.get("semantic_id"))
+ ops=[]
+ # Preserve referential integrity: remove relations before entities, then create
+ # entities before relations. Updates occur in their corresponding upsert phase.
+ for i in sorted(cr.keys()-tr.keys()): ops.append({"op":"delete","kind":"relation","semantic_id":i})
+ for i in sorted(ce.keys()-te.keys()): ops.append({"op":"delete","kind":"entity","semantic_id":i})
+ for kind,a,b in (("entity",ce,te),("relation",cr,tr)):
+  for i in sorted(b):
+   if a.get(i)!=b[i]: ops.append({"op":"create" if i not in a else "update","kind":kind,"semantic_id":i,"value":b[i]})
+ for index,op in enumerate(ops): op.update(operation_index=index,operation_hash=sha({"namespace":ns,"snapshot_hash":snapshot["snapshot_hash"],"operation_index":index,"operation":op}))
+ current_hash=sha(current); transaction_id=sha({"snapshot":snapshot["snapshot_hash"],"current_graph_hash":current_hash,"operations":ops})[:24]
+ return {"schema_version":"memory-graph-semantic-reconcile/v1","namespace":ns,"current_graph_hash":current_hash,"target_snapshot_hash":snapshot["snapshot_hash"],"operations":ops,"foreign_entities_preserved":sum(not owned(x) for x in current["entities"]),"foreign_relations_preserved":sum(not owned(x) for x in current["relations"]),"canonical_markdown_mutated":False,"inference_applied":False,"idempotent":not ops,"journal":{"transaction_id":transaction_id,"state":"pending" if ops else "verified","dispatch_index":0,"next_operation_hash":ops[0]["operation_hash"] if ops else None,"retry_safe":True,"resume_requires_fresh_current_view":True,"resume_contract":"discard_prior_index_and_regenerate_from_fresh_view"}}
+
+def reconcile_receipts(plan,receipts,api):
+ """Seal exact backend outcomes without treating duplicate or partial responses as success."""
+ if not isinstance(plan,dict) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1" or not isinstance(receipts,list) or len(receipts)>len(plan.get("operations",[])): fail(api,"invalid_operation_receipts","receipts must be a bounded prefix of the sealed operation plan")
+ completed=[]
+ for index,receipt in enumerate(receipts):
+  operation=plan["operations"][index]
+  keys={"operation_index","operation_hash","outcome","effect","reason_code","semantic_id","readback_hash"}
+  if not closed(receipt,keys) or receipt["operation_index"]!=index or receipt["operation_hash"]!=operation.get("operation_hash") or receipt["semantic_id"]!=operation.get("semantic_id") or receipt["outcome"] not in {"applied","duplicate"}: fail(api,"operation_receipt_mismatch","backend response does not identify the exact planned operation",operation_index=index)
+  expected_semantics={"applied":("changed","backend_applied"),"duplicate":("unchanged","already_satisfied")}
+  if (receipt["effect"],receipt["reason_code"])!=expected_semantics[receipt["outcome"]]: fail(api,"operation_result_inconsistent","backend outcome, effect, and reason code disagree",operation_index=index)
+  expected_readback=sha({"semantic_id":operation["semantic_id"],"absent":True}) if operation["op"]=="delete" else sha(operation["value"])
+  if receipt["readback_hash"]!=expected_readback: fail(api,"operation_readback_mismatch","backend readback does not prove the requested postcondition",operation_index=index)
+  completed.append({"operation_index":index,"operation_hash":operation["operation_hash"],"outcome":receipt["outcome"],"effect":receipt["effect"],"reason_code":receipt["reason_code"],"readback_hash":receipt["readback_hash"]})
+ remaining=plan["operations"][len(completed):]
+ return {"schema_version":"memory-graph-semantic-operation-receipts/v1","transaction_id":plan["journal"]["transaction_id"],"completed":completed,"completed_count":len(completed),"remaining_count":len(remaining),"complete":not remaining,"next_operation_hash":remaining[0]["operation_hash"] if remaining else None,"requires_fresh_current_view_before_resume":bool(remaining),"receipts_hash":sha(completed)}
+
+def verify_reconcile(snapshot,plan,current,api):
+ required={"schema_version","namespace","current_graph_hash","target_snapshot_hash","operations","foreign_entities_preserved","foreign_relations_preserved","canonical_markdown_mutated","inference_applied","idempotent","journal"}
+ if not closed(plan,required) or plan.get("schema_version")!="memory-graph-semantic-reconcile/v1": fail(api,"invalid_reconcile_plan","closed reconcile plan required")
+ if plan["namespace"]!=snapshot.get("namespace") or plan["target_snapshot_hash"]!=snapshot.get("snapshot_hash"): fail(api,"reconcile_plan_mismatch","plan does not target this snapshot")
+ journal=plan.get("journal")
+ if not closed(journal,{"transaction_id","state","dispatch_index","next_operation_hash","retry_safe","resume_requires_fresh_current_view","resume_contract"}) or journal["dispatch_index"]!=0 or journal["resume_contract"]!="discard_prior_index_and_regenerate_from_fresh_view" or journal["resume_requires_fresh_current_view"] is not True: fail(api,"invalid_reconcile_plan","resume state must use fresh-view regeneration and never trust a persisted dispatch index")
+ for index,op in enumerate(plan["operations"]):
+  if op.get("operation_index")!=index: fail(api,"invalid_reconcile_plan","operation indexes must be contiguous")
+  base={k:v for k,v in op.items() if k not in {"operation_index","operation_hash"}}
+  expected=sha({"namespace":plan["namespace"],"snapshot_hash":plan["target_snapshot_hash"],"operation_index":index,"operation":base})
+  if op.get("operation_hash")!=expected: fail(api,"invalid_reconcile_plan","operation seal mismatch",operation_index=index)
+ expected_tx=sha({"snapshot":plan["target_snapshot_hash"],"current_graph_hash":plan["current_graph_hash"],"operations":plan["operations"]})[:24]
+ if journal["transaction_id"]!=expected_tx or journal["next_operation_hash"]!=(plan["operations"][0]["operation_hash"] if plan["operations"] else None): fail(api,"invalid_reconcile_plan","journal seal or next operation does not match the plan")
+ post=reconcile(snapshot,current,api)
+ if not post["idempotent"]: fail(api,"semantic_reconcile_incomplete","fresh backend view does not match target",remaining_operations=len(post["operations"]),resume_plan=post)
+ return {"schema_version":"memory-graph-semantic-reconcile-verification/v1","namespace":plan["namespace"],"transaction_id":plan["journal"].get("transaction_id"),"target_snapshot_hash":plan["target_snapshot_hash"],"post_current_graph_hash":post["current_graph_hash"],"verified":True,"remaining_operations":0,"canonical_markdown_mutated":False,"foreign_entities_preserved":post["foreign_entities_preserved"],"foreign_relations_preserved":post["foreign_relations_preserved"]}
+
+def export_html(snapshot,output,api,include_candidates=False):
+ snapshot_entities_and_assertions(snapshot,api)
+ candidate_entities=sum(x.get("kind")=="entity" for x in snapshot.get("candidates",[])) if include_candidates else 0; candidate_assertions=sum(x.get("kind")=="assertion" for x in snapshot.get("candidates",[])) if include_candidates else 0
+ if len(snapshot.get("entities",[]))+candidate_entities>500 or len(snapshot.get("assertions",[]))+candidate_assertions>1000: fail(api,"semantic_visualization_too_large","visualization is bounded to 500 nodes and 1000 edges")
+ def endpoint_id(value): return value.get("entity_id","") if isinstance(value,dict) else str(value)
+ def bounded(value,limit=80):
+  text=str(value or "").replace("\n"," ").replace("\r"," ")
+  return text[:limit]+("…" if len(text)>limit else "")
+ def safe_detail(item,kind):
+  # Omit claim text, basis, source provenance, review reasons, and observations.
+  keys=("semantic_id","entity_id","type","predicate","status","trust")
+  return {"kind":kind,**{k:bounded(item[k]) for k in keys if k in item}}
+ claim_ids=sorted({x.get("claim_id") for x in snapshot.get("entities",[])+snapshot.get("assertions",[])+(snapshot.get("candidates",[]) if include_candidates else []) if isinstance(x,dict) and isinstance(x.get("claim_id"),str)})
+ cluster_ids={claim_id:"cluster-"+sha({"snapshot_hash":snapshot["snapshot_hash"],"claim_ordinal":index})[:12] for index,claim_id in enumerate(claim_ids)}
+ def cluster(item): return cluster_ids.get(item.get("claim_id"),"cluster-unknown")
+ nodes=[]
+ for e in snapshot.get("entities",[]):
+  trust="canonical explicit" if e.get("label")=="approved/explicit" or e.get("entity_source")=="canonical_explicit" else "approved private proposal"
+  nodes.append({"id":e.get("entity_id") or e["semantic_id"],"semantic_id":e["semantic_id"],"type":e.get("type","Unknown"),"cluster":cluster(e),"label":bounded(e.get("name") or e.get("entity_id") or e["semantic_id"]),"trust":trust,"status":"approved","detail":safe_detail({**e,"status":"approved","trust":trust},"entity")})
+ edges=[]
+ for a in snapshot.get("assertions",[]):
+  edges.append({"id":a["semantic_id"],"source":endpoint_id(a.get("subject")),"target":endpoint_id(a.get("object")),"relation":bounded(a.get("predicate","")),"cluster":cluster(a),"status":"approved","trust":"approved assertion","detail":safe_detail({**a,"status":"approved","trust":"approved assertion"},"assertion")})
+ for c in snapshot.get("candidates",[]) if include_candidates else []:
+  p=c.get("payload",{}); kind=c.get("kind")
+  if kind=="entity": nodes.append({"id":p.get("entity_id") or c["proposal_id"],"semantic_id":c["proposal_id"],"type":p.get("type","Unknown"),"cluster":cluster(c),"label":bounded(p.get("entity_id") or c["proposal_id"]),"trust":"candidate/inert","status":"candidate","detail":safe_detail({**p,"semantic_id":c["proposal_id"],"status":"candidate","trust":"candidate/inert"},"entity")})
+  elif kind=="assertion": edges.append({"id":c["proposal_id"],"source":endpoint_id(p.get("subject")),"target":endpoint_id(p.get("object")),"relation":bounded(p.get("predicate","")),"cluster":cluster(c),"status":"candidate","trust":"candidate/inert","detail":safe_detail({**p,"semantic_id":c["proposal_id"],"status":"candidate","trust":"candidate/inert"},"assertion")})
+ graph={"schema_version":"memory-graph-html-dataset/v1","nodes":sorted(nodes,key=lambda x:x["id"]),"edges":sorted(edges,key=lambda x:x["id"]),"inferred_edges":[]}
+ def embedded(v): return html_json(v)
+ doc='''<!doctype html><html lang="en"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><title>Memory Graph Semantic</title><style>html,body{height:100%;margin:0;background:#0d1118;color:#eef;font:14px system-ui}body{display:grid;grid-template-rows:auto 1fr}header{padding:10px;background:#181d28;z-index:2}input,select,button{margin:3px;padding:7px;background:#222b3a;color:#eef;border:1px solid #526078;border-radius:5px}.legend{margin-left:8px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px 0 9px}.explicit{background:#50d890}.private{background:#4aa8ff}.candidate{background:#e2a84a}main{min-height:0;display:grid;grid-template-columns:1fr 320px}#stage{width:100%;height:100%;touch-action:none;background:radial-gradient(circle,#20283a 1px,transparent 1px);background-size:24px 24px}#details{overflow:auto;padding:12px;background:#141a24;border-left:1px solid #394158;white-space:pre-wrap}.edge{stroke:#8a9ab5;stroke-width:2}.edge.candidate{stroke:#e2a84a;stroke-dasharray:7 5}.edge-label{fill:#cbd5e8;font-size:11px}.node{cursor:pointer;stroke:#eef;stroke-width:1.5}.node.explicit{fill:#50d890}.node.private{fill:#4aa8ff}.node.candidate{fill:#e2a84a;stroke-dasharray:4 3}.node-label{fill:#fff;font-size:12px;pointer-events:none}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}</style><header><b>Semantic Memory Graph</b><input id="q" placeholder="Search"><select id="type"><option value="">All types</option><option>Person</option><option>Project</option><option>Decision</option><option>Cause</option><option>Effect</option><option>Event</option></select><select id="cluster"><option value="">All clusters</option></select><button id="reset">Reset pan/zoom</button><span class="legend"><i class="dot explicit"></i>canonical explicit<i class="dot private"></i>approved private proposal<i class="dot candidate"></i>candidate/inert</span></header><main><p id="graph-help" hidden>Use Tab to focus nodes, then Enter or Space to show bounded non-sensitive details.</p><svg id="stage" role="img" aria-label="Interactive semantic graph" aria-describedby="graph-help"><g id="viewport"></g></svg><aside id="details" role="status" aria-live="polite">Click a node or edge for details.</aside></main><script id="graph-data" type="application/json">'''+embedded(graph)+'''</script><script>const G=JSON.parse(document.getElementById('graph-data').textContent),svg=document.getElementById('stage'),vp=document.getElementById('viewport'),q=document.getElementById('q'),ty=document.getElementById('type'),cl=document.getElementById('cluster'),details=document.getElementById('details'),NS=svg.namespaceURI;[...new Set([...G.nodes,...G.edges].map(x=>x.cluster))].sort().forEach(x=>cl.add(new Option(x,x)));let scale=1,tx=0,tt=0,drag=null;function el(n,a){const e=document.createElementNS(NS,n);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e}function visible(x){const s=JSON.stringify(x).toLowerCase();return(!q.value||s.includes(q.value.toLowerCase()))&&(!ty.value||x.type===ty.value)&&(!cl.value||x.cluster===cl.value)}function draw(){vp.textContent='';const ns=G.nodes.filter(visible),ids=new Set(ns.map(x=>x.id)),w=Math.max(svg.clientWidth,600),h=Math.max(svg.clientHeight,500),pos={};ns.forEach((n,i)=>{const a=2*Math.PI*i/Math.max(ns.length,1)-Math.PI/2;pos[n.id]={x:w/2+Math.cos(a)*Math.min(w,h)*.33,y:h/2+Math.sin(a)*Math.min(w,h)*.33}});const parallel={};G.edges.filter(e=>ids.has(e.source)&&ids.has(e.target)&&visible(e)).forEach(e=>{const key=[e.source,e.target].sort().join('|'),rank=parallel[key]||0;parallel[key]=rank+1;const a=pos[e.source],b=pos[e.target],dx=b.x-a.x,dy=b.y-a.y,len=Math.max(Math.hypot(dx,dy),1),offset=(rank-Math.floor(rank/2)*2)*(rank?14*Math.ceil(rank/2):0),mx=(a.x+b.x)/2-dy/len*offset,my=(a.y+b.y)/2+dx/len*offset,path=el('path',{d:`M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`,fill:'none',class:'edge '+e.status,'data-parallel-rank':rank});path.onclick=()=>details.textContent=JSON.stringify(e.detail,null,2);vp.append(path);const t=el('text',{x:mx,y:my,class:'edge-label'});t.textContent=e.relation;vp.append(t)});ns.forEach(n=>{const p=pos[n.id],klass=n.trust==='canonical explicit'?'explicit':n.status==='candidate'?'candidate':'private',c=el('circle',{cx:p.x,cy:p.y,r:18,class:'node '+klass,tabindex:0,role:'button','aria-label':`${n.status} ${n.type} ${n.label}`});c.onclick=()=>details.textContent=JSON.stringify(n.detail,null,2);c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.onclick()}};vp.append(c);const t=el('text',{x:p.x+23,y:p.y+4,class:'node-label'});t.textContent=n.label;vp.append(t)});transform()}function transform(){vp.setAttribute('transform',`translate(${tx} ${tt}) scale(${scale})`)}svg.onwheel=e=>{e.preventDefault();scale=Math.max(.25,Math.min(4,scale*(e.deltaY<0?1.1:.9)));transform()};svg.onpointerdown=e=>drag={x:e.clientX-tx,y:e.clientY-tt};svg.onpointermove=e=>{if(drag){tx=e.clientX-drag.x;tt=e.clientY-drag.y;transform()}};svg.onpointerup=svg.onpointerleave=()=>drag=null;document.getElementById('reset').onclick=()=>{scale=1;tx=tt=0;transform()};q.oninput=ty.onchange=cl.onchange=draw;addEventListener('resize',draw);draw()</script></html>'''
+ atomic_write(output,doc.encode("utf-8")); return {"schema_version":"memory-graph-semantic-html/v1","path":str(output),"sha256":hashlib.sha256(doc.encode()).hexdigest(),"offline":True,"network_requests":0,"node_count":len(graph["nodes"]),"edge_count":len(graph["edges"]),"candidate_lane_included":include_candidates,"quarantine_count":len(snapshot.get("quarantine",[])),"quarantine_projected":False,"filters":["search","type","cluster"],"interactions":["pan","zoom","node_details","edge_details"],"labels":["canonical explicit","approved private proposal"]+(["candidate/inert"] if include_candidates else [])}
