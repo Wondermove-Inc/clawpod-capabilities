@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.10.5",
+  "version": "0.10.6",
   "description": "Autonomously route per-agent private graph onboarding and daily reconciliation from direct canonical memory topic files.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
@@ -17,6 +17,6 @@
   },
   "linkedHarness": {
     "id": "memory-graph",
-    "version": "0.10.5"
+    "version": "0.10.6"
   }
 }

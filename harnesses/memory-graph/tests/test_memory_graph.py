@@ -86,12 +86,56 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
 
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
-        self.assertEqual(manifest["version"], "0.10.5")
+        self.assertEqual(manifest["version"], "0.10.6")
         self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "validate-inference-candidates", "project-inference-overlay", "ontology-validate", "review-queue", "cq-evaluate", "semantic-view", "semantic-extractor-input", "semantic-validate-proposals", "semantic-review-queue", "semantic-approve", "semantic-build", "semantic-migrate-v09", "semantic-reconcile", "semantic-reconcile-verify", "semantic-export-html"})
         self.assertNotIn("query-plan", manifest["commands"], "semantic query remains direct-CLI-only in v0.6")
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(skill.startswith("---\nname: memory-graph\n")); self.assertIn("description:", skill.split("---", 2)[1])
         self.assertIn("first-class cron surface", skill); self.assertNotIn("UTC fallback", skill)
+
+    def test_semantic_export_html_keeps_relative_filename_in_gateway_argv(self):
+        manifest = json.loads((PACKAGE / "harness.json").read_text())
+        command = manifest["commands"]["semantic-export-html"]
+        arg_map = {item["arg"]: item for item in command["argMap"]}
+        self.assertEqual(arg_map["output"]["valueType"], "string")
+        self.assertNotIn("pathRole", arg_map["output"])
+        self.assertEqual(
+            (arg_map["outputRoot"]["valueType"], arg_map["outputRoot"]["pathRole"]),
+            ("path", "output"),
+        )
+
+        gateway_cwd = self.tmp / "gateway-cwd"
+        gateway_cwd.mkdir()
+        supplied = {
+            "input": str(self.tmp / "snapshot.json"),
+            "output": "graph.html",
+            "outputRoot": str(self.tmp / "approved-output"),
+        }
+
+        def gateway_argv(items):
+            argv = list(command["baseArgv"])
+            for item in items:
+                value = supplied[item["arg"]]
+                if item.get("valueType") == "path":
+                    value = str((gateway_cwd / value).resolve())
+                argv.extend((item["flag"], value))
+            return argv
+
+        mapped = gateway_argv(command["argMap"][:3])
+        self.assertEqual(mapped[mapped.index("--output") + 1], "graph.html")
+        self.assertTrue(Path(mapped[mapped.index("--output-root") + 1]).is_absolute())
+
+        broken_map = [dict(item) for item in command["argMap"][:3]]
+        broken_map[1].update(valueType="path", pathRole="output")
+        broken = gateway_argv(broken_map)
+        absolutized = broken[broken.index("--output") + 1]
+        self.assertTrue(Path(absolutized).is_absolute())
+        spec = importlib.util.spec_from_file_location("memory_graph_contract", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with self.assertRaises(module.InputError) as raised:
+            module.safe_output_resolve(self.tmp, absolutized)
+        self.assertEqual(raised.exception.code, "invalid_output_path")
 
     def test_success_preserves_provenance_and_relation_classes(self):
         out, result = self.run_cli("plan", "--root", str(FIXTURE), "--include-inferred", "--detail")

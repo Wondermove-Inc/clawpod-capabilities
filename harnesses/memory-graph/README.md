@@ -1,5 +1,7 @@
 # Memory Graph Harness
 
+Version 0.10.6 preserves the required relative HTML filename for `semantic-export-html` as a string argument while retaining `outputRoot` as the approved output path. This prevents Gateway path normalization from converting the filename to an absolute path; Harness traversal, symlink, collision, extension, and containment checks remain authoritative.
+
 Version 0.10.5 treats `decided` as many-valued: one Person may have multiple distinct current Decision objects. Exact duplicate assertions remain rejected, while `supersedes` remains functional and cycle-protected. Semantic authority, lifecycle, canonical-memory, and MCP boundaries are unchanged.
 
 Version 0.10.4 extends the metadata-only private JSON output contract to every semantic stage whose full result feeds another stage: extractor input, validation, review queue, approval, build, reconcile, and reconcile verification. Paired `output`/`outputRoot` arguments create a new normalized relative `.json` file atomically at mode 0600 beneath an existing approved non-symlink root; stdout contains only path, exact bytes, SHA-256, and mode. Collisions, mismatches, traversal, escapes, malformed extensions, and symlink roots, parents, or targets fail closed. Omitting both arguments preserves full stdout. Gateway, semantic authority boundaries, canonical memory, MCP dispatch, and no-network behavior are unchanged.

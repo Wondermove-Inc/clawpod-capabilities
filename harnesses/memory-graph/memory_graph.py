@@ -34,7 +34,7 @@ semantic_v10 = importlib.util.module_from_spec(_SEMANTIC_V10_SPEC)
 _SEMANTIC_V10_SPEC.loader.exec_module(semantic_v10)
 
 SCHEMA_VERSION = 6
-CONTRACT_VERSION = "0.10.5"
+CONTRACT_VERSION = "0.10.6"
 SEMANTIC_CONTRACT_VERSION = "1.0.0"
 INFERENCE_CONTRACT_VERSION = "0.7"
 INFERENCE_SCHEMA_VERSION = "memory-graph-inference-candidates/v1"
