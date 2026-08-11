@@ -86,7 +86,7 @@ else: print(json.dumps(db if tool=="read_graph" else {"ok":True}))
 
     def test_skill_manifest_version_and_gateway_surface_validate(self):
         manifest = json.loads((PACKAGE / "harness.json").read_text())
-        self.assertEqual(manifest["version"], "0.10.1")
+        self.assertEqual(manifest["version"], "0.10.2")
         self.assertEqual(set(manifest["commands"]), {"inspect", "plan", "validate-plan", "validate-snapshot", "onboard", "cron-plan", "validate-inference-candidates", "project-inference-overlay", "ontology-validate", "review-queue", "cq-evaluate", "semantic-view", "semantic-extractor-input", "semantic-validate-proposals", "semantic-review-queue", "semantic-approve", "semantic-build", "semantic-migrate-v09", "semantic-reconcile", "semantic-reconcile-verify", "semantic-export-html"})
         self.assertNotIn("query-plan", manifest["commands"], "semantic query remains direct-CLI-only in v0.6")
         skill = (ROOT / "skills/memory-graph/SKILL.md").read_text(encoding="utf-8")

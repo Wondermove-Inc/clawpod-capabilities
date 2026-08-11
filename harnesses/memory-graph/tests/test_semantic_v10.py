@@ -459,7 +459,7 @@ class SemanticV10(unittest.TestCase):
   self.assertEqual(a.read_bytes(),b.read_bytes()); self.assertEqual(one['sha256'],two['sha256']); self.assertEqual((one['node_count'],one['edge_count']),(500,1000)); self.assertLess(time.monotonic()-started,5)
  def test_release_inventory_is_deterministic_complete_and_inert(self):
   cmd=['python3',str(P/'release_inventory.py')]; one=subprocess.check_output(cmd,text=True); two=subprocess.check_output(cmd,text=True); self.assertEqual(one,two)
-  out=json.loads(one); self.assertEqual(out['version'],'0.10.1'); self.assertIn('rollback',out); self.assertIn('update',out)
+  out=json.loads(one); self.assertEqual(out['version'],'0.10.2'); self.assertIn('rollback',out); self.assertIn('update',out)
   expected=['README.md','capability.json','harness.json','memory_graph.py','ontology.py','semantic_v10.py','semantic_contract_inventory.py','release_inventory.py','tests/TEST.md','tests/test_semantic_contract_inventory.py','tests/test_semantic_v10.py']
   self.assertEqual([x['path'] for x in out['files']],expected)
   for item in out['files']: self.assertEqual(hashlib.sha256((P/item['path']).read_bytes()).hexdigest(),item['sha256'])
