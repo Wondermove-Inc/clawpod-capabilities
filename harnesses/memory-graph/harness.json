@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "memory-graph",
   "title": "Memory Graph",
-  "description": "Build, query, reconcile, and verify a private explicit-evidence causal Memory MCP graph across decisions, people, projects, causes, effects, and events.",
-  "version": "0.11.0",
+  "description": "Build, query, reconcile, verify, and deterministically export a private explicit-evidence causal graph across decisions, people, projects, causes, effects, and events.",
+  "version": "0.11.1",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
   "execution": {
@@ -1481,7 +1481,7 @@
       ]
     },
     "semantic-export-html": {
-      "description": "Write deterministic offline semantic-first interactive HTML",
+      "description": "Write deterministic fully offline interactive SVG HTML from validated inert candidates or an approved semantic snapshot",
       "baseArgv": [
         "semantic-export-html"
       ],
