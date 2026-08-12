@@ -244,6 +244,21 @@
     "manifestStoresPointer": false
   },
   "eventMutationRoutesEvidenced": [],
+  "lifecycleExecute": {
+    "maxSteps": 30,
+    "maxPlanBytes": 131072,
+    "maxTotalSeconds": 25,
+    "backendInstances": 1,
+    "loginCount": 1,
+    "sessionPersistence": false,
+    "references": "$steps.<earlier-name>.result|readback.<scalar-path>",
+    "mutationRequirements": [
+      "approve=true per step",
+      "stable idempotency key per step",
+      "effect digest over exact before/after per step"
+    ],
+    "failure": "stop first; report redacted completed steps, uncertain state, and plan-created cleanup IDs"
+  },
   "eventActions": [
     "list",
     "get",

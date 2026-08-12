@@ -4,6 +4,7 @@ import click
 from . import __version__
 from .core.contracts import create_preview, delete_preview, preview, readback_mismatches, require_idempotency, resource_merge, secret_warning, validate_payload, verify_event
 from .core.safety import digest, redact, validate_body
+from .core.lifecycle import MAX_PLAN_BYTES, execute_plan
 from .utils.backend import Backend, BackendError, RSA_CONTRACT
 
 class State:
@@ -401,6 +402,26 @@ def source_test_local(body_file,idempotency_key,signing_secret_env):
 @click.option('--metadata-json',default='{}')
 @guarded
 def secret_action_warning(action,metadata_json): emit({'ok':True,'credential_lifecycle':secret_warning(parse(metadata_json),action)})
+
+@cli.group()
+def lifecycle():
+    """Execute a bounded plan in one authenticated in-memory session."""
+
+@lifecycle.command('execute')
+@click.option('--plan-json',required=True)
+@click.pass_obj
+@guarded
+def lifecycle_execute(state,plan_json):
+    if len(plan_json.encode())>MAX_PLAN_BYTES: raise ValueError('lifecycle plan exceeds 131072 bytes')
+    plan=parse(plan_json,'plan JSON')
+    # Authenticate once before any plan work. Backend.request then reuses this
+    # Backend's in-memory CookieJar for every step and never writes it to disk.
+    import time
+    deadline=time.monotonic()+25.0
+    state.backend.login_from_env(deadline=deadline)
+    result=execute_plan(state.backend,plan,deadline=deadline)
+    emit(result)
+    if not result['ok']: raise click.exceptions.Exit(4)
 
 def main(): cli()
 if __name__=='__main__': main()

@@ -1,5 +1,9 @@
 # ClawPod Cloud Webhooks
 
+Version 0.2.3 adds `lifecycle.execute`, a bounded plan command for full lifecycle workflows without per-command relogin. It accepts 1 to 30 allowlisted steps (maximum 131072 JSON bytes), logs in exactly once, and reuses one in-memory CookieJar. No cookie or session is persisted. Each mutation retains independent approval, stable idempotency, and exact effect-digest verification. Safe scalar references use `$steps.<name>.readback.id`; arbitrary evaluation is not supported. Execution stops on first failure and reports redacted completed work, uncertain state, and only resources created by this plan as cleanup-required. Cleanup must be explicitly planned and approved.
+
+Rule payload evidence uses numeric `source_id`, `playbook_id`, and `target_room_ids` values. Playbook activation remains unsupported.
+
 CLI-Anything harness for guarded ClawPod Cloud Webhooks portal/API operations through a real bounded HTTP client.
 
 ## Safety contract

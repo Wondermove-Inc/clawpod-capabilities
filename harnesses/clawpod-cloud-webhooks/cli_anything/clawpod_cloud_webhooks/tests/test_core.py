@@ -1,4 +1,4 @@
-import pytest
+import pytest, time
 from cli_anything.clawpod_cloud_webhooks.core.safety import *
 from cli_anything.clawpod_cloud_webhooks.core.contracts import *
 from cli_anything.clawpod_cloud_webhooks.utils.backend import Backend, RSA_CONTRACT
@@ -78,6 +78,20 @@ def test_secret_warning_retains_expiry(): assert secret_warning({'previous_secre
 def test_timeout_bounds():
     with pytest.raises(ValueError): Backend('http://x',timeout=31)
 def test_rsa_contract(): assert RSA_CONTRACT['algorithm']=='RSA-OAEP' and RSA_CONTRACT['hash']=='SHA-256' and not RSA_CONTRACT['plaintext_persistence']
+
+def test_retry_sleep_rechecks_deadline(monkeypatch):
+    b=Backend('https://example.invalid',retries=1)
+    ticks=iter([10.0,10.2])
+    monkeypatch.setattr('cli_anything.clawpod_cloud_webhooks.utils.backend.time.monotonic',lambda: next(ticks))
+    monkeypatch.setattr('cli_anything.clawpod_cloud_webhooks.utils.backend.time.sleep',lambda _: None)
+    with pytest.raises(Exception,match='deadline'): b._deadline_sleep(.05,10.1)
+
+def test_rsa_local_work_deadline_overrun(monkeypatch):
+    b=Backend('https://example.invalid',retries=0)
+    monkeypatch.setenv('CLAWPOD_CLOUD_EMAIL','safe@example.invalid'); monkeypatch.setenv('CLAWPOD_CLOUD_PASSWORD','protected')
+    monkeypatch.setattr(b,'_raw_request',lambda *a,**k:{'public_key':'unused'})
+    monkeypatch.setattr('cli_anything.clawpod_cloud_webhooks.utils.backend.time.monotonic',lambda: 20.0)
+    with pytest.raises(Exception,match='deadline'): b.login_from_env(deadline=19.0)
 
 def test_readback_semantics_normalize_numeric_identifier_types():
     from cli_anything.clawpod_cloud_webhooks.core.contracts import readback_mismatches
