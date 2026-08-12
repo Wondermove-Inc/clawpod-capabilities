@@ -11,7 +11,7 @@ CLI-Anything harness for guarded ClawPod Cloud Webhooks portal/API operations th
 - Rejects inbound bodies above 1,048,576 bytes.
 - Requires stable idempotency and effect-digest approval for mutations.
 - Source, Playbook, and Rule creates and full-object updates GET-verify typed fields; deletes verify authoritative-list absence.
-- Enable/disable and Rule reorder use full-object update/readback. Source rotate/regenerate use the evidenced action routes and redact returned secrets.
+- Source/Rule enable/disable and Rule reorder use full-object update/readback. Playbook activation is unsupported because authoritative item readback exposes no activation field. Source rotate/regenerate use the evidenced action routes and redact returned secrets.
 - Rejects `in`, `not_in`, `gt`, `lt`, `gte`, `lte`, and `message_template` until backend fixes are proven.
 - Blocks agent targets without destination-evidence requirements.
 - Treats any non-empty Event `error_message` as failure.
@@ -31,7 +31,7 @@ TLS verification is strict by default and HTTP base URLs are rejected. For an in
 
 Authenticated onboarding and every later authenticated one-shot Gateway command use identical owner-scoped `secretRefs` maps for prepare and run. The agent reuses those pointers automatically; the user does not configure environment variables or repeat credentials. Secrets never enter chat, argv, files, or Harness input. This is not session persistence; each command uses a fresh process-memory session.
 
-Use `mutation-preview --action create|update|delete|action` first. Supply its exact effect digest, stable idempotency key, and explicit `--approve` to the matching typed command. The full surface is `source|playbook|rule create|get|list|update|delete`, enable/disable for each, `rule-reorder`, `source-rotate-secret`, and `source-regenerate`. Event evidence supports only list/get, redacted inspection, and verification; no replay/retry/delete route is invented. Reads may retry bounded transient failures. Mutations are never blindly retried.
+Use `mutation-preview --action create|update|delete|action` first. Supply its exact effect digest, stable idempotency key, and explicit `--approve` to the matching typed command. The full surface is `source|playbook|rule create|get|list|update|delete`, enable/disable for Sources and Rules, `rule-reorder`, `source-rotate-secret`, and `source-regenerate`. Event evidence supports only list/get, redacted inspection, and verification; no replay/retry/delete route is invented. Reads may retry bounded transient failures. Mutations are never blindly retried.
 
 ## Tests
 

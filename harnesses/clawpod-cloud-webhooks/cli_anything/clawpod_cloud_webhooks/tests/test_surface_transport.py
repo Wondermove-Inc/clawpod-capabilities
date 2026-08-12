@@ -10,7 +10,7 @@ from cli_anything.clawpod_cloud_webhooks.utils.backend import BackendError
 
 BASE = {
     "source": {"id": "s1", "name": "source", "description": None, "provider": "custom", "is_active": True, "playbook_id": None, "tenant_id": "t"},
-    "playbook": {"id": "p1", "name": "playbook", "description": None, "content": "instructions", "is_active": True, "tenant_id": "t"},
+    "playbook": {"id": "p1", "name": "playbook", "description": None, "content": "instructions", "tenant_id": "t"},
     "rule": {"id": "r1", "name": "rule", "description": None, "source_id": "s1", "playbook_id": None, "conditions": [], "target_type": "room", "target_room_ids": ["room-1"], "priority": 100, "is_active": True, "tenant_id": "t"},
 }
 
@@ -103,7 +103,7 @@ def test_every_resource_create_get_list_update_delete_transport(kind):
     assert ScriptedBackend.calls[delete_index + 1][0:2] == ("GET", f"/api/proxy/webhook-{kind}s/{created_id}?tenant_id=t")
 
 
-@pytest.mark.parametrize("kind", ["source", "playbook", "rule"])
+@pytest.mark.parametrize("kind", ["source", "rule"])
 @pytest.mark.parametrize("enabled", [False, True])
 def test_enable_disable_uses_full_put_and_readback(kind, enabled):
     before = dict(ScriptedBackend.resources[kind][BASE[kind]["id"]]); after = resource_merge(kind, before, {"is_active": enabled})

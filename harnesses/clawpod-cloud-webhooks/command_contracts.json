@@ -122,18 +122,6 @@
       "retry": "never blind retry",
       "verification": "authoritative list absence"
     },
-    "playbook.enable": {
-      "sideEffect": true,
-      "approvalRequired": true,
-      "retry": "never blind retry",
-      "verification": "authoritative GET readback"
-    },
-    "playbook.disable": {
-      "sideEffect": true,
-      "approvalRequired": true,
-      "retry": "never blind retry",
-      "verification": "authoritative GET readback"
-    },
     "rule.create": {
       "sideEffect": true,
       "approvalRequired": true,

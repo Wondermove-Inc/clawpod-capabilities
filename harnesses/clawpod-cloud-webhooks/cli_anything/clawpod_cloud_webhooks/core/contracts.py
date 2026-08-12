@@ -3,9 +3,35 @@ from .safety import digest, redact, validate_features, guard_agent_targets
 
 MUTABLE_FIELDS = {
     "source": ("name", "description", "provider", "source_type", "preset_id", "organization_id", "auth_type", "auth_config", "config", "signature_config", "rate_limit_per_minute", "is_active", "playbook_id", "tenant_id"),
-    "playbook": ("name", "description", "content", "is_active", "tenant_id"),
+    "playbook": ("name", "description", "content", "tenant_id"),
     "rule": ("name", "description", "source_id", "playbook_id", "conditions", "targets", "target_type", "target_agent_ids", "target_room_ids", "round_robin", "message_template", "priority", "cooldown_seconds", "max_per_hour", "is_active", "destination_evidence_required", "tenant_id"),
 }
+
+# Fields proven to be present in authoritative item GET responses. Verification is
+# deliberately narrower than request payloads only where the backend contract is.
+READBACK_FIELDS = {
+    "source": MUTABLE_FIELDS["source"],
+    "playbook": MUTABLE_FIELDS["playbook"],
+    "rule": MUTABLE_FIELDS["rule"],
+}
+
+ID_FIELDS = {"id", "tenant_id", "organization_id", "preset_id", "playbook_id", "source_id"}
+
+def semantic_equal(field, expected, actual):
+    """Compare backend identifiers without treating JSON number/string drift as change."""
+    if field in ID_FIELDS and not isinstance(expected, bool) and not isinstance(actual, bool):
+        return str(expected) == str(actual)
+    return expected == actual
+
+def readback_mismatches(kind, expected, actual):
+    if kind not in READBACK_FIELDS: raise ValueError("unsupported resource kind")
+    if not isinstance(expected, dict) or not isinstance(actual, dict): raise ValueError("resource and readback must be JSON objects")
+    return {
+        field: {"expected": expected.get(field), "actual": actual.get(field)}
+        for field in READBACK_FIELDS[kind]
+        if field in expected and (field not in actual or not semantic_equal(field, expected[field], actual[field]))
+    }
+
 def require_idempotency(v):
     if not isinstance(v,str) or not v.strip(): raise ValueError("stable idempotency key is required")
     return v.strip()
