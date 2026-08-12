@@ -1,5 +1,11 @@
 # ClawPod Cloud Webhooks Test Plan
 
+## v0.2.0 full-surface verification
+
+- `PYTHONPATH=harnesses/clawpod-cloud-webhooks python3 -m pytest -q harnesses/clawpod-cloud-webhooks/cli_anything/clawpod_cloud_webhooks/tests tests/test_clawpod_cloud_webhooks_onboarding.py --tb=short` -> **86 passed**.
+- The scripted transport suite exercises Source, Playbook, and Rule create/get/list/update/delete, enable/disable, Rule reorder, Source rotate/regenerate, all evidenced Event reads/inspection/verification, exact HTTP methods/routes/idempotency, source-of-truth readback or absence, redaction, digest/approval rejection, partial verification failure, and typed backend/auth/timeout failures.
+- `python3 scripts/sync_registry.py --check`, `python3 scripts/validate.py`, and `git diff --check` pass. Fixtures are local-only; no live service, credential, install, deployment, or external mutation is used.
+
 Written before test code and implementation. All backend tests use a local mock server; live portal access and real secrets are prohibited.
 
 ## Internal-network TLS refinement plan (0.1.5, written before implementation/tests)

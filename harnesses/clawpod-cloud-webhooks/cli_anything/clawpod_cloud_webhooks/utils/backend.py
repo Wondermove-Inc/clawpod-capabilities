@@ -54,7 +54,8 @@ class Backend:
             except urllib.error.HTTPError as e:
                 retry=e.code in (429,502,503,504) and method=="GET"
                 if retry and i+1<attempts: time.sleep(min(.05*(2**i),.2)); continue
-                raise BackendError("auth_failed" if e.code in (401,403) else "backend_error",f"backend HTTP {e.code}",retry_safe=method=="GET",status=e.code)
+                code="auth_failed" if e.code in (401,403) else "not_found" if e.code==404 else "backend_error"
+                raise BackendError(code,f"backend HTTP {e.code}",retry_safe=method=="GET",status=e.code)
             except urllib.error.URLError as e:
                 if isinstance(e.reason,ssl.SSLCertVerificationError):
                     raise BackendError("tls_verification_failed","TLS certificate verification failed",retry_safe=True)

@@ -30,6 +30,12 @@ def test_tenant_preflight_rejects_target():
     with pytest.raises(ValueError): preflight({'targets':[{'tenant_id':'other'}]},'t')
 def test_preview_has_approval_and_digest():
     p=preview('rule','r',{}, {'tenant_id':'t'},'t','key-1'); assert p['requires_approval'] and p['effect_digest'].startswith('sha256:')
+def test_idempotency_key_is_bound_into_every_effect_digest():
+    assert preview('rule','r',{}, {'tenant_id':'t'},'t','key-1')['effect_digest'] != preview('rule','r',{}, {'tenant_id':'t'},'t','key-2')['effect_digest']
+    assert create_preview('playbook',{'name':'p','tenant_id':'t'},'t','key-1')['effect_digest'] != create_preview('playbook',{'name':'p','tenant_id':'t'},'t','key-2')['effect_digest']
+    assert delete_preview('source','s',{'tenant_id':'t'},'t','key-1')['effect_digest'] != delete_preview('source','s',{'tenant_id':'t'},'t','key-2')['effect_digest']
+def test_create_payload_tenant_conflict_is_rejected():
+    with pytest.raises(ValueError,match='tenant isolation mismatch'): validate_payload('playbook',{'name':'p','tenant_id':'other'},'t')
 def test_delivered_with_error_fails(): assert not verify_event({'status':'delivered','error_message':'tenant isolation violation'})['ok']
 def test_destination_proof_required(): assert not verify_event({'status':'delivered'},True)['ok']
 def test_secret_warning_retains_expiry(): assert secret_warning({'previous_secret_expires_at':'later'},'regenerate')['previous_secret_may_remain_valid']
