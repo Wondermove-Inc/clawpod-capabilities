@@ -770,7 +770,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/core/contracts.py",
-          "sha256": "1b8a48b8103316e6464149b3a3e99d28159986f659394b160213f35a9a15041b"
+          "sha256": "704d9376122c5c52d943d892ecd59be630e145af14978d8bfb096e0d1b9d8e19"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/core/lifecycle.py",
