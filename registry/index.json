@@ -75,7 +75,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -100,7 +100,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.2.0"
+        "version": "0.2.1"
       }
     },
     {
@@ -726,7 +726,7 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -754,7 +754,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "667d4a15b970b851e20d17510224670c14646cfb6d5a1e388ca6b9cc6da8bf41"
+          "sha256": "1df8d53aba539e667ec551426125665f9d045da050789b5e5071be3c3ea242cf"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -774,7 +774,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/core/safety.py",
-          "sha256": "503c3fd737a3759173a85b8acacc247cdece21ee150e197ed417ff5e1728d809"
+          "sha256": "9d8723328a6f7e7b627d23845a8230f1a01ba0b094255a29cd7c633790145bc1"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/utils/__init__.py",
@@ -790,11 +790,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "e6e4eb002d388e32f90d83000acb61aac29b56dd530717f610cb531d4b866132"
+          "sha256": "9bffc57c0a6f6a72f637848be246dfb95191dfe83de6fdd492ef6d4f387274d4"
         },
         {
           "path": "setup.py",
-          "sha256": "3f7b665acc9bfad40e88a407739770794b0d712dbddc5a1fd37be35a6a7f156b"
+          "sha256": "9c6765e6d40263c8e80bc1922103f527ddd4ac9f1b0c804b20a0891369e291dd"
         }
       ]
     },
