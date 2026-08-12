@@ -536,13 +536,24 @@ def _cdp_consent(**values):
     payload = {k: values[k] for k in ("endpoint", "authorize_url", "resource_url", "scopes", "redirect_uri", "state", "timeout")}
     payload["callback_fd"] = child_fd
     if values.get("test_snapshots") is not None: payload["testSnapshots"] = values["test_snapshots"]
+    communicate_timeout = min(values["timeout"] + 5, 605)
     try:
-        out, _ = proc.communicate(json.dumps(payload), timeout=min(values["timeout"] + 5, 605))
+        out, _ = proc.communicate(json.dumps(payload), timeout=communicate_timeout)
         result = values.get("callback_result")
         if result is not None:
             if not values["callback_done"].is_set():
                 _receive_callback_frame(parent, values["redirect_uri"], values["state"], result,
                                         values["callback_done"], values["callback_lock"])
+    except subprocess.TimeoutExpired as exc:
+        proc.terminate()
+        try:
+            proc.communicate(timeout=1)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.communicate()
+        exc.output = None
+        exc.stderr = None
+        raise
     finally:
         parent.close()
     try: result = json.loads(out)

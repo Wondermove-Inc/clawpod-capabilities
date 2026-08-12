@@ -670,7 +670,7 @@
         },
         {
           "path": "oauth3lo.py",
-          "sha256": "0f50680b934ab9a56247d69662eac07eb2775b54114eef148916151c80a668c9"
+          "sha256": "0509be31f5ac06a01a5367c7303271d4389eb802dc04313105ae5a2b2365a414"
         },
         {
           "path": "oauth_cdp.js",
@@ -682,7 +682,7 @@
         },
         {
           "path": "test_oauth_async.py",
-          "sha256": "66e328d418b48939182bdf32c55ebe7557e0e4cde1cabb3418bf144e649f44e4"
+          "sha256": "0acc9336e82378b168c3b3fe94e9c7ed1dc18ede1a8d2c80b1a8c95e86fc7660"
         }
       ]
     },
