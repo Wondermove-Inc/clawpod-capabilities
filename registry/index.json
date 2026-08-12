@@ -777,10 +777,6 @@
           "sha256": "8276cd37178f0f103ec6e4e4f0d758159681f82b0e06331ec2d89a3c691d56f8"
         },
         {
-          "path": "cli_anything/clawpod_cloud_webhooks/core/lifecycle.py",
-          "sha256": "8276cd37178f0f103ec6e4e4f0d758159681f82b0e06331ec2d89a3c691d56f8"
-        },
-        {
           "path": "cli_anything/clawpod_cloud_webhooks/core/safety.py",
           "sha256": "9d8723328a6f7e7b627d23845a8230f1a01ba0b094255a29cd7c633790145bc1"
         },
