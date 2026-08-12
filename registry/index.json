@@ -437,8 +437,8 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.11.0",
-      "description": "Orchestrate bounded natural-language candidate authoring for an explicit-evidence causal memory graph with hydrated decision provenance.",
+      "version": "0.11.1",
+      "description": "Orchestrate deterministic fully offline interactive SVG exports for inert candidates and approved causal snapshots.",
       "path": "skills/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -455,12 +455,12 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "1b993daebb5880521aa12df7d82e3b6a1021f84da6727ba1e654fd480df17b71"
+          "sha256": "87363078facf4296c6610448664f797938848a7f563090cc237d6928e4d18ebf"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.11.0"
+        "version": "0.11.1"
       }
     },
     {
@@ -1164,8 +1164,8 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.11.0",
-      "description": "Page and validate external-agent natural-language candidates for an explicit-evidence causal memory graph with hydrated decision provenance.",
+      "version": "0.11.1",
+      "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
       "path": "harnesses/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1182,7 +1182,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "9fc5777139c239a1759cbfa46174073738f8fe8d0ecb526aee74d533d0989951"
+          "sha256": "ffca32ba1a0c93a363696d5dd6457d66bb58aea66385a3acc9ff4b909a61f9d2"
         },
         {
           "path": "agent_authoring_driver.py",
@@ -1190,7 +1190,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "66a739fe6366323abb15471509cccd14a34afa3f9fd2c3261215035f9cb67ffb"
+          "sha256": "9ca6da2213d9e6c56d02151969ba99a3b790d3856c4e2271ea7e0d089bba904a"
         },
         {
           "path": "memory_graph.py",
@@ -1206,7 +1206,7 @@
         },
         {
           "path": "release_inventory.py",
-          "sha256": "7d15521b9f3d8aac635c69ab702d0a28ab846db6c8d5de27e2adc79660a8241e"
+          "sha256": "8c6134b616a62917373e4c4ae8526cbb1db106ff84d7685629780a72ea5b2d2f"
         },
         {
           "path": "semantic_contract_inventory.py",
@@ -1218,7 +1218,7 @@
         },
         {
           "path": "semantic_v11.py",
-          "sha256": "641a4900577117d430882162c62b48e3d73a2e68b92ece852740eb1a5a4810c5"
+          "sha256": "1ef6df8e17745428c08a11a32f1337486504c58c558a81d07c0c01c7f3f87240"
         }
       ]
     },
