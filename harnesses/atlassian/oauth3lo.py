@@ -14,7 +14,9 @@ import json
 import os
 import re
 import secrets
+import socket
 import stat
+import struct
 import subprocess
 import sys
 import threading
@@ -33,6 +35,7 @@ CALLBACK_PATH = "/oauth/atlassian/callback"
 ALIAS = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 JOB = re.compile(r"^[a-f0-9]{32}$")
 REQUIRED_CONFLUENCE_SCOPE = "read:space:confluence"
+CALLBACK_FRAME_MAX = 8192
 
 
 class OAuthFailure(Exception):
@@ -161,8 +164,70 @@ def _atomic_json(path, value, *, overwrite):
         tmp.unlink(missing_ok=True)
 
 
-def _receiver(port, state, timeout, server_factory=HTTPServer):
-    result, done = {}, threading.Event()
+def _callback_value(value, redirect_uri, state):
+    """Independently validate and reduce a callback URL to code or safe error."""
+    try:
+        actual = urllib.parse.urlsplit(value)
+        expected = urllib.parse.urlsplit(redirect_uri)
+    except Exception:
+        return None, "oauth_callback_mismatch"
+    if (actual.scheme, actual.netloc, actual.path) != (expected.scheme, expected.netloc, expected.path) or actual.fragment:
+        return None, "oauth_callback_mismatch"
+    pairs = urllib.parse.parse_qsl(actual.query, keep_blank_values=True)
+    if any(k not in ("state", "code", "error") for k, _ in pairs):
+        return None, "oauth_response_invalid"
+    query = {}
+    for key, item in pairs: query.setdefault(key, []).append(item)
+    states, codes, errors = query.get("state", []), query.get("code", []), query.get("error", [])
+    if len(states) != 1 or not hmac.compare_digest(states[0], state):
+        return None, "oauth_state_mismatch"
+    if len(codes) > 1 or len(errors) > 1 or bool(codes) == bool(errors):
+        return None, "oauth_response_invalid"
+    if errors:
+        return None, "oauth_denied"
+    if not codes[0]:
+        return None, "oauth_code_missing"
+    return codes[0], None
+
+
+def _consume_callback(value, redirect_uri, state, result, done, lock):
+    code, error = _callback_value(value, redirect_uri, state)
+    with lock:
+        if done.is_set(): return False, "oauth_callback_consumed"
+        if error: result["error"] = error
+        else: result["code"] = code
+        done.set()
+    return error is None, error
+
+
+def _receive_callback_frame(channel, redirect_uri, state, result, done, lock):
+    """Consume exactly one big-endian length-prefixed callback frame."""
+    def exact(size):
+        chunks = []
+        while size:
+            chunk = channel.recv(size)
+            if not chunk: raise ValueError("short frame")
+            chunks.append(chunk); size -= len(chunk)
+        return b"".join(chunks)
+    try:
+        header = exact(4)
+        size = struct.unpack("!I", header)[0]
+        if not 0 < size <= CALLBACK_FRAME_MAX: raise ValueError("invalid frame length")
+        raw = exact(size)
+        if channel.recv(1): raise ValueError("multiple frames")
+        value = raw.decode("utf-8", "strict")
+    except Exception:
+        with lock:
+            if not done.is_set(): result["error"] = "oauth_callback_transport_invalid"; done.set()
+        return False
+    return _consume_callback(value, redirect_uri, state, result, done, lock)[0]
+
+
+def _receiver(port, state, timeout, server_factory=HTTPServer, *, result=None, done=None, lock=None):
+    result = {} if result is None else result
+    done = threading.Event() if done is None else done
+    lock = threading.Lock() if lock is None else lock
+    redirect_uri = f"http://127.0.0.1:{port}{CALLBACK_PATH}"
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_): pass
@@ -172,18 +237,15 @@ def _receiver(port, state, timeout, server_factory=HTTPServer):
             self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
         def do_GET(self):
             u = urllib.parse.urlsplit(self.path)
-            host = self.headers.get("Host", "").split(":", 1)[0]
-            if u.path != CALLBACK_PATH or u.fragment or host != "127.0.0.1": self.reply(404, "Not found"); return
-            q = urllib.parse.parse_qs(u.query, keep_blank_values=True)
-            if done.is_set(): self.reply(409, "Callback already received"); return
-            if not hmac.compare_digest(q.get("state", [""])[0], state):
-                result["error"] = "oauth_state_mismatch"; done.set(); self.reply(400, "Invalid OAuth response"); return
-            if q.get("error"):
-                result["error"] = "oauth_denied"; done.set(); self.reply(400, "Authorization denied"); return
-            code = q.get("code", [""])[0]
-            if not code:
-                result["error"] = "oauth_code_missing"; done.set(); self.reply(400, "Invalid OAuth response"); return
-            result["code"] = code; done.set(); self.reply(200, "Authorization complete. You may close this tab.")
+            host = self.headers.get("Host", "")
+            if (u.path != CALLBACK_PATH or u.fragment or host != f"127.0.0.1:{port}" or
+                    u.scheme or u.netloc):
+                self.reply(404, "Not found"); return
+            ok, error = _consume_callback(redirect_uri + ("?" + u.query if u.query else ""), redirect_uri, state, result, done, lock)
+            if error == "oauth_callback_consumed": self.reply(409, "Callback already received"); return
+            if ok: self.reply(200, "Authorization complete. You may close this tab.")
+            elif error == "oauth_denied": self.reply(400, "Authorization denied")
+            else: self.reply(400, "Invalid OAuth response")
         def do_POST(self): self.reply(405, "Method not allowed")
 
     try:
@@ -308,15 +370,21 @@ def login(*, transfer_root, client_path, output_path, sites_output_path, site_al
     client, port = _client(cp)
     endpoint = _devtools_endpoint(managed_browser_devtools_url)
     state = secrets.token_urlsafe(32)
-    result, done = _receiver(port, state, timeout, server_factory)
+    result, done, callback_lock = {}, threading.Event(), threading.Lock()
+    result, done = _receiver(port, state, timeout, server_factory, result=result, done=done, lock=callback_lock)
     query = {"audience": "api.atlassian.com", "client_id": client["client_id"], "scope": " ".join(client["scopes"]),
              "redirect_uri": client["redirect_uri"], "state": state, "response_type": "code", "prompt": "consent"}
     authorize = AUTHORIZE_URL + "?" + urllib.parse.urlencode(query, quote_via=urllib.parse.quote)
     if status_cb: status_cb("pending-login")
     if consent_driver:
-        consent_driver(endpoint=endpoint, authorize_url=authorize, resource_url=resource_url,
-                       scopes=client["scopes"], redirect_uri=client["redirect_uri"], state=state,
-                       timeout=timeout, status_cb=status_cb)
+        try:
+            consent_driver(endpoint=endpoint, authorize_url=authorize, resource_url=resource_url,
+                           scopes=client["scopes"], redirect_uri=client["redirect_uri"], state=state,
+                           timeout=timeout, status_cb=status_cb, callback_result=result,
+                           callback_done=done, callback_lock=callback_lock)
+        except Exception:
+            done.set()
+            raise
     elif not open_devtools(endpoint, authorize, min(timeout, 5)):
         done.set(); raise OAuthFailure("browser_open_failed", "could not open the agent-managed browser")
     if not done.wait(timeout + .5): raise OAuthFailure("oauth_timeout", "authorization timed out", True)
@@ -327,8 +395,11 @@ def login(*, transfer_root, client_path, output_path, sites_output_path, site_al
         "client_secret": client["client_secret"], "code": code, "redirect_uri": client["redirect_uri"]}, timeout=min(timeout, 30), opener=opener)
     if not isinstance(token, dict) or not all(isinstance(token.get(k), str) and token[k] for k in ("access_token", "refresh_token")):
         raise OAuthFailure("oauth_token_invalid", "token response omitted reusable credentials")
+    # Atlassian may omit `scope` from a successful authorization-code token response.
+    # In that case, accessible-resources is the authoritative grant check below.
     granted = set(str(token.get("scope", "")).split())
-    if set(client["scopes"]) - granted: raise OAuthFailure("oauth_scope_missing", "token response omitted requested scopes")
+    # Do not reject on this advisory field. Atlassian can return a partial or
+    # omitted scope string here; accessible-resources below is authoritative.
     resources = _json_request("GET", RESOURCES_URL, token=token["access_token"], timeout=min(timeout, 30), opener=opener)
     if not isinstance(resources, list): raise OAuthFailure("oauth_resources_invalid", "accessible resources response was invalid")
     diagnostics = _private_path(transfer_root, ".oauth-resource-candidates.json", existing=False)
@@ -451,11 +522,29 @@ def _cdp_consent(**values):
     env = None
     if values.get("test_snapshots") is not None:
         env = dict(os.environ); env["OAUTH_CDP_TEST_MODE"] = "1"
-    proc = subprocess.Popen(["node", str(helper)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.DEVNULL, text=True, env=env)
+    parent, child = socket.socketpair(socket.AF_UNIX, socket.SOCK_STREAM)
+    parent.settimeout(min(values["timeout"] + 5, 605))
+    try:
+        proc = subprocess.Popen(["node", str(helper)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                stderr=subprocess.DEVNULL, text=True, env=env, close_fds=True,
+                                pass_fds=(child.fileno(),))
+    except Exception:
+        parent.close(); child.close()
+        raise OAuthFailure("browser_automation_failed", "managed browser automation failed") from None
+    child_fd = child.fileno()
+    child.close()
     payload = {k: values[k] for k in ("endpoint", "authorize_url", "resource_url", "scopes", "redirect_uri", "state", "timeout")}
+    payload["callback_fd"] = child_fd
     if values.get("test_snapshots") is not None: payload["testSnapshots"] = values["test_snapshots"]
-    out, _ = proc.communicate(json.dumps(payload), timeout=min(values["timeout"] + 5, 605))
+    try:
+        out, _ = proc.communicate(json.dumps(payload), timeout=min(values["timeout"] + 5, 605))
+        result = values.get("callback_result")
+        if result is not None:
+            if not values["callback_done"].is_set():
+                _receive_callback_frame(parent, values["redirect_uri"], values["state"], result,
+                                        values["callback_done"], values["callback_lock"])
+    finally:
+        parent.close()
     try: result = json.loads(out)
     except Exception: raise OAuthFailure("browser_automation_failed", "managed browser automation failed") from None
     if result.get("phase") == "pending-consent" and values.get("status_cb"): values["status_cb"]("pending-consent")

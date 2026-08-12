@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 'use strict';
+const fs=require('fs');
+const CALLBACK_FRAME_MAX=8192;
 /* Managed-Chromium Atlassian consent driver.
  *
  * Atlassian renders product/category labels rather than every literal scope.
@@ -43,7 +45,63 @@ function inspectAuthorization(c,page){
     return fail('oauth_callback_mismatch','authorization callback or state mismatch');
   return verifyScopes(c.scopes,String(page.text||'').toLowerCase());
 }
+function inspectCallback(c,value){
+  let actual,expected;
+  try{actual=new URL(value);expected=new URL(c.redirect_uri)}catch(_){return fail('oauth_callback_mismatch','authorization callback mismatch')}
+  if(actual.origin!==expected.origin||actual.pathname!==expected.pathname||actual.username||actual.password||actual.hash)
+    return fail('oauth_callback_mismatch','authorization callback mismatch');
+  const states=actual.searchParams.getAll('state'),codes=actual.searchParams.getAll('code'),errors=actual.searchParams.getAll('error');
+  for(const key of actual.searchParams.keys())if(!['state','code','error'].includes(key))return fail('oauth_response_invalid','authorization response is invalid');
+  if(states.length!==1||states[0]!==c.state)return fail('oauth_state_mismatch','authorization state mismatch');
+  if(codes.length>1||errors.length>1||Boolean(codes.length)===Boolean(errors.length))return fail('oauth_response_invalid','authorization response is invalid');
+  if(codes.length===1&&!codes[0])return fail('oauth_response_invalid','authorization response is invalid');
+  return {ok:true};
+}
+async function transferCallback(c,value){
+  const checked=inspectCallback(c,value);if(!checked.ok)return checked;
+  try{
+    if(!Number.isInteger(c.callback_fd)||c.callback_fd<3){
+      if(process.env.OAUTH_CDP_TEST_MODE==='1'){
+        const response=await fetch(value,{method:'GET',redirect:'manual'});
+        return response.status===200||response.status===409?{ok:true,phase:'callback-relayed'}:fail('oauth_callback_transport_invalid','authorization callback transport failed');
+      }
+      return fail('oauth_callback_transport_invalid','authorization callback transport is invalid');
+    }
+    const body=Buffer.from(value,'utf8');
+    if(!body.length||body.length>CALLBACK_FRAME_MAX)return fail('oauth_callback_transport_invalid','authorization callback transport is invalid');
+    const frame=Buffer.allocUnsafe(4+body.length);frame.writeUInt32BE(body.length,0);body.copy(frame,4);
+    let offset=0;while(offset<frame.length)offset+=fs.writeSync(c.callback_fd,frame,offset,frame.length-offset);
+    fs.closeSync(c.callback_fd);c.callback_fd=-1;
+    return {ok:true,phase:'callback-transferred'};
+  }catch(_){try{if(c.callback_fd>=3)fs.closeSync(c.callback_fd)}catch(_){}c.callback_fd=-1;return fail('oauth_callback_transport_invalid','authorization callback transport failed')}
+}
+function callbackFromTargets(c,targets,before,currentId){
+  const eligible=(targets||[]).filter(t=>t&&typeof t.id==='string'&&(t.id===currentId||!before.has(t.id)||before.get(t.id)!==t.url));
+  const paths=eligible.filter(t=>{try{const a=new URL(t.url),e=new URL(c.redirect_uri);return a.origin===e.origin&&a.pathname===e.pathname}catch(_){return false}});
+  if(paths.length>1)return fail('oauth_callback_ambiguous','authorization callback is ambiguous');
+  if(paths.length===0)return null;
+  const checked=inspectCallback(c,paths[0].url);return checked.ok?{ok:true,value:paths[0].url}:checked;
+}
+async function listTargets(c){
+  try{
+    const response=await fetch(c.endpoint+'/json/list',{redirect:'error'});
+    if(!response.ok)return null;
+    const targets=await response.json();return Array.isArray(targets)?targets:null;
+  }catch(_){return null}
+}
 async function synthetic(c){
+  if(c.testCallbackUrl)return transferCallback(c,c.testCallbackUrl);
+  if(c.testTargetSnapshots){
+    const before=new Map((c.testBeforeTargets||[]).map(t=>[t.id,t.url]));
+    for(const id of c.testBeforeTargetIds||[])if(!before.has(id))before.set(id,undefined);
+    for(const targets of c.testTargetSnapshots){
+      const found=callbackFromTargets(c,targets,before,c.testCurrentTargetId);
+      if(!found)continue;
+      if(!found.ok)return found;
+      return transferCallback(c,found.value);
+    }
+    return fail('oauth_timeout','authorization timed out');
+  }
   let waited=false;
   const pages=c.testSnapshots||[];
   for(let i=0;i<pages.length;i++){
@@ -83,7 +141,10 @@ async function run(c){
   while(Date.now()<deadline){
     const page=await evaljs(readPage);
     if(!page){await sleep(300);continue} if(page.login){await sleep(500);continue}
-    const u=new URL(page.url),expected=new URL(c.authorize_url);
+    const u=new URL(page.url),expected=new URL(c.authorize_url),callbackExpected=new URL(c.redirect_uri);
+    if(u.origin===callbackExpected.origin&&u.pathname===callbackExpected.pathname){
+      const relayed=await transferCallback(c,page.url);ws.close();return relayed
+    }
     if(u.origin===expected.origin&&/authorize|consent/i.test(u.pathname+' '+page.text)){
       const checked=inspectAuthorization(c,page);if(!checked.ok){ws.close();return checked}
       const host=new URL(c.resource_url).hostname.toLowerCase();
@@ -94,11 +155,30 @@ async function run(c){
        const settled=await evaljs(readPage);
        if(!settled||settled.sites.length!==1||settled.sites[0]!==host){ws.close();return fail('oauth_site_unsettled','selected Atlassian site was not confirmed')}
       }
+      const beforeTargets=await listTargets(c);
+      if(!beforeTargets){ws.close();return fail('browser_automation_failed','managed browser target discovery failed')}
+      const beforeIds=new Map(beforeTargets.filter(t=>t&&typeof t.id==='string').map(t=>[t.id,t.url]));
       const clicked=await evaljs(`(()=>{const xs=[...document.querySelectorAll('button,input[type=submit]')].filter(e=>/^(accept|allow|authorize|continue)$/i.test((e.innerText||e.value||'').trim())&&!e.disabled);if(xs.length!==1)return xs.length;xs[0].click();return 1})()`);
-      ws.close(); return clicked===1?{ok:true,phase:'pending-consent'}:fail('oauth_consent_ambiguous','consent action is missing or ambiguous');
+      if(clicked!==1){ws.close();return fail('oauth_consent_ambiguous','consent action is missing or ambiguous')}
+      while(Date.now()<deadline){
+        const location=await evaljs('location.href').catch(()=>null);
+        if(location){
+          let candidate=false;try{const a=new URL(location),e=new URL(c.redirect_uri);candidate=a.origin===e.origin&&a.pathname===e.pathname}catch(_){}
+          if(candidate){const relayed=await transferCallback(c,location);ws.close();return relayed}
+        }
+        const targets=await listTargets(c);
+        if(!targets){ws.close();return fail('browser_automation_failed','managed browser target discovery failed')}
+        const found=callbackFromTargets(c,targets,beforeIds,target.id);
+        if(found){
+          if(!found.ok){ws.close();return found}
+          const relayed=await transferCallback(c,found.value);ws.close();return relayed
+        }
+        await sleep(200);
+      }
+      ws.close();return fail('oauth_timeout','authorization timed out');
     }
     await sleep(400);
   }
   ws.close();return fail('oauth_timeout','authorization timed out');
 }
-let input='';process.stdin.setEncoding('utf8');process.stdin.on('data',x=>input+=x);process.stdin.on('end',async()=>{try{console.log(JSON.stringify(await run(JSON.parse(input))))}catch(_){console.log(JSON.stringify(fail('browser_automation_failed','managed browser automation failed')))}});
+let input='';process.stdin.setEncoding('utf8');process.stdin.on('data',x=>input+=x);process.stdin.on('end',async()=>{let c;try{c=JSON.parse(input);console.log(JSON.stringify(await run(c)))}catch(_){console.log(JSON.stringify(fail('browser_automation_failed','managed browser automation failed')))}finally{try{if(c&&c.callback_fd>=3)fs.closeSync(c.callback_fd)}catch(_){}}});

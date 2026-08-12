@@ -1,5 +1,6 @@
 import json, os, stat, subprocess, sys, tempfile, time, unittest
 import threading
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest import mock
@@ -39,6 +40,52 @@ class OAuthAsyncTests(unittest.TestCase):
    def server_close(self): pass
   result,done=oauth3lo._receiver(43119,"wanted",.01,FakeServer); done.wait(.1)
   self.assertNotIn("code",result)
+ def test_receiver_consumes_exact_relay_and_rejects_duplicate_state(self):
+  server=ThreadingHTTPServer(('127.0.0.1',0),BaseHTTPRequestHandler); port=server.server_address[1]; server.server_close()
+  result,done=oauth3lo._receiver(port,'wanted',1,ThreadingHTTPServer)
+  bad=f'http://127.0.0.1:{port}{oauth3lo.CALLBACK_PATH}?state=wanted&state=wanted&code=secret-code'
+  with self.assertRaises(__import__('urllib.error').error.HTTPError) as raised: urllib.request.urlopen(bad)
+  self.assertEqual(raised.exception.code,400); self.assertTrue(done.wait(.5)); self.assertNotIn('code',result)
+  self.assertEqual(result.get('error'),'oauth_state_mismatch')
+ def test_receiver_consumes_exact_callback_once(self):
+  server=ThreadingHTTPServer(('127.0.0.1',0),BaseHTTPRequestHandler); port=server.server_address[1]; server.server_close()
+  result,done=oauth3lo._receiver(port,'wanted',1,ThreadingHTTPServer)
+  url=f'http://127.0.0.1:{port}{oauth3lo.CALLBACK_PATH}?state=wanted&code=secret-code'
+  with urllib.request.urlopen(url) as response: self.assertEqual(response.status,200)
+  self.assertTrue(done.wait(.5)); self.assertEqual(result.pop('code'),'secret-code'); self.assertEqual(result,{})
+ def test_node_relays_only_valid_exact_callback_without_exporting_code(self):
+  class Callback(BaseHTTPRequestHandler):
+   received=threading.Event()
+   def log_message(self,*_): pass
+   def do_GET(self):
+    Callback.received.set(); self.send_response(200); self.end_headers()
+  server=ThreadingHTTPServer(('127.0.0.1',0),Callback); threading.Thread(target=server.serve_forever,daemon=True).start(); self.addCleanup(server.server_close); self.addCleanup(server.shutdown)
+  redirect=f'http://127.0.0.1:{server.server_address[1]}{oauth3lo.CALLBACK_PATH}'
+  def invoke(callback):
+   payload={'redirect_uri':redirect,'state':'wanted','testCallbackUrl':callback}
+   env=dict(os.environ,OAUTH_CDP_TEST_MODE='1')
+   cp=subprocess.run(['node',str(HERE/'oauth_cdp.js')],input=json.dumps(payload),text=True,capture_output=True,env=env,check=True)
+   self.assertNotIn('secret-code',cp.stdout+cp.stderr); return json.loads(cp.stdout)
+  got=invoke(redirect+'?state=wanted&code=secret-code')
+  self.assertTrue(got['ok']); self.assertEqual(got['phase'],'callback-relayed'); self.assertTrue(Callback.received.wait(.5))
+  self.assertEqual(invoke(redirect+'?state=wrong&code=secret-code')['code'],'oauth_state_mismatch')
+ def test_node_relays_new_callback_target_across_loopback_namespaces(self):
+  class Callback(BaseHTTPRequestHandler):
+   received=threading.Event()
+   def log_message(self,*_): pass
+   def do_GET(self):
+    Callback.received.set(); self.send_response(200); self.end_headers()
+  server=ThreadingHTTPServer(('127.0.0.1',0),Callback); threading.Thread(target=server.serve_forever,daemon=True).start(); self.addCleanup(server.server_close); self.addCleanup(server.shutdown)
+  redirect=f'http://127.0.0.1:{server.server_address[1]}{oauth3lo.CALLBACK_PATH}'
+  callback=redirect+'?state=wanted&code=secret-code'
+  payload={'redirect_uri':redirect,'state':'wanted','testBeforeTargetIds':['consent','unrelated'],
+           'testCurrentTargetId':'consent','testTargetSnapshots':[
+             [{'id':'consent','url':'https://auth.atlassian.com/authorize'},{'id':'unrelated','url':callback}],
+             [{'id':'consent','url':'https://auth.atlassian.com/authorize'},{'id':'unrelated','url':callback},{'id':'callback','url':callback}]]}
+  env=dict(os.environ,OAUTH_CDP_TEST_MODE='1')
+  cp=subprocess.run(['node',str(HERE/'oauth_cdp.js')],input=json.dumps(payload),text=True,capture_output=True,env=env,check=True)
+  self.assertNotIn('secret-code',cp.stdout+cp.stderr); got=json.loads(cp.stdout)
+  self.assertTrue(got['ok']); self.assertEqual(got['phase'],'callback-relayed'); self.assertTrue(Callback.received.wait(.5))
  def test_job_status_is_allowlisted_and_mode_0600(self):
   r=self.root(); jid="a"*32; p=r/'.oauth-jobs'/f'{jid}.json'; p.parent.mkdir(mode=0o700)
   oauth3lo._atomic_json(p,{"schemaVersion":1,"jobId":jid,"status":"pending-consent","updatedAt":1,"access_token":"never"},overwrite=False)
