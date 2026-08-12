@@ -1,31 +1,59 @@
-# Agent-desktop OAuth onboarding
+# Agent-complete Google OAuth onboarding
 
-Each installed agent must issue and store its own Google OAuth credential on that agent's managed desktop. Do not copy another agent's credential bundle or run the callback on a remote host.
+Each installed agent issues and stores its own Google OAuth credential on that agent's managed desktop. Never copy another agent's bundle or run its callback remotely. Google Console and Admin Console setup is browser-driven: do not claim API automation for these controls.
 
-## User-facing preflight
+## User-facing preflight and immediate post-install handoff
 
-Immediately after installation and validation, if the selected account alias has no usable credential, do not call the capability ready, do not begin silently, and do not expose an authorization URL. Give the same notice before first credentialed use if onboarding was deferred. First tell the user:
+Immediately after installation and validation, inspect whether the selected alias has a usable credential. If it does not, say that the capability is **installed but not yet connected**, identify the intended alias, explain `workspace-max`, the managed-browser consent flow, protected agent-local mode-0600 storage, revocation, and that later sends/shares/deletes still need approval. Ask: **“Start Google Workspace authorization now?”** Explain that this includes the durability setup, using the exact resume label **“Start Google Workspace authorization and durability setup now?”** Continue only after an explicit affirmative response in the current conversation. Do not open a browser, inspect private console state, invoke `auth.login`, or create credential state before that response.
 
-- Google authorization is required before the requested Workspace work can continue.
-- The intended account alias and that the user chooses or confirms the Google account in the managed browser.
-- `workspace-max` grants Gmail and Gmail Settings, Calendar, Drive, and identity access so the full Harness command surface is available without repeated consent.
-- What the user must do: sign in, choose or confirm the Google account, review the consent screen, and approve the displayed permissions.
-- What the agent will do: open the managed browser, receive and validate the callback, store the credential securely, and run sanitized account and service verification.
-- The agent's managed browser will open for Google sign-in and consent.
-- The credential is scoped, revocable, and stored only in that agent's protected local files.
-- Broad OAuth scopes do not bypass later preview and approval for sends, shares, deletes, invitations, ownership changes, or other side effects.
+Tell the owner that the agent will perform every automatable console step. The owner is needed only for Google login/MFA, legally meaningful final Publish/verification/admin approvals, and Google review. If deferred, record authorization as pending and give the exact resume action.
 
-Ask, "Start Google Workspace authorization now?" Continue only after an explicit affirmative response in the current conversation. If the installed-client configuration or managed browser is unavailable, explain that prerequisite before asking the user to attempt login.
+## 1. Inspect and choose the durable audience path
 
-1. After user approval, start or inspect the agent's OpenClaw-managed browser with the browser tool.
-2. Read its loopback CDP/DevTools URL, for example a literal `http://127.0.0.1:<port>` endpoint.
-3. Place the Google Desktop/installed-client JSON under a private transfer root as a regular mode-0600 file.
-4. Run `auth.login` with a stable account alias, `workspace-max`, relative client/output paths, the local managed-browser DevTools URL, a maximum ten-minute timeout, and bounded Gmail/Calendar/Drive smoke tests.
-5. The Harness opens consent in that agent's desktop browser, receives the callback on that same agent's `127.0.0.1`, validates PKCE/state/identity/scopes, and writes the credential bundle atomically at mode 0600.
-6. Verify `auth.accounts.status`, identity, granted scopes, and sanitized smoke-test counts before provider work.
+After approval, use the managed browser and the `desktop` skill to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
 
-After onboarding, select that protected bundle for authenticated Harness calls with the typed `credentialPath` input (or `--credential-path` at the direct CLI boundary). This is required when Gateway safe execution removes credential environment variables. Keep the path in the typed invocation only, never echo it in chat, logs, previews, or artifacts. The Harness still requires a private mode-0600 regular non-symlink file, and `account` continues to select an alias inside the bundle.
+- **External, Testing:** explain that refresh tokens can expire after seven days. Navigate to the In production transition, resolve all automatable prerequisites below, and prepare Publish. Stop immediately before the final legally meaningful **Publish app** confirmation, show the exact project/audience/effect, and obtain a fresh owner confirmation. After confirmation, click Publish and re-read Audience until **In production** is displayed. Publishing may trigger verification; it does not itself prove approval.
+- **External, In production:** do not republish. Continue with Data Access verification and authorization.
+- **Internal:** use this only when the selected project belongs to the owner's Google Workspace organization and all intended users are members. Confirm Audience displays **Internal**. Do not attempt external publishing; continue with Workspace Admin authorization where organization policy requires it. If any intended account is outside the organization, stop and ask whether to use an External project.
 
-The Harness also accepts the local browser endpoint from `GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL` or `OPENCLAW_BROWSER_CDP_URL`. Explicit command input wins. Only literal loopback HTTP endpoints are accepted.
+Stop for login/MFA rather than asking the owner to operate the remaining browser workflow.
 
-Never ask the owner to copy an authorization URL, code, token, client secret, or credential file between agents. If no managed browser is available, stop with a browser-open error instead of moving consent to another machine.
+## 2. Prepare External verification completely
+
+Inspect **Google Auth Platform → Branding** and **Data Access**. Gmail and Drive `workspace-max` scopes can be sensitive or restricted. Read the console's current scope classifications and verification state rather than assuming them.
+
+Before asking the owner for a final submission, prepare every automatable field and upload available evidence:
+
+1. Verify app name, support/developer contacts, authorized domains, homepage, and a publicly reachable privacy-policy URL whose domain ownership is established.
+2. Make declared scopes match actual `workspace-max` use. Remove unrelated scopes only if doing so does not change the requested Harness behavior.
+3. Write concise per-scope justifications tied to Gmail/Gmail Settings, Calendar, Drive, and identity commands; explain least access, user benefit, storage, retention, and revocation.
+4. Add only owner-approved test accounts and prepare reviewer steps that exercise representative Gmail, Calendar, and Drive reads without exposing user data.
+5. Prepare sanitized demo/video or screenshots, architecture/data-handling evidence, and any restricted-scope security-assessment information the console requests. Never fabricate evidence or claim an assessment was completed.
+6. Validate all URLs and fields in the rendered console, then show the exact submission effect and stop for the owner's final verification/submission approval.
+
+After approval, submit. If Google review is pending, record the project, review state, latest verified timestamp, and next check in tracked work with a wake-guard. Do not block a Gateway call or repeatedly poll. Resume when review changes or at the scheduled check; report requests for more information exactly and prepare the response, again stopping for legally meaningful final submission.
+
+## 3. Prepare Workspace Admin authorization
+
+For organization-managed accounts, use the managed browser to open **Google Admin console → Security → Access and data control → API controls** (labels can vary). Inspect app access control, trusted/internal app settings, and domain policy for the exact OAuth client/project.
+
+Prepare the narrow trusted-app or admin authorization required for the intended users and scopes. Show organization, client/project identity, affected users/OU/group, scopes, and policy effect. Stop before the final admin authorization or trust confirmation for owner/admin approval. Never claim domain-wide delegation, trusted-app status, or admin authorization unless the rendered Admin Console confirms it. If the signed-in owner is not an authorized admin, record the exact pending admin action and wait with a wake-guard.
+
+## 4. Authorize each agent and verify
+
+Only after the applicable audience, verification, and admin gates are confirmed:
+
+1. Start/inspect that agent's OpenClaw-managed browser and obtain its literal loopback CDP URL.
+2. Place Desktop/installed-client JSON under a private transfer root as a regular mode-0600 file.
+3. Run the existing `auth.login` flow unchanged with a stable alias, `workspace-max`, relative client/output paths, local browser URL, at most ten minutes, and Gmail/Calendar/Drive smoke tests.
+4. The owner performs only sign-in/MFA, account choice, consent review, and consent confirmation. The agent handles callback validation and storage.
+5. Verify `auth.accounts.status`, identity, granted scopes, and sanitized Gmail, Calendar, and Drive smoke-test counts.
+6. Repeat authorization and smoke tests separately for every agent. Never transfer credentials between agents.
+
+Use typed `credentialPath` for later calls. Never echo the path. If a previous token was issued while External was Testing, reauthorize after production/approval rather than expecting the old refresh token to become durable.
+
+## Failure and revocation
+
+A sanitized `invalid_grant` refresh failure can mean Testing-mode seven-day expiry, user revocation, password/security changes, long inactivity, token limits, or an invalid/expired refresh token. Inspect Audience and account/admin state, then reauthorize the affected agent; never expose Google's response body. Revocation is available from the Google Account connections page and by removing the protected local bundle through the approved logout flow.
+
+The browser endpoint may come from `GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL` or `OPENCLAW_BROWSER_CDP_URL`; explicit typed input wins. Accept only literal loopback HTTP endpoints. Never ask the owner to copy an OAuth URL, code, token, client secret, or credential file.

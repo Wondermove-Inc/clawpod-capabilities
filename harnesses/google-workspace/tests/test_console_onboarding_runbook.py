@@ -1,0 +1,21 @@
+from pathlib import Path
+
+
+def test_install_handoff_is_agent_complete_and_minimizes_owner_intervention():
+ skill=Path('skills/google-workspace/SKILL.md').read_text()
+ runbook=Path('skills/google-workspace/references/onboarding.md').read_text()
+ required=(
+  'installed but not yet connected','Start Google Workspace authorization and durability setup now?',
+  'Google Auth Platform → Audience','External, Testing','seven days','In production','Internal',
+  'Google Auth Platform → Branding','Data Access','sensitive or restricted','scope justifications',
+  'Google Admin console','API controls','wake-guard','Gmail, Calendar, and Drive smoke-test counts',
+  'login/MFA','final legally meaningful','never expose Google\'s response body')
+ for phrase in required: assert phrase in runbook
+ assert 'agent-complete Google Console durability runbook' in skill
+ assert 'do not claim API automation' in runbook
+
+
+def test_runbook_preserves_harness_login_contract_and_workspace_max():
+ runbook=Path('skills/google-workspace/references/onboarding.md').read_text()
+ for phrase in ('existing `auth.login` flow unchanged','`workspace-max`','literal loopback CDP URL','mode-0600','Repeat authorization'):
+  assert phrase in runbook

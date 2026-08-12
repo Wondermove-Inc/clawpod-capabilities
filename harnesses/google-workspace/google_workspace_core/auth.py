@@ -1,5 +1,5 @@
 from __future__ import annotations
-import json, os, stat, time, urllib.parse, urllib.request
+import json, os, stat, time, urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 
 class AuthError(Exception): pass
@@ -26,5 +26,16 @@ class CredentialProvider:
         if not all(item.get(k) for k in ("refresh_token","client_id","client_secret")): raise AuthError("access token expired and protected refresh material is unavailable")
         data=urllib.parse.urlencode({"grant_type":"refresh_token","refresh_token":item["refresh_token"],"client_id":item["client_id"],"client_secret":item["client_secret"]}).encode()
         req=urllib.request.Request(item.get("token_uri","https://oauth2.googleapis.com/token"),data=data,method="POST")
-        with urllib.request.urlopen(req,timeout=15) as r: refreshed=json.load(r)
+        try:
+            with urllib.request.urlopen(req,timeout=15) as r: refreshed=json.load(r)
+        except urllib.error.HTTPError as exc:
+            # Provider response bodies may contain sensitive diagnostic material.
+            # Classify invalid_grant from the sanitized OAuth error code only.
+            if exc.code == 400:
+                raise AuthError("credential refresh was rejected (invalid_grant possible): reauthorize this agent; causes include External Testing seven-day expiry, revocation, account security changes, inactivity, token limits, or an invalid/expired refresh token") from None
+            raise AuthError("credential refresh was rejected by the provider; reauthorize this agent") from None
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError):
+            raise AuthError("credential refresh failed; retry if transient or reauthorize this agent") from None
+        if not isinstance(refreshed,dict) or not refreshed.get("access_token"):
+            raise AuthError("credential refresh returned no usable access token; reauthorize this agent")
         return refreshed["access_token"],item

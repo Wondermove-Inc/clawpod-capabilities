@@ -396,7 +396,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "description": "Route Gmail, Calendar, Drive, and agent-desktop OAuth onboarding through the typed Google Workspace Harness.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -414,11 +414,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "1a1afb551d4d22171344cbafa1590ca85233e6dfc26f79b7f94f31fe272a0af2"
+          "sha256": "6adffb606ad30aafe6bd94c36b588db085f417ebcd28abed55d4305e6fb7b5f0"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "55a54da8acdc6aeb97b28fff205891995310e48efc95af2bf31828660811de7d"
+          "sha256": "9b8885622a7b44e27eebacea2fc6c4c9c3fa21684b1ef070e1578f9939fdc69c"
         },
         {
           "path": "references/operations.md",
@@ -431,7 +431,7 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.2.3"
+        "version": "0.2.4"
       }
     },
     {
@@ -1079,7 +1079,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1109,7 +1109,7 @@
         },
         {
           "path": "google_workspace_core/auth.py",
-          "sha256": "3a7e3372aa8f0a4b2984d7961e2eea9b7dc804eb71885de282946672b63c7a01"
+          "sha256": "afa6410371b61f99a2731b1c2b90cb2784b9aec8300e6ee894405fad21d78d57"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1153,7 +1153,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "9d0bd4a0d5317ba7a03bfff8c98677441f96cfcb166b9d127536744a0e3921a6"
+          "sha256": "e3a6a376349af04cad2c9a43db1882fe89699098d4417adf87c2d8b14379aa31"
         },
         {
           "path": "scripts/generate_schemas.py",
