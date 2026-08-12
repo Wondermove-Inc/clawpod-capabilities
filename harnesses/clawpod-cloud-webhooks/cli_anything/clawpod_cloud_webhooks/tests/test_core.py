@@ -78,3 +78,19 @@ def test_secret_warning_retains_expiry(): assert secret_warning({'previous_secre
 def test_timeout_bounds():
     with pytest.raises(ValueError): Backend('http://x',timeout=31)
 def test_rsa_contract(): assert RSA_CONTRACT['algorithm']=='RSA-OAEP' and RSA_CONTRACT['hash']=='SHA-256' and not RSA_CONTRACT['plaintext_persistence']
+
+def test_readback_semantics_normalize_numeric_identifier_types():
+    from cli_anything.clawpod_cloud_webhooks.core.contracts import readback_mismatches
+    expected = {'name': 'n', 'tenant_id': '2', 'playbook_id': '17'}
+    actual = {'name': 'n', 'tenant_id': 2, 'playbook_id': 17}
+    assert readback_mismatches('source', expected, actual) == {}
+    actual['name'] = 'changed'
+    assert readback_mismatches('source', expected, actual)['name']['actual'] == 'changed'
+
+
+def test_playbook_readback_verifies_only_returned_contract_fields():
+    from cli_anything.clawpod_cloud_webhooks.core.contracts import readback_mismatches, validate_payload
+    payload = validate_payload('playbook', {'name': 'p', 'content': 'c'}, '2')
+    assert readback_mismatches('playbook', payload, {'name': 'p', 'content': 'c', 'tenant_id': 2}) == {}
+    with pytest.raises(ValueError, match='unknown Playbook fields: is_active'):
+        validate_payload('playbook', {'name': 'p', 'content': 'c', 'is_active': True}, '2')

@@ -2,7 +2,7 @@ import hashlib, hmac, json, re, shlex, sys
 from urllib.parse import quote
 import click
 from . import __version__
-from .core.contracts import MUTABLE_FIELDS, create_preview, delete_preview, preview, require_idempotency, resource_merge, secret_warning, validate_payload, verify_event
+from .core.contracts import create_preview, delete_preview, preview, readback_mismatches, require_idempotency, resource_merge, secret_warning, validate_payload, verify_event
 from .core.safety import digest, redact, validate_body
 from .utils.backend import Backend, BackendError, RSA_CONTRACT
 
@@ -173,7 +173,7 @@ def _items(value):
     if isinstance(value,dict) and isinstance(value.get('items'),list): return value['items']
     raise ValueError('list response must be an array or an object containing items')
 def _changed_fields(kind, expected, actual):
-    return {k:{'expected':expected.get(k),'actual':actual.get(k)} for k in MUTABLE_FIELDS[kind] if k in expected and expected.get(k)!=actual.get(k)}
+    return readback_mismatches(kind, expected, actual)
 def _created_id(kind,result):
     if not isinstance(result,dict): return None
     for value in (result,result.get(kind),result.get('data')):
@@ -339,7 +339,7 @@ def _add_state_command(kind,enabled):
     def command(state,resource_id,tenant_id,idempotency_key,effect_digest,approve):
         return _state_action(state,kind,resource_id,tenant_id,enabled,idempotency_key,effect_digest,approve)
     cli.add_command(command)
-for _kind in ('source','playbook','rule'):
+for _kind in ('source','rule'):
     _add_state_command(_kind,True); _add_state_command(_kind,False)
 
 @cli.command('rule-reorder')
