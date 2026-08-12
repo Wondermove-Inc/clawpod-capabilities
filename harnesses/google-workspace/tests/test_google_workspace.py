@@ -18,7 +18,7 @@ class Tests(unittest.TestCase):
   e=os.environ.copy();e.update(env or {});return subprocess.run([sys.executable,str(CLI),*args],input=input,text=True,capture_output=True,env=e)
  def mock(self,response):
   d=tempfile.TemporaryDirectory();p=Path(d.name)/'mock.json';p.write_text(json.dumps(response));self.addCleanup(d.cleanup);return str(p)
- def test_inventory_count(self):self.assertEqual(len(catalog()),151)
+ def test_inventory_count(self):self.assertEqual(len(catalog()),152)
  def test_inventory_services(self):self.assertTrue(all(any(k.startswith(x) for x in ('auth.','gmail.','calendar.','drive.')) for k in catalog()))
  def test_closed_schemas(self):self.assertTrue(all(not c['inputSchema']['additionalProperties'] for c in catalog().values()))
  def test_all_have_argmap(self):self.assertTrue(all(c['argMap'] for c in catalog().values()))
@@ -26,7 +26,7 @@ class Tests(unittest.TestCase):
  def test_destructive_safety(self):self.assertIn('destructive',catalog()['drive.files.delete']['safetyClasses'])
  def test_auth_safety(self):self.assertIn('secretUse',catalog()['auth.accounts.status']['safetyClasses'])
  def test_discovery_subprocess(self):
-  r=self.cli('--list-commands');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(len(o['data']['commands']),151)
+  r=self.cli('--list-commands');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(len(o['data']['commands']),152)
  def test_unknown_one_json(self):
   r=self.cli('nope','--json');self.assertEqual(r.returncode,2);self.assertFalse(json.loads(r.stdout)['ok']);self.assertEqual(len(r.stdout.strip().splitlines()),1)
  def test_scope_list_no_auth(self):

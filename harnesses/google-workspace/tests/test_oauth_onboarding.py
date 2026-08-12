@@ -2,6 +2,7 @@ import io,json,stat,urllib.error
 from pathlib import Path
 import pytest
 from google_workspace_core.core import SCOPES,managed_browser_url
+from google_workspace_core.core import run
 from google_workspace_core.oauth_desktop import LoginError,_canonical_scopes,_devtools_endpoint,_open_devtools,_smoke
 
 
@@ -68,6 +69,25 @@ def test_smoke_failure_and_invalid_shape_are_sanitized():
  assert _smoke("token",["drive"],5,failed)=={"drive":{"ok":False,"error":"REQUEST_FAILED"}}
  assert _smoke("token",["calendar"],5,lambda *a:{"items":"secret"})=={"calendar":{"ok":False,"error":"INVALID_RESPONSE"}}
  with pytest.raises(LoginError,match="unknown smoke"):_smoke("token",["contacts"],5,lambda *a:{})
+
+
+def test_onboarding_decision_is_deterministic_and_requires_both_internal_conditions():
+ base={"externalPublishingStatus":"testing","usesNonBasicScopes":True,"usesRestrictedGmailOrDriveScopes":True}
+ internal,code=run("auth.onboarding.decide",{"body":{**base,"projectInOrganization":True,"allIntendedUsersOrganizationMembers":True}})
+ assert code==0 and internal["data"]["resource"]["recommendedAudience"]=="internal"
+ assert "admin API controls may be required" in " ".join(internal["data"]["resource"]["requiredGates"])
+ for project_in_org,all_members in ((False,True),(True,False),(False,False)):
+  external,code=run("auth.onboarding.decide",{"body":{**base,"projectInOrganization":project_in_org,"allIntendedUsersOrganizationMembers":all_members}})
+  resource=external["data"]["resource"]
+  assert code==0 and resource["recommendedAudience"]=="external" and resource["durability"]=="temporary-testing"
+  assert "expire after 7 days, including refresh tokens" in " ".join(resource["requiredGates"])
+
+
+def test_onboarding_decision_schema_is_closed_and_requires_observations():
+ out,code=run("auth.onboarding.decide",{"body":{"projectInOrganization":True}})
+ assert code==2 and out["error"]["code"]=="INVALID_ARGUMENT"
+ out,code=run("auth.onboarding.decide",{"body":{"projectInOrganization":True,"allIntendedUsersOrganizationMembers":True,"externalPublishingStatus":"testing","usesNonBasicScopes":False,"usesRestrictedGmailOrDriveScopes":False,"unexpected":True}})
+ assert code==2 and out["error"]["code"]=="INVALID_ARGUMENT"
 
 
 def test_google_skill_requires_user_facing_authorization_preflight():

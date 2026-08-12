@@ -12,8 +12,10 @@ Tell the owner that the agent will perform every automatable console step. The o
 
 After approval, use the managed browser and the `desktop` skill to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
 
-- **External, Testing:** explain that refresh tokens can expire after seven days. Navigate to the In production transition, resolve all automatable prerequisites below, and prepare Publish. Stop immediately before the final legally meaningful **Publish app** confirmation, show the exact project/audience/effect, and obtain a fresh owner confirmation. After confirmation, click Publish and re-read Audience until **In production** is displayed. Publishing may trigger verification; it does not itself prove approval.
-- **External, In production:** do not republish. Continue with Data Access verification and authorization.
+First run the local, deterministic `auth.onboarding.decide` command with the observed organization facts, External publishing status, and scope classifications. It performs no OAuth, credential, browser, or network action. Its rule is exact: default to **Internal only when** the selected project belongs to a Google Cloud Organization **and** every intended user is a member of that same organization. Otherwise choose External. Treat its result as a policy check, then verify the rendered console state.
+
+- **External, Testing:** this is a limited pre-release state for test users, not a durable deployment state. Authorizations by test users expire after **7 days (seven days) when any non-basic scope is requested; the expiration includes refresh tokens**. Navigate to the In production transition, resolve all automatable prerequisites below, and prepare Publish. Stop immediately before the final legally meaningful **Publish app** confirmation, show the exact project/audience/effect, and obtain a fresh owner confirmation. After confirmation, click Publish and re-read Audience until **In production** is displayed. Publishing may trigger verification; it does not itself prove approval.
+- **External, In production:** this is the published External state; the Testing seven-day rule above no longer applies to new authorizations, but verification, scope, user-access, and other Google token policies still apply. Do not republish. Continue with Data Access verification and authorization. Reauthorize credentials issued during Testing rather than assuming they become durable.
 - **Internal:** use this only when the selected project belongs to the owner's Google Workspace organization and all intended users are members. Confirm Audience displays **Internal**. Do not attempt external publishing; continue with Workspace Admin authorization where organization policy requires it. If any intended account is outside the organization, stop and ask whether to use an External project.
 
 Stop for login/MFA rather than asking the owner to operate the remaining browser workflow.
@@ -35,7 +37,7 @@ After approval, submit. If Google review is pending, record the project, review 
 
 ## 3. Prepare Workspace Admin authorization
 
-For organization-managed accounts, use the managed browser to open **Google Admin console → Security → Access and data control → API controls** (labels can vary). Inspect app access control, trusted/internal app settings, and domain policy for the exact OAuth client/project.
+For organization-managed accounts, use the managed browser to open **Google Admin console → Security → Access and data control → API controls** (labels can vary). Inspect app access control, trusted/internal app settings, and domain policy for the exact OAuth client/project. Even for an Internal app, restricted Gmail or Drive scopes may require Google Workspace admin API controls; Internal audience selection is not an admin-policy bypass.
 
 Prepare the narrow trusted-app or admin authorization required for the intended users and scopes. Show organization, client/project identity, affected users/OU/group, scopes, and policy effect. Stop before the final admin authorization or trust confirmation for owner/admin approval. Never claim domain-wide delegation, trusted-app status, or admin authorization unless the rendered Admin Console confirms it. If the signed-in owner is not an authorized admin, record the exact pending admin action and wait with a wake-guard.
 
@@ -47,7 +49,7 @@ Only after the applicable audience, verification, and admin gates are confirmed:
 2. Place Desktop/installed-client JSON under a private transfer root as a regular mode-0600 file.
 3. Run the existing `auth.login` flow unchanged with a stable alias, `workspace-max`, relative client/output paths, local browser URL, at most ten minutes, and Gmail/Calendar/Drive smoke tests.
 4. The owner performs only sign-in/MFA, account choice, consent review, and consent confirmation. The agent handles callback validation and storage.
-5. Verify `auth.accounts.status`, identity, granted scopes, and sanitized Gmail, Calendar, and Drive smoke-test counts.
+5. Verify the configured Audience in Cloud Console; verify the authorized account's membership and domain against the intended audience; verify `auth.accounts.status`, identity, and the actually granted scopes; then verify sanitized Gmail, Calendar, and Drive smoke-test counts. A successful login alone is not sufficient.
 6. Repeat authorization and smoke tests separately for every agent. Never transfer credentials between agents.
 
 Use typed `credentialPath` for later calls. Never echo the path. If a previous token was issued while External was Testing, reauthorize after production/approval rather than expecting the old refresh token to become durable.

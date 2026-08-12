@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """Deterministically specialize every command schema from checked provider contracts."""
-import json,re,sys
+import copy,json,re,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import operation
 from google_workspace_core.scopes import required_scopes
 from google_workspace_core.contracts import body_schema,QUERY_TYPES,S,O,A
 p=ROOT/'harness.json';doc=json.loads(p.read_text())
+# Seed locally evaluated onboarding policy from an existing lifecycle-compatible
+# auth command. Rich schemas below remain the semantic source of truth.
+if 'auth.onboarding.decide' not in doc['commands']:
+ template=copy.deepcopy(doc['commands']['auth.scopes.list'])
+ template['description']='Deterministically choose the Google OAuth audience and verification gates without credentials or network access.'
+ template['baseArgv']=['auth.onboarding.decide']
+ doc['commands']['auth.onboarding.decide']=template
 SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
 PAGED={'list','search','instances'}
 def allowed_query(cmd,action):
@@ -81,7 +88,16 @@ for cmd,c in commands.items():
    c.setdefault('argMap',[]).insert(1,{'arg':'credentialPath','type':'option','flag':'--credential-path','valueType':'path','pathRole':'input','optional':True})
  if cmd.startswith('auth.'):
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
-  if cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
+  if cmd=='auth.onboarding.decide':
+   props['body']=O({
+    'projectInOrganization':{'type':'boolean'},
+    'allIntendedUsersOrganizationMembers':{'type':'boolean'},
+    'externalPublishingStatus':S(enum=['testing','inProduction']),
+    'usesNonBasicScopes':{'type':'boolean'},
+    'usesRestrictedGmailOrDriveScopes':{'type':'boolean'},
+   },required=['projectInOrganization','allIntendedUsersOrganizationMembers','externalPublishingStatus','usesNonBasicScopes','usesRestrictedGmailOrDriveScopes'])
+   s['required']=list(dict.fromkeys(s['required']+['body']))
+  elif cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
   elif cmd=='auth.login':
    props['body']=O({
     'clientPath':S(),
