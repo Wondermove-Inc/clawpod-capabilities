@@ -86,6 +86,27 @@ class OAuthAsyncTests(unittest.TestCase):
   cp=subprocess.run(['node',str(HERE/'oauth_cdp.js')],input=json.dumps(payload),text=True,capture_output=True,env=env,check=True)
   self.assertNotIn('secret-code',cp.stdout+cp.stderr); got=json.loads(cp.stdout)
   self.assertTrue(got['ok']); self.assertEqual(got['phase'],'callback-relayed'); self.assertTrue(Callback.received.wait(.5))
+ def test_cdp_timeout_terminates_and_reaps_without_leaking_output(self):
+  proc=mock.Mock(); timeout=subprocess.TimeoutExpired(['node','oauth_cdp.js'],10,output='secret-output',stderr='secret-error')
+  proc.communicate.side_effect=[timeout,('cleanup-output','cleanup-error')]
+  parent=mock.Mock(); child=mock.Mock(); child.fileno.return_value=7
+  with mock.patch('oauth3lo.socket.socketpair',return_value=(parent,child)), mock.patch('oauth3lo.subprocess.Popen',return_value=proc):
+   with self.assertRaises(subprocess.TimeoutExpired) as raised:
+    oauth3lo._cdp_consent(endpoint='http://127.0.0.1:9222',authorize_url='https://auth.atlassian.com/authorize',resource_url='https://acme.atlassian.net',scopes=SCOPES,redirect_uri='http://127.0.0.1:43119/oauth/atlassian/callback',state='secret-state',timeout=5)
+  self.assertIs(raised.exception,timeout); self.assertIsNone(timeout.output); self.assertIsNone(timeout.stderr)
+  proc.terminate.assert_called_once_with(); proc.kill.assert_not_called(); self.assertEqual(proc.communicate.call_count,2); parent.close.assert_called_once_with()
+  self.assertNotIn('secret-output',str(raised.exception)); self.assertNotIn('secret-error',str(raised.exception)); self.assertNotIn('secret-state',str(raised.exception))
+ def test_cdp_timeout_kills_after_bounded_wait_and_reaps(self):
+  proc=mock.Mock(); first=subprocess.TimeoutExpired(['node','oauth_cdp.js'],10,output='secret-output'); second=subprocess.TimeoutExpired(['node','oauth_cdp.js'],1,output='cleanup-secret')
+  proc.communicate.side_effect=[first,second,('killed-output','killed-error')]
+  parent=mock.Mock(); child=mock.Mock(); child.fileno.return_value=7
+  with mock.patch('oauth3lo.socket.socketpair',return_value=(parent,child)), mock.patch('oauth3lo.subprocess.Popen',return_value=proc):
+   with self.assertRaises(subprocess.TimeoutExpired) as raised:
+    oauth3lo._cdp_consent(endpoint='http://127.0.0.1:9222',authorize_url='https://auth.atlassian.com/authorize',resource_url='https://acme.atlassian.net',scopes=SCOPES,redirect_uri='http://127.0.0.1:43119/oauth/atlassian/callback',state='secret-state',timeout=5)
+  self.assertIs(raised.exception,first); self.assertIsNone(first.output); self.assertIsNone(first.stderr)
+  proc.terminate.assert_called_once_with(); proc.kill.assert_called_once_with(); self.assertEqual(proc.communicate.call_count,3)
+  self.assertEqual(proc.communicate.call_args_list[0].kwargs,{'timeout':10}); self.assertEqual(proc.communicate.call_args_list[1],mock.call(timeout=1)); self.assertEqual(proc.communicate.call_args_list[2],mock.call())
+  parent.close.assert_called_once_with(); self.assertNotIn('cleanup-secret',str(raised.exception)); self.assertNotIn('secret-state',str(raised.exception))
  def test_job_status_is_allowlisted_and_mode_0600(self):
   r=self.root(); jid="a"*32; p=r/'.oauth-jobs'/f'{jid}.json'; p.parent.mkdir(mode=0o700)
   oauth3lo._atomic_json(p,{"schemaVersion":1,"jobId":jid,"status":"pending-consent","updatedAt":1,"access_token":"never"},overwrite=False)
