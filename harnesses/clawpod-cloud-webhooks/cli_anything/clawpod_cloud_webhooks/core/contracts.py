@@ -61,9 +61,12 @@ def validate_payload(kind, payload, tenant_id):
 def preflight(payload, tenant_id):
     if not tenant_id: raise ValueError("tenant_id is required")
     if not isinstance(payload,dict): raise ValueError("payload must be a JSON object")
-    if payload.get("tenant_id") not in (None,tenant_id): raise ValueError("tenant isolation mismatch")
+    payload_tenant=payload.get("tenant_id")
+    if payload_tenant is not None and not semantic_equal("tenant_id",tenant_id,payload_tenant): raise ValueError("tenant isolation mismatch")
     for t in payload.get("targets",[]) or []:
-        if isinstance(t,dict) and t.get("tenant_id") not in (None,tenant_id): raise ValueError("target tenant isolation mismatch")
+        if isinstance(t,dict):
+            target_tenant=t.get("tenant_id")
+            if target_tenant is not None and not semantic_equal("tenant_id",tenant_id,target_tenant): raise ValueError("target tenant isolation mismatch")
     validate_features(payload); guard_agent_targets(payload)
 def preview(kind, resource_id, before, after, tenant_id, idempotency_key):
     idempotency_key=require_idempotency(idempotency_key); preflight(after,tenant_id)
