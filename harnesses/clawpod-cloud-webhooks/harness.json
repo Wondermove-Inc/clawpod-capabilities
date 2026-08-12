@@ -4,7 +4,7 @@
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
   "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
   "execution": {
@@ -879,1030 +879,6 @@
         }
       ]
     },
-    "source.list": {
-      "description": "List Sources.",
-      "baseArgv": [
-        "source.list"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "source.get": {
-      "description": "Get a Source with sensitive values redacted.",
-      "baseArgv": [
-        "source.get"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "resourceId",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "resourceId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "resourceId",
-          "type": "option",
-          "flag": "--resource-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "playbook.list": {
-      "description": "List Playbooks.",
-      "baseArgv": [
-        "playbook.list"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "rule.list": {
-      "description": "List Rules.",
-      "baseArgv": [
-        "rule.list"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "event.inspect-redacted": {
-      "description": "Inspect Event without sensitive headers or tokens.",
-      "baseArgv": [
-        "event.inspect-redacted"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "eventId",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "eventId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "eventId",
-          "type": "option",
-          "flag": "--event-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "event.verify": {
-      "description": "Verify terminal status, empty error, and optional destination evidence.",
-      "baseArgv": [
-        "event.verify"
-      ],
-      "safetyClasses": [
-        "readOnly",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "eventId",
-          "tenantId"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "eventId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "requireDestinationEvidence": {
-            "type": "boolean"
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "eventId",
-          "type": "option",
-          "flag": "--event-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "requireDestinationEvidence",
-          "type": "option",
-          "flag": "--require-destination-evidence",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
     "audit.config": {
       "description": "Audit known broken and unsafe configuration.",
       "baseArgv": [
@@ -2040,400 +1016,6 @@
           "type": "option",
           "flag": "--tenant-id",
           "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "caCertPath",
-          "type": "option",
-          "flag": "--ca-cert",
-          "valueType": "path",
-          "pathRole": "input",
-          "optional": true
-        },
-        {
-          "arg": "insecureSkipTlsVerify",
-          "type": "option",
-          "flag": "--insecure-skip-tls-verify",
-          "valueType": "boolean",
-          "optional": true
-        },
-        {
-          "arg": "insecureTlsRiskAccepted",
-          "type": "option",
-          "flag": "--i-understand-insecure-tls-risk",
-          "valueType": "boolean",
-          "optional": true
-        }
-      ]
-    },
-    "mutation.preview": {
-      "description": "Produce a redacted mutation preview and effect digest.",
-      "baseArgv": [
-        "mutation.preview"
-      ],
-      "safetyClasses": [
-        "readOnly"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "kind",
-          "resourceId",
-          "tenantId",
-          "beforeJson",
-          "afterJson",
-          "idempotencyKey"
-        ],
-        "properties": {
-          "kind": {
-            "type": "string",
-            "enum": [
-              "source",
-              "playbook",
-              "rule"
-            ]
-          },
-          "resourceId": {
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "beforeJson": {
-            "type": "object"
-          },
-          "afterJson": {
-            "type": "object"
-          },
-          "idempotencyKey": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "kind",
-          "type": "option",
-          "flag": "--kind",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "resourceId",
-          "type": "option",
-          "flag": "--resource-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "beforeJson",
-          "type": "option",
-          "flag": "--before-json",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "afterJson",
-          "type": "option",
-          "flag": "--after-json",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "idempotencyKey",
-          "type": "option",
-          "flag": "--idempotency-key",
-          "valueType": "string",
-          "optional": false
-        }
-      ]
-    },
-    "source.update": {
-      "description": "Read-before-write full Source update with digest and readback verification.",
-      "baseArgv": [
-        "source.update"
-      ],
-      "safetyClasses": [
-        "externalSideEffect",
-        "humanAccountAction",
-        "secretUse"
-      ],
-      "inputSchema": {
-        "type": "object",
-        "required": [
-          "baseUrl",
-          "sourceId",
-          "tenantId",
-          "changesJson",
-          "idempotencyKey",
-          "effectDigest",
-          "approve"
-        ],
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          },
-          "sourceId": {
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "changesJson": {
-            "type": "object"
-          },
-          "idempotencyKey": {
-            "type": "string"
-          },
-          "effectDigest": {
-            "type": "string"
-          },
-          "approve": {
-            "type": "boolean"
-          },
-          "caCertPath": {
-            "type": "string",
-            "minLength": 1
-          },
-          "insecureSkipTlsVerify": {
-            "type": "boolean",
-            "const": true
-          },
-          "insecureTlsRiskAccepted": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "outputSchema": {
-        "type": "object",
-        "required": [
-          "ok"
-        ],
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          },
-          "capability": {
-            "type": "object"
-          },
-          "error": {
-            "type": "object"
-          },
-          "items": {},
-          "item": {},
-          "event": {},
-          "verification": {},
-          "preview": {},
-          "operation": {
-            "type": "string"
-          },
-          "effect_digest": {
-            "type": "string"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "partial_failure": {
-            "type": "boolean"
-          },
-          "retry_safe": {},
-          "result": {},
-          "readback": {},
-          "tenant_id": {
-            "type": "string"
-          },
-          "source_count": {
-            "type": "integer"
-          },
-          "findings": {
-            "type": "array"
-          },
-          "body_bytes": {
-            "type": "integer"
-          },
-          "body_digest": {
-            "type": "string"
-          },
-          "signature_generated": {
-            "type": "boolean"
-          },
-          "signature_exposed": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string"
-          },
-          "credential_lifecycle": {
-            "type": "object"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "login": {
-            "type": "object"
-          },
-          "onboarding_requires_explicit_approval": {
-            "type": "boolean"
-          },
-          "remote": {},
-          "local": {
-            "type": "object"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "tls_verification_mode": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "argMap": [
-        {
-          "arg": "baseUrl",
-          "type": "option",
-          "flag": "--base-url",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "sourceId",
-          "type": "option",
-          "flag": "--source-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "tenantId",
-          "type": "option",
-          "flag": "--tenant-id",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "changesJson",
-          "type": "option",
-          "flag": "--changes-json",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "idempotencyKey",
-          "type": "option",
-          "flag": "--idempotency-key",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "effectDigest",
-          "type": "option",
-          "flag": "--effect-digest",
-          "valueType": "string",
-          "optional": false
-        },
-        {
-          "arg": "approve",
-          "type": "option",
-          "flag": "--approve",
-          "valueType": "boolean",
           "optional": false
         },
         {
@@ -2816,6 +1398,5764 @@
           "flag": "--metadata-json",
           "valueType": "string",
           "optional": true
+        }
+      ]
+    },
+    "source.list": {
+      "description": "List Source resources.",
+      "baseArgv": [
+        "source.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "source.get": {
+      "description": "Get one redacted Source by exact ID.",
+      "baseArgv": [
+        "source.get"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "resourceId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "source.create": {
+      "description": "Create and GET-verify a typed Source after exact preview confirmation.",
+      "baseArgv": [
+        "source.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId",
+          "payloadJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "payloadJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "payloadJson",
+          "type": "option",
+          "flag": "--payload-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.update": {
+      "description": "Read, full-object update, and GET-verify a typed Source.",
+      "baseArgv": [
+        "source.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "changesJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changesJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "changesJson",
+          "type": "option",
+          "flag": "--changes-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.delete": {
+      "description": "Delete an exact Source and verify absence from the authoritative list.",
+      "baseArgv": [
+        "source.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.enable": {
+      "description": "Enable a Source through full-object update and GET readback.",
+      "baseArgv": [
+        "source.enable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.disable": {
+      "description": "Disable a Source through full-object update and GET readback.",
+      "baseArgv": [
+        "source.disable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.list": {
+      "description": "List Playbook resources.",
+      "baseArgv": [
+        "playbook.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "playbook.get": {
+      "description": "Get one redacted Playbook by exact ID.",
+      "baseArgv": [
+        "playbook.get"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "resourceId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.create": {
+      "description": "Create and GET-verify a typed Playbook after exact preview confirmation.",
+      "baseArgv": [
+        "playbook.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId",
+          "payloadJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "payloadJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "payloadJson",
+          "type": "option",
+          "flag": "--payload-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.update": {
+      "description": "Read, full-object update, and GET-verify a typed Playbook.",
+      "baseArgv": [
+        "playbook.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "playbookId",
+          "tenantId",
+          "changesJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "playbookId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changesJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "playbookId",
+          "type": "option",
+          "flag": "--playbook-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "changesJson",
+          "type": "option",
+          "flag": "--changes-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.delete": {
+      "description": "Delete an exact Playbook and verify absence from the authoritative list.",
+      "baseArgv": [
+        "playbook.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "playbookId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "playbookId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "playbookId",
+          "type": "option",
+          "flag": "--playbook-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.enable": {
+      "description": "Enable a Playbook through full-object update and GET readback.",
+      "baseArgv": [
+        "playbook.enable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "playbookId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "playbookId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "playbookId",
+          "type": "option",
+          "flag": "--playbook-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "playbook.disable": {
+      "description": "Disable a Playbook through full-object update and GET readback.",
+      "baseArgv": [
+        "playbook.disable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "playbookId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "playbookId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "playbookId",
+          "type": "option",
+          "flag": "--playbook-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "rule.list": {
+      "description": "List Rule resources.",
+      "baseArgv": [
+        "rule.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "rule.get": {
+      "description": "Get one redacted Rule by exact ID.",
+      "baseArgv": [
+        "rule.get"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "resourceId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "rule.create": {
+      "description": "Create and GET-verify a typed Rule after exact preview confirmation.",
+      "baseArgv": [
+        "rule.create"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId",
+          "payloadJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "payloadJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "payloadJson",
+          "type": "option",
+          "flag": "--payload-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "rule.update": {
+      "description": "Read, full-object update, and GET-verify a typed Rule.",
+      "baseArgv": [
+        "rule.update"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "ruleId",
+          "tenantId",
+          "changesJson",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changesJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "ruleId",
+          "type": "option",
+          "flag": "--rule-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "changesJson",
+          "type": "option",
+          "flag": "--changes-json",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "rule.delete": {
+      "description": "Delete an exact Rule and verify absence from the authoritative list.",
+      "baseArgv": [
+        "rule.delete"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "ruleId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "ruleId",
+          "type": "option",
+          "flag": "--rule-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "rule.enable": {
+      "description": "Enable a Rule through full-object update and GET readback.",
+      "baseArgv": [
+        "rule.enable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "ruleId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "ruleId",
+          "type": "option",
+          "flag": "--rule-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "rule.disable": {
+      "description": "Disable a Rule through full-object update and GET readback.",
+      "baseArgv": [
+        "rule.disable"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "ruleId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "ruleId",
+          "type": "option",
+          "flag": "--rule-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "event.list": {
+      "description": "List Event resources.",
+      "baseArgv": [
+        "event.list"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "event.get": {
+      "description": "Get one redacted Event by exact ID.",
+      "baseArgv": [
+        "event.get"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "resourceId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "rule.reorder": {
+      "description": "Change Rule priority through full-object update and verify readback.",
+      "baseArgv": [
+        "rule.reorder"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "ruleId",
+          "tenantId",
+          "priority",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "ruleId",
+          "type": "option",
+          "flag": "--rule-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "priority",
+          "type": "option",
+          "flag": "--priority",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.rotate-secret": {
+      "description": "Execute evidenced Source rotate-secret action, redact returned secret, and verify overlap metadata.",
+      "baseArgv": [
+        "source.rotate-secret"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "source.regenerate": {
+      "description": "Execute evidenced Source regenerate action, redact returned secret, and verify overlap metadata.",
+      "baseArgv": [
+        "source.regenerate"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "sourceId",
+          "tenantId",
+          "idempotencyKey",
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effectDigest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "sourceId",
+          "type": "option",
+          "flag": "--source-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "option",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "event.inspect-redacted": {
+      "description": "Inspect Event without sensitive headers or tokens.",
+      "baseArgv": [
+        "event.inspect-redacted"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "eventId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "eventId",
+          "type": "option",
+          "flag": "--event-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "event.verify": {
+      "description": "Verify terminal status, empty error, and optional destination evidence.",
+      "baseArgv": [
+        "event.verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "eventId",
+          "tenantId"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requireDestinationEvidence": {
+            "type": "boolean"
+          },
+          "caCertPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "insecureSkipTlsVerify": {
+            "type": "boolean",
+            "const": true
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "eventId",
+          "type": "option",
+          "flag": "--event-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "requireDestinationEvidence",
+          "type": "option",
+          "flag": "--require-destination-evidence",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "insecureSkipTlsVerify",
+          "type": "option",
+          "flag": "--insecure-skip-tls-verify",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "option",
+          "flag": "--i-understand-insecure-tls-risk",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "mutation.preview": {
+      "description": "Produce a redacted create/update/delete/action preview and effect digest.",
+      "baseArgv": [
+        "mutation.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "kind",
+          "tenantId",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "source",
+              "playbook",
+              "rule"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update",
+              "delete",
+              "action"
+            ]
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "beforeJson": {
+            "type": "object"
+          },
+          "afterJson": {
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object"
+          },
+          "items": {},
+          "item": {},
+          "event": {},
+          "verification": {},
+          "preview": {},
+          "operation": {
+            "type": "string"
+          },
+          "effect_digest": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "partial_failure": {
+            "type": "boolean"
+          },
+          "retry_safe": {},
+          "result": {},
+          "readback": {},
+          "tenant_id": {
+            "type": "string"
+          },
+          "source_count": {
+            "type": "integer"
+          },
+          "findings": {
+            "type": "array"
+          },
+          "body_bytes": {
+            "type": "integer"
+          },
+          "body_digest": {
+            "type": "string"
+          },
+          "signature_generated": {
+            "type": "boolean"
+          },
+          "signature_exposed": {
+            "type": "boolean"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "credential_lifecycle": {
+            "type": "object"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "login": {
+            "type": "object"
+          },
+          "onboarding_requires_explicit_approval": {
+            "type": "boolean"
+          },
+          "remote": {},
+          "local": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "tls_verification_mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "tenantId",
+          "type": "option",
+          "flag": "--tenant-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "kind",
+          "type": "option",
+          "flag": "--kind",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "action",
+          "type": "option",
+          "flag": "--action",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "resourceId",
+          "type": "option",
+          "flag": "--resource-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "beforeJson",
+          "type": "option",
+          "flag": "--before-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "afterJson",
+          "type": "option",
+          "flag": "--after-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": false
         }
       ]
     }

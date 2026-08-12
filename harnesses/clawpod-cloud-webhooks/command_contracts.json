@@ -50,7 +50,11 @@
     "source.list",
     "source.get",
     "playbook.list",
+    "playbook.get",
     "rule.list",
+    "rule.get",
+    "event.list",
+    "event.get",
     "event.inspect-redacted",
     "event.verify",
     "audit.config"
@@ -58,28 +62,127 @@
   "mutationCommands": {
     "mutation.preview": {
       "sideEffect": false,
+      "actions": [
+        "create",
+        "update",
+        "delete",
+        "action"
+      ],
       "required": [
         "kind",
-        "resourceId",
         "tenantId",
-        "beforeJson",
-        "afterJson",
         "idempotencyKey"
       ]
+    },
+    "source.create": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
     },
     "source.update": {
       "sideEffect": true,
       "approvalRequired": true,
-      "required": [
-        "sourceId",
-        "tenantId",
-        "changesJson",
-        "idempotencyKey",
-        "effectDigest",
-        "approve"
-      ],
       "retry": "never blind retry",
-      "verification": "GET full Source after PUT"
+      "verification": "authoritative GET readback"
+    },
+    "source.delete": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative list absence"
+    },
+    "source.enable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "source.disable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "playbook.create": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "playbook.update": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "playbook.delete": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative list absence"
+    },
+    "playbook.enable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "playbook.disable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "rule.create": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "rule.update": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "rule.delete": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative list absence"
+    },
+    "rule.enable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "rule.disable": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "authoritative GET readback"
+    },
+    "rule.reorder": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "retry": "never blind retry",
+      "verification": "GET Rule priority readback"
+    },
+    "source.rotate-secret": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "secretUse": true,
+      "retry": "never blind retry",
+      "verification": "GET Source overlap metadata; returned secret redacted"
+    },
+    "source.regenerate": {
+      "sideEffect": true,
+      "approvalRequired": true,
+      "secretUse": true,
+      "retry": "never blind retry",
+      "verification": "GET Source overlap metadata; returned secret redacted"
     },
     "source.test-local": {
       "sideEffect": false,
@@ -151,5 +254,12 @@
     ],
     "prepareRunMustMatch": true,
     "manifestStoresPointer": false
-  }
+  },
+  "eventMutationRoutesEvidenced": [],
+  "eventActions": [
+    "list",
+    "get",
+    "inspect-redacted",
+    "verify"
+  ]
 }

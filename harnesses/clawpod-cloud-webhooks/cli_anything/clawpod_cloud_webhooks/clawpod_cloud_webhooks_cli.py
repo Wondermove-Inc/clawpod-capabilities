@@ -1,7 +1,8 @@
 import hashlib, hmac, json, re, shlex, sys
+from urllib.parse import quote
 import click
 from . import __version__
-from .core.contracts import preview, require_idempotency, secret_warning, source_merge, verify_event
+from .core.contracts import MUTABLE_FIELDS, create_preview, delete_preview, preview, require_idempotency, resource_merge, secret_warning, validate_payload, verify_event
 from .core.safety import digest, redact, validate_body
 from .utils.backend import Backend, BackendError, RSA_CONTRACT
 
@@ -17,6 +18,8 @@ def parse(s,label="JSON"):
     try: return json.loads(s)
     except Exception as e: raise click.ClickException(f"malformed {label}: {e}")
 def api(state, method, path, **kw): return state.backend.request(method,path,**kw)
+def path_id(value): return quote(str(value),safe='')
+def tenant_query(value): return '?tenant_id='+quote(str(value),safe='')
 
 def guarded(fn):
     def run(*a,**kw):
@@ -164,20 +167,96 @@ def auth_status(state):
     emit({"ok":True,"remote":remote,"local":{"connected":local["connected"],"protected_session":True,"sensitive_values_exposed":False}})
 
 READS={'permissions':'/api/proxy/auth/permissions','presets':'/api/proxy/webhook-presets','source':'/api/proxy/webhook-sources','playbook':'/api/proxy/webhook-playbooks','rule':'/api/proxy/webhook-rules','event':'/api/proxy/webhook-events'}
+RESOURCE_PATHS={k:READS[k] for k in ('source','playbook','rule')}
+def _items(value):
+    if isinstance(value,list): return value
+    if isinstance(value,dict) and isinstance(value.get('items'),list): return value['items']
+    raise ValueError('list response must be an array or an object containing items')
+def _changed_fields(kind, expected, actual):
+    return {k:{'expected':expected.get(k),'actual':actual.get(k)} for k in MUTABLE_FIELDS[kind] if k in expected and expected.get(k)!=actual.get(k)}
+def _created_id(kind,result):
+    if not isinstance(result,dict): return None
+    for value in (result,result.get(kind),result.get('data')):
+        if isinstance(value,dict) and value.get('id') is not None: return str(value['id'])
+    return None
+def _mutation_output(operation,effect_digest,result,readback,mismatches=None):
+    ok=not mismatches
+    emit({'ok':ok,'operation':operation,'effect_digest':effect_digest,'verified':ok,'result':result,'readback':readback,'verification_mismatches':mismatches or {},'retry_safe':None if ok else False,'partial_failure':not ok})
+    if not ok: raise click.exceptions.Exit(4)
+def _approved(approve):
+    if not approve: raise ValueError('explicit execution approval is required')
+
 def add_read_group(name,path):
     g=click.Group(name=name)
     @click.command('list')
     @click.option('--tenant-id',required=True)
     @click.pass_obj
     @guarded
-    def list_cmd(state,tenant_id): emit({"ok":True,"kind":name,"items":api(state,'GET',path+'?tenant_id='+tenant_id)})
+    def list_cmd(state,tenant_id): emit({"ok":True,"kind":name,"items":api(state,'GET',path+tenant_query(tenant_id))})
     @click.command('get')
     @click.argument('resource_id')
     @click.option('--tenant-id',required=True)
     @click.pass_obj
     @guarded
-    def get_cmd(state,resource_id,tenant_id): emit({"ok":True,"kind":name,"item":api(state,'GET',path+'/'+resource_id+'?tenant_id='+tenant_id)})
-    g.add_command(list_cmd); g.add_command(get_cmd); cli.add_command(g)
+    def get_cmd(state,resource_id,tenant_id): emit({"ok":True,"kind":name,"item":api(state,'GET',path+'/'+path_id(resource_id)+tenant_query(tenant_id))})
+    g.add_command(list_cmd); g.add_command(get_cmd)
+    if name in RESOURCE_PATHS:
+        @click.command('create')
+        @click.option('--tenant-id',required=True)
+        @click.option('--payload-json',required=True)
+        @click.option('--idempotency-key',required=True)
+        @click.option('--effect-digest',required=True)
+        @click.option('--approve',is_flag=True)
+        @click.pass_obj
+        @guarded
+        def create_cmd(state,tenant_id,payload_json,idempotency_key,effect_digest,approve,_name=name,_path=path):
+            _approved(approve); payload=validate_payload(_name,parse(payload_json),tenant_id)
+            p=create_preview(_name,payload,tenant_id,idempotency_key)
+            if p['effect_digest']!=effect_digest: raise ValueError('effect digest mismatch; re-preview create payload')
+            result=api(state,'POST',_path,body=payload,idempotency=idempotency_key)
+            resource_id=_created_id(_name,result)
+            if not resource_id: raise BackendError('verification_failed','create response omitted resource id; reconcile before retry',False)
+            readback=api(state,'GET',f'{_path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+            _mutation_output(f'{_name}.create',effect_digest,result,readback,_changed_fields(_name,payload,readback))
+        @click.command('update')
+        @click.argument('resource_id')
+        @click.option('--tenant-id',required=True)
+        @click.option('--changes-json',required=True)
+        @click.option('--idempotency-key',required=True)
+        @click.option('--effect-digest',required=True)
+        @click.option('--approve',is_flag=True)
+        @click.pass_obj
+        @guarded
+        def update_cmd(state,resource_id,tenant_id,changes_json,idempotency_key,effect_digest,approve,_name=name,_path=path):
+            _approved(approve); before=api(state,'GET',f'{_path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+            after=resource_merge(_name,before,parse(changes_json)); p=preview(_name,resource_id,before,after,tenant_id,idempotency_key)
+            if p['effect_digest']!=effect_digest: raise ValueError(f'effect digest mismatch; re-preview current {_name.title()}')
+            result=api(state,'PUT',f'{_path}/{path_id(resource_id)}',body=after,idempotency=idempotency_key)
+            readback=api(state,'GET',f'{_path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+            _mutation_output(f'{_name}.update',effect_digest,result,readback,_changed_fields(_name,after,readback))
+        @click.command('delete')
+        @click.argument('resource_id')
+        @click.option('--tenant-id',required=True)
+        @click.option('--idempotency-key',required=True)
+        @click.option('--effect-digest',required=True)
+        @click.option('--approve',is_flag=True)
+        @click.pass_obj
+        @guarded
+        def delete_cmd(state,resource_id,tenant_id,idempotency_key,effect_digest,approve,_name=name,_path=path):
+            _approved(approve); before=api(state,'GET',f'{_path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+            p=delete_preview(_name,resource_id,before,tenant_id,idempotency_key)
+            if p['effect_digest']!=effect_digest: raise ValueError(f'effect digest mismatch; re-preview current {_name.title()}')
+            result=api(state,'DELETE',f'{_path}/{path_id(resource_id)}',idempotency=idempotency_key)
+            # Verify the exact item, not a possibly paginated collection page.
+            try:
+                api(state,'GET',f'{_path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+                present=True
+            except BackendError as exc:
+                if exc.status==404 or exc.code=='not_found': present=False
+                else: raise
+            _mutation_output(f'{_name}.delete',effect_digest,result,{'absent':not present},{'resource_id':{'expected':'absent','actual':'present'}} if present else {})
+        g.add_command(create_cmd); g.add_command(update_cmd); g.add_command(delete_cmd)
+    cli.add_command(g)
 for _n,_p in READS.items(): add_read_group(_n,_p)
 
 @cli.command('event-inspect-redacted')
@@ -185,7 +264,7 @@ for _n,_p in READS.items(): add_read_group(_n,_p)
 @click.option('--tenant-id',required=True)
 @click.pass_obj
 @guarded
-def event_inspect(state,event_id,tenant_id): emit({"ok":True,"event":redact(api(state,'GET',f'/api/proxy/webhook-events/{event_id}?tenant_id={tenant_id}'))})
+def event_inspect(state,event_id,tenant_id): emit({"ok":True,"event":redact(api(state,'GET','/api/proxy/webhook-events/'+path_id(event_id)+tenant_query(tenant_id)))})
 
 @cli.command('event-verify')
 @click.argument('event_id')
@@ -194,7 +273,7 @@ def event_inspect(state,event_id,tenant_id): emit({"ok":True,"event":redact(api(
 @click.pass_obj
 @guarded
 def event_verify(state,event_id,tenant_id,require_destination_evidence):
-    e=api(state,'GET',f'/api/proxy/webhook-events/{event_id}?tenant_id={tenant_id}'); v=verify_event(e,require_destination_evidence); emit({"ok":v['ok'],"verification":v,"event":redact(e)})
+    e=api(state,'GET','/api/proxy/webhook-events/'+path_id(event_id)+tenant_query(tenant_id)); v=verify_event(e,require_destination_evidence); emit({"ok":v['ok'],"verification":v,"event":redact(e)})
     if not v['ok']: raise click.exceptions.Exit(3)
 
 @cli.command('audit-config')
@@ -213,15 +292,21 @@ def audit_config(state,tenant_id):
 
 @cli.command('mutation-preview')
 @click.option('--kind',type=click.Choice(['source','playbook','rule']),required=True)
-@click.option('--resource-id',required=True)
+@click.option('--action',type=click.Choice(['create','update','delete','action']),default='update',show_default=True)
+@click.option('--resource-id',default='(new)',show_default=True)
 @click.option('--tenant-id',required=True)
-@click.option('--before-json',required=True)
-@click.option('--after-json',required=True)
+@click.option('--before-json',default='{}')
+@click.option('--after-json',default='{}')
 @click.option('--idempotency-key',required=True)
 @guarded
-def mutation_preview(kind,resource_id,tenant_id,before_json,after_json,idempotency_key): emit({'ok':True,'preview':preview(kind,resource_id,parse(before_json),parse(after_json),tenant_id,idempotency_key)})
+def mutation_preview(kind,action,resource_id,tenant_id,before_json,after_json,idempotency_key):
+    before=parse(before_json); after=parse(after_json)
+    if action=='create': value=create_preview(kind,validate_payload(kind,after,tenant_id),tenant_id,idempotency_key)
+    elif action=='delete': value=delete_preview(kind,resource_id,before,tenant_id,idempotency_key)
+    else: value=preview(kind,resource_id,before,after,tenant_id,idempotency_key)
+    emit({'ok':True,'preview':value})
 
-@cli.command('source-update')
+@cli.command('source-update',hidden=True)
 @click.argument('source_id')
 @click.option('--tenant-id',required=True)
 @click.option('--changes-json',required=True)
@@ -231,15 +316,73 @@ def mutation_preview(kind,resource_id,tenant_id,before_json,after_json,idempoten
 @click.pass_obj
 @guarded
 def source_update(state,source_id,tenant_id,changes_json,idempotency_key,effect_digest,approve):
-    require_idempotency(idempotency_key)
-    before=api(state,'GET',f'/api/proxy/webhook-sources/{source_id}?tenant_id={tenant_id}')
-    after=source_merge(before,parse(changes_json)); p=preview('source',source_id,before,after,tenant_id,idempotency_key)
-    if p['effect_digest']!=effect_digest: raise ValueError('effect digest mismatch; re-preview current Source')
-    result=api(state,'PUT',f'/api/proxy/webhook-sources/{source_id}',body=after,idempotency=idempotency_key)
-    readback=api(state,'GET',f'/api/proxy/webhook-sources/{source_id}?tenant_id={tenant_id}')
-    expected={k:after.get(k) for k in after}; actual={k:readback.get(k) for k in after}; ok=expected==actual
-    emit({'ok':ok,'operation':'source.update','effect_digest':effect_digest,'verified':ok,'result':result,'readback':readback,'retry_safe':False if not ok else None,'partial_failure':not ok})
-    if not ok: raise click.exceptions.Exit(4)
+    ctx=click.get_current_context(); return ctx.invoke(cli.commands['source'].commands['update'],resource_id=source_id,tenant_id=tenant_id,changes_json=changes_json,idempotency_key=idempotency_key,effect_digest=effect_digest,approve=approve)
+
+def _state_action(state,kind,resource_id,tenant_id,enabled,idempotency_key,effect_digest,approve):
+    _approved(approve); path=RESOURCE_PATHS[kind]; before=api(state,'GET',f'{path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+    after=resource_merge(kind,before,{'is_active':enabled}); p=preview(kind,resource_id,before,after,tenant_id,idempotency_key)
+    if p['effect_digest']!=effect_digest: raise ValueError(f'effect digest mismatch; re-preview current {kind.title()}')
+    result=api(state,'PUT',f'{path}/{path_id(resource_id)}',body=after,idempotency=idempotency_key)
+    readback=api(state,'GET',f'{path}/{path_id(resource_id)}{tenant_query(tenant_id)}')
+    _mutation_output(f'{kind}.{"enable" if enabled else "disable"}',effect_digest,result,readback,_changed_fields(kind,after,readback))
+
+def _add_state_command(kind,enabled):
+    command_name=f'{kind}-{"enable" if enabled else "disable"}'
+    @click.command(command_name)
+    @click.argument('resource_id')
+    @click.option('--tenant-id',required=True)
+    @click.option('--idempotency-key',required=True)
+    @click.option('--effect-digest',required=True)
+    @click.option('--approve',is_flag=True)
+    @click.pass_obj
+    @guarded
+    def command(state,resource_id,tenant_id,idempotency_key,effect_digest,approve):
+        return _state_action(state,kind,resource_id,tenant_id,enabled,idempotency_key,effect_digest,approve)
+    cli.add_command(command)
+for _kind in ('source','playbook','rule'):
+    _add_state_command(_kind,True); _add_state_command(_kind,False)
+
+@cli.command('rule-reorder')
+@click.argument('rule_id')
+@click.option('--tenant-id',required=True)
+@click.option('--priority',type=int,required=True)
+@click.option('--idempotency-key',required=True)
+@click.option('--effect-digest',required=True)
+@click.option('--approve',is_flag=True)
+@click.pass_obj
+@guarded
+def rule_reorder(state,rule_id,tenant_id,priority,idempotency_key,effect_digest,approve):
+    _approved(approve); path=RESOURCE_PATHS['rule']; before=api(state,'GET',f'{path}/{path_id(rule_id)}{tenant_query(tenant_id)}')
+    after=resource_merge('rule',before,{'priority':priority}); p=preview('rule',rule_id,before,after,tenant_id,idempotency_key)
+    if p['effect_digest']!=effect_digest: raise ValueError('effect digest mismatch; re-preview current Rule')
+    result=api(state,'PUT',f'{path}/{path_id(rule_id)}',body=after,idempotency=idempotency_key)
+    readback=api(state,'GET',f'{path}/{path_id(rule_id)}{tenant_query(tenant_id)}')
+    _mutation_output('rule.reorder',effect_digest,result,readback,_changed_fields('rule',after,readback))
+
+def _add_secret_command(action,route):
+    @click.command('source-'+action)
+    @click.argument('source_id')
+    @click.option('--tenant-id',required=True)
+    @click.option('--idempotency-key',required=True)
+    @click.option('--effect-digest',required=True)
+    @click.option('--approve',is_flag=True)
+    @click.pass_obj
+    @guarded
+    def command(state,source_id,tenant_id,idempotency_key,effect_digest,approve):
+        _approved(approve); path=RESOURCE_PATHS['source']; before=api(state,'GET',f'{path}/{path_id(source_id)}{tenant_query(tenant_id)}')
+        after={**before,'secret_action':action}; p=preview('source',source_id,before,after,tenant_id,idempotency_key)
+        if p['effect_digest']!=effect_digest: raise ValueError('effect digest mismatch; re-preview current Source secret action')
+        result=api(state,'POST',f'{path}/{path_id(source_id)}/{route}',idempotency=idempotency_key)
+        readback=api(state,'GET',f'{path}/{path_id(source_id)}{tenant_query(tenant_id)}')
+        candidates=(result,result.get('source'),result.get('data')) if isinstance(result,dict) else ()
+        acknowledged=any(isinstance(value,dict) and any(key in value for key in ('signing_secret','signingSecret','secret')) for value in candidates)
+        lifecycle=secret_warning(readback,'rotate' if action=='rotate-secret' else action)
+        mismatches={} if acknowledged else {'action_response':{'expected':'new secret acknowledgement','actual':'missing'}}
+        emit({'ok':acknowledged,'operation':f'source.{action}','effect_digest':effect_digest,'verified':acknowledged,'result':result,'readback':readback,'verification_mismatches':mismatches,'credential_lifecycle':lifecycle,'secret_exposed':False,'retry_safe':None if acknowledged else False,'partial_failure':not acknowledged})
+        if not acknowledged: raise click.exceptions.Exit(4)
+    cli.add_command(command)
+_add_secret_command('rotate-secret','rotate-secret')
+_add_secret_command('regenerate','regenerate')
 
 @cli.command('source-test-local')
 @click.option('--body-file',type=click.Path(exists=True,dir_okay=False),required=True)
