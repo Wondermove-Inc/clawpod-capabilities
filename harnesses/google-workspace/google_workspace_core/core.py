@@ -39,6 +39,18 @@ def managed_browser_url(body):
  return body.get("managedBrowserDevtoolsUrl") or os.environ.get("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL") or os.environ.get("OPENCLAW_BROWSER_CDP_URL")
 def local_auth(command,payload,out):
  provider=CredentialProvider(payload.get("credentialPath")); action=command.split(".",1)[1]
+ if action=="onboarding.decide":
+  body=payload["body"];internal=body["projectInOrganization"] and body["allIntendedUsersOrganizationMembers"]
+  testing=not internal and body["externalPublishingStatus"]=="testing"
+  reasons=(["The project belongs to a Google Cloud Organization and every intended user is an organization member."] if internal else ["Internal is unavailable unless both organization conditions are true; use External for any outside user or non-organization project."])
+  gates=[]
+  if testing:gates.append("Move External from Testing to In production for durable authorization.")
+  if testing and body["usesNonBasicScopes"]:gates.append("External Testing authorizations using non-basic scopes expire after 7 days, including refresh tokens.")
+  if body["usesRestrictedGmailOrDriveScopes"]:
+   gates.append(("Google Workspace admin API controls may be required for restricted Gmail/Drive scopes." if internal else "Restricted Gmail/Drive scopes may require Google verification and security assessment."))
+  gates.append("Verify configured audience, account membership/domain, granted scopes, and Gmail, Calendar, and Drive smoke tests.")
+  out["data"]={"resource":{"recommendedAudience":"internal" if internal else "external","externalPublishingStatus":None if internal else body["externalPublishingStatus"],"durability":"organization-members-only" if internal else ("temporary-testing" if testing else "production"),"reasons":reasons,"requiredGates":gates}}
+  return out,0
  if action=="scopes.list": out["data"]={"profiles":SCOPES}; return out,0
  if action=="login":
   from .oauth_desktop import desktop_login,LoginError

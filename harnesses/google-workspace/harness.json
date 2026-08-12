@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Typed Gmail v1, Calendar v3, Drive v3, and agent-desktop OAuth operations with previews, confirmations, retries, and structured evidence.",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -44124,6 +44124,299 @@
         "type": "object",
         "required": [
           "account",
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.onboarding.decide": {
+      "description": "Deterministically choose the Google OAuth audience and verification gates without credentials or network access.",
+      "baseArgv": [
+        "auth.onboarding.decide"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
           "body"
         ],
         "properties": {

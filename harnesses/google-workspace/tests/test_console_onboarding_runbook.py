@@ -19,3 +19,13 @@ def test_runbook_preserves_harness_login_contract_and_workspace_max():
  runbook=Path('skills/google-workspace/references/onboarding.md').read_text()
  for phrase in ('existing `auth.login` flow unchanged','`workspace-max`','literal loopback CDP URL','mode-0600','Repeat authorization'):
   assert phrase in runbook
+
+
+def test_audience_policy_and_durability_language_are_precise():
+ runbook=Path('skills/google-workspace/references/onboarding.md').read_text()
+ for phrase in (
+  'auth.onboarding.decide','default to **Internal only when**','every intended user',
+  'expire after **7 days (seven days) when any non-basic scope is requested; the expiration includes refresh tokens**',
+  'limited pre-release state','published External state','restricted Gmail or Drive scopes may require',
+  'configured Audience','membership and domain','actually granted scopes'):
+  assert phrase in runbook
