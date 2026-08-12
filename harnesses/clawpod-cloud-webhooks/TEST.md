@@ -1,5 +1,9 @@
 # ClawPod Cloud Webhooks Test Plan
 
+## v0.2.3 single-login lifecycle
+
+`test_lifecycle.py` verifies one login for a multi-step plan, 30-step bounds, safe earlier-step references, digest mismatch before mutation, first-failure partial-state reporting, redaction, cleanup IDs limited to plan-created resources, and non-persistent session evidence.
+
 ## v0.2.0 full-surface verification
 
 - `PYTHONPATH=harnesses/clawpod-cloud-webhooks python3 -m pytest -q harnesses/clawpod-cloud-webhooks/cli_anything/clawpod_cloud_webhooks/tests tests/test_clawpod_cloud_webhooks_onboarding.py --tb=short` -> **86 passed**.

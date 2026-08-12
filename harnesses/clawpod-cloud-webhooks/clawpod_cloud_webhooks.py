@@ -41,6 +41,7 @@ COMMANDS = {
     "event.verify": ["event-verify"],
     "audit.config": ["audit-config"],
     "mutation.preview": ["mutation-preview"],
+    "lifecycle.execute": ["lifecycle", "execute"],
     "source.test-local": ["source-test-local"],
     "secret.rotate-warning": ["secret-action-warning", "--action", "rotate"],
     "secret.regenerate-warning": ["secret-action-warning", "--action", "regenerate"],
