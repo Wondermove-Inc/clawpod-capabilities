@@ -8,6 +8,42 @@ def test_redacts_headers_recursively():
     assert 'nope' not in str(x) and str(x).count('[REDACTED]')==4
 def test_redacts_url_token(): assert 'abcDEF123456' not in redact('https://x/incoming/abcDEF123456')
 def test_redacts_bearer_in_string(): assert 'token123' not in redact('Bearer token123')
+def test_redacts_nested_json_strings_objects_and_lists():
+    canaries=['CANARY_COOKIE','CANARY_AUTH','CANARY_PROXY','CANARY_SET','CANARY_SIG','CANARY_TOKEN','CANARY_SECRET','CANARY_PASSWORD','CANARY_API']
+    value={'headers':'{"cOoKiE":"CANARY_COOKIE","AUTHORIZATION":"Bearer CANARY_AUTH","Proxy-Authorization":"CANARY_PROXY","Set-Cookie":"CANARY_SET","x-WebHook-Signature":"CANARY_SIG"}',
+           'payload':'[{"token":"CANARY_TOKEN"},{"nested":"{\\"secret\\":\\"CANARY_SECRET\\",\\"Password\\":\\"CANARY_PASSWORD\\",\\"api-key\\":\\"CANARY_API\\"}"}]',
+           'useful':'keep-me'}
+    cleaned=redact(value)
+    rendered=json.dumps(cleaned)
+    assert all(canary not in rendered for canary in canaries)
+    assert cleaned['useful']=='keep-me'
+    assert isinstance(cleaned['headers'],dict) and isinstance(cleaned['payload'],list)
+def test_redacts_malformed_and_non_json_text_patterns():
+    canaries=['CANARY_BAD_COOKIE','CANARY_BAD_TOKEN','CANARY_FORM_PASSWORD']
+    value={'malformed':'{"Cookie":"CANARY_BAD_COOKIE", token=CANARY_BAD_TOKEN',
+           'form':'name=useful password=CANARY_FORM_PASSWORD note=kept'}
+    rendered=json.dumps(redact(value))
+    assert all(canary not in rendered for canary in canaries)
+    assert 'useful' in rendered and 'kept' in rendered
+def test_redacts_unclosed_quoted_values_and_preserves_separated_text():
+    canaries=['CANARY_UNCLOSED_COOKIE','CANARY_UNCLOSED_AUTH','CANARY_UNCLOSED_API']
+    cases=[
+        'useful=kept; Cookie="CANARY_UNCLOSED_COOKIE',
+        'prefix kept, authorization=\'CANARY_UNCLOSED_AUTH',
+        'note:kept api-key="CANARY_UNCLOSED_API',
+    ]
+    cleaned=[redact(value) for value in cases]
+    rendered=json.dumps(cleaned)
+    assert all(canary not in rendered for canary in canaries)
+    assert 'useful=kept' in cleaned[0] and 'prefix kept' in cleaned[1] and 'note:kept' in cleaned[2]
+def test_redacts_quoted_values_at_common_separators():
+    canaries=['CANARY_SEMICOLON','CANARY_COMMA','CANARY_BRACE']
+    value='Cookie="CANARY_SEMICOLON"; authorization=\'CANARY_COMMA\', api-key="CANARY_BRACE"}'
+    cleaned=redact(value)
+    assert all(canary not in cleaned for canary in canaries)
+    assert ';' in cleaned and ',' in cleaned and '}' in cleaned
+def test_sensitive_parent_key_replaces_malformed_value():
+    assert redact({'CoOkIe':'not-json CANARY_PARENT'})['CoOkIe']=='[REDACTED]'
 def test_digest_deterministic(): assert digest({'b':2,'a':1})==digest({'a':1,'b':2})
 def test_payload_exact_cap(): validate_body(b'x'*MAX_BODY)
 def test_payload_over_cap():
