@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "enterprise-newsletter",
   "title": "Enterprise Newsletter",
-  "description": "Credential-free complete-schema validation, bounded brand-token rendering, computed HTML/text parity, inspection, and digest-bound release verification.",
+  "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
   "version": "0.1.2",
   "entrypoint": "./enterprise_newsletter.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Validate, render, inspect, or release-bind an enterprise newsletter without sending it"
+    "Render the enterprise newsletter",
+    "Validate a capability catalog",
+    "Release-bind the approved brief"
   ],
   "capabilities": [
     "complete-newsletter-json-schema",

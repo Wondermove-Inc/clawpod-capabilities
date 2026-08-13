@@ -3,14 +3,14 @@
   "kind": "openclaw.harness.v1",
   "name": "google-workspace",
   "title": "Google Workspace",
-  "description": "Typed Gmail v1, Calendar v3, Drive v3, and agent-desktop OAuth operations with previews, confirmations, retries, and structured evidence.",
+  "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
   "version": "0.2.5",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
-    "Automate Gmail, Google Calendar, or Google Drive through approved user OAuth",
-    "Inspect Google Workspace account scopes and identity",
-    "Transfer Drive content or manage Workspace resources with explicit safety previews"
+    "Search approved Gmail mail",
+    "Create a Google Calendar event",
+    "Change a Drive file permission"
   ],
   "capabilities": [
     "gmail-v1",

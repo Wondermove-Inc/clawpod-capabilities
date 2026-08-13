@@ -10,6 +10,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def skill_description(path: Path) -> str:
+    line = next(line for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("description:"))
+    return line.split(":", 1)[1].strip().strip('"\'')
+
+
 class RegistrySyncTests(unittest.TestCase):
     def run_sync(self, root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -43,6 +48,18 @@ class RegistrySyncTests(unittest.TestCase):
         self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.3")
         atlassian=next(e for e in skills if e["id"]=="atlassian")
         self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
+
+    def test_registry_skill_descriptions_exactly_match_frontmatter(self) -> None:
+        registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
+        skills = [entry for entry in registry["capabilities"] if entry["type"] == "skill"]
+        self.assertEqual(len(skills), 18)
+        for entry in skills:
+            expected = skill_description(ROOT / entry["path"] / "SKILL.md")
+            self.assertEqual(entry["description"], expected, entry["id"])
+
+        memory_graph = next(entry for entry in skills if entry["id"] == "memory-graph")
+        self.assertIn("connected history", memory_graph["description"])
+        self.assertNotIn("interactive SVG", memory_graph["description"])
 
     def test_registry_harness_uses_gateway_supported_input_schema(self) -> None:
         manifest = json.loads(
@@ -106,6 +123,10 @@ class RegistrySyncTests(unittest.TestCase):
             self.assertEqual(entry["type"], "skill")
             self.assertEqual(entry["description"], "Example capability used to verify automatic registry package discovery.")
             self.assertEqual(entry["files"][0]["path"], "SKILL.md")
+            self.assertEqual(
+                entry["description"],
+                "Use for testing automatic registry discovery of a new skill package.",
+            )
             self.assertEqual(len(entry["files"][0]["sha256"]), 64)
 
     def test_skill_frontmatter_description_source_is_opt_in(self) -> None:

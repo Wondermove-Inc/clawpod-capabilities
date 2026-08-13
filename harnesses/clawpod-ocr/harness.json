@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-ocr",
   "title": "ClawPod OCR",
-  "description": "Bounded local Korean and English OCR with comparison DOCX reports, a one-call image fast path, detached jobs, provenance, caching, and guarded Ollama correction.",
+  "description": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
   "version": "0.3.1",
   "entrypoint": "./clawpod_ocr.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Extract text from bounded PDFs and images locally with optional approved vision correction"
+    "Extract Korean text from this PDF",
+    "Export OCR results from these images",
+    "Create an OCR comparison DOCX"
   ],
   "capabilities": [
     "local-ocr",

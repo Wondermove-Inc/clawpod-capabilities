@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "claude-design",
   "title": "Claude Design",
-  "description": "Create, edit, present, export, and verify slides, documents, UI designs, wireframes, prototypes, design systems, templates, and other Claude Design artifacts with exact approvals and artifact checks.",
+  "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
   "version": "0.3.0",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Use when a user asks to create, revise, present, export, or verify slide decks, documents, UI mockups, wireframes, prototypes, design systems, templates, or other visual artifacts in Claude Design. Use the authenticated browser by default; MCP is optional only after a real authorized tool smoke succeeds."
+    "Create a presentation deck",
+    "Refine this UI wireframe",
+    "Export and verify the design system"
   ],
   "capabilities": [
     "onboarding",

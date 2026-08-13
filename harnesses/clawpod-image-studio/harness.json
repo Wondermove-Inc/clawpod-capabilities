@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-image-studio",
   "title": "ClawPod Image Studio",
-  "description": "Guarded provider workflows with detached bounded OpenAI jobs plus an offline deterministic professional AI photo studio.",
+  "description": "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here.",
   "version": "0.4.0",
   "entrypoint": "./clawpod_image_studio.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Plan, validate, prepare, generate, edit, compare, or inspect images across OpenAI, Vertex, BFL, and Recraft"
+    "Generate a standalone campaign image",
+    "Compare OpenAI and Recraft image outputs",
+    "Quality-check this edited photo"
   ],
   "capabilities": [
     "offline-provider-routing",

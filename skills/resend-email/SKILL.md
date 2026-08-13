@@ -1,6 +1,6 @@
 ---
 name: resend-email
-description: Send transactional email through the paired guarded Resend HTTPS API Harness, including per-run Gateway memory-secret binding, onboarding, sender readiness, previews, attachments, and retry-safe delivery.
+description: "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content."
 ---
 
 # Resend Email

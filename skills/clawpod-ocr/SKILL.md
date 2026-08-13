@@ -1,6 +1,6 @@
 ---
 name: "clawpod-ocr"
-description: "Extract Korean/English text locally, create enterprise comparison DOCX reports, and optionally use guarded Ollama review."
+description: "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims."
 ---
 
 # ClawPod OCR

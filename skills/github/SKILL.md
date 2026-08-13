@@ -1,6 +1,6 @@
 ---
 name: "github"
-description: "Operate GitHub repositories, issues, pull requests, Actions runs, releases, and bounded API reads through the guarded GitHub CLI Harness."
+description: "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration."
 ---
 
 # GitHub

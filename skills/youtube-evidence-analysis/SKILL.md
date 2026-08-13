@@ -1,6 +1,6 @@
 ---
 name: "youtube-evidence-analysis"
-description: "Analyze YouTube videos as evidence with explicit transcript provenance, timestamp citations, source verification, and a structured Korean report."
+description: "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims."
 ---
 
 # YouTube Evidence Analysis

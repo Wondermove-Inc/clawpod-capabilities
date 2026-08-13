@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
-  "description": "Guarded typed ClawPod Cloud Webhooks operations through a real HTTP client with redaction, previews, and verification.",
+  "description": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
   "version": "0.2.3",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Inspect, audit, configure, or verify ClawPod Cloud Webhooks Sources, Playbooks, Rules, and Events"
+    "Inspect ClawPod webhook events",
+    "Preview a playbook rule change",
+    "Verify a webhook source update"
   ],
   "capabilities": [
     "real-http",

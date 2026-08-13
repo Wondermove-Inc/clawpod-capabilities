@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Route guarded Notion API work and guide exact PAT/Internal Integration onboarding through the typed notion Harness. Use for workspace connection, PAT creation, reads, search, pages, blocks, Markdown, data sources, comments, files, webhooks, and guarded writes, not generic note-taking.
+description: "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims."
 ---
 
 # Notion

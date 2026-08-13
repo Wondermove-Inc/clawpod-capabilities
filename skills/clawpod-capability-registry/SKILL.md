@@ -1,6 +1,6 @@
 ---
 name: clawpod-capability-registry
-description: Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.
+description: "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection."
 ---
 
 # ClawPod Capability Registry

@@ -1,6 +1,6 @@
 ---
 name: "clawpod-video-studio"
-description: "Create, edit, repurpose, localize, resume, and QA videos with ClawPod Video Studio through guarded OpenMontage pipelines."
+description: "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images."
 ---
 
 # ClawPod Video Studio

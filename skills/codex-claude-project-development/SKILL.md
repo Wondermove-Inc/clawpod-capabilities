@@ -1,6 +1,6 @@
 ---
 name: codex-claude-project-development
-description: Develop software projects with Codex and/or Claude across separate processes, with canonical git validation, leases, rotation, protected secrets, and fail-closed recovery. Uses ACPX named sessions as an internal implementation detail and requires no OpenClaw runtime changes.
+description: "Use to onboard Codex or Claude, register projects, and coordinate cross-process coding sessions, leases, and git context; use ordinary coding for in-process edits and GitHub for remote repository operations."
 ---
 
 # Codex & Claude Project Development

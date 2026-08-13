@@ -1,6 +1,6 @@
 ---
 name: "clawpod-image-studio"
-description: "Create, edit, compare, onboard, and QA images across OpenAI, Vertex Imagen, BFL FLUX, and Recraft."
+description: "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here."
 ---
 
 # ClawPod Image Studio

@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "github",
   "title": "GitHub",
-  "description": "Guarded typed GitHub operations through the real gh CLI with stable JSON and bounded execution.",
+  "description": "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration.",
   "version": "0.3.0",
   "entrypoint": "./github.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Operate GitHub repositories, issues, pull requests, workflow runs, releases, local repository bootstrap and guarded branch push, or bounded API reads"
+    "Open a GitHub pull request",
+    "Inspect the failed Actions run",
+    "Create a guarded repository release"
   ],
   "capabilities": [
     "gh-cli",

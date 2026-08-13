@@ -1,6 +1,6 @@
 ---
 name: cloudflare-quick-tunnel-preview
-description: Safely expose a loopback-only local preview through an accountless, TTL-bounded Cloudflare Quick Tunnel.
+description: "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure."
 ---
 # Cloudflare Quick Tunnel Preview
 

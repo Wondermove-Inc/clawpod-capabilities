@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "memory-graph",
   "title": "Memory Graph",
-  "description": "Build, query, reconcile, verify, and deterministically export a private explicit-evidence causal graph across decisions, people, projects, causes, effects, and events.",
+  "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
   "version": "0.11.1",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
@@ -13,8 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Immediately after installation for per-agent direct-memory graph onboarding",
-    "An agent needs connected historical context across decisions, people, projects, causes, or changes that simple Memory Search cannot reconstruct"
+    "Connect decisions to later outcomes",
+    "Reconcile people projects and events",
+    "Export the private evidence graph"
   ],
   "capabilities": [
     "autonomous-memory-onboarding",

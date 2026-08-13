@@ -1,6 +1,6 @@
 ---
 name: enterprise-newsletter
-description: Compose and review topic-neutral, customer-isolated enterprise briefs, newsletters, and capability catalogs with evidence-backed claims, deterministic email rendering, exact-digest approval, and guarded handoff to verified-research and resend-email.
+description: "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests."
 ---
 
 # Enterprise Newsletter

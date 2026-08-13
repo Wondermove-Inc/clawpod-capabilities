@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "atlassian",
   "title": "Atlassian",
-  "description": "Typed Jira Cloud v3 and Confluence Cloud v2/v1 operations with guarded mutations and stable evidence.",
+  "description": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
   "version": "0.3.1",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Operate Jira Cloud or Confluence Cloud through approved credentials"
+    "Update the Jira issue after approval",
+    "Read this Confluence page",
+    "Add an attachment to a Jira ticket"
   ],
   "capabilities": [
     "jira-cloud-v3",
