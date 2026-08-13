@@ -6,7 +6,7 @@
       "id": "atlassian",
       "type": "skill",
       "version": "0.2.1",
-      "description": "Route approved Jira and Confluence work through the typed Atlassian harness.",
+      "description": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
       "path": "skills/atlassian",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -23,7 +23,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "fb7ddaac21997dae196a320d6ed8b3edec57332969f063eda7c1e8301a110425"
+          "sha256": "4555c0d1690199cf1865512b4cd2710ccf3f220744100116ea61c13c1e644bd0"
         },
         {
           "path": "references/commands.md",
@@ -47,7 +47,7 @@
       "id": "claude-design",
       "type": "skill",
       "version": "0.3.0",
-      "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
+      "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -63,7 +63,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7174941a0b793d60c96316868a0ab052239d1525e8bb741d020cefcbd70f7847"
+          "sha256": "61ddf58646041269acc13a77e484e3163542f19424a50a1a8bb8970d191fd5dd"
         },
         {
           "path": "references/operations.md",
@@ -79,7 +79,7 @@
       "id": "clawpod-capability-registry",
       "type": "skill",
       "version": "0.3.3",
-      "description": "Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.",
+      "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -96,7 +96,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2a2bcc932a6483ac302e4d81c23a2bd8613bc0d7f493704d3cceb763e2f6703a"
+          "sha256": "deaad1939db1f02bec51a4d7b4045e5ed5da622308559a7b2573451f28e50b7c"
         }
       ],
       "linkedHarness": {
@@ -108,7 +108,7 @@
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
       "version": "0.2.3",
-      "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
+      "description": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -123,7 +123,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "82309c838ee83b569a7985bd846d7803be63b885c34648a7f23f6355b688a8e6"
+          "sha256": "5be6aecfd5d773d4d759c7b17d3329b86c3a78c74c8575a1c6615ef0b92d425d"
         },
         {
           "path": "references/portal-endpoint-contract.md",
@@ -139,7 +139,7 @@
       "id": "clawpod-image-studio",
       "type": "skill",
       "version": "0.4.0",
-      "description": "Route guarded detached image jobs and a complete offline professional photo production procedure.",
+      "description": "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -155,7 +155,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "43cfe5f5d9a48c6988dda90e2580c32aabf99d2a0e23004671b709a21ecdd78d"
+          "sha256": "d04f97020889422c232f87ea314881cddbe2789304900ad5b6746fc652e8f8b2"
         },
         {
           "path": "references/onboarding.md",
@@ -183,7 +183,7 @@
       "id": "clawpod-ocr",
       "type": "skill",
       "version": "0.3.1",
-      "description": "Extract Korean and English text locally and create enterprise comparison DOCX reports with guarded optional review.",
+      "description": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
       "path": "skills/clawpod-ocr",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -198,7 +198,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "678821e10785f0234682e81f8863555fdff2f669300635f3378c0b081de3a9db"
+          "sha256": "a74ad4ad5ece27e14377f98d0e0a32615b04c89fe19693d9c33381807d21ff81"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -226,7 +226,7 @@
       "id": "clawpod-video-studio",
       "type": "skill",
       "version": "0.2.0",
-      "description": "Route governed end-to-end video production through ClawPod Video Studio and its pinned OpenMontage backend.",
+      "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -242,7 +242,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2cf9e218db5b1de7419f8a00b412cc1bdb7844aeeb45288bba7588cd34908b97"
+          "sha256": "ad8acc63b5124bf99f52817da543f12d79187dfc570f2b99b3dbba88c04943a4"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -278,7 +278,7 @@
       "id": "cloudflare-quick-tunnel-preview",
       "type": "skill",
       "version": "0.1.2",
-      "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
+      "description": "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure.",
       "path": "skills/cloudflare-quick-tunnel-preview",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -293,7 +293,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d16276cb5ddfbb90dbe5ba43edef7a435f29fff5d68b789f62c94d2343f5c000"
+          "sha256": "6f522fcbcfbd7313f569dc02321613c4b01a8ef995dfc285c45a8dfce62400ce"
         }
       ],
       "linkedHarness": {
@@ -305,7 +305,7 @@
       "id": "codex-claude-project-development",
       "type": "skill",
       "version": "0.2.1",
-      "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
+      "description": "Use to onboard Codex or Claude, register projects, and coordinate cross-process coding sessions, leases, and git context; use ordinary coding for in-process edits and GitHub for remote repository operations.",
       "path": "skills/codex-claude-project-development",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -321,7 +321,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2867df7d62a7647410b5311dc99cfbc451c145f12bcafab28cdf2f5fc86b9e1a"
+          "sha256": "7591eb548888a28119b7ca3ded662d1f833201a7e2e914850f25eea23b32ac0a"
         },
         {
           "path": "agents/openai.yaml",
@@ -349,7 +349,7 @@
       "id": "enterprise-newsletter",
       "type": "skill",
       "version": "0.1.2",
-      "description": "Compose bounded, brand-token enterprise newsletters with computed HTML/text parity and bind reviewed content and private recipient sets to deterministic release manifests.",
+      "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
       "path": "skills/enterprise-newsletter",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -365,7 +365,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4b0bcb2ca43772b9788e99cdbd3cbad4b55075ce2186eb67032f7c30a4071020"
+          "sha256": "0b4a3fdfd1ed6f179f21d51f90a1d7c698fdd7c3fd27cff8d05eb44e3188f79c"
         },
         {
           "path": "agents/openai.yaml",
@@ -397,7 +397,7 @@
       "id": "github",
       "type": "skill",
       "version": "0.3.0",
-      "description": "Route GitHub work through the guarded Harness, including verified local repository bootstrap and existing-repository branch push.",
+      "description": "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration.",
       "path": "skills/github",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -413,7 +413,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "088054acb260dfa61a84b71a1b111c329fd87fb00357921503bf17c31954e0ae"
+          "sha256": "70a3bf23c3cf885f6b8a0fcd12693737246a3455c9e8da4a3e08c09737078686"
         },
         {
           "path": "references/onboarding.md",
@@ -433,7 +433,7 @@
       "id": "google-workspace",
       "type": "skill",
       "version": "0.2.5",
-      "description": "Route Gmail, Calendar, Drive, and agent-desktop OAuth onboarding through the typed Google Workspace Harness.",
+      "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -450,7 +450,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4666888c53364e9e33a46dc29bbc3251e4cb7e7ccb8ec1c5a726191678b7e018"
+          "sha256": "2cb52df0883f454d7d0cfea170aa97d30cfe44920e376126ee7619e89935e377"
         },
         {
           "path": "references/onboarding.md",
@@ -474,7 +474,7 @@
       "id": "memory-graph",
       "type": "skill",
       "version": "0.11.1",
-      "description": "Orchestrate deterministic fully offline interactive SVG exports for inert candidates and approved causal snapshots.",
+      "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
       "path": "skills/memory-graph",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -491,7 +491,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "87363078facf4296c6610448664f797938848a7f563090cc237d6928e4d18ebf"
+          "sha256": "8ee5210702a0582c180e3dc3f1f96746c92616edb93bcbdbebb1676bba85c307"
         }
       ],
       "linkedHarness": {
@@ -503,7 +503,7 @@
       "id": "notion",
       "type": "skill",
       "version": "0.1.9",
-      "description": "Route guarded Notion API work and guide exact PAT/Internal Integration onboarding through the typed notion Harness.",
+      "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
       "path": "skills/notion",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -520,7 +520,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f6c7ce66df386f0b81fd3166687bdc246cf828ec942e5652bdbcb1af393b46bb"
+          "sha256": "a9a72ea635ed9b94dfae29315803b6d8f955c9c644e86a7b9bb21330f7cb8962"
         },
         {
           "path": "references/commands.md",
@@ -540,7 +540,7 @@
       "id": "resend-email",
       "type": "skill",
       "version": "0.1.4",
-      "description": "Route per-run Gateway memory-secret-backed Resend onboarding and verified-sender transactional delivery.",
+      "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
       "path": "skills/resend-email",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -556,7 +556,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "1a908211e5e3e5b846a89aa4d1df615fb412215839d66b9d39ead9e797b9d422"
+          "sha256": "2b6409adae78bfaf8d3263e025a10b8f38f3d6de16bd9c4ad4e5f5804afb1136"
         }
       ],
       "linkedHarness": {
@@ -568,7 +568,7 @@
       "id": "synology-smb-storage",
       "type": "skill",
       "version": "0.1.4",
-      "description": "Connect and manually restore Synology SMB 3.1.1 storage with exact mount verification and shared-storage-first policy guidance.",
+      "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -583,7 +583,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "e0079f2be17c3b3563cc73b6258de7117598921f3fcb188579e466af3ce191c8"
+          "sha256": "c776966cdefa9c406a7af1f82dc76ca9c6ce288a392689abf2681c5f1778a6e6"
         },
         {
           "path": "references/operations.md",
@@ -599,7 +599,7 @@
       "id": "verified-research",
       "type": "skill",
       "version": "0.1.2",
-      "description": "Apply source hierarchy, cross-checking, contradiction handling, confidence, and no-fabrication rules to evidence-backed research.",
+      "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
       "path": "skills/verified-research",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -616,7 +616,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f1d941d668a158a29f86e4f5fedf84b364f70d8dab06cee575584a20e84328fb"
+          "sha256": "feaa4e9776c5b30f9eb225d104a8c200522255a25eeeabb70a0c766945c86794"
         },
         {
           "path": "references/harness-operations.md",
@@ -636,7 +636,7 @@
       "id": "youtube-evidence-analysis",
       "type": "skill",
       "version": "0.1.1",
-      "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
+      "description": "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims.",
       "path": "skills/youtube-evidence-analysis",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -653,7 +653,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "708dba9bd16e567b48ed72237d28bd7998baa833eacac9f7b0b6daa593613ab0"
+          "sha256": "7e587772ecc26451f39b3623046c207d9973c9fba3e5be69ccad25b35951300a"
         },
         {
           "path": "references/operations.md",
@@ -702,7 +702,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "9454bed007cf839dd3012a75518a31002ce6fac0b39ab77b4093e14b1005bc1d"
+          "sha256": "ec65097e3ef34aa509463980f211bf7d25ada4e7d892d8531e87b2cdf0da4a5b"
         },
         {
           "path": "oauth3lo.py",
@@ -758,7 +758,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "dc034de1ed56bb3214098eb2d250e0f8dee1dcc6b0bee816960ec6dd33fcb81b"
+          "sha256": "27f34a9511200c82f695d84e2a9406828b4e7fc620c6fe3d6d844d0ec9b90b01"
         }
       ]
     },
@@ -791,7 +791,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "3acbf3e33752cc9fc2a0fc246b0b8628e30150dddd284a2154726e8c0d98d154"
+          "sha256": "1472278feafd0e7c514bc5491c9f0156d37a5f9002bb9b3a1bb046b52eaf85a3"
         }
       ]
     },
@@ -866,7 +866,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c761e8b27d5d2ae0d648045eb02cb4bb25d02fee0b92ac32c10e38413b806548"
+          "sha256": "f8c51a8589fde8867490a6275f377ceb1ed5ec9d80450c908dad227fd70b7707"
         },
         {
           "path": "setup.py",
@@ -906,7 +906,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "5798f99da451ac2794d92f9ac882e6e33d130af39f0a3e3d2e5bf9da1b3577eb"
+          "sha256": "5558a4557ac45d67d01bee10446f19a4660af2cbb3f2c393650488bb7aa74537"
         },
         {
           "path": "professional_studio.py",
@@ -953,7 +953,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "65b3a0dcef5414fb06292a08e72f0b5bc96326b5bc3dc3b92113684486650388"
+          "sha256": "c6a31b65e5dedbd70edecb41c0223191f6b0db8045ae4eec8e79d86042d6ef63"
         },
         {
           "path": "templates/enterprise-comparison-template.docx",
@@ -1009,7 +1009,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "6acfbac0f53878e5c628f42d8e71bf92efbf2db6939f76cce79a3310235406ab"
+          "sha256": "61d0543d17f040bb3b8049e4b71d6db09953b514d01a0a31b1f05d80aa2bff6c"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",
@@ -1048,7 +1048,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "cbe46a512c504476eb02076ca2c142243cc0ed45e6067eb155fe058bd5bb2875"
+          "sha256": "1a94e1dc1315055a95a7867e8f27ebfb55ae28082898121d5cf8fc2baf779ea8"
         }
       ]
     },
@@ -1080,7 +1080,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "924988303a3e51b239c98e48a5f917d49a9c873f687118b9c31f8d7e09cc1a0a"
+          "sha256": "b6a8c775d3bc5ad2030a78aa9dfb6dfd4dde38dbc8b8b3cc8a8565f40ff6ccf8"
         }
       ]
     },
@@ -1108,7 +1108,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "17c821d265d98a76912850e8368c135eff1a6e8eadc94af13079ff424f2376e5"
+          "sha256": "15ea4b7f3360593f76921e8172337e7c8c54553fa51f03493611a00fade385ac"
         }
       ]
     },
@@ -1148,7 +1148,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f1c4aa94a19dee718030f5419366d446a240b85496580db0a45fe05fe0ec5360"
+          "sha256": "ed7f869ffb057a262cf13c5afc4286734746366097fc264c4ff5e36161a34827"
         },
         {
           "path": "scripts/generate_schemas.py",
@@ -1233,7 +1233,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "ec974c14d5956bdd67bd1e2c8eec6489fe945b7389e0ee705891eee5405cf63e"
+          "sha256": "43d5b19058c15504dada700a415591cce613754b0b40a6d992958f66628b011d"
         },
         {
           "path": "scripts/generate_schemas.py",
@@ -1270,7 +1270,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "9ca6da2213d9e6c56d02151969ba99a3b790d3856c4e2271ea7e0d089bba904a"
+          "sha256": "b87dde98ce3cf145898c15920860ebcec2c89dba821f28caf166503241621dc7"
         },
         {
           "path": "memory_graph.py",
@@ -1335,7 +1335,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "ff289184e77202a618548cb74f3d0e6234f2a22b33302e93547e85cd207edda2"
+          "sha256": "f66380f9527e0e2afb0572aa2d2c2eb7b782918ff8e443a9c090fae6877adde6"
         },
         {
           "path": "notion.py",
@@ -1375,7 +1375,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "abbf02b3a04bba020bdd05b9db5de50655c20c4539d5c740d9227e61afc8affc"
+          "sha256": "e383c4be684407be811251df2f164de1aa4bd6b786f0d42f9748eb22dd48ebf2"
         },
         {
           "path": "resend_email.py",
@@ -1414,7 +1414,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "328cdce156ee26da216e230f9381d572018e7f3abe0d875b6b01eed06b7121f3"
+          "sha256": "7add41b1543027e8b68dceb936b6ac60340ecb5c129cea501c220629582ae0ce"
         },
         {
           "path": "synology_smb_storage.py",
@@ -1455,7 +1455,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "1fd0b319410628cf948e1215587d66a108a7798666ef48050d2cdbac68c734eb"
+          "sha256": "f7502adf29bbfba8a60645d906da7609a8ca1ed0348d499245fe4c09192c7d5f"
         },
         {
           "path": "scripts/generate_schemas.py",
@@ -1500,7 +1500,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c13a8a3659f678cf749f7714979bf85565ee50768cf677ea1092d8b6cc691c8d"
+          "sha256": "564cc8567bb832b3cb7508f179894765683bb570c451503898e18001a4f18c4a"
         },
         {
           "path": "scripts/generate_schemas.py",

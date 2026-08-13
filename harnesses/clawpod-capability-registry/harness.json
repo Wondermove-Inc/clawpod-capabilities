@@ -3,15 +3,14 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
-  "description": "Search, assess, install, validate, update, and roll back capabilities, with deterministic registry-first WORKFLOW onboarding.",
+  "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
   "version": "0.3.3",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [
-    "An agent needs to discover reusable capabilities",
-    "A capability must be installed with provenance and digest checks",
-    "An installed capability needs validation, update, or rollback",
-    "Registry-first creation policy must be activated or checked in an agent-owned WORKFLOW.md"
+    "Find a capability for this task",
+    "Install and validate this capability",
+    "Roll back the capability update"
   ],
   "capabilities": [
     "registry-search",

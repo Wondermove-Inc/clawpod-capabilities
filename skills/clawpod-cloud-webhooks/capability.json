@@ -16,5 +16,6 @@
   "linkedHarness": {
     "id": "clawpod-cloud-webhooks",
     "version": "0.2.3"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

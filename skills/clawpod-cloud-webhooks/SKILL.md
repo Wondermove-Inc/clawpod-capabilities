@@ -1,6 +1,6 @@
 ---
 name: "clawpod-cloud-webhooks"
-description: "Operate and diagnose ClawPod Cloud Webhooks Sources, Playbooks, Rules, Events, guarded mutations, and protected onboarding."
+description: "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview."
 ---
 
 # ClawPod Cloud Webhooks

@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "resend-email",
   "title": "Resend Email",
-  "description": "Guarded Resend HTTPS transactional email with per-run Gateway memory-secret injection, protected onboarding, verified-sender enforcement, previews, and retry-safe delivery.",
+  "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
   "version": "0.1.4",
   "entrypoint": "./resend_email.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Onboard, verify, preview, or send transactional email with Resend"
+    "Verify a Resend sender",
+    "Preview a transactional email",
+    "Deliver the approved message retry-safely"
   ],
   "capabilities": [
     "resend-https-api",

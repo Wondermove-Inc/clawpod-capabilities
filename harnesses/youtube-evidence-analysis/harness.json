@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "youtube-evidence-analysis",
   "title": "YouTube Evidence Analysis",
-  "description": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
+  "description": "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims.",
   "version": "0.1.1",
   "entrypoint": "./youtube_evidence_analysis.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Prepare deterministic records for evidence-led analysis of a YouTube video"
+    "Normalize this YouTube URL",
+    "Import the supplied video transcript",
+    "Validate these timestamp citations"
   ],
   "capabilities": [
     "youtube-url-normalization",

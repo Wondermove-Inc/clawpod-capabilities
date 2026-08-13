@@ -1,6 +1,6 @@
 ---
 name: google-workspace
-description: Operate Gmail, Google Calendar, Google Drive, and broad one-consent OAuth through the typed Google Workspace Harness. Use for mail, event, file, account, scope, and agent-local credential onboarding tasks.
+description: "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter."
 ---
 
 # Google Workspace

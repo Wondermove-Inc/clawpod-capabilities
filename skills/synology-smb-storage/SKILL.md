@@ -1,6 +1,6 @@
 ---
 name: synology-smb-storage
-description: Connect Synology SMB 3.1.1 shared storage, verify its exact mount, and enforce its durable-artifact layout and WORKFLOW policy.
+description: "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs."
 ---
 
 # Synology SMB Storage

@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "verified-research",
   "title": "Verified Research",
-  "description": "Deterministic bounded capture, hashing, bundling, inspection, and validation of research evidence.",
+  "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
   "version": "0.1.2",
   "entrypoint": "./verified_research.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Capture and validate deterministic evidence records for source-backed research"
+    "Cross-check these factual claims",
+    "Capture citations with confidence",
+    "Resolve contradictions in the evidence bundle"
   ],
   "capabilities": [
     "public-http-capture",

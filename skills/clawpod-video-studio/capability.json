@@ -17,5 +17,6 @@
   "linkedHarness": {
     "id": "clawpod-video-studio",
     "version": "0.2.0"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

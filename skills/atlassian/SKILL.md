@@ -1,6 +1,6 @@
 ---
 name: "atlassian"
-description: "Operate Jira, Confluence, and resilient agent-local Atlassian OAuth 3LO through a guarded CLI Harness."
+description: "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief."
 ---
 
 # Atlassian

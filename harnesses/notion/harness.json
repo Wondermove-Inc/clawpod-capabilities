@@ -3,13 +3,14 @@
   "kind": "openclaw.harness.v1",
   "name": "notion",
   "title": "notion",
-  "description": "Typed guarded Notion REST API operations with resumable minimal-intervention onboarding, protected secret handoff, allowlisted writes, previews, verification, retries, and redaction.",
+  "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
   "version": "0.1.9",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [
-    "Operate Notion pages, blocks, data sources, comments, files, users, or webhooks",
-    "Plan and verify a protected Notion connection"
+    "Read a Notion page",
+    "Update a Notion data source",
+    "Inspect Notion webhook events"
   ],
   "capabilities": [
     "notion-rest-2026-03-11",

@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "synology-smb-storage",
   "title": "Synology SMB Storage",
-  "description": "Guarded Synology SMB 3.1.1 credentials, discovery, mount lifecycle, layout, and WORKFLOW policy operations.",
+  "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
   "version": "0.1.4",
   "entrypoint": "./synology_smb_storage.py",
   "packageRoot": ".",
@@ -13,7 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Connect or operate Synology SMB shared storage"
+    "Discover Synology SMB shares",
+    "Mount the approved NAS share",
+    "Restore the artifact storage mount"
   ],
   "capabilities": [
     "smb3-discovery",

@@ -1,6 +1,6 @@
 ---
 name: claude-design
-description: Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.
+description: "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets."
 ---
 
 # Claude Design

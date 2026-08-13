@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-video-studio",
   "title": "ClawPod Video Studio",
-  "description": "Typed, approval-bound ClawPod video production with a digest-verified OpenMontage runtime, protected provider injection, detached jobs, cost controls, checkpoints, and media QA.",
+  "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
   "version": "0.2.0",
   "entrypoint": "./clawpod_video_studio.py",
   "packageRoot": ".",
@@ -13,8 +13,9 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Create, edit, repurpose, localize, animate, inspect, resume, or quality-check videos with ClawPod Video Studio",
-    "Connect media, image, video, speech, or music providers through protected secret pointers for the pinned OpenMontage backend"
+    "Create a product launch video",
+    "Localize and resume this video job",
+    "Run media QA before export"
   ],
   "capabilities": [
     "agentic-video-production",

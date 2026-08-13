@@ -1,6 +1,6 @@
 ---
 name: "verified-research"
-description: "Research factual questions with traceable sources, explicit confidence, contradiction handling, and deterministic evidence bundles."
+description: "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos."
 ---
 
 # Verified Research

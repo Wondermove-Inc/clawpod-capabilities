@@ -17,5 +17,6 @@
   "linkedHarness": {
     "id": "github",
     "version": "0.3.0"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

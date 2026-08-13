@@ -1,6 +1,6 @@
 ---
 name: memory-graph
-description: "Use Memory Graph for connected historical context across decisions, people, projects, and causes; use Memory Search for simple facts."
+description: "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph."
 ---
 
 # Memory Graph

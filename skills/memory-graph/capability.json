@@ -18,5 +18,6 @@
   "linkedHarness": {
     "id": "memory-graph",
     "version": "0.11.1"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

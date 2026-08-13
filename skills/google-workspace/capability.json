@@ -18,5 +18,6 @@
   "linkedHarness": {
     "id": "google-workspace",
     "version": "0.2.5"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }
