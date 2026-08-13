@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.0",
-  "description": "Route Claude Design projects, systems, exports, sharing, and code handoff through guarded MCP-first and browser workflows.",
+  "version": "0.3.0",
+  "description": "Operate Claude Design through its logged-in browser, with guarded planning and optional smoke-verified MCP acceleration.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [
@@ -15,6 +15,6 @@
   },
   "linkedHarness": {
     "id": "claude-design",
-    "version": "0.2.0"
+    "version": "0.3.0"
   }
 }
