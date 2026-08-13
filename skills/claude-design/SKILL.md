@@ -1,6 +1,6 @@
 ---
 name: claude-design
-description: Create, edit, present, export, and verify slides, documents, UI mockups, wireframes, prototypes, design systems, templates, and visual artifacts with Claude Design; use its logged-in browser by default and optional smoke-verified MCP.
+description: Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.
 ---
 
 # Claude Design

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "version": "0.3.0",
-  "description": "Create, edit, present, export, and verify slides, documents, UI mockups, wireframes, prototypes, design systems, templates, and visual artifacts with Claude Design; use its logged-in browser by default and optional smoke-verified MCP.",
+  "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [

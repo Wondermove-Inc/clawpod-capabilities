@@ -47,7 +47,7 @@
       "id": "claude-design",
       "type": "skill",
       "version": "0.3.0",
-      "description": "Create, edit, present, export, and verify slides, documents, UI mockups, wireframes, prototypes, design systems, templates, and visual artifacts with Claude Design; use its logged-in browser by default and optional smoke-verified MCP.",
+      "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -63,7 +63,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a95be10881972263771de069cc61f19c2c10ee0a666ee3aa7a6ad2e9f5f06c53"
+          "sha256": "79f25c023510e3f4e5df6138850cc6e752b8211a589ce6ad4e8f4a7e2730a374"
         },
         {
           "path": "references/operations.md",
