@@ -822,7 +822,7 @@
         },
         {
           "path": "clawpod_cloud_webhooks.py",
-          "sha256": "6d6718f668171fb95ee066f300c9c678e92423b6b070601bd1d0d49ac776e76b"
+          "sha256": "2e278960c9538faa446aea258e2af5ed0bdba8516efcaee5e86f5006de1905bd"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
@@ -997,7 +997,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "8340e11746e1a0c96b231bd915f6cbe963760ed28a5f5f77ab8a482474048367"
+          "sha256": "cf27bdd6e75a3c716590c43a12c30560b9bf751e32b8cfb7fd9b86922574d976"
         },
         {
           "path": "command_contracts.json",

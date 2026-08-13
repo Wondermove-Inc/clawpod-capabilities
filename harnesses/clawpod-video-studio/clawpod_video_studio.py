@@ -6,7 +6,10 @@ are never persisted, echoed, or placed on child argv.
 from __future__ import annotations
 import argparse, contextlib, dataclasses, datetime as dt, enum, fcntl, hashlib, json, os, re, shutil, signal, socket, stat, subprocess, sys, tempfile, time, urllib.error, urllib.request, uuid
 from pathlib import Path
-import yaml
+try:
+ import yaml
+except ModuleNotFoundError:
+ yaml = None
 
 VERSION="0.2.3"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
 UPSTREAM_LOCK={"url":"https://github.com/calesthio/OpenMontage","commit":UPSTREAM_COMMIT,"packageVersion":VERSION,"license":"AGPL-3.0-only","licenseSha256":"0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0","treeDigest":"git:fd61711510ef01c3b896bae808ee4ca7c96a391f","patches":[{"id":"openmontage-documentary-category","path":"patches/openmontage-documentary-category.patch","sha256":"sha256:f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"}],"patchedFiles":[{"path":"schemas/pipelines/pipeline_manifest.schema.json","sha256":"sha256:8491027015f0ec1b49da834bd341a00380f9cb34be57afb38c086e577ab95bad"}]}
