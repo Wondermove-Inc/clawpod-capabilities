@@ -73,21 +73,21 @@ def test_export_verify_requires_artifact_metadata(tmp_path):
  _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf'); assert o['error']['code']=='INVALID_INPUT'
 def test_export_verify_rejects_wrong_page_count(tmp_path):
  f=tmp_path/'x.pdf';f.write_bytes(pdf_bytes())
- _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','3','--qa-page','1','--qa-page','2','--qa-page','3')
+ _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','3','--qa-pages','1,2,3')
  assert o['error']['code']=='VERIFICATION_FAILED' and o['data']['page_count']==2 and o['data']['page_count_matches'] is False
 def test_export_verify_requires_page_by_page_visual_qa(tmp_path):
  f=tmp_path/'x.pdf';f.write_bytes(pdf_bytes())
- _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','2','--qa-page','1')
+ _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','2','--qa-pages','1')
  assert o['error']['code']=='VERIFICATION_FAILED' and o['data']['missing_qa_pages']==[2]
 def test_export_verify_metadata_native_provenance_and_complete_qa(tmp_path):
  f=tmp_path/'x.pdf';f.write_bytes(pdf_bytes())
- _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','2','--qa-page','1','--qa-page','2')
+ _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','native-claude-design','--expected-pages','2','--qa-pages','1,2')
  assert o['data']['bytes']==len(f.read_bytes()) and o['data']['mime']=='application/pdf' and o['data']['sha256']==hashlib.sha256(f.read_bytes()).hexdigest()
  assert o['data']['page_count']==2 and o['data']['page_count_matches'] and o['data']['visual_qa_complete'] and o['data']['provenance']=='native-claude-design'
  assert o['evidence'][0]['metadata']['provenance']=='native-claude-design'
 def test_export_verify_distinguishes_fallback_provenance(tmp_path):
  f=tmp_path/'x.pdf';f.write_bytes(pdf_bytes(1))
- _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','fallback-rendering','--expected-pages','1','--qa-page','1')
+ _,o=run('projects.export.verify','--output-path',str(f),'--format','pdf','--project-id','p','--provenance','fallback-rendering','--expected-pages','1','--qa-pages','1')
  assert o['data']['provenance']=='fallback-rendering' and o['data']['visual_qa_complete']
 def test_destinations_catalog():
  _,o=run('destinations.list'); assert {'Canva','Vercel','Claude Code'}<=set(o['data']['destinations'])
