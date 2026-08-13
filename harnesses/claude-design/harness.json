@@ -4,7 +4,7 @@
   "name": "claude-design",
   "title": "Claude Design",
   "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -362,6 +362,277 @@
         "additionalProperties": true
       },
       "argMap": []
+    },
+    "browser.input.plan": {
+      "description": "browser input plan",
+      "baseArgv": [
+        "browser.input.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "tagName": {
+            "type": "string"
+          },
+          "contenteditable": {
+            "type": "boolean"
+          },
+          "role": {
+            "type": "string"
+          },
+          "evaluateDisabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "prompt",
+          "type": "option",
+          "flag": "--prompt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ref",
+          "type": "option",
+          "flag": "--ref",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tagName",
+          "type": "option",
+          "flag": "--tag-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "contenteditable",
+          "type": "flag",
+          "flag": "--contenteditable",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "evaluateDisabled",
+          "type": "flag",
+          "flag": "--evaluate-disabled",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "browser.input.verify": {
+      "description": "browser input verify",
+      "baseArgv": [
+        "browser.input.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "observedText": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "prompt",
+          "type": "option",
+          "flag": "--prompt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedText",
+          "type": "option",
+          "flag": "--observed-text",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "browser.input.diagnose": {
+      "description": "browser input diagnose",
+      "baseArgv": [
+        "browser.input.diagnose"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "errorMessage": {
+            "type": "string"
+          },
+          "gatewayStatus": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "errorMessage",
+          "type": "option",
+          "flag": "--error-message",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "gatewayStatus",
+          "type": "option",
+          "flag": "--gateway-status",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
     },
     "auth.setup-token.plan": {
       "description": "auth setup-token plan",

@@ -46,7 +46,7 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
       "path": "skills/claude-design",
       "compatibility": {
@@ -63,16 +63,16 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "61ddf58646041269acc13a77e484e3163542f19424a50a1a8bb8970d191fd5dd"
+          "sha256": "25936210c2495acc15e2ae2945c4f4c4d63669be6c776aa92010e0c982dccff9"
         },
         {
           "path": "references/operations.md",
-          "sha256": "a834b83929de5a371a147149753e09f6a231816cc5a76b1240c28073fe34dad2"
+          "sha256": "d26965725f7095006a2af14899acafa41f1c5d4a1e1e31508b1b499e92c722c8"
         }
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.3.3"
+        "version": "0.3.4"
       }
     },
     {
@@ -725,7 +725,7 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Browser-first Claude Design guardrails, exact approvals, artifact verification, and optional MCP diagnostics.",
       "path": "harnesses/claude-design",
       "compatibility": {
@@ -742,23 +742,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "f6e6bdd26dd9eaee5840676054292762d160613c708135c10a3128bb249d0600"
+          "sha256": "bf74312d2a44034bf98fd58bbaef911da91bedab149d3165e153732e8d381ec7"
         },
         {
           "path": "TEST.md",
-          "sha256": "eddfe79d1c9010a4c3325558cbda3e882064498b4e68643ce74aeac1b4a16e80"
+          "sha256": "fe17c8584b53c8523285d26b80f3def3a3ca3358ff2328b6a39dd908be7be72c"
         },
         {
           "path": "claude_design.py",
-          "sha256": "213133e07eb3738c945c95b758c66f1aec8928fca525b81571861658ae011dd1"
+          "sha256": "36ac33eb5312adb8207e6af20fae377f1dea98a1db142018a61775235eee8d8b"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "fe38102519500519568388c98d3da9c10e602d9db64f2e694fc4bf8496ece1fe"
+          "sha256": "d12ac0259db92d068c53a31c50f8ef1693298c6f40b8480bf19a64b717727ce6"
         },
         {
           "path": "harness.json",
-          "sha256": "02062e1297f85006a6c0a4b1f8a66c658399aa95a5571204a26f0a2871477c74"
+          "sha256": "7a6128d850c628296622ba26aea882dd3eaf0ac73b6647b2acbdbadfecfccfb2"
         }
       ]
     },

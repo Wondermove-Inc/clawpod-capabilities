@@ -4,11 +4,23 @@
 
 Run `onboarding.plan`, `onboarding.preflight`, `onboarding.status`, `auth.contract`, and `auth.status`, then open `https://claude.ai/design` with the desktop/browser capability. Readiness means the authenticated Design UI is visible and usable. Reuse the browser session. The human performs only missing sign-in, MFA, or provider consent. Default onboarding does not register an MCP endpoint, initiate Claude Code OAuth, request a setup token, or delegate CLI work.
 
-## Typed 56-command surface
+## Typed 59-command surface
 
-The Harness preserves 56 commands. It plans and guards browser work rather than pretending to execute provider mutations. Projects: list/get/search/create/update/iterate/comment/edit/present/share/export/handoff/delete. Design systems: list/get/create/update/remix/publish/set-default/delete. Templates: list/get/create/update/delete. Code: browser login handoff and bidirectional sync. Destinations: list/handoff. Admin: status/permissions/usage/enable/role-update. System, onboarding, auth, export verification, and optional MCP diagnostics complete the surface.
+The Harness preserves 59 commands. It plans and guards browser work rather than pretending to execute provider mutations. Projects: list/get/search/create/update/iterate/comment/edit/present/share/export/handoff/delete. Design systems: list/get/create/update/remix/publish/set-default/delete. Templates: list/get/create/update/delete. Code: browser login handoff and bidirectional sync. Destinations: list/handoff. Admin: status/permissions/usage/enable/role-update. System, onboarding, auth, browser input planning/verification/diagnosis, export verification, and optional MCP diagnostics complete the surface.
 
 Read and mutation commands return `HUMAN_VERIFICATION` with the browser URL and reconciliation source. Perform the action through desktop/browser, preserve IDs/revisions, then verify list/detail, ACL, artifact, git, or organization state. Never convert the handoff itself into success.
+
+## Exact browser input and long prompts
+
+Start from a fresh browser snapshot and inspect the target's tag, role, and contenteditable state. Run `browser.input.plan --prompt ... --ref ...` with those observed semantics. The deterministic routing contract is:
+
+- `input` and `textarea` use one `fill` action regardless of prompt length.
+- Contenteditable targets use one `type` action only through 600 characters. Above 600 characters they use one ref-scoped `evaluate` action that replaces the contents with a text node and dispatches bubbling `input` and `change` events. Prompt content is serialized as a JSON string literal, so quotes, backslashes, newlines, Unicode, and markup remain inert text.
+- Unsupported elements fail closed. If browser evaluate is disabled, long contenteditable input fails closed unless the browser exposes a separately supported paste action; repeated `type` calls are not a safe fallback.
+
+After insertion, read the target's text/value through browser evaluate and run `browser.input.verify` with the original prompt and observed text. Submit only when exact equality passes; the reported character count and UTF-8 SHA-256 provide auditable supporting evidence. A mismatch is non-retry-safe and must never be submitted.
+
+Refs are snapshot-scoped. If a ref is stale, take a fresh snapshot, redetect the same editable by accessible role/name and editable semantics, retry the selected input action once, and perform exact verification. If the action times out, inspect the current field content and browser status before choosing a retry. Use `browser.input.diagnose` to classify these failures. A timeout is not evidence of Gateway failure and never by itself authorizes restarting the Gateway; diagnose control-plane health independently.
 
 ## Exact effects and exports
 
