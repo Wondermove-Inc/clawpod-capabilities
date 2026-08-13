@@ -14,6 +14,6 @@ Run `onboarding.plan`, `onboarding.preflight`, `onboarding.status`, `auth.contra
 
 ## Safety and verification
 
-Externally visible and organization effects use `*.preview` then `*.apply` with the exact effect digest and `--approve`. Deletes require exact name and approval. Browser actions must be reconciled against provider state. `projects.export.verify` checks regular-file path, MIME, bytes, and SHA-256 for HTML, PPTX, and PDF. HTML is active content.
+Externally visible and organization effects use `*.preview` then `*.apply` with the exact effect digest and `--approve`. Deletes require exact name and approval. Browser actions must be reconciled against provider state. Native PDF export uses Share → Export → PDF → Download → Print or save as PDF, with full-deck page count checked before save. Present/File menus alone cannot establish export unavailability. `projects.export.verify` requires artifact metadata, explicit native or fallback provenance, exact PDF page count, and page-by-page visual QA. HTML is active content.
 
 See `command_contracts.json`, the Skill operations reference, and `TEST.md`.

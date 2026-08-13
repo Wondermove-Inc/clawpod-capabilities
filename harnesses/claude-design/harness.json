@@ -2126,6 +2126,18 @@
           },
           "outputPath": {
             "type": "string"
+          },
+          "expectedPages": {
+            "type": "integer"
+          },
+          "provenance": {
+            "type": "string"
+          },
+          "qaPage": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": false
@@ -2191,6 +2203,27 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "output"
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "provenance",
+          "type": "option",
+          "flag": "--provenance",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "qaPage",
+          "type": "repeatOption",
+          "flag": "--qa-page",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
