@@ -63,11 +63,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "79f25c023510e3f4e5df6138850cc6e752b8211a589ce6ad4e8f4a7e2730a374"
+          "sha256": "7174941a0b793d60c96316868a0ab052239d1525e8bb741d020cefcbd70f7847"
         },
         {
           "path": "references/operations.md",
-          "sha256": "95d9734f7ec4b2931d69abc90e67e8ec1976d1cab77f6b6c3ce3100132e26726"
+          "sha256": "a834b83929de5a371a147149753e09f6a231816cc5a76b1240c28073fe34dad2"
         }
       ],
       "linkedHarness": {
@@ -742,15 +742,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "96b9ad464ffb04d19afe0064774ee3d2ab2059ee9787b232f723547e4a572934"
+          "sha256": "f6e6bdd26dd9eaee5840676054292762d160613c708135c10a3128bb249d0600"
         },
         {
           "path": "TEST.md",
-          "sha256": "7d3465caa80093a8f26fffaa46486fd7ae1865e2cb6d8a6ecd370fe61f254a98"
+          "sha256": "eddfe79d1c9010a4c3325558cbda3e882064498b4e68643ce74aeac1b4a16e80"
         },
         {
           "path": "claude_design.py",
-          "sha256": "ce2da8583da22f73a856c89031fc9ba0f90c818f9c87fd8ac999851f8c3062ed"
+          "sha256": "6a9bc58ac597dd4c552e266b7784be705afb38220dc2623d9fa8684c4c43287e"
         },
         {
           "path": "command_contracts.json",
@@ -758,7 +758,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "727ee1b9b6079ac267a52ca3dd4bb8a480fe2f0f0031d6baed46b3ac93a41df0"
+          "sha256": "6d2ed06abbba9f771ddf1176fcb17805dea18c9c58fd33288de74ce7418c8e61"
         }
       ]
     },

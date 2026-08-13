@@ -14,7 +14,9 @@ Read and mutation commands return `HUMAN_VERIFICATION` with the browser URL and 
 
 Run `*.preview` with every intended field. Pass the unchanged `effect_digest`, identical fields, and `--approve` to `*.apply`. Changed fields invalidate the digest. Deletes require ID, exact displayed name, and explicit approval, followed by absence verification. Permission changes may take up to 15 minutes.
 
-Export HTML, PPTX, or PDF in the browser, then run `projects.export.verify` for regular-file path, MIME, bytes, and SHA-256. HTML is active content. On timeout, browser loss, or ambiguous state, reopen the existing resource and inspect before retrying.
+For native PDF export, use **Share → Export → PDF → Download → Print or save as PDF**. Present and File menus are not authoritative export discovery surfaces, so their lack of an export item is not evidence that native export is unavailable. In the print preview, confirm the page count equals the expected full deck before saving.
+
+Run `projects.export.verify` with `--project-id`, `--provenance native-claude-design`, `--expected-pages`, and repeated `--qa-page` values covering every page. Success requires regular-file path, MIME, bytes, SHA-256, project ID, provenance, exact page-count match, and page-by-page visual QA. If native export genuinely fails only after checking Share → Export, a fallback renderer may be used but must be recorded as `fallback-rendering`; never present fallback output as native provenance. HTML and PPTX remain supported browser exports. HTML is active content. On timeout, browser loss, or ambiguous state, reopen the existing resource and inspect before retrying.
 
 ## Optional MCP diagnostics and verified defect, 2026-08-13
 

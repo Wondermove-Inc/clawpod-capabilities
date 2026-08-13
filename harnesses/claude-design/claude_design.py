@@ -60,14 +60,22 @@ def file_evidence(path_s):
  p=Path(path_s).expanduser()
  if not p.is_file():raise ValueError("output path is not a regular file")
  raw=p.read_bytes(); mime=mimetypes.guess_type(p.name)[0] or "application/octet-stream"
- return {"path":str(p.resolve()),"mime":mime,"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}
+ info={"path":str(p.resolve()),"mime":mime,"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}
+ if mime=="application/pdf":
+  try:
+   from pypdf import PdfReader
+   info["page_count"]=len(PdfReader(str(p)).pages)
+  except (ImportError,OSError,ValueError):
+   info["page_count"]=len(re.findall(rb"/Type\s*/Page(?!s)\b",raw))
+ return info
 
 def handoff(command,values,action,source):
  return fail(command,"HUMAN_VERIFICATION",action+" Then reconcile "+source+" before retrying or claiming success.",False,{"url":DESIGN_URL,"values":values,"reconciliation_source":source})
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url"]:p.add_argument("--"+name)
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance"]:p.add_argument("--"+name)
+ p.add_argument("--expected-pages",type=int);p.add_argument("--qa-page",action="append",default=[])
  p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
  return p
@@ -101,13 +109,24 @@ def main(argv=None):
   if a.format:
    if a.format not in FORMATS:return fail(c,"INVALID_INPUT","--format must be html, pptx, or pdf.")
    expected=FORMATS[a.format]; info["expected_mime"]=expected; info["mime_matches"]=info["mime"]==expected
-  return envelope(c,data=info,evidence=[{"kind":"artifact","ref":info["sha256"]}])
+  if not a.project_id or not a.provenance:return fail(c,"INVALID_INPUT","Artifact metadata requires --project-id and --provenance (native-claude-design or fallback-rendering).")
+  if a.provenance not in {"native-claude-design","fallback-rendering"}:return fail(c,"INVALID_INPUT","--provenance must be native-claude-design or fallback-rendering.")
+  if a.format=="pdf":
+   if not a.expected_pages or a.expected_pages<1:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages before save/success.")
+   info["expected_pages"]=a.expected_pages; info["page_count_matches"]=info.get("page_count")==a.expected_pages
+   if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"PDF has {info.get('page_count',0)} pages; expected {a.expected_pages}.",False,info)
+   reviewed={int(x) for x in a.qa_page if x.isdigit()}
+   missing=sorted(set(range(1,a.expected_pages+1))-reviewed)
+   if missing:return fail(c,"VERIFICATION_FAILED","Page-by-page visual QA is incomplete.",False,{**info,"qa_pages":sorted(reviewed),"missing_qa_pages":missing})
+   info["qa_pages"]=sorted(reviewed);info["visual_qa_complete"]=True
+  info["project_id"]=a.project_id;info["provenance"]=a.provenance
+  return envelope(c,data=info,evidence=[{"kind":"artifact","ref":info["sha256"],"metadata":{"project_id":a.project_id,"provenance":a.provenance,"page_count":info.get("page_count"),"visual_qa_complete":info.get("visual_qa_complete",False)}}])
  if c=="projects.export":
   result=require_id(c,a.project_id,"project_id")
   if result is not None:return result
   if a.format not in FORMATS:return fail(c,"INVALID_INPUT","--format must be html, pptx, or pdf.")
   if not a.output_path:return fail(c,"INVALID_INPUT","--output-path is required.")
-  return handoff(c,{"project_id":a.project_id,"format":a.format,"output_path":a.output_path},"Open the exact project, choose Share > Export and the requested format, and save to the approved path.","local regular file MIME, bytes, and SHA-256 via projects.export.verify")
+  return handoff(c,{"project_id":a.project_id,"format":a.format,"output_path":a.output_path},"Open the exact project. For PDF use Share > Export > PDF > Download > Print or save as PDF; verify the print preview shows the expected full-deck page count before saving. Do not infer export is unavailable from Present or File menus alone. For any fallback, label provenance as fallback-rendering rather than native Claude Design export.","local regular file MIME, bytes, and SHA-256 via projects.export.verify")
  if c in READS:
   if c.endswith(".get") and not (a.project_id or a.design_system_id or a.template_id):return fail(c,"INVALID_INPUT","The resource identifier is required.")
   if c=="destinations.list":return envelope(c,data={"destinations":DESTINATIONS,"connection_state":"requires live account readback"})
