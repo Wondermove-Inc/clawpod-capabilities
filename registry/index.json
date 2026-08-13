@@ -598,7 +598,7 @@
     {
       "id": "verified-research",
       "type": "skill",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
       "path": "skills/verified-research",
       "compatibility": {
@@ -616,7 +616,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5f7d929b5e2387e69149f5f4f3aa00395fc8d538999662c066fcfdb106ff5da4"
+          "sha256": "433ba2e3a1448c7173e3b08d01530e10ea0a9d198c6c341691de427f2481895f"
         },
         {
           "path": "references/harness-operations.md",
@@ -637,7 +637,7 @@
       ],
       "linkedHarness": {
         "id": "verified-research",
-        "version": "0.1.6"
+        "version": "0.1.7"
       }
     },
     {
@@ -1433,7 +1433,7 @@
     {
       "id": "verified-research",
       "type": "harness",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
       "path": "harnesses/verified-research",
       "compatibility": {
@@ -1451,11 +1451,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "b2072236db8b21e4a8fcd64ce958fa9cc3d9d137a8aefa86d7ea4cf6adc8dca7"
+          "sha256": "7747c237132788ec80247f63fd3bec47911de090a3fbbcc5a9a1b8b7dee3c9d2"
         },
         {
           "path": "TEST.md",
-          "sha256": "550da8ba4dcafee38ca984b4015cfd2884af3a21b0821b78ea7c942f4416067a"
+          "sha256": "7fb1160cb128a1204531897f982e644e57400a8a6848d682546c2d2d5fc7ef2f"
         },
         {
           "path": "command_contracts.json",
@@ -1463,15 +1463,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "de18fa86d2d8d978e494374027a086669abc0e6b5c515e5e73257c522ac77e11"
+          "sha256": "16307fc307136bf100e3da6ecbffdbbb19fcb4a6ae18259c13788925d4471895"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "8fdb7f9f1c7bc300a254067c368c12bf482cf70f3b7059153ade34d91c15a7c2"
+          "sha256": "4c15540c88e517877d7c1080c468d3e9f5c4d977ae0dd650f7b0f32cb8a2b3d2"
         },
         {
           "path": "verified_research.py",
-          "sha256": "94504953e4956f220781cee4efba8a5e15df6ef871dcfc7eab558a9834342111"
+          "sha256": "1eb3c7514fd2c32a9d7adbeac137e21023b98514c2f529cad152a956cb451700"
         }
       ]
     },
