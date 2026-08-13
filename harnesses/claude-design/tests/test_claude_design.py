@@ -10,20 +10,20 @@ def test_version():
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
 def test_onboarding_plan_complete():
- _,o=run('onboarding.plan'); assert o['data']['state']=='installed_not_connected' and '/design-login' in o['data']['steps'][2]
+ _,o=run('onboarding.plan'); assert o['data']['state']=='installed_not_connected' and o['data']['official_mcp']['url']=='https://api.anthropic.com/v1/design/mcp' and 'CLI commands' in o['data']['never_delegate_to_user'] and o['data']['human_only']==['sign-in when no reusable authentication exists','MFA','provider consent','credential-use authorization']
 def test_preflight_redacts_setup_token():
  env={**os.environ,'CLAUDE_CODE_OAUTH_TOKEN':'TOP_SECRET_SENTINEL'};p,o=run('onboarding.preflight',env=env)
  assert o['data']['setup_token_present'] and 'TOP_SECRET_SENTINEL' not in p.stdout
-def test_onboarding_status_never_claims_connected():
- _,o=run('onboarding.status'); assert o['data']['connected']=='unknown' and o['data']['schema_discovered'] is False
+def test_onboarding_status_has_verified_state_contract():
+ _,o=run('onboarding.status'); assert o['data']['connection_state'] in {'CONNECTED','NOT_CONNECTED'} and o['data']['official_mcp']['url']=='https://api.anthropic.com/v1/design/mcp' and o['data']['schema_discovered'] is False
 def test_auth_contract():
- _,o=run('auth.contract'); assert o['data']['setup_token_command']=='claude setup-token' and o['data']['setup_token_persisted'] is False
+ _,o=run('auth.contract'); assert o['data']['setup_token_command']=='claude setup-token' and o['data']['setup_token_persisted'] is False and o['data']['agent_owns_mcp_registration'] is True
 def test_setup_token_plan_not_execute():
  _,o=run('auth.setup-token.plan'); assert o['data']['interactive'] and o['data']['command']==['claude','setup-token']
 def test_login_is_human_verification():
- p,o=run('code.login.handoff'); assert p.returncode==2 and o['error']['code']=='HUMAN_VERIFICATION' and '/design-login' in o['error']['message']
-def test_mcp_does_not_invent_endpoint():
- _,o=run('mcp.inspect'); assert o['data']['endpoint_discovered'] is False and o['data']['tool_schema_discovered'] is False
+ p,o=run('code.login.handoff'); assert p.returncode==2 and o['error']['code']=='HUMAN_VERIFICATION' and 'sign-in, MFA, or consent' in o['error']['message']
+def test_mcp_uses_verified_endpoint():
+ _,o=run('mcp.inspect'); assert o['data']['official_url']=='https://api.anthropic.com/v1/design/mcp' and o['data']['tool_schema_discovered'] is False
 def test_mcp_validate_unavailable():
  p,o=run('mcp.validate'); assert p.returncode==2 and o['error']['code']=='BACKEND_UNAVAILABLE'
 def test_mcp_install_requires_observed_transport():

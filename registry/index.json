@@ -63,7 +63,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "75e1c3f7361a4ffbb3baa35e152062ffaa696ebcd9aa5ec025d05a366e40fef4"
+          "sha256": "de6dfa60d60739f37e27d55fdeb3025cf24347aa8e2ee303eff3272ec32a3bf9"
         },
         {
           "path": "references/operations.md",
@@ -750,7 +750,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "e3fa59efafe5762ec8c51e72cb81352379243d1c195b433018cff70f0ed3c64b"
+          "sha256": "7cb745c544c02de36328f650a5f4c22bceadc417539ee99f8b69d8700138352b"
         },
         {
           "path": "command_contracts.json",
