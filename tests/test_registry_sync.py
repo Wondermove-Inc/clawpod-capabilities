@@ -104,8 +104,58 @@ class RegistrySyncTests(unittest.TestCase):
             registry = json.loads((copy / "registry" / "index.json").read_text(encoding="utf-8"))
             entry = next(item for item in registry["capabilities"] if item["id"] == "example-skill")
             self.assertEqual(entry["type"], "skill")
+            self.assertEqual(entry["description"], "Example capability used to verify automatic registry package discovery.")
             self.assertEqual(entry["files"][0]["path"], "SKILL.md")
             self.assertEqual(len(entry["files"][0]["sha256"]), 64)
+
+    def test_skill_frontmatter_description_source_is_opt_in(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = self.copy_repository(directory)
+            package = copy / "skills" / "github"
+            metadata_path = package / "capability.json"
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            metadata["descriptionSource"] = "skill-frontmatter"
+            metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+            update = self.run_sync(copy)
+            self.assertEqual(update.returncode, 0, update.stderr)
+            registry = json.loads((copy / "registry" / "index.json").read_text(encoding="utf-8"))
+            entry = next(
+                item
+                for item in registry["capabilities"]
+                if item["type"] == "skill" and item["id"] == "github"
+            )
+            frontmatter = next(
+                line.split(":", 1)[1].strip().strip('"\'')
+                for line in (package / "SKILL.md").read_text(encoding="utf-8").splitlines()
+                if line.startswith("description:")
+            )
+            self.assertEqual(entry["description"], frontmatter)
+            self.assertNotEqual(entry["description"], metadata["description"])
+
+    def test_skill_frontmatter_description_source_is_rejected_for_harness(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = self.copy_repository(directory)
+            metadata_path = copy / "harnesses" / "github" / "capability.json"
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            metadata["descriptionSource"] = "skill-frontmatter"
+            metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+            result = self.run_sync(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("valid only for skills", result.stderr)
+
+    def test_invalid_description_source_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            copy = self.copy_repository(directory)
+            metadata_path = copy / "skills" / "github" / "capability.json"
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            metadata["descriptionSource"] = "unknown"
+            metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+            result = self.run_sync(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("descriptionSource must be", result.stderr)
 
     def test_package_without_metadata_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
