@@ -19,7 +19,7 @@ import uuid
 from html.parser import HTMLParser
 from pathlib import Path
 
-VERSION = "0.1.2"
+VERSION = "0.1.4"
 MAX_INPUT = 2_000_000
 MAX_OUTPUT = 4_000_000
 MAX_TRANSCRIPT = 1_500_000

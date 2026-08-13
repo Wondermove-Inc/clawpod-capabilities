@@ -157,8 +157,13 @@ def translate(gateway_argv):
 
 
 def main(argv=None):
+    raw_argv = list(sys.argv[1:] if argv is None else argv)
+    if raw_argv == ["system.version"]:
+        from cli_anything.clawpod_cloud_webhooks import __version__
+        print(json.dumps({"ok": True, "capability": {"name": "clawpod-cloud-webhooks", "title": "ClawPod Cloud Webhooks", "version": __version__}, "backend": "real HTTP client"}, sort_keys=True))
+        return 0
     try:
-        cli_argv = translate(list(sys.argv[1:] if argv is None else argv))
+        cli_argv = translate(raw_argv)
         package_root = str(Path(__file__).resolve().parent)
         result = subprocess.run(
             cli_argv,

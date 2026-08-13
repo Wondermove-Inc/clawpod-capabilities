@@ -1,0 +1,440 @@
+test_all_18_connected_release_units_have_exact_metadata_and_registry_versions (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_all_18_connected_release_units_have_exact_metadata_and_registry_versions) ... ok
+test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) ...
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='SKILL.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='root README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-ocr', surface='root README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='codex-claude-project-development', surface='README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='enterprise-newsletter', surface='SKILL.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='github', surface='SKILL.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='memory-graph', surface='README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='memory-graph', surface='root README.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='resend-email', surface='SKILL.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='verified-research', surface='SKILL.md') ... FAIL
+  test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='youtube-evidence-analysis', surface='SKILL.md') ... FAIL
+test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) ...
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='claude-design', surface='claude_design.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-image-studio', surface='clawpod_image_studio.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-ocr', surface='clawpod_ocr.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-video-studio', surface='clawpod_video_studio.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='cloudflare-quick-tunnel-preview', surface='cloudflare_quick_tunnel_preview.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='codex-claude-project-development', surface='codex_claude_project_development.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='enterprise-newsletter', surface='enterprise_newsletter.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='memory-graph', surface='memory_graph.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='resend-email', surface='resend_email.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='youtube-evidence-analysis', surface='youtube_evidence_analysis.py') ... FAIL
+  test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='verified-research', surface='verified_research.py') ... FAIL
+test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) ...
+  test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='atlassian') ... FAIL
+  test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='github') ... FAIL
+  test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='resend-email') ... FAIL
+  test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='verified-research') ... FAIL
+  test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='youtube-evidence-analysis') ... FAIL
+test_package_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_package_versions_equal_manifest) ...
+  test_package_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_package_versions_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='cli_anything/clawpod_cloud_webhooks/__init__.py') ... FAIL
+  test_package_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_package_versions_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='setup.py') ... FAIL
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 116, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:README.md current release line")
+AssertionError: '0.2.3' != '0.2.5'
+- 0.2.3
+?     ^
++ 0.2.5
+?     ^
+ : clawpod-cloud-webhooks:README.md current release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 116, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:README.md current release line")
+AssertionError: '0.4.0' != '0.4.2'
+- 0.4.0
+?     ^
++ 0.4.2
+?     ^
+ : clawpod-image-studio:README.md current release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.4.0' != '0.4.2'
+- 0.4.0
+?     ^
++ 0.4.2
+?     ^
+ : clawpod-image-studio:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-image-studio', surface='root README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 126, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:root README release line")
+AssertionError: '0.3.0' != '0.4.2'
+- 0.3.0
++ 0.4.2
+ : clawpod-image-studio:root README release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='clawpod-ocr', surface='root README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 126, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:root README release line")
+AssertionError: '0.3.1' != '0.3.3'
+- 0.3.1
+?     ^
++ 0.3.3
+?     ^
+ : clawpod-ocr:root README release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='codex-claude-project-development', surface='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 116, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:README.md current release line")
+AssertionError: '0.2.1' != '0.2.3'
+- 0.2.1
+?     ^
++ 0.2.3
+?     ^
+ : codex-claude-project-development:README.md current release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='enterprise-newsletter', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.1.2' != '0.1.4'
+- 0.1.2
+?     ^
++ 0.1.4
+?     ^
+ : enterprise-newsletter:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='github', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.3.0' != '0.3.2'
+- 0.3.0
+?     ^
++ 0.3.2
+?     ^
+ : github:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='memory-graph', surface='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 116, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:README.md current release line")
+AssertionError: '0.11.1' != '0.11.3'
+- 0.11.1
+?      ^
++ 0.11.3
+?      ^
+ : memory-graph:README.md current release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='memory-graph', surface='root README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 126, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:root README release line")
+AssertionError: '0.7.0' != '0.11.3'
+- 0.7.0
++ 0.11.3
+ : memory-graph:root README release line
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='resend-email', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.1.4' != '0.1.6'
+- 0.1.4
+?     ^
++ 0.1.6
+?     ^
+ : resend-email:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='verified-research', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.1.2' != '0.1.4'
+- 0.1.2
+?     ^
++ 0.1.4
+?     ^
+ : verified-research:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_current_readme_and_skill_release_declarations_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_current_readme_and_skill_release_declarations_equal_manifest) (capability_id='youtube-evidence-analysis', surface='SKILL.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 121, in test_current_readme_and_skill_release_declarations_equal_manifest
+    self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")
+AssertionError: '0.1.1' != '0.1.3'
+- 0.1.1
+?     ^
++ 0.1.3
+?     ^
+ : youtube-evidence-analysis:SKILL.md linked Harness declaration
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='claude-design', surface='claude_design.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.3.1' != '0.3.2'
+- 0.3.1
+?     ^
++ 0.3.2
+?     ^
+ : claude-design
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-image-studio', surface='clawpod_image_studio.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.4.1' != '0.4.2'
+- 0.4.1
+?     ^
++ 0.4.2
+?     ^
+ : clawpod-image-studio
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-ocr', surface='clawpod_ocr.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.3.2' != '0.3.3'
+- 0.3.2
+?     ^
++ 0.3.3
+?     ^
+ : clawpod-ocr
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='clawpod-video-studio', surface='clawpod_video_studio.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.2.1' != '0.2.2'
+- 0.2.1
+?     ^
++ 0.2.2
+?     ^
+ : clawpod-video-studio
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='cloudflare-quick-tunnel-preview', surface='cloudflare_quick_tunnel_preview.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.1.3' != '0.1.4'
+- 0.1.3
+?     ^
++ 0.1.4
+?     ^
+ : cloudflare-quick-tunnel-preview
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='codex-claude-project-development', surface='codex_claude_project_development.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.2.2' != '0.2.3'
+- 0.2.2
+?     ^
++ 0.2.3
+?     ^
+ : codex-claude-project-development
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='enterprise-newsletter', surface='enterprise_newsletter.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.1.3' != '0.1.4'
+- 0.1.3
+?     ^
++ 0.1.4
+?     ^
+ : enterprise-newsletter
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='memory-graph', surface='memory_graph.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.11.2' != '0.11.3'
+- 0.11.2
+?      ^
++ 0.11.3
+?      ^
+ : memory-graph
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='resend-email', surface='resend_email.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.1.5' != '0.1.6'
+- 0.1.5
+?     ^
++ 0.1.6
+?     ^
+ : resend-email
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='youtube-evidence-analysis', surface='youtube_evidence_analysis.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 90, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, constant), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.1.2' != '0.1.3'
+- 0.1.2
+?     ^
++ 0.1.3
+?     ^
+ : youtube-evidence-analysis
+
+======================================================================
+FAIL: test_known_executable_release_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_known_executable_release_versions_equal_manifest) (capability_id='verified-research', surface='verified_research.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 96, in test_known_executable_release_versions_equal_manifest
+    self.assertEqual(match.group(1), load(package / "harness.json")["version"], capability_id)
+AssertionError: '0.1.3' != '0.1.4'
+- 0.1.3
+?     ^
++ 0.1.4
+?     ^
+ : verified-research
+
+======================================================================
+FAIL: test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='atlassian')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 139, in test_manifest_generators_preserve_release_version
+    self.assertEqual(load(package / "harness.json")["version"], expected, capability_id)
+AssertionError: '0.3.2' != '0.3.3'
+- 0.3.2
+?     ^
++ 0.3.3
+?     ^
+ : atlassian
+
+======================================================================
+FAIL: test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='github')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 139, in test_manifest_generators_preserve_release_version
+    self.assertEqual(load(package / "harness.json")["version"], expected, capability_id)
+AssertionError: '0.3.1' != '0.3.2'
+- 0.3.1
+?     ^
++ 0.3.2
+?     ^
+ : github
+
+======================================================================
+FAIL: test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='resend-email')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 139, in test_manifest_generators_preserve_release_version
+    self.assertEqual(load(package / "harness.json")["version"], expected, capability_id)
+AssertionError: '0.1.5' != '0.1.6'
+- 0.1.5
+?     ^
++ 0.1.6
+?     ^
+ : resend-email
+
+======================================================================
+FAIL: test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='verified-research')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 139, in test_manifest_generators_preserve_release_version
+    self.assertEqual(load(package / "harness.json")["version"], expected, capability_id)
+AssertionError: '0.1.3' != '0.1.4'
+- 0.1.3
+?     ^
++ 0.1.4
+?     ^
+ : verified-research
+
+======================================================================
+FAIL: test_manifest_generators_preserve_release_version (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_manifest_generators_preserve_release_version) (capability_id='youtube-evidence-analysis')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 139, in test_manifest_generators_preserve_release_version
+    self.assertEqual(load(package / "harness.json")["version"], expected, capability_id)
+AssertionError: '0.1.2' != '0.1.3'
+- 0.1.2
+?     ^
++ 0.1.3
+?     ^
+ : youtube-evidence-analysis
+
+======================================================================
+FAIL: test_package_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_package_versions_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='cli_anything/clawpod_cloud_webhooks/__init__.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 104, in test_package_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, name), expected, f"{capability_id}:{relative}")
+AssertionError: '0.2.4' != '0.2.5'
+- 0.2.4
+?     ^
++ 0.2.5
+?     ^
+ : clawpod-cloud-webhooks:cli_anything/clawpod_cloud_webhooks/__init__.py
+
+======================================================================
+FAIL: test_package_versions_equal_manifest (tests.test_version_integrity.CandidateFinalVersionIntegrityTests.test_package_versions_equal_manifest) (capability_id='clawpod-cloud-webhooks', surface='setup.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/worktrees/final-version-integrity/tests/test_version_integrity.py", line 104, in test_package_versions_equal_manifest
+    self.assertEqual(assigned_string(package / relative, name), expected, f"{capability_id}:{relative}")
+AssertionError: '0.2.4' != '0.2.5'
+- 0.2.4
+?     ^
++ 0.2.5
+?     ^
+ : clawpod-cloud-webhooks:setup.py
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.174s
+
+FAILED (failures=31)

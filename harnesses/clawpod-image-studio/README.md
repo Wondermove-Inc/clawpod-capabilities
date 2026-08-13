@@ -1,6 +1,6 @@
 # ClawPod Image Studio
 
-Portable, guarded CLI Harness for OpenAI Images, Vertex Imagen, BFL FLUX, and Recraft. Version 0.4.0 adds detached, bounded OpenAI generation jobs while preserving the legacy one-shot transport and the v0.3.0 offline professional production layer. Other providers remain offline/injectable only.
+Portable, guarded CLI Harness for OpenAI Images, Vertex Imagen, BFL FLUX, and Recraft. Version 0.4.3 adds detached, bounded OpenAI generation jobs while preserving the legacy one-shot transport and the v0.3.0 offline professional production layer. Other providers remain offline/injectable only.
 
 ## Detached OpenAI generation
 

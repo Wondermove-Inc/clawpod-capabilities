@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Route governed end-to-end video production through ClawPod Video Studio and its pinned OpenMontage backend.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -16,7 +16,7 @@
   },
   "linkedHarness": {
     "id": "clawpod-video-studio",
-    "version": "0.2.2"
+    "version": "0.2.3"
   },
   "descriptionSource": "skill-frontmatter"
 }

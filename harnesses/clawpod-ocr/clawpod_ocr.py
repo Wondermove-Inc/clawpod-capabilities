@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse, base64, hashlib, html, json, os, re, secrets, shutil, signal, stat, struct, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request, uuid, zipfile, zlib
 from pathlib import Path
 
-VERSION="0.3.2"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024; MAX_REPORT_JOBS=50; MAX_REPORT_SOURCE_BYTES=256*1024*1024
+VERSION="0.3.4"; SCHEMA=1; MAX_FILE=64*1024*1024; MAX_PAGES=200; MAX_PIXELS=40_000_000; MAX_HTTP=2*1024*1024; MAX_IMAGE_TRANSFER=8*1024*1024; MAX_REPORT_JOBS=50; MAX_REPORT_SOURCE_BYTES=256*1024*1024
 CHILDREN={}
 
 def out(cmd,data=None,effects=None,err=None):

@@ -154,11 +154,11 @@ Never publish credentials, internal endpoints, customer data, private configurat
 
 No license has been selected yet. Until one is added, copyright remains with the repository owner and reuse is not granted beyond applicable law.
 
-### ClawPod OCR 0.3.1
+### ClawPod OCR 0.3.4
 
 ClawPod OCR produces local enterprise `.docx` comparison reports for one or multiple completed OCR jobs. Reports preserve and distinguish raw OCR from separately corrected text and include source imagery, QA metadata, document controls, and file-specific sections.
 
-### ClawPod Image Studio 0.3.0
+### ClawPod Image Studio 0.4.3
 
 ClawPod Image Studio now includes an additive, offline professional production
 slice: revisioned projects and briefs, strict shot compilation, content-addressed
@@ -168,6 +168,6 @@ delivery manifests/packages. Its existing protected-secret and exact paid-intent
 provider boundary remains unchanged; Studio registration commands never call a
 provider.
 
-### Memory Graph 0.7.0
+### Memory Graph 0.11.4
 
 Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. Version 0.11.0 adds complete lifecycle-aware extractor paging, external-agent natural-language candidate authoring, explicit-evidence-only Person/Project/Decision/Cause/Effect/Event causal graphs, bounded review pages, hydrated decision recall, and full offline semantic HTML. The Harness itself never calls a model, network, MCP, or live graph mutation surface.
