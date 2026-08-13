@@ -109,6 +109,7 @@ class RegistrySyncTests(unittest.TestCase):
                         "schemaVersion": 1,
                         "version": "1.0.0",
                         "description": "Example capability used to verify automatic registry package discovery.",
+                        "descriptionSource": "skill-frontmatter",
                         "compatibility": {"openclaw": ">=2026.4.0", "platforms": ["linux"]},
                         "safety": {"risk": "read-only", "approvalRequired": False},
                     }
@@ -121,7 +122,6 @@ class RegistrySyncTests(unittest.TestCase):
             registry = json.loads((copy / "registry" / "index.json").read_text(encoding="utf-8"))
             entry = next(item for item in registry["capabilities"] if item["id"] == "example-skill")
             self.assertEqual(entry["type"], "skill")
-            self.assertEqual(entry["description"], "Example capability used to verify automatic registry package discovery.")
             self.assertEqual(entry["files"][0]["path"], "SKILL.md")
             self.assertEqual(
                 entry["description"],

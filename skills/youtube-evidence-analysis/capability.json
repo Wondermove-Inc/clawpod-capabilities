@@ -1,1 +1,23 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.1","description":"Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos","windows"]},"safety":{"risk":"read-only","approvalRequired":false},"linkedHarness":{"id":"youtube-evidence-analysis","version":"0.1.1"}}
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.1",
+  "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "read-only",
+    "approvalRequired": false
+  },
+  "linkedHarness": {
+    "id": "youtube-evidence-analysis",
+    "version": "0.1.1"
+  },
+  "descriptionSource": "skill-frontmatter"
+}

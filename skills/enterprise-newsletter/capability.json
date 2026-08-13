@@ -17,5 +17,6 @@
   "linkedHarness": {
     "id": "enterprise-newsletter",
     "version": "0.1.2"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

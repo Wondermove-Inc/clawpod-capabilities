@@ -17,5 +17,6 @@
   "safety": {
     "risk": "write-safe",
     "approvalRequired": false
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

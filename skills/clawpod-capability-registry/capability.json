@@ -18,5 +18,6 @@
   "linkedHarness": {
     "id": "clawpod-capability-registry",
     "version": "0.3.3"
-  }
+  },
+  "descriptionSource": "skill-frontmatter"
 }

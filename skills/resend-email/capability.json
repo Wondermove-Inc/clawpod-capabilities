@@ -1,1 +1,22 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.1.4","description":"Route per-run Gateway memory-secret-backed Resend onboarding and verified-sender transactional delivery.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"externally-visible","approvalRequired":true},"linkedHarness":{"id":"resend-email","version":"0.1.4"}}
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.4",
+  "description": "Route per-run Gateway memory-secret-backed Resend onboarding and verified-sender transactional delivery.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "externally-visible",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "resend-email",
+    "version": "0.1.4"
+  },
+  "descriptionSource": "skill-frontmatter"
+}
