@@ -1,6 +1,6 @@
 # Claude Design Harness
 
-Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, exports, design systems, templates, code sync, destinations, and administration. The 59-command surface is preserved.
+Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, exports, design systems, templates, code sync, destinations, and administration. The 61-command surface is preserved.
 
 Provider execution defaults to the logged-in `https://claude.ai/design` UI through the desktop/browser capability. The Harness plans actions, emits exact browser handoffs and reconciliation sources, gates effects with SHA-256 digests, and verifies exported artifacts. It never fakes provider success or inspects browser credentials.
 
@@ -14,7 +14,7 @@ Run `onboarding.plan`, `onboarding.preflight`, `onboarding.status`, `auth.contra
 
 ## Safety and verification
 
-Externally visible and organization effects use `*.preview` then `*.apply` with the exact effect digest and `--approve`. Deletes require exact name and approval. Browser actions must be reconciled against provider state. Native PDF export uses Share → Export → PDF → Download → Print or save as PDF, with full-deck page count checked before save. Present/File menus alone cannot establish export unavailability. `projects.export.verify` requires artifact metadata, explicit native or fallback provenance, exact PDF page count, and page-by-page visual QA. HTML is active content.
+Externally visible and organization effects use `*.preview` then `*.apply` with the exact effect digest and `--approve`. Deletes require exact name and approval. Browser actions must be reconciled against provider state. Native PDF export begins with `projects.export.plan`, which requires an exact active `.dc.html` URL/UI filename match and matching expected/observed counts, then uses Share → PDF → Print or Save as PDF. Reject one-page iframe prints for multi-page decks. After tool failures, keep the export foregrounded, return to the same file, inspect state, run `projects.export.diagnose`, and resume from the last verified step. `projects.export.verify` requires artifact metadata, explicit native or fallback provenance, exact PDF page count, and page-by-page visual QA. HTML is active content.
 
 For prompt entry, use `browser.input.plan` with a fresh element ref and its observed tag/role/contenteditable state. Standard fields use `fill`; contenteditables use `type` through 600 characters and a single safe text-node `evaluate` insertion above that threshold. Run `browser.input.verify` on exact readback before submit. `browser.input.diagnose` distinguishes stale refs and action timeouts without treating a timeout as permission to restart the Gateway.
 

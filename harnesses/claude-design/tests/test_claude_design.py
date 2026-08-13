@@ -6,7 +6,7 @@ def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],text=True,capture_output=True,env=env); return p,json.loads(p.stdout)
 
 def test_version():
- p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.5'
+ p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.6'
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
 def test_onboarding_plan_is_browser_first_and_minimal_human_input():
@@ -105,8 +105,36 @@ def pdf_bytes(pages=2):
  return b'%PDF-1.4\n'+b''.join(b'<< /Type /Page >>\n' for _ in range(pages))+b'%%EOF\n'
 def test_export_handoff_uses_native_pdf_route_and_not_present_file_inference(tmp_path):
  _,o=run('projects.export','--project-id','p','--format','pdf','--output-path',str(tmp_path/'x.pdf')); msg=o['error']['message']
- assert o['error']['code']=='HUMAN_VERIFICATION' and 'Share > Export > PDF > Download > Print or save as PDF' in msg
- assert 'Do not infer export is unavailable from Present or File menus alone' in msg and 'expected full-deck page count before saving' in msg
+ assert o['error']['code']=='HUMAN_VERIFICATION' and 'Share > PDF > Print or Save as PDF' in msg
+ assert 'projects.export.plan' in msg and 'one-page iframe/browser print is not a full-deck export' in msg
+def export_args(filename='Quarterly 雪.dc.html',expected='3',observed='3'):
+ from urllib.parse import quote
+ return ['--file-url','https://claude.ai/design?file='+quote(filename,safe=''),'--ui-filename',filename,'--expected-pages',expected,'--observed-slides',observed]
+def test_export_plan_requires_exact_selected_dc_html_and_counts():
+ p,o=run('projects.export.plan',*export_args())
+ assert p.returncode==0 and o['data']['decoded_file_parameter']=='Quarterly 雪.dc.html' and o['data']['exact_filename_match']
+ assert o['data']['observed_slide_count_matches'] and o['data']['workflow'][2:5]==['Share','PDF','Print or Save as PDF']
+ assert o['data']['read_only'] and o['data']['provider_execution'] is False
+ assert 'shadow DOM' in o['data']['environment_workflow']['chrome'] and 'Save File' in o['data']['environment_workflow']['gtk']
+def test_export_plan_rejects_active_file_mismatch_before_provider_blocker():
+ args=export_args('Right.dc.html')
+ args[args.index('--ui-filename')+1]='Wrong.dc.html'
+ p,o=run('projects.export.diagnose',*args,'--provider-error','Share button disabled')
+ assert p.returncode==2 and o['error']['code']=='ACTIVE_FILE_MISMATCH'
+ assert o['data']['provider_error']=='Share button disabled' and 'does not exactly equal' in o['error']['message']
+def test_export_plan_rejects_non_dc_html_mojibake_and_literal_unicode_escape():
+ for filename in ['deck.html','Deck Ã©.dc.html',r'Deck \u96ea.dc.html']:
+  p,o=run('projects.export.plan',*export_args(filename))
+  assert p.returncode==2 and o['error']['code']=='ACTIVE_FILE_MISMATCH'
+def test_export_plan_requires_observed_slides_equal_expected_before_share():
+ p,o=run('projects.export.plan',*export_args(expected='4',observed='3'))
+ assert p.returncode==2 and o['error']['code']=='SLIDE_COUNT_MISMATCH' and 'Do not Share' in o['error']['message']
+def test_export_plan_rejects_one_page_iframe_print_for_full_deck():
+ p,o=run('projects.export.plan',*export_args(),'--preview-pages','1')
+ assert p.returncode==2 and o['error']['code']=='IFRAME_PRINT_REJECTED' and 'not a full-deck export' in o['error']['message']
+def test_export_diagnose_provider_blocker_only_after_identity_and_counts_pass():
+ p,o=run('projects.export.diagnose',*export_args(),'--preview-pages','3','--provider-error','Share button disabled')
+ assert p.returncode==0 and o['data']['classification']=='PROVIDER_BLOCKER' and 'only after active-file identity' in o['data']['next_action']
 def test_export_verify_missing(tmp_path):
  _,o=run('projects.export.verify','--output-path',str(tmp_path/'none.pdf')); assert o['error']['code']=='NOT_FOUND'
 def test_export_verify_requires_artifact_metadata(tmp_path):
@@ -137,10 +165,17 @@ def test_unknown_unsupported():
 def test_unsafe_identifier_rejected():
  _,o=run('projects.update','--project-id','../../etc/passwd'); assert o['error']['code']=='INVALID_INPUT'
 def test_manifest_contract():
- m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.5'
+ m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.6'
  assert all(x not in (ROOT/'harness.json').read_text() for x in ['minimum','maximum','minLength','enum'])
 def test_contracts_match_manifest():
- m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==59 and c['commands']==list(m['commands'])
+ m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==61 and c['commands']==list(m['commands'])
+def test_export_contracts_use_gateway_supported_scalar_schemas():
+ m=json.loads((ROOT/'harness.json').read_text())
+ for name in ['projects.export.plan','projects.export.verify','projects.export.diagnose']:
+  command=m['commands'][name]
+  assert command['safetyClasses']==['readOnly'] and command['inputSchema']['additionalProperties'] is False
+  assert all(schema=={'type':'string'} for schema in command['inputSchema']['properties'].values())
+  assert all(arg['valueType'] in {'string','path'} for arg in command['argMap'])
 def test_no_secret_literals_in_distributables():
  text='\n'.join(p.read_text(errors='ignore') for p in ROOT.rglob('*') if p.is_file() and 'tests' not in p.parts)
  assert 'TOP_SECRET_SENTINEL' not in text

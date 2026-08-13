@@ -3,8 +3,9 @@
 from __future__ import annotations
 import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlparse
 
-VERSION="0.3.5"
+VERSION="0.3.6"
 DESIGN_URL="https://claude.ai/design"
 LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
@@ -27,6 +28,8 @@ HANDOFFS={
 }
 SECRET_KEYS=re.compile(r"token|password|secret|authorization|cookie",re.I)
 ID_RE=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$")
+LITERAL_UNICODE_ESCAPE_RE=re.compile(r"\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8}")
+MOJIBAKE_MARKERS=("\ufffd","Ã","Â","â€","ðŸ","ï¿½")
 
 def envelope(command,ok=True,data=None,warnings=None,error=None,retry_safe=True,evidence=None):
  out={"ok":ok,"command":command,"request_id":str(uuid.uuid4()),"data":data or {},"warnings":warnings or [],"evidence":evidence or [],"retry_safe":retry_safe}
@@ -103,13 +106,59 @@ def file_evidence(path_s):
    info["page_count"]=len(re.findall(rb"/Type\s*/Page(?!s)\b",raw))
  return info
 
+def positive_integer(value):
+ return int(value) if value and value.isdigit() and int(value)>0 else None
+
+def decoded_design_filename(file_url):
+ try:
+  values=parse_qs(urlparse(file_url).query,keep_blank_values=True,strict_parsing=False).get("file",[])
+ except ValueError:
+  return None
+ if len(values)!=1:return None
+ # parse_qs performs one URL decode. Decode repeatedly boundedly because observed
+ # Design URLs may encode the filename value itself before encoding the query.
+ value=values[0]
+ for _ in range(2):
+  decoded=unquote(value)
+  if decoded==value:break
+  value=decoded
+ return value
+
+def filename_problem(filename):
+ if not filename:return "filename is empty"
+ if LITERAL_UNICODE_ESCAPE_RE.search(filename):return "filename contains a literal Unicode escape placeholder"
+ if any(marker in filename for marker in MOJIBAKE_MARKERS):return "filename contains mojibake or replacement characters"
+ if "/" in filename or "\\" in filename:return "filename must be the exact basename shown in the UI"
+ if not filename.endswith(".dc.html"):return "filename must end exactly with .dc.html"
+
+def export_identity(file_url,ui_filename):
+ decoded=decoded_design_filename(file_url)
+ data={"file_url":file_url,"decoded_file_parameter":decoded,"ui_filename":ui_filename,"exact_filename_match":decoded==ui_filename if decoded is not None else False}
+ problem=filename_problem(decoded) if decoded is not None else "URL must contain exactly one non-empty file parameter"
+ if not problem:problem=filename_problem(ui_filename)
+ if not problem and decoded!=ui_filename:problem="URL-decoded file parameter does not exactly equal the active UI filename"
+ return data,problem
+
+def export_plan(file_url,ui_filename,expected_pages,observed_slides,preview_pages=None):
+ identity,problem=export_identity(file_url,ui_filename)
+ data={**identity,"expected_pages":expected_pages,"observed_slide_count":observed_slides,"observed_slide_count_matches":observed_slides==expected_pages,"read_only":True,"provider_execution":False}
+ if problem:return data,"ACTIVE_FILE_MISMATCH",problem
+ if observed_slides!=expected_pages:return data,"SLIDE_COUNT_MISMATCH",f"Observed {observed_slides} slides; expected {expected_pages}. Do not Share or export."
+ if preview_pages is not None:
+  data["print_preview_pages"]=preview_pages;data["print_preview_page_count_matches"]=preview_pages==expected_pages
+  if preview_pages==1 and expected_pages>1:return data,"IFRAME_PRINT_REJECTED","A one-page iframe/browser print is not a full-deck export. Return to Claude Design and use Share > PDF."
+  if preview_pages!=expected_pages:return data,"PRINT_PAGE_COUNT_MISMATCH",f"Print preview shows {preview_pages} pages; expected {expected_pages}. Do not save."
+ data["workflow"]=["open the exact selected .dc.html active file","confirm observed slide count equals expected pages","Share","PDF","Print or Save as PDF","verify the local file exists","verify PDF page count equals expected pages"]
+ data["environment_workflow"]={"chrome":"In print preview, traverse the preview shadow DOM to activate Save when ordinary browser refs cannot reach it.","gtk":"In the native Save File dialog, enter the exact output path/name and activate Save; then verify the file on disk."}
+ return data,None,None
+
 def handoff(command,values,action,source):
  return fail(command,"HUMAN_VERIFICATION",action+" Then reconcile "+source+" before retrying or claiming success.",False,{"url":DESIGN_URL,"values":values,"reconciliation_source":source})
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status"]:p.add_argument("--"+name)
- p.add_argument("--expected-pages");p.add_argument("--qa-pages")
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error"]:p.add_argument("--"+name)
+ p.add_argument("--expected-pages");p.add_argument("--observed-slides");p.add_argument("--preview-pages");p.add_argument("--qa-pages")
  p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
  return p
@@ -152,6 +201,17 @@ def main(argv=None):
    if result is not None:return result
   argv=["claude","mcp",verb]+(([a.mcp_name] if a.mcp_name else []))
   return envelope(c,data={"argv":argv,"execute":False,"optional":True,"requires_separate_approval":True,"readiness_impact":"none","reconcile":"real tool smoke for install; list/get for removal"})
+ if c in {"projects.export.plan","projects.export.diagnose"}:
+  expected=positive_integer(a.expected_pages);observed=positive_integer(a.observed_slides);preview=positive_integer(a.preview_pages) if a.preview_pages is not None else None
+  if not a.file_url or not a.ui_filename or expected is None or observed is None:return fail(c,"INVALID_INPUT","--file-url, --ui-filename, --expected-pages, and --observed-slides are required; page counts must be positive integers.")
+  if a.preview_pages is not None and preview is None:return fail(c,"INVALID_INPUT","--preview-pages must be a positive integer when supplied.")
+  data,code,message=export_plan(a.file_url,a.ui_filename,expected,observed,preview)
+  if code:return fail(c,code,message,False,{**data,"provider_error":a.provider_error} if a.provider_error else data)
+  if c=="projects.export.diagnose":
+   data["classification"]="PROVIDER_BLOCKER" if a.provider_error else "READY"
+   data["next_action"]="Resolve the provider blocker only after active-file identity and slide/page counts pass." if a.provider_error else "Continue with the prescribed native export workflow."
+   if a.provider_error:data["provider_error"]=a.provider_error
+  return envelope(c,data=data)
  if c=="projects.export.verify":
   if not a.output_path:return fail(c,"INVALID_INPUT","--output-path is required.")
   try: info=file_evidence(a.output_path)
@@ -162,8 +222,8 @@ def main(argv=None):
   if not a.project_id or not a.provenance:return fail(c,"INVALID_INPUT","Artifact metadata requires --project-id and --provenance (native-claude-design or fallback-rendering).")
   if a.provenance not in {"native-claude-design","fallback-rendering"}:return fail(c,"INVALID_INPUT","--provenance must be native-claude-design or fallback-rendering.")
   if a.format=="pdf":
-   if not a.expected_pages or not a.expected_pages.isdigit() or int(a.expected_pages)<1:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages as a positive integer before save/success.")
-   expected_pages=int(a.expected_pages)
+   expected_pages=positive_integer(a.expected_pages)
+   if expected_pages is None:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages as a positive integer before save/success.")
    info["expected_pages"]=expected_pages; info["page_count_matches"]=info.get("page_count")==expected_pages
    if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"PDF has {info.get('page_count',0)} pages; expected {expected_pages}.",False,info)
    tokens=[x.strip() for x in (a.qa_pages or "").split(",") if x.strip()]
@@ -181,7 +241,7 @@ def main(argv=None):
   if result is not None:return result
   if a.format not in FORMATS:return fail(c,"INVALID_INPUT","--format must be html, pptx, or pdf.")
   if not a.output_path:return fail(c,"INVALID_INPUT","--output-path is required.")
-  return handoff(c,{"project_id":a.project_id,"format":a.format,"output_path":a.output_path},"Open the exact project. For PDF use Share > Export > PDF > Download > Print or save as PDF; verify the print preview shows the expected full-deck page count before saving. Do not infer export is unavailable from Present or File menus alone. For any fallback, label provenance as fallback-rendering rather than native Claude Design export.","local regular file MIME, bytes, and SHA-256 via projects.export.verify")
+  return handoff(c,{"project_id":a.project_id,"format":a.format,"output_path":a.output_path},"First run projects.export.plan for the exact selected .dc.html file. For PDF use Share > PDF > Print or Save as PDF; verify print preview shows the expected full-deck page count before saving. A one-page iframe/browser print is not a full-deck export. For any fallback, label provenance as fallback-rendering rather than native Claude Design export.","actual local regular file MIME, bytes, SHA-256, and PDF page count via projects.export.verify")
  if c in READS:
   if c.endswith(".get") and not (a.project_id or a.design_system_id or a.template_id):return fail(c,"INVALID_INPUT","The resource identifier is required.")
   if c=="destinations.list":return envelope(c,data={"destinations":DESTINATIONS,"connection_state":"requires live account readback"})
