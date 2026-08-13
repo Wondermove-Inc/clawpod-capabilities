@@ -4,7 +4,7 @@
   "name": "memory-graph",
   "title": "Memory Graph",
   "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "entrypoint": "./memory_graph.py",
   "packageRoot": ".",
   "execution": {

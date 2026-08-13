@@ -6,7 +6,7 @@ import argparse, datetime, hashlib, html, json, os, re, stat, sys, tempfile
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 TEMPLATE = "enterprise-dark-v1"
 MAX_INPUT = 256_000
 PROFILES = {"brief": (1, 4, 2, 8), "newsletter": (2, 6, 3, 12), "capability-catalog": (1, 6, 4, 24)}

@@ -4,7 +4,7 @@
   "name": "codex-claude-project-development",
   "title": "Codex & Claude Project Development",
   "description": "Use to onboard Codex or Claude, register projects, and coordinate cross-process coding sessions, leases, and git context; use ordinary coding for in-process edits and GitHub for remote repository operations.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "entrypoint": "./codex_claude_project_development.py",
   "packageRoot": ".",
   "execution": {

@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 DESIGN_URL="https://claude.ai/design"
 MCP_NAME="claude-design"
 MCP_URL="https://api.anthropic.com/v1/design/mcp"
