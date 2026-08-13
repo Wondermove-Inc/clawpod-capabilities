@@ -28,6 +28,8 @@
     "projects.share.preview",
     "projects.share.apply",
     "projects.export",
+    "projects.export.plan",
+    "projects.export.diagnose",
     "projects.export.verify",
     "projects.handoff.preview",
     "projects.handoff.apply",

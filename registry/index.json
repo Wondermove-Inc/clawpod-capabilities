@@ -46,7 +46,7 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
       "path": "skills/claude-design",
       "compatibility": {
@@ -72,7 +72,7 @@
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.3.5"
+        "version": "0.3.6"
       }
     },
     {
@@ -725,7 +725,7 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Browser-first Claude Design guardrails, exact approvals, artifact verification, and optional MCP diagnostics.",
       "path": "harnesses/claude-design",
       "compatibility": {
@@ -750,15 +750,15 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "e864599a61720f72f2052f028ee237f44a466bd8bff1cd024906e54ddb33da36"
+          "sha256": "1a29f174caf44da8c24c7fdb3d5c5675754420ca45ecf3296414ac4e5ffe4581"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "d12ac0259db92d068c53a31c50f8ef1693298c6f40b8480bf19a64b717727ce6"
+          "sha256": "a22e1950fc5e25f6df7e1277e47ac658542bade524cec5bbb25a40485cb80720"
         },
         {
           "path": "harness.json",
-          "sha256": "b432b46549cfc2873cae29761eac45e1d20f87838fad983a78cea3e0a6865570"
+          "sha256": "084941f0fbe7c13a48680cefaf04577493035374d8f758519d7014a3e0ee8f3e"
         }
       ]
     },

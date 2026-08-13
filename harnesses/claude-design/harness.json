@@ -4,7 +4,7 @@
   "name": "claude-design",
   "title": "Claude Design",
   "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -2376,6 +2376,230 @@
           "valueType": "path",
           "optional": true,
           "pathRole": "output"
+        }
+      ]
+    },
+    "projects.export.plan": {
+      "description": "projects export plan",
+      "baseArgv": [
+        "projects.export.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "observedSlides": {
+            "type": "string"
+          },
+          "previewPages": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedSlides",
+          "type": "option",
+          "flag": "--observed-slides",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "previewPages",
+          "type": "option",
+          "flag": "--preview-pages",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.export.diagnose": {
+      "description": "projects export diagnose",
+      "baseArgv": [
+        "projects.export.diagnose"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "observedSlides": {
+            "type": "string"
+          },
+          "previewPages": {
+            "type": "string"
+          },
+          "providerError": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedSlides",
+          "type": "option",
+          "flag": "--observed-slides",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "previewPages",
+          "type": "option",
+          "flag": "--preview-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "providerError",
+          "type": "option",
+          "flag": "--provider-error",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
