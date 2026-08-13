@@ -6,7 +6,7 @@ def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],text=True,capture_output=True,env=env); return p,json.loads(p.stdout)
 
 def test_version():
- p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.0'
+ p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.4'
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
 def test_onboarding_plan_is_browser_first_and_minimal_human_input():
@@ -21,6 +21,47 @@ def test_onboarding_status_browser_readiness_independent_of_mcp():
  _,o=run('onboarding.status'); d=o['data']; assert d['capability_readiness']=='READY_PENDING_BROWSER_AUTH_CHECK' and d['mcp_required'] is False
 def test_auth_contract_requires_only_browser_login_steps():
  _,o=run('auth.contract'); d=o['data']; assert d['default_auth']=='existing claude.ai browser session' and d['mcp_oauth_required'] is False and d['mcp_registration_required'] is False
+@pytest.mark.parametrize('tag',['input','textarea','INPUT'])
+def test_browser_input_plan_uses_fill_for_standard_fields_at_any_length(tag):
+ prompt='x'*1200; p,o=run('browser.input.plan','--prompt',prompt,'--ref','field-1','--tag-name',tag)
+ assert p.returncode==0 and o['data']['strategy']=='fill'
+ assert o['data']['action']=={'kind':'fill','fields':[{'ref':'field-1','type':'text','value':prompt}]}
+ assert o['data']['expected_length']==len(prompt) and len(o['data']['expected_sha256'])==64
+@pytest.mark.parametrize('length,strategy',[ (600,'type'),(601,'evaluate') ])
+def test_browser_input_plan_contenteditable_threshold(length,strategy):
+ prompt='ø'*length; p,o=run('browser.input.plan','--prompt',prompt,'--ref','prompt-box','--contenteditable')
+ assert p.returncode==0 and o['data']['editable_kind']=='contenteditable' and o['data']['strategy']==strategy
+ assert o['data']['action']['kind']==strategy and o['data']['action']['ref']=='prompt-box'
+def test_long_contenteditable_evaluate_treats_adversarial_prompt_as_text():
+ prompt=('quotes " \\ newline\n markup </script><b>no</b> unicode 雪 '*20)
+ _,o=run('browser.input.plan','--prompt',prompt,'--ref','r7','--role','textbox')
+ fn=o['data']['action']['fn']; literal=json.dumps(prompt,ensure_ascii=True)
+ assert o['data']['strategy']=='evaluate' and f'const text = {literal};' in fn
+ assert 'replaceChildren(document.createTextNode(text))' in fn and "InputEvent('input'" in fn and "Event('change'" in fn
+ assert prompt not in fn
+def test_long_contenteditable_fails_closed_without_evaluate():
+ p,o=run('browser.input.plan','--prompt','x'*601,'--ref','r','--contenteditable','--evaluate-disabled')
+ assert p.returncode==2 and o['error']['code']=='UNSUPPORTED' and o['retry_safe'] is False
+ assert o['data']['strategy']=='blocked' and 'type is not a safe long-input fallback' in o['data']['reason']
+def test_browser_input_plan_rejects_unsupported_and_missing_target_details():
+ _,missing=run('browser.input.plan','--prompt','x'); assert missing['error']['code']=='INVALID_INPUT'
+ p,o=run('browser.input.plan','--prompt','x','--ref','r','--tag-name','div')
+ assert p.returncode==2 and o['error']['code']=='UNSUPPORTED' and o['data']['strategy']=='blocked'
+def test_browser_input_verify_requires_exact_readback():
+ prompt='line one\n雪 "quoted"'
+ p,ok=run('browser.input.verify','--prompt',prompt,'--observed-text',prompt)
+ assert p.returncode==0 and ok['data']['exact_match'] and ok['data']['expected_sha256']==hashlib.sha256(prompt.encode()).hexdigest()
+ assert ok['evidence'][0]['kind']=='browser-input-verification'
+ p,bad=run('browser.input.verify','--prompt',prompt,'--observed-text',prompt+' ')
+ assert p.returncode==2 and bad['error']['code']=='VERIFICATION_FAILED' and bad['retry_safe'] is False and bad['data']['exact_match'] is False
+def test_browser_input_diagnosis_recovers_stale_ref_once_without_restart():
+ _,o=run('browser.input.diagnose','--error-message','Unknown ref from stale snapshot','--gateway-status','unhealthy')
+ assert o['data']['classification']=='STALE_REF' and 'retry once' in o['data']['next_action'] and o['data']['gateway_restart'] is False
+def test_browser_input_timeout_does_not_infer_gateway_restart():
+ _,o=run('browser.input.diagnose','--error-message','browser action timed out','--gateway-status','healthy')
+ assert o['data']['classification']=='BROWSER_ACTION_TIMEOUT' and o['data']['gateway_status'] is True and o['data']['gateway_restart'] is False
+ assert 'not evidence that the Gateway must be restarted' in o['warnings'][0]
+ _,bad=run('browser.input.diagnose','--error-message','failed','--gateway-status','broken'); assert bad['error']['code']=='INVALID_INPUT'
 def test_setup_token_deprecated_for_default_path():
  _,o=run('auth.setup-token.plan'); assert o['data']['deprecated_for_default_path'] and o['data']['execute'] is False
 def test_login_is_browser_handoff():
@@ -96,10 +137,10 @@ def test_unknown_unsupported():
 def test_unsafe_identifier_rejected():
  _,o=run('projects.update','--project-id','../../etc/passwd'); assert o['error']['code']=='INVALID_INPUT'
 def test_manifest_contract():
- m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.0'
+ m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.4'
  assert all(x not in (ROOT/'harness.json').read_text() for x in ['minimum','maximum','minLength','enum'])
 def test_contracts_match_manifest():
- m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==56 and c['commands']==list(m['commands'])
+ m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==59 and c['commands']==list(m['commands'])
 def test_no_secret_literals_in_distributables():
  text='\n'.join(p.read_text(errors='ignore') for p in ROOT.rglob('*') if p.is_file() and 'tests' not in p.parts)
  assert 'TOP_SECRET_SENTINEL' not in text

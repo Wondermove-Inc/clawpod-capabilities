@@ -4,8 +4,9 @@ from __future__ import annotations
 import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 
-VERSION="0.3.3"
+VERSION="0.3.4"
 DESIGN_URL="https://claude.ai/design"
+LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
 MCP_URL="https://api.anthropic.com/v1/design/mcp"
 MCP_DEFECT="Claude Code 2.1.229 sends an OAuth redirect_uri that the provider rejects; transport Connected does not prove tool authorization."
@@ -41,6 +42,39 @@ def canonical(command, values):
 
 def effect_digest(command,values): return hashlib.sha256(canonical(command,values).encode()).hexdigest()
 
+def editable_kind(tag_name,contenteditable,role):
+ tag=(tag_name or "").lower()
+ if tag in {"input","textarea"}:return "standard"
+ if contenteditable or (role or "").lower()=="textbox":return "contenteditable"
+ return "unsupported"
+
+def contenteditable_injection(prompt):
+ # OpenClaw evaluate passes the ref-resolved element as `el`. Embed the text as a
+ # JSON string literal so quotes, newlines, and Unicode cannot alter the function.
+ literal=json.dumps(prompt,ensure_ascii=True)
+ return "(el) => { const text = "+literal+"; el.focus(); el.replaceChildren(document.createTextNode(text)); el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText',data:text})); el.dispatchEvent(new Event('change',{bubbles:true})); return {text:el.innerText ?? el.textContent ?? '',length:(el.innerText ?? el.textContent ?? '').length}; }"
+
+def browser_input_plan(prompt,ref,tag_name=None,contenteditable=False,role=None,evaluate_enabled=True):
+ kind=editable_kind(tag_name,contenteditable,role)
+ common={"editable_kind":kind,"expected_length":len(prompt),"expected_sha256":hashlib.sha256(prompt.encode()).hexdigest(),"verify":"read text/value with evaluate and require exact text, length, and SHA-256 match","stale_ref_recovery":["take a fresh snapshot of the same target","redetect the editable by role/name and editable semantics","retry the selected input action once with the new ref","verify exactly; never retry or submit on ambiguity"]}
+ if kind=="standard":
+  return {**common,"strategy":"fill","action":{"kind":"fill","fields":[{"ref":ref,"type":"text","value":prompt}]}}
+ if kind=="contenteditable" and len(prompt)>LONG_CONTENTEDITABLE_CHARS:
+  if not evaluate_enabled:return {**common,"strategy":"blocked","reason":"Long contenteditable input requires enabled browser evaluate or a separately supported paste action; type is not a safe long-input fallback."}
+  return {**common,"strategy":"evaluate","action":{"kind":"evaluate","ref":ref,"fn":contenteditable_injection(prompt)}}
+ if kind=="contenteditable":return {**common,"strategy":"type","action":{"kind":"type","ref":ref,"text":prompt},"constraint":f"type is allowed only at or below {LONG_CONTENTEDITABLE_CHARS} characters"}
+ return {**common,"strategy":"blocked","reason":"Element is not a standard editable or contenteditable textbox; refresh the snapshot and redetect."}
+
+def diagnose_browser_input(error_message,gateway_healthy=None):
+ message=error_message or ""
+ lower=message.lower()
+ stale=bool(re.search(r"stale|element .*not found|not visible|unknown ref|snapshot",lower))
+ timeout="timed out" in lower or "timeout" in lower
+ if stale:return {"classification":"STALE_REF","next_action":"fresh snapshot, redetect editable, retry once, then exact verification","gateway_restart":False}
+ if timeout:return {"classification":"BROWSER_ACTION_TIMEOUT","next_action":"inspect current field content and browser status; choose evaluate for long contenteditable input","gateway_restart":False,"gateway_status":gateway_healthy}
+ if gateway_healthy is False:return {"classification":"BROWSER_CONTROL_UNAVAILABLE","next_action":"diagnose browser/Gateway health independently before any restart decision","gateway_restart":False}
+ return {"classification":"BROWSER_INPUT_FAILED","next_action":"inspect current browser state and exact field content before retrying","gateway_restart":False}
+
 def run_claude(args,timeout=5):
  exe=shutil.which("claude")
  if not exe:return {"available":False,"exit_code":None,"stdout":"","stderr":"claude executable not found"}
@@ -74,9 +108,9 @@ def handoff(command,values,action,source):
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance"]:p.add_argument("--"+name)
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status"]:p.add_argument("--"+name)
  p.add_argument("--expected-pages");p.add_argument("--qa-pages")
- p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true")
+ p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
  return p
 
@@ -88,6 +122,22 @@ def main(argv=None):
  if c=="onboarding.status":return envelope(c,data={"installed":True,"capability_readiness":"READY_PENDING_BROWSER_AUTH_CHECK","default_execution":"browser","design_url":DESIGN_URL,"browser_authenticated":"not_safely_inferred","mcp_required":False},warnings=["Verify the logged-in Claude Design UI with the desktop/browser capability before provider work."])
  if c=="auth.contract":return envelope(c,data={"default_auth":"existing claude.ai browser session","login_handoff":"Agent opens Claude Design; user performs only sign-in, MFA, or provider consent when the browser is not authenticated.","credential_files":False,"mcp_oauth_required":False,"mcp_registration_required":False,"browser_readiness_check":"authenticated Design UI is readable"})
  if c=="auth.status":return envelope(c,data={"browser_authentication":"not_safely_inferred","verification":"desktop/browser source-of-truth check required","claude_cli_optional":bool(shutil.which("claude")),"mcp_required":False})
+ if c=="browser.input.plan":
+  if a.prompt is None or not a.ref:return fail(c,"INVALID_INPUT","--prompt and --ref are required.")
+  plan=browser_input_plan(a.prompt,a.ref,a.tag_name,a.contenteditable,a.role,not a.evaluate_disabled)
+  if plan["strategy"]=="blocked":return fail(c,"UNSUPPORTED",plan["reason"],False,plan)
+  return envelope(c,data=plan)
+ if c=="browser.input.verify":
+  if a.prompt is None or a.observed_text is None:return fail(c,"INVALID_INPUT","--prompt and --observed-text are required for exact verification.")
+  expected_hash=hashlib.sha256(a.prompt.encode()).hexdigest(); observed_hash=hashlib.sha256(a.observed_text.encode()).hexdigest()
+  data={"exact_match":a.prompt==a.observed_text,"expected_length":len(a.prompt),"observed_length":len(a.observed_text),"expected_sha256":expected_hash,"observed_sha256":observed_hash}
+  if not data["exact_match"]:return fail(c,"VERIFICATION_FAILED","Inserted browser content does not exactly match the requested content and must not be submitted.",False,data)
+  return envelope(c,data=data,evidence=[{"kind":"browser-input-verification","ref":observed_hash,"metadata":{"length":len(a.observed_text),"exact_match":True}}])
+ if c=="browser.input.diagnose":
+  if not a.error_message:return fail(c,"INVALID_INPUT","--error-message is required.")
+  if a.gateway_status not in {None,"healthy","unhealthy","unknown"}:return fail(c,"INVALID_INPUT","--gateway-status must be healthy, unhealthy, or unknown.")
+  status={"healthy":True,"unhealthy":False}.get(a.gateway_status)
+  return envelope(c,data=diagnose_browser_input(a.error_message,status),warnings=["A browser type timeout alone is not evidence that the Gateway must be restarted."])
  if c=="auth.setup-token.plan":return envelope(c,data={"deprecated_for_default_path":True,"execute":False,"reason":"Browser-first readiness does not require a Claude Code setup token or MCP OAuth."},warnings=["Use only for a separately approved Claude Code workflow, never for default Claude Design onboarding."])
  if c=="code.login.handoff":return handoff(c,{},"Open Claude Design in the browser. If authentication is absent, complete only provider sign-in, MFA, or consent, then return control.","authenticated Claude Design UI")
  if c=="mcp.inspect":
