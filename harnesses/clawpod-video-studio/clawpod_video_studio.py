@@ -8,7 +8,7 @@ import argparse, contextlib, dataclasses, datetime as dt, enum, fcntl, hashlib, 
 from pathlib import Path
 import yaml
 
-VERSION="0.2.1"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
+VERSION="0.2.3"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
 UPSTREAM_LOCK={"url":"https://github.com/calesthio/OpenMontage","commit":UPSTREAM_COMMIT,"packageVersion":VERSION,"license":"AGPL-3.0-only","licenseSha256":"0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0","treeDigest":"git:fd61711510ef01c3b896bae808ee4ca7c96a391f","patches":[{"id":"openmontage-documentary-category","path":"patches/openmontage-documentary-category.patch","sha256":"sha256:f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"}],"patchedFiles":[{"path":"schemas/pipelines/pipeline_manifest.schema.json","sha256":"sha256:8491027015f0ec1b49da834bd341a00380f9cb34be57afb38c086e577ab95bad"}]}
 DEPENDENCY_LOCK={"pythonEnvironmentDigest":"sha256:1426f614312febda3348de68a45de54c41107a68147317c2265722a7d2d5e4b7","npmLockDigest":"sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed","npmLockPath":"remotion-composer/package-lock.json"}
 MAX_JSON=1_000_000; MAX_LOG=250_000

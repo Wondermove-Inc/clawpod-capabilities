@@ -5,7 +5,7 @@ description: "Use to generate, edit, compare, inspect, or QA images with OpenAI,
 
 # ClawPod Image Studio
 
-Use the linked `clawpod-image-studio` Harness v0.4.0. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
+Use the linked `clawpod-image-studio` Harness v0.4.3. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
 
 ## Immediate post-install onboarding
 

@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.5"
+VERSION = "0.1.7"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000
@@ -185,7 +185,7 @@ def command(a) -> dict:
         data.update({"next":["capture any supplied key immediately into owner-only memory_secret storage without repeating it","select the authorized Resend pointer from the safe secret catalog","pass the identical secretRefs mapping {RESEND_API_KEY: pointerId} to Gateway prepare and run","run verify, then sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"source":"Room, message, or an existing owner-authorized credential","storage":"memory_secret","owner_only":True,"environment":"RESEND_API_KEY","gateway_parameter":"secretRefs","per_run_binding":True,"prepare_run_binding_must_match":True,"environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
         return output(a.command,True,data=data)
     if a.command=="status":
-        data=onboarding_status(a.state); data["persistent_policy_required"]=False
+        data=onboarding_status(a.state); data.update({"persistent_policy_required":False,"version":VERSION})
         return output(a.command,True,data=data)
     client=Client(a.base_url,a.timeout,a.retries)
     if a.command=="verify":

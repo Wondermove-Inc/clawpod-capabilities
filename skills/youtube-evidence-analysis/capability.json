@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -17,7 +17,7 @@
   },
   "linkedHarness": {
     "id": "youtube-evidence-analysis",
-    "version": "0.1.3"
+    "version": "0.1.4"
   },
   "descriptionSource": "skill-frontmatter"
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "clawpod-cloud-webhooks",
-    "version": "0.2.5"
+    "version": "0.2.6"
   },
   "descriptionSource": "skill-frontmatter"
 }
