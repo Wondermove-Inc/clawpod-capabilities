@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,7 +12,7 @@
   },
   "linkedHarness": {
     "id": "codex-claude-project-development",
-    "version": "0.2.2"
+    "version": "0.2.3"
   },
   "safety": {
     "risk": "write-safe",

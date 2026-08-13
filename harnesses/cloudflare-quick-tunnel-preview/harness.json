@@ -4,7 +4,7 @@
   "name": "cloudflare-quick-tunnel-preview",
   "title": "Cloudflare Quick Tunnel Preview",
   "description": "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "entrypoint": "./cloudflare_quick_tunnel_preview.py",
   "packageRoot": ".",
   "execution": {

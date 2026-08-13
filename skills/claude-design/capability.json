@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "claude-design",
-    "version": "0.3.1"
+    "version": "0.3.2"
   },
   "descriptionSource": "skill-frontmatter"
 }

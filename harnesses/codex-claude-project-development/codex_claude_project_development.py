@@ -15,7 +15,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 SCHEMA_VERSION = 2
 AGENTS = ("claude", "codex")
 MAX_STATE_BYTES = 1_048_576

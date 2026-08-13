@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
   "compatibility": {
     "openclaw": ">=2026.4.0",

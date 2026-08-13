@@ -24,7 +24,7 @@ import uuid
 from pathlib import Path
 from urllib.parse import urlsplit
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 SUPERVISOR_EXECUTABLE = os.path.realpath(sys.executable)
 STATE_VERSION = 1
 MAX_READ_LOG = 16_384
