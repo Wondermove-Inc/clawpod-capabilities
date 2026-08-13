@@ -37,6 +37,23 @@ def operation(command:str, params:dict) -> dict:
  service,version=service_for(command)
  if service=="oauth": return {"service":service,"version":version,"action":command.split(".",1)[1],"method":"LOCAL","url":"","query":{},"pathParams":set()}
  p=dict(params or {}); query={}; used=set(); parts=command.split("."); action=parts[-1]
+ if command=="gmail.read":
+  mode=p.get("mode","messages")
+  if mode not in ("messages","threads"):raise OperationError("gmail.read mode must be messages or threads")
+  query={k:v for k,v in p.items() if k not in ("mode","userId","includeBody")}
+  query.setdefault("fields","nextPageToken,"+mode+"(id,threadId,labelIds,snippet,internalDate,payload(headers))")
+  return {"service":"gmail","version":"v1","action":"read","method":"GET","url":"https://gmail.googleapis.com/gmail/v1/users/"+_q(p.get("userId","me"))+"/"+mode,"query":query,"pathParams":set()}
+ if command=="calendar.read":
+  cal=_q(p.get("calendarId","primary"));query={k:v for k,v in p.items() if k!="calendarId"};query.setdefault("singleEvents",True);query.setdefault("orderBy","startTime")
+  query.setdefault("fields","nextPageToken,items(id,summary,start,end,organizer,attendees,status,recurringEventId,recurrence)")
+  return {"service":"calendar","version":"v3","action":"read","method":"GET","url":"https://www.googleapis.com/calendar/v3/calendars/"+cal+"/events","query":query,"pathParams":set()}
+ if command=="drive.read":
+  mode=p.get("mode","recent")
+  if mode=="get":
+   _need(p,"fileId");return {"service":"drive","version":"v3","action":"read","method":"GET","url":"https://www.googleapis.com/drive/v3/files/"+_q(p["fileId"]),"query":{"fields":"id,name,mimeType,modifiedTime,owners(displayName,emailAddress),parents,webViewLink,size"},"pathParams":{"fileId"}}
+  if mode not in ("recent","search"):raise OperationError("drive.read mode must be search, recent, or get")
+  query={k:v for k,v in p.items() if k not in ("mode","fileId")};query.setdefault("orderBy","modifiedTime desc");query.setdefault("fields","nextPageToken,files(id,name,mimeType,modifiedTime,owners(displayName,emailAddress),parents,webViewLink,size)")
+  return {"service":"drive","version":"v3","action":"read","method":"GET","url":"https://www.googleapis.com/drive/v3/files","query":query,"pathParams":set()}
  if service=="gmail":
   base="https://gmail.googleapis.com/gmail/v1/users/"+_q(p.get("userId","me")); resource=parts[1]
   if resource=="profile": path="profile"

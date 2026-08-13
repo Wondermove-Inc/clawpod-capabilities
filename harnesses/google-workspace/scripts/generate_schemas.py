@@ -14,6 +14,23 @@ if 'auth.onboarding.decide' not in doc['commands']:
  template['description']='Deterministically choose the Google OAuth audience and verification gates without credentials or network access.'
  template['baseArgv']=['auth.onboarding.decide']
  doc['commands']['auth.onboarding.decide']=template
+ADDITIONS={
+ 'auth.bindings.list':('List pod-local credential aliases and sanitized metadata.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
+ 'auth.bindings.status':('Validate binding registry, permissions, bundle shape, and identity.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
+ 'auth.bindings.resolve':('Resolve one alias to sanitized metadata without exposing a path.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
+ 'auth.bindings.import':('Copy or explicitly reference a validated legacy credential bundle.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.accounts.list'),
+ 'auth.bindings.rename':('Atomically rename a pod-local alias.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
+ 'auth.bindings.remove':('Remove a binding, with separate explicit credential deletion.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
+ 'auth.bindings.migrate':('Preview or apply bounded deterministic legacy discovery.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.accounts.list'),
+ 'auth.bindings.permissions.check':('Report protected-root permission defects.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
+ 'auth.bindings.permissions.repair':('Repair owned pod-local protected-root permissions.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
+ 'gmail.read':('Perform bounded Gmail message or thread reads with normalized summaries.',('secretUse','authReuse','readOnly'),'gmail.messages.list'),
+ 'calendar.read':('Perform bounded upcoming or ranged Calendar reads with normalized summaries.',('secretUse','authReuse','readOnly'),'calendar.events.list'),
+ 'drive.read':('Perform bounded Drive search, recent, or metadata reads.',('secretUse','authReuse','readOnly'),'drive.files.list'),
+}
+for name,(description,safety,source) in ADDITIONS.items():
+ if name not in doc['commands']:
+  template=copy.deepcopy(doc['commands'][source]);template['description']=description;template['baseArgv']=[name];template['safetyClasses']=list(safety);doc['commands'][name]=template
 SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
 PAGED={'list','search','instances'}
 def allowed_query(cmd,action):
@@ -51,6 +68,10 @@ def manifest_name(command):
  # Runtime command identifiers are lowercase. Preserve the provider spelling in
  # baseArgv while exposing a lifecycle-safe kebab-case alias.
  return '.'.join(re.sub(r'(?<!^)(?=[A-Z])','-',part).lower() for part in command.split('.'))
+def exact_surface(command,schema,names):
+ keep=set(names);schema['properties']={k:v for k,v in schema['properties'].items() if k in keep}
+ schema['required']=[k for k in schema.get('required',[]) if k in keep]
+ command['argMap']=[arg for arg in command.get('argMap',[]) if arg.get('arg') in keep]
 
 commands={logical_name(key,c):c for key,c in doc['commands'].items()}
 # Rehydrate rich schemas when regenerating from an already projected manifest.
@@ -63,6 +84,13 @@ if contracts_path.exists():
   if cmd in existing_contracts:
    c['inputSchema']=json.loads(json.dumps(existing_contracts[cmd]['inputSchema']))
    c['outputSchema']=json.loads(json.dumps(existing_contracts[cmd]['outputSchema']))
+ # Added commands are always rebuilt from a baseline rich contract. This
+ # prevents an already-projected lifecycle manifest from becoming semantic
+ # input on the next deterministic generation pass.
+ for name,(_description,_safety,source) in ADDITIONS.items():
+  if source in existing_contracts:
+   commands[name]['inputSchema']=json.loads(json.dumps(existing_contracts[source]['inputSchema']))
+   commands[name]['outputSchema']=json.loads(json.dumps(existing_contracts[source]['outputSchema']))
 for cmd,c in commands.items():
  mapped=[]
  for safety in c.get('safetyClasses',[]):
@@ -82,6 +110,9 @@ for cmd,c in commands.items():
    c['inputSchema']['properties'][name]={'type':'string'}
  c.pop('requiredScopes',None)
  s=c['inputSchema'];props=s['properties'];props['fields']={'type':'array','items':{'type':'string','minLength':1,'maxLength':512},'maxItems':100};props['expectedSha256']={'type':'string','pattern':'^[a-f0-9]{64}$'};props['batch']={'type':'array','minItems':1,'maxItems':100,'items':{'type':'object'}};s['required']=list(dict.fromkeys(s.get('required',[])))
+ # 0.3.0 can select the sole account in an explicit bundle or the sole healthy
+ # pod-local binding, so account is no longer a universal required field.
+ s['required']=[name for name in s['required'] if name!='account']
  if cmd not in ('auth.login','auth.scopes.list'):
   props['credentialPath']=S(maxLength=4096)
   if not any(arg.get('arg')=='credentialPath' for arg in c.get('argMap',[])):
@@ -102,15 +133,42 @@ for cmd,c in commands.items():
    props['body']=O({
     'clientPath':S(),
     'profiles':A(S(),maxItems=32),
-    'managedBrowserDevtoolsUrl':S(),
-    'smokeTests':A(S(enum=['gmail','calendar','drive']),maxItems=3),
+   'managedBrowserDevtoolsUrl':S(),
+   'smokeTests':A(S(enum=['gmail','calendar','drive']),maxItems=3),
+    'bind':{'type':'boolean'},
    },required=['clientPath','profiles'])
    # Human consent is bounded at ten minutes. The process timeout below must
    # outlive that receiver window and the final token/identity exchanges.
    props['timeoutMs']['minimum']=5000;props['timeoutMs']['maximum']=600000;props['timeoutMs']['default']=600000
-   s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot','outputPath']))
+   s['required']=[name for name in s['required'] if name!='outputPath']
+   s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot']))
+  elif cmd=='auth.bindings.import':
+   props['body']=O({'mode':S(enum=['copy','reference']),'sourceAlias':S()});s['required']=list(dict.fromkeys(s['required']+['account','inputPath']))
+   exact_surface(c,s,('account','inputPath','body','overwrite','preview','dryRun','confirm','requestId'))
+  elif cmd=='auth.bindings.rename':props['body']=O({'newAlias':S()},required=['newAlias']);s['required']=list(dict.fromkeys(s['required']+['account','body']))
+  elif cmd=='auth.bindings.remove':props['body']=O({'deleteCredential':{'type':'boolean'}});s['required']=list(dict.fromkeys(s['required']+['account']))
+  elif cmd=='auth.bindings.migrate':
+   mapping=O({'candidateId':S(),'alias':S(),'sourceAlias':S(),'mode':S(enum=['copy','reference']),'overwrite':{'type':'boolean'}},required=['candidateId','alias'])
+   props['body']=O({'mappings':A(mapping,maxItems=1)});s['required']=list(dict.fromkeys(s['required']+['inputPath']))
+   exact_surface(c,s,('inputPath','body','preview','dryRun','confirm','requestId'))
   else: props['body']=O({})
+  if cmd in ('auth.bindings.list','auth.bindings.status','auth.bindings.permissions.check'):
+   exact_surface(c,s,('requestId',))
+  elif cmd=='auth.bindings.resolve':
+   exact_surface(c,s,('account','requestId'))
+  elif cmd=='auth.bindings.rename':
+   exact_surface(c,s,('account','body','preview','dryRun','confirm','requestId'))
+  elif cmd=='auth.bindings.remove':
+   exact_surface(c,s,('account','body','preview','dryRun','confirm','requestId'))
+  elif cmd=='auth.bindings.permissions.repair':
+   exact_surface(c,s,('preview','dryRun','confirm','requestId'))
   continue
+ if cmd=='gmail.read':
+  props['params']=O({'mode':S(enum=['messages','threads']),'userId':S(),'q':S(maxLength=20000),'labelIds':A(S(),maxItems=100),'includeSpamTrash':{'type':'boolean'},'includeBody':{'type':'boolean'}});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+ if cmd=='calendar.read':
+  props['params']=O({'calendarId':S(),'timeMin':S(format='date-time'),'timeMax':S(format='date-time'),'timeZone':S(),'singleEvents':{'type':'boolean'},'orderBy':S(enum=['startTime','updated'])});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+ if cmd=='drive.read':
+  props['params']=O({'mode':S(enum=['search','recent','get']),'fileId':S(),'q':S(maxLength=20000),'spaces':QUERY_TYPES['spaces'],'corpora':QUERY_TYPES['corpora'],'driveId':S(),'orderBy':S()});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()
  for key in sorted(allowed_query(cmd,op['action'])):
@@ -159,7 +217,8 @@ def lifecycle_schema(node):
 for command in commands.values():
  # Batch items are intentionally typed from the command's own accepted fields.
  schema=command['inputSchema'];item_props={k:v for k,v in schema.get('properties',{}).items() if k!='batch'}
- schema['properties']['batch']['items']={'type':'object','additionalProperties':False,'properties':item_props}
+ if 'batch' in schema.get('properties',{}):
+  schema['properties']['batch']['items']={'type':'object','additionalProperties':False,'properties':item_props}
  close_objects(command['inputSchema']);close_objects(command['outputSchema'])
  # Snapshot full recursive semantics before projecting the lifecycle schemas.
  command['_richInputSchema']=json.loads(json.dumps(schema))

@@ -489,3 +489,10 @@ Accessed 2026-07-22. Google documentation is authoritative for provider semantic
 - Drive OAuth scopes: https://developers.google.com/workspace/drive/api/guides/api-specific-auth
 - Google OAuth 2.0 overview: https://developers.google.com/identity/protocols/oauth2
 - Repository conventions inspected: `README.md`, `schemas/capability.schema.json`, `schemas/package-metadata.schema.json`, `harnesses/clawpod-capability-registry/harness.json`, its paired `capability.json` files, `SKILL.md`, and package/repository tests.
+# Pod-local account aliases (0.3.0)
+
+Google Workspace 0.3.0 adds protected pod-local account aliases without adding an agent namespace. `GOOGLE_WORKSPACE_BINDING_ROOT`, when supplied by the trusted local runtime, must be absolute; otherwise the Harness uses the platform user-state directory. Registry metadata contains opaque credential references and masked identity hints only. OAuth tokens and client configuration remain in private credential bundles outside Skill, Harness, Registry, staging, and cache trees.
+
+Resolution precedence is: explicit typed `credentialPath` plus account, explicit typed path with its sole account, explicit account resolved as a pod-local alias, deprecated `GOOGLE_WORKSPACE_ACCOUNT` as an alias selector, then the sole healthy binding. Invalid explicit selectors never fall through and multiple bindings require an account. `auth.bindings.*` diagnostics never return filesystem paths.
+
+Binding writes use a private advisory lock, revision-checked previews, same-directory durable replacement, and bounded metadata-only backups. Import/migration do not delete legacy bundles. Package replacement and rollback must leave the protected root untouched. A rollback to 0.2.6 remains usable by supplying the referenced bundle through the typed `credentialPath`; 0.2.6 does not understand pod-local aliases.

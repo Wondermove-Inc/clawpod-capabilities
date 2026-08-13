@@ -2,10 +2,12 @@ from __future__ import annotations
 import hashlib, json, os, re, tempfile, time
 from pathlib import Path
 
-SECRET_KEYS=re.compile(r"token|secret|authorization|code|verifier|raw|content|body|description|credentialPath",re.I)
+SECRET_KEYS=re.compile(r"token|secret|authorization|code|verifier|raw|content|body|description|credential(?:Path|Ref)|resolvedPath|bindingRoot|client(?:Config|Id)|providerResponse|exceptionContext|root|path",re.I)
+SECRET_VALUES=re.compile(r"(?:bearer\s+\S+|(?:access|refresh|id)[_-]?token\s*[:=]\s*\S+|client[_-]?secret\s*[:=]\s*\S+)",re.I)
 def redact(value):
     if isinstance(value,dict): return {k:("[REDACTED]" if SECRET_KEYS.search(k) else redact(v)) for k,v in value.items()}
     if isinstance(value,list): return [redact(v) for v in value]
+    if isinstance(value,str) and (SECRET_VALUES.search(value) or value.startswith(("/","file:"))):return "[REDACTED]"
     return value
 
 def canonical(value)->str: return json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False)

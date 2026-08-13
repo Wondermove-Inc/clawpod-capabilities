@@ -11,10 +11,11 @@ class AdversarialContract(unittest.TestCase):
  def mock(self,responses):
   p=Path(self.d.name)/('mock'+str(time.time_ns())+'.json');p.write_text(json.dumps(responses));os.environ['GOOGLE_WORKSPACE_MOCK_HTTP']=str(p);return p
  def tearDown(self):os.environ.pop('GOOGLE_WORKSPACE_MOCK_HTTP',None);os.environ.pop('GOOGLE_WORKSPACE_STATE_FILE',None)
- def test_all_151_schemas_are_specialized_and_scoped(self):
+ def test_all_schemas_are_specialized_and_scoped(self):
   for cmd,c in catalog().items():
    with self.subTest(cmd=cmd):
-    self.assertFalse(c['inputSchema']['additionalProperties']);self.assertFalse(c['inputSchema']['properties']['params']['additionalProperties'])
+    self.assertFalse(c['inputSchema']['additionalProperties'])
+    if 'params' in c['inputSchema']['properties']:self.assertFalse(c['inputSchema']['properties']['params']['additionalProperties'])
     if not cmd.startswith('auth.'):self.assertTrue(c['requiredScopes'])
  def test_every_remote_command_resolves(self):
   s={k:'x/id' for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};s.update(kind='imap',mimeType='text/plain',requestId='r')
@@ -37,7 +38,7 @@ class AdversarialContract(unittest.TestCase):
  def test_unknown_provider_query_fails(self):
   out,code=run('drive.files.list',{'account':'a','params':{'evil':'x'}});self.assertEqual(code,2);self.assertIn('unsupported provider',out['error']['message'])
  def test_dry_run_authenticates(self):
-  out,code=run('calendar.events.insert',{'account':'missing','params':{'calendarId':'c'},'body':{'summary':'x'},'dryRun':True});self.assertEqual(code,3);self.assertEqual(out['error']['code'],'AUTH_REQUIRED')
+  out,code=run('calendar.events.insert',{'account':'missing','params':{'calendarId':'c'},'body':{'summary':'x'},'dryRun':True});self.assertEqual(code,3);self.assertEqual(out['error']['code'],'BINDING_NOT_FOUND')
  def test_drive_binary_operations_are_supported(self):
   for c,p in [('drive.files.upload',{}),('drive.files.download',{'fileId':'f'}),('drive.files.export',{'fileId':'f','mimeType':'text/plain'})]:self.assertTrue(operation(c,p)['url'].startswith('https://'))
  def test_resumable_upload_and_checksum_download(self):

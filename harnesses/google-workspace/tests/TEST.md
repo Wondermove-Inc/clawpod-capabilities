@@ -2,7 +2,7 @@
 
 All automated tests use `.invalid` identities, isolated temporary state, and scripted HTTP. They never load production credentials or call Google.
 
-Desktop OAuth coverage includes loopback success, denied consent, missing refresh token, state mismatch, duplicate callback rejection, timeout, bind failure, token/identity/scope errors, malformed or non-private client files, private atomic output, overwrite refusal, alias collision and merge, traversal/symlink rejection, secret redaction, URL encoding, PKCE S256 correctness, repeat invocation, and browser fallback. The command inventory contains 152 commands.
+Desktop OAuth coverage includes loopback success, denied consent, missing refresh token, state mismatch, duplicate callback rejection, timeout, bind failure, token/identity/scope errors, malformed or non-private client files, private atomic output, overwrite refusal, alias collision and merge, traversal/symlink rejection, secret redaction, URL encoding, PKCE S256 correctness, repeat invocation, and browser fallback. The command inventory contains 164 commands (the 152-command compatibility baseline plus 12 refine commands).
 
 ## Inventory
 
@@ -12,7 +12,7 @@ Desktop OAuth coverage includes loopback success, denied consent, missing refres
 
 ## Covered contracts
 
-- exhaustive 152-command contract coverage, including 144 provider HTTPS operations, closed command-specific schemas, required resource identifiers, and non-empty exact scope declarations
+- exhaustive 164-command contract coverage, including 147 provider HTTPS operations, closed command-specific schemas, required resource identifiers, and non-empty exact scope declarations
 - subprocess discovery, one-object JSON output, status taxonomy, and authentication-before-preview behavior
 - persisted account/command/input/target/ETag-bound one-use previews, stale/replay rejection, and 10-minute expiry implementation
 - bounded automatic pagination and account/command/query-bound continuation tokens
