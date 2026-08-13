@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Extract Korean and English text locally and create enterprise comparison DOCX reports with guarded optional review.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "clawpod-ocr",
-    "version": "0.3.1"
+    "version": "0.3.2"
   },
   "descriptionSource": "skill-frontmatter"
 }

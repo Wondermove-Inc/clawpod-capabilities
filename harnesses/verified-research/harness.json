@@ -4,7 +4,7 @@
   "name": "verified-research",
   "title": "Verified Research",
   "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "entrypoint": "./verified_research.py",
   "packageRoot": ".",
   "execution": {

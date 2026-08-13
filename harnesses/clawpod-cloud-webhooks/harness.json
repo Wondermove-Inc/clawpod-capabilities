@@ -4,7 +4,7 @@
   "name": "clawpod-cloud-webhooks",
   "title": "ClawPod Cloud Webhooks",
   "description": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "entrypoint": "./clawpod_cloud_webhooks.py",
   "packageRoot": ".",
   "execution": {
