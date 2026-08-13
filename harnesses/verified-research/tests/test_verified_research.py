@@ -269,13 +269,27 @@ def test_tavily_connected_unit_contract_and_versions():
  skill_meta=json.loads((skill/'capability.json').read_text()); harness_meta=json.loads((harness/'capability.json').read_text()); manifest=json.loads((harness/'harness.json').read_text())
  assert 'Tavily MCP as the recommended' in skill_text
  assert '`web_fetch`' in skill_text and '`browser`' in skill_text and 'degraded mode' in skill_text
- assert skill_meta['version']==skill_meta['linkedHarness']['version']==harness_meta['version']==manifest['version']=='0.1.6'
- assert "'version':'0.1.6'" in P.read_text()
+ assert skill_meta['version']==skill_meta['linkedHarness']['version']==harness_meta['version']==manifest['version']=='0.1.7'
+ assert "'version':'0.1.7'" in P.read_text()
  registry=json.loads((root/'registry/index.json').read_text())
  entries=[x for x in registry['capabilities'] if x['id']=='verified-research']
- assert len(entries)==2 and all(x['version']=='0.1.6' for x in entries)
+ assert len(entries)==2 and all(x['version']=='0.1.7' for x in entries)
  for tool in ('tavily_search','tavily_extract','tavily_map','tavily_crawl','tavily_research'):
   assert policy.count('`'+tool+'`')>=1
+
+def test_manifest_matches_current_gateway_schema_and_preserves_boundaries():
+ root=P.parents[2]; manifest=json.loads((P.parent/'harness.json').read_text()); generator=(P.parent/'scripts/generate_schemas.py').read_text(); skill=(root/'skills/verified-research/SKILL.md').read_text()
+ assert 'whenNotToUse' not in manifest and 'whenNotToUse' not in generator
+ assert manifest['whenToUse']==['Cross-check these factual claims','Capture citations with confidence','Resolve contradictions in the evidence bundle']
+ assert 'skip unsupported browsing, brainstorming, and pure editing' in manifest['description']
+ assert 'skip unsupported browsing, brainstorming, and pure editing' in skill.split('---',2)[1]
+ gateway_modules=[p for p in Path('/usr/lib/node_modules/openclaw/dist').glob('system-prompt-*.js') if 'parseCliHarnessManifest as f' in p.read_text(errors='ignore')]
+ if not gateway_modules:
+  pytest.skip('current OpenClaw Gateway runtime is not installed')
+ script="import(process.argv[1]).then(m=>{const r=m.f(JSON.parse(process.argv[2])); console.log(JSON.stringify(r)); process.exit(r.ok?0:1)})"
+ result=subprocess.run(['node','-e',script,gateway_modules[0].as_uri(),json.dumps(manifest)],text=True,capture_output=True)
+ assert result.returncode==0, result.stdout+result.stderr
+ assert json.loads(result.stdout)['ok'] is True
 
 def test_tavily_onboarding_requires_consent_and_bounded_verification():
  root=P.parents[2]; refs=root/'skills/verified-research/references'; onboarding=(refs/'onboarding.md').read_text(); policy=(refs/'tavily-mcp.md').read_text()

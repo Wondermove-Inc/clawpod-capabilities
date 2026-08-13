@@ -7,7 +7,7 @@ description: "Use when factual claims need citations, cross-checking, contradict
 
 Use this Skill for factual research, source verification, evidence-backed briefs, fact checking, or claims that need citations. Do not use it for casual brainstorming, pure editing, fiction, or tasks where the user explicitly wants no research.
 
-Use Tavily MCP as the recommended discovery and extraction backend. When Tavily is unavailable, explicitly use degraded mode: `web_fetch` remains the fallback for known public URLs and `browser` for JavaScript-only pages, without bypassing access controls. The linked `verified-research` Harness (version 0.1.6) captures and validates evidence; it does **not** decide whether claims are true.
+Use Tavily MCP as the recommended discovery and extraction backend. When Tavily is unavailable, explicitly use degraded mode: `web_fetch` remains the fallback for known public URLs and `browser` for JavaScript-only pages, without bypassing access controls. The linked `verified-research` Harness (version 0.1.7) captures and validates evidence; it does **not** decide whether claims are true.
 
 ## Method
 
