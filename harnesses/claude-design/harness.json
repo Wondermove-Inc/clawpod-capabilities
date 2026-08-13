@@ -4,7 +4,7 @@
   "name": "claude-design",
   "title": "Claude Design",
   "description": "Use Claude Design to create, refine, present, export, or verify decks, documents, UI mockups, wireframes, prototypes, design systems, and templates; use Image Studio for standalone image generation or source assets.",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -459,7 +459,7 @@
         },
         {
           "arg": "contenteditable",
-          "type": "flag",
+          "type": "booleanFlag",
           "flag": "--contenteditable",
           "valueType": "boolean",
           "optional": true
@@ -473,7 +473,7 @@
         },
         {
           "arg": "evaluateDisabled",
-          "type": "flag",
+          "type": "booleanFlag",
           "flag": "--evaluate-disabled",
           "valueType": "boolean",
           "optional": true
