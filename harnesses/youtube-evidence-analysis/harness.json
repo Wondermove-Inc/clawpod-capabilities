@@ -4,7 +4,7 @@
   "name": "youtube-evidence-analysis",
   "title": "YouTube Evidence Analysis",
   "description": "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoint": "./youtube_evidence_analysis.py",
   "packageRoot": ".",
   "execution": {

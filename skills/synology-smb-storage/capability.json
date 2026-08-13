@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Connect and manually restore Synology SMB 3.1.1 storage with exact mount verification and shared-storage-first policy guidance.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "synology-smb-storage",
-    "version": "0.1.4"
+    "version": "0.1.5"
   },
   "descriptionSource": "skill-frontmatter"
 }

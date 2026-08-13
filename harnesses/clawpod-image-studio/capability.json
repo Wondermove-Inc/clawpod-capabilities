@@ -1,1 +1,17 @@
-{"$schema":"../../schemas/package-metadata.schema.json","schemaVersion":1,"version":"0.4.0","description":"Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.","compatibility":{"openclaw":">=2026.4.0","platforms":["linux","macos"]},"safety":{"risk":"externally-visible","approvalRequired":true}}
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.4.1",
+  "description": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "externally-visible",
+    "approvalRequired": true
+  }
+}

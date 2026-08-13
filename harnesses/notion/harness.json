@@ -4,7 +4,7 @@
   "name": "notion",
   "title": "notion",
   "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "entrypoint": "./notion.py",
   "packageRoot": ".",
   "whenToUse": [

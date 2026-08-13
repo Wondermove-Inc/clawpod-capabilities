@@ -4,7 +4,7 @@
   "name": "clawpod-capability-registry",
   "title": "ClawPod Capability Registry",
   "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "entrypoint": "./clawpod_capability_registry.py",
   "packageRoot": ".",
   "whenToUse": [

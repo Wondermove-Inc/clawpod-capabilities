@@ -4,7 +4,7 @@
   "name": "clawpod-ocr",
   "title": "ClawPod OCR",
   "description": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "entrypoint": "./clawpod_ocr.py",
   "packageRoot": ".",
   "execution": {

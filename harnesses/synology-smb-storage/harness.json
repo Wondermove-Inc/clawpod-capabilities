@@ -4,7 +4,7 @@
   "name": "synology-smb-storage",
   "title": "Synology SMB Storage",
   "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "entrypoint": "./synology_smb_storage.py",
   "packageRoot": ".",
   "execution": {
