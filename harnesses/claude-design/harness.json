@@ -1,0 +1,5482 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "claude-design",
+  "title": "Claude Design",
+  "description": "Typed guarded Claude Design planning, local verification, exact approvals, and human reconciliation without invented provider APIs.",
+  "version": "0.2.0",
+  "entrypoint": "./claude_design.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 10000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Onboard, inspect, create, edit, share, export, hand off, synchronize, or administer Claude Design"
+  ],
+  "capabilities": [
+    "onboarding",
+    "mcp-discovery",
+    "project-operations",
+    "design-systems",
+    "templates",
+    "code-sync",
+    "administration",
+    "artifact-verification"
+  ],
+  "authModel": {
+    "type": "existing-claude-session-or-protected-setup-token",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "system.version": {
+      "description": "system version",
+      "baseArgv": [
+        "system.version"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "onboarding.plan": {
+      "description": "onboarding plan",
+      "baseArgv": [
+        "onboarding.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "onboarding.preflight": {
+      "description": "onboarding preflight",
+      "baseArgv": [
+        "onboarding.preflight"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "onboarding.status": {
+      "description": "onboarding status",
+      "baseArgv": [
+        "onboarding.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.contract": {
+      "description": "auth contract",
+      "baseArgv": [
+        "auth.contract"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.status": {
+      "description": "auth status",
+      "baseArgv": [
+        "auth.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "auth.setup-token.plan": {
+      "description": "auth setup-token plan",
+      "baseArgv": [
+        "auth.setup-token.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "code.login.handoff": {
+      "description": "code login handoff",
+      "baseArgv": [
+        "code.login.handoff"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "mcp.inspect": {
+      "description": "mcp inspect",
+      "baseArgv": [
+        "mcp.inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "mcp.validate": {
+      "description": "mcp validate",
+      "baseArgv": [
+        "mcp.validate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "mcp.install-plan": {
+      "description": "mcp install-plan",
+      "baseArgv": [
+        "mcp.install-plan"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "mcpName": {
+            "type": "string"
+          },
+          "mcpCommand": {
+            "type": "string"
+          },
+          "mcpUrl": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "mcpName",
+          "type": "option",
+          "flag": "--mcp-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mcpCommand",
+          "type": "option",
+          "flag": "--mcp-command",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "mcpUrl",
+          "type": "option",
+          "flag": "--mcp-url",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "mcp.remove-plan": {
+      "description": "mcp remove-plan",
+      "baseArgv": [
+        "mcp.remove-plan"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "mcpName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "mcpName",
+          "type": "option",
+          "flag": "--mcp-name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.list": {
+      "description": "projects list",
+      "baseArgv": [
+        "projects.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.get": {
+      "description": "projects get",
+      "baseArgv": [
+        "projects.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.search": {
+      "description": "projects search",
+      "baseArgv": [
+        "projects.search"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.create": {
+      "description": "projects create",
+      "baseArgv": [
+        "projects.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "prompt",
+          "type": "option",
+          "flag": "--prompt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "template",
+          "type": "option",
+          "flag": "--template",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.update": {
+      "description": "projects update",
+      "baseArgv": [
+        "projects.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.iterate": {
+      "description": "projects iterate",
+      "baseArgv": [
+        "projects.iterate"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "prompt",
+          "type": "option",
+          "flag": "--prompt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "template",
+          "type": "option",
+          "flag": "--template",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "model",
+          "type": "option",
+          "flag": "--model",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.comment.preview": {
+      "description": "projects comment preview",
+      "baseArgv": [
+        "projects.comment.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "text",
+          "type": "option",
+          "flag": "--text",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "target",
+          "type": "option",
+          "flag": "--target",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.comment.apply": {
+      "description": "projects comment apply",
+      "baseArgv": [
+        "projects.comment.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "projects.edit": {
+      "description": "projects edit",
+      "baseArgv": [
+        "projects.edit"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "patch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "patch",
+          "type": "option",
+          "flag": "--patch",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.present": {
+      "description": "projects present",
+      "baseArgv": [
+        "projects.present"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.share.preview": {
+      "description": "projects share preview",
+      "baseArgv": [
+        "projects.share.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.share.apply": {
+      "description": "projects share apply",
+      "baseArgv": [
+        "projects.share.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "projects.export": {
+      "description": "projects export",
+      "baseArgv": [
+        "projects.export"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        }
+      ]
+    },
+    "projects.export.verify": {
+      "description": "projects export verify",
+      "baseArgv": [
+        "projects.export.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "format",
+          "type": "option",
+          "flag": "--format",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        }
+      ]
+    },
+    "projects.handoff.preview": {
+      "description": "projects handoff preview",
+      "baseArgv": [
+        "projects.handoff.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.handoff.apply": {
+      "description": "projects handoff apply",
+      "baseArgv": [
+        "projects.handoff.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "projects.delete": {
+      "description": "projects delete",
+      "baseArgv": [
+        "projects.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "exactName": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "exactName",
+          "type": "option",
+          "flag": "--exact-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.list": {
+      "description": "design-systems list",
+      "baseArgv": [
+        "design-systems.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.get": {
+      "description": "design-systems get",
+      "baseArgv": [
+        "design-systems.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.create": {
+      "description": "design-systems create",
+      "baseArgv": [
+        "design-systems.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.update": {
+      "description": "design-systems update",
+      "baseArgv": [
+        "design-systems.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.remix": {
+      "description": "design-systems remix",
+      "baseArgv": [
+        "design-systems.remix"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.publish.preview": {
+      "description": "design-systems publish preview",
+      "baseArgv": [
+        "design-systems.publish.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.publish.apply": {
+      "description": "design-systems publish apply",
+      "baseArgv": [
+        "design-systems.publish.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "design-systems.set-default.preview": {
+      "description": "design-systems set-default preview",
+      "baseArgv": [
+        "design-systems.set-default.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "design-systems.set-default.apply": {
+      "description": "design-systems set-default apply",
+      "baseArgv": [
+        "design-systems.set-default.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "design-systems.delete": {
+      "description": "design-systems delete",
+      "baseArgv": [
+        "design-systems.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "designSystemId": {
+            "type": "string"
+          },
+          "exactName": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "designSystemId",
+          "type": "option",
+          "flag": "--design-system-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "exactName",
+          "type": "option",
+          "flag": "--exact-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "templates.list": {
+      "description": "templates list",
+      "baseArgv": [
+        "templates.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "templateId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "templateId",
+          "type": "option",
+          "flag": "--template-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "templates.get": {
+      "description": "templates get",
+      "baseArgv": [
+        "templates.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "templateId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "templateId",
+          "type": "option",
+          "flag": "--template-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "templates.create": {
+      "description": "templates create",
+      "baseArgv": [
+        "templates.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "templateId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "templateId",
+          "type": "option",
+          "flag": "--template-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "templates.update": {
+      "description": "templates update",
+      "baseArgv": [
+        "templates.update"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "templateId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "templateId",
+          "type": "option",
+          "flag": "--template-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "templates.delete": {
+      "description": "templates delete",
+      "baseArgv": [
+        "templates.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "templateId": {
+            "type": "string"
+          },
+          "exactName": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "templateId",
+          "type": "option",
+          "flag": "--template-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "exactName",
+          "type": "option",
+          "flag": "--exact-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "code.sync.preview": {
+      "description": "code sync preview",
+      "baseArgv": [
+        "code.sync.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "code.sync.apply": {
+      "description": "code sync apply",
+      "baseArgv": [
+        "code.sync.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction",
+        "secretUse",
+        "modifiesSource"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "destinations.list": {
+      "description": "destinations list",
+      "baseArgv": [
+        "destinations.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "destinations.handoff.preview": {
+      "description": "destinations handoff preview",
+      "baseArgv": [
+        "destinations.handoff.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "destinations.handoff.apply": {
+      "description": "destinations handoff apply",
+      "baseArgv": [
+        "destinations.handoff.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "admin.status": {
+      "description": "admin status",
+      "baseArgv": [
+        "admin.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "admin.permissions": {
+      "description": "admin permissions",
+      "baseArgv": [
+        "admin.permissions"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "admin.usage": {
+      "description": "admin usage",
+      "baseArgv": [
+        "admin.usage"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "admin.enable.preview": {
+      "description": "admin enable preview",
+      "baseArgv": [
+        "admin.enable.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "admin.enable.apply": {
+      "description": "admin enable apply",
+      "baseArgv": [
+        "admin.enable.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    },
+    "admin.role-update.preview": {
+      "description": "admin role-update preview",
+      "baseArgv": [
+        "admin.role-update.preview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "admin.role-update.apply": {
+      "description": "admin role-update apply",
+      "baseArgv": [
+        "admin.role-update.apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "effectDigest",
+          "approve"
+        ],
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "repositoryPath": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "member": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "effectDigest": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "access",
+          "type": "option",
+          "flag": "--access",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "role",
+          "type": "option",
+          "flag": "--role",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "principal",
+          "type": "option",
+          "flag": "--principal",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "destination",
+          "type": "option",
+          "flag": "--destination",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "repositoryPath",
+          "type": "option",
+          "flag": "--repository-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "direction",
+          "type": "option",
+          "flag": "--direction",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "member",
+          "type": "option",
+          "flag": "--member",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "organization",
+          "type": "option",
+          "flag": "--organization",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "effectDigest",
+          "type": "option",
+          "flag": "--effect-digest",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": false
+        }
+      ]
+    }
+  }
+}

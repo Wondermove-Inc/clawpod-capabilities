@@ -44,6 +44,38 @@
       }
     },
     {
+      "id": "claude-design",
+      "type": "skill",
+      "version": "0.2.0",
+      "description": "Route Claude Design projects, systems, exports, sharing, and code handoff through guarded MCP-first and browser workflows.",
+      "path": "skills/claude-design",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "de6dfa60d60739f37e27d55fdeb3025cf24347aa8e2ee303eff3272ec32a3bf9"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "fd805fc884767a44ba59706374d0aa1214651b3adbe41302fe668716e60c0903"
+        }
+      ],
+      "linkedHarness": {
+        "id": "claude-design",
+        "version": "0.2.0"
+      }
+    },
+    {
       "id": "clawpod-capability-registry",
       "type": "skill",
       "version": "0.3.3",
@@ -687,6 +719,46 @@
         {
           "path": "test_oauth_async.py",
           "sha256": "0acc9336e82378b168c3b3fe94e9c7ed1dc18ede1a8d2c80b1a8c95e86fc7660"
+        }
+      ]
+    },
+    {
+      "id": "claude-design",
+      "type": "harness",
+      "version": "0.2.0",
+      "description": "Guarded Claude Design routing with official Claude Code discovery, exact previews, and browser handoffs.",
+      "path": "harnesses/claude-design",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "99dfca42be523db38d1daab88468b0d65cf8e61419f1a085e8993765d217fd82"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "e48debbd917c26a84402c5877b37c894f5d657e09616a2b6eb2053a788243152"
+        },
+        {
+          "path": "claude_design.py",
+          "sha256": "7cb745c544c02de36328f650a5f4c22bceadc417539ee99f8b69d8700138352b"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "98c415ebe6698050dd8a81c560fc11235c6fa5068e2cd77eb6c26a51e32a99f7"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "86953fccd496f2a9df85c9f0606614d164380df48e8fc5f4b786dcf6c086b32a"
         }
       ]
     },
