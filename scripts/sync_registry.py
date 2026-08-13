@@ -14,7 +14,16 @@ from pathlib import Path
 NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$")
 RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "credential-related"}
-PACKAGE_METADATA_KEYS = {"$schema", "schemaVersion", "version", "description", "compatibility", "safety", "linkedHarness"}
+PACKAGE_METADATA_KEYS = {
+    "$schema",
+    "schemaVersion",
+    "version",
+    "description",
+    "descriptionSource",
+    "compatibility",
+    "safety",
+    "linkedHarness",
+}
 IGNORED_PARTS = {"tests", "__pycache__", ".git"}
 IGNORED_FILES = {"capability.json", ".DS_Store"}
 
@@ -73,6 +82,9 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
     description = value["description"]
     if not isinstance(description, str) or not 10 <= len(description) <= 240:
         raise SyncError(f"{path} description must contain 10-240 characters")
+    description_source = value.get("descriptionSource", "package-metadata")
+    if description_source not in {"package-metadata", "skill-frontmatter"}:
+        raise SyncError(f"{path} descriptionSource must be package-metadata or skill-frontmatter")
 
     compatibility = value["compatibility"]
     if not isinstance(compatibility, dict) or set(compatibility) - {"openclaw", "platforms"}:
@@ -149,11 +161,15 @@ def build_entry(root: Path, capability_type: str, package: Path) -> dict[str, ob
 
     if capability_type != "skill" and metadata.get("linkedHarness") is not None:
         raise SyncError(f"{metadata_path} linkedHarness is valid only for skills")
+    description_source = metadata.get("descriptionSource", "package-metadata")
+    if capability_type != "skill" and description_source != "package-metadata":
+        raise SyncError(f"{metadata_path} descriptionSource=skill-frontmatter is valid only for skills")
+    description = interface["description"] if description_source == "skill-frontmatter" else metadata["description"]
     entry = {
         "id": capability_id,
         "type": capability_type,
         "version": metadata["version"],
-        "description": metadata["description"],
+        "description": description,
         "path": package.relative_to(root).as_posix(),
         "compatibility": metadata["compatibility"],
         "safety": metadata["safety"],
