@@ -1,0 +1,5 @@
+{
+  "whenNotToUse": [
+    "This unsupported top-level key must be rejected by the live Gateway parser"
+  ]
+}
