@@ -598,7 +598,7 @@
     {
       "id": "verified-research",
       "type": "skill",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
       "path": "skills/verified-research",
       "compatibility": {
@@ -616,20 +616,28 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "55fa246de75a71ff10bf41951b72b6bb18574237fb1b9ab84121b018084762e5"
+          "sha256": "5f7d929b5e2387e69149f5f4f3aa00395fc8d538999662c066fcfdb106ff5da4"
         },
         {
           "path": "references/harness-operations.md",
           "sha256": "b218154e3952b9123cb997ace42144a88201c41a6af02083f244c21468f1f84f"
         },
         {
+          "path": "references/onboarding.md",
+          "sha256": "9d558f81405ac5a08d377e7d31553a5d5b51a0224f88c7bfade2366845e08d22"
+        },
+        {
           "path": "references/research-policy.md",
           "sha256": "c35e6a19fad1818225ee7e692315ff75a37290b1c693ff7eb7cd2fa452861114"
+        },
+        {
+          "path": "references/tavily-mcp.md",
+          "sha256": "98e70a1839d628f4a62b76ea662553561d75e41e75e47adcaa93a66676a9d1d2"
         }
       ],
       "linkedHarness": {
         "id": "verified-research",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
@@ -1425,7 +1433,7 @@
     {
       "id": "verified-research",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
       "path": "harnesses/verified-research",
       "compatibility": {
@@ -1443,11 +1451,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "201e9d59a4308d4def78d172d628118080665352fac86be636b7d37affe9340a"
+          "sha256": "b2072236db8b21e4a8fcd64ce958fa9cc3d9d137a8aefa86d7ea4cf6adc8dca7"
         },
         {
           "path": "TEST.md",
-          "sha256": "6883ec327640f3816a95417fa9263725e43aff5f3f2f03ebbdd7fc9068df4525"
+          "sha256": "550da8ba4dcafee38ca984b4015cfd2884af3a21b0821b78ea7c942f4416067a"
         },
         {
           "path": "command_contracts.json",
@@ -1455,15 +1463,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "9e01a210ed54b73518616d5637952e4182913e4348651a3039a14447e540431c"
+          "sha256": "de18fa86d2d8d978e494374027a086669abc0e6b5c515e5e73257c522ac77e11"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "331d2af6a52b987362872160f5dd4a4bf02cdbcafa83b26cdce9a5b69a747985"
+          "sha256": "8fdb7f9f1c7bc300a254067c368c12bf482cf70f3b7059153ade34d91c15a7c2"
         },
         {
           "path": "verified_research.py",
-          "sha256": "8da48ccbdefa20840c7abda33aa35e0f430af597bd389b1d459b608c34ccde31"
+          "sha256": "94504953e4956f220781cee4efba8a5e15df6ef871dcfc7eab558a9834342111"
         }
       ]
     },
