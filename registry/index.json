@@ -63,11 +63,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "25936210c2495acc15e2ae2945c4f4c4d63669be6c776aa92010e0c982dccff9"
+          "sha256": "ed1be14d4fad1358dcab7533d92c7e94ca46f565501cd70012f5515ed5d9e488"
         },
         {
           "path": "references/operations.md",
-          "sha256": "d26965725f7095006a2af14899acafa41f1c5d4a1e1e31508b1b499e92c722c8"
+          "sha256": "f620d0a1ac203bd80c41d0a9ab00e51b3df795e1b22e7db4a87a9c2e92fbdd57"
         }
       ],
       "linkedHarness": {
@@ -742,11 +742,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "bf74312d2a44034bf98fd58bbaef911da91bedab149d3165e153732e8d381ec7"
+          "sha256": "25b0f42c756a816e09f90dd0dd09529a0dec79fbca89b4b77a3fd728bace1b69"
         },
         {
           "path": "TEST.md",
-          "sha256": "fe17c8584b53c8523285d26b80f3def3a3ca3358ff2328b6a39dd908be7be72c"
+          "sha256": "fd1e10faabe74c3c3f8f757caa5bd235a1433c272f564b6d4255b9b93b970979"
         },
         {
           "path": "claude_design.py",
