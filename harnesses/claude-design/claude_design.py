@@ -75,7 +75,7 @@ def handoff(command,values,action,source):
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
  for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance"]:p.add_argument("--"+name)
- p.add_argument("--expected-pages",type=int);p.add_argument("--qa-page",action="append",default=[])
+ p.add_argument("--expected-pages");p.add_argument("--qa-pages")
  p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
  return p
@@ -112,11 +112,16 @@ def main(argv=None):
   if not a.project_id or not a.provenance:return fail(c,"INVALID_INPUT","Artifact metadata requires --project-id and --provenance (native-claude-design or fallback-rendering).")
   if a.provenance not in {"native-claude-design","fallback-rendering"}:return fail(c,"INVALID_INPUT","--provenance must be native-claude-design or fallback-rendering.")
   if a.format=="pdf":
-   if not a.expected_pages or a.expected_pages<1:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages before save/success.")
-   info["expected_pages"]=a.expected_pages; info["page_count_matches"]=info.get("page_count")==a.expected_pages
-   if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"PDF has {info.get('page_count',0)} pages; expected {a.expected_pages}.",False,info)
-   reviewed={int(x) for x in a.qa_page if x.isdigit()}
-   missing=sorted(set(range(1,a.expected_pages+1))-reviewed)
+   if not a.expected_pages or not a.expected_pages.isdigit() or int(a.expected_pages)<1:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages as a positive integer before save/success.")
+   expected_pages=int(a.expected_pages)
+   info["expected_pages"]=expected_pages; info["page_count_matches"]=info.get("page_count")==expected_pages
+   if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"PDF has {info.get('page_count',0)} pages; expected {expected_pages}.",False,info)
+   tokens=[x.strip() for x in (a.qa_pages or "").split(",") if x.strip()]
+   if not tokens or any(not x.isdigit() for x in tokens):return fail(c,"INVALID_INPUT","--qa-pages must be a comma-separated list of positive page numbers.")
+   reviewed={int(x) for x in tokens}
+   invalid=sorted(x for x in reviewed if x < 1 or x > expected_pages)
+   if invalid:return fail(c,"INVALID_INPUT","--qa-pages contains pages outside the expected range.",False,{**info,"invalid_qa_pages":invalid})
+   missing=sorted(set(range(1,expected_pages+1))-reviewed)
    if missing:return fail(c,"VERIFICATION_FAILED","Page-by-page visual QA is incomplete.",False,{**info,"qa_pages":sorted(reviewed),"missing_qa_pages":missing})
    info["qa_pages"]=sorted(reviewed);info["visual_qa_complete"]=True
   info["project_id"]=a.project_id;info["provenance"]=a.provenance

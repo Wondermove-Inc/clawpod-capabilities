@@ -750,7 +750,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "6a9bc58ac597dd4c552e266b7784be705afb38220dc2623d9fa8684c4c43287e"
+          "sha256": "6565a4670a6d98e449ffc6e00bec0e619ce69b2606f1926ae6a34a7df98e6387"
         },
         {
           "path": "command_contracts.json",
@@ -758,7 +758,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "6d2ed06abbba9f771ddf1176fcb17805dea18c9c58fd33288de74ce7418c8e61"
+          "sha256": "dc034de1ed56bb3214098eb2d250e0f8dee1dcc6b0bee816960ec6dd33fcb81b"
         }
       ]
     },

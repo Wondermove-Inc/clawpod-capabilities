@@ -2128,16 +2128,13 @@
             "type": "string"
           },
           "expectedPages": {
-            "type": "integer"
+            "type": "string"
           },
           "provenance": {
             "type": "string"
           },
-          "qaPage": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "qaPages": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2208,7 +2205,7 @@
           "arg": "expectedPages",
           "type": "option",
           "flag": "--expected-pages",
-          "valueType": "integer",
+          "valueType": "string",
           "optional": true
         },
         {
@@ -2219,9 +2216,9 @@
           "optional": true
         },
         {
-          "arg": "qaPage",
-          "type": "repeatOption",
-          "flag": "--qa-page",
+          "arg": "qaPages",
+          "type": "option",
+          "flag": "--qa-pages",
           "valueType": "string",
           "optional": true
         }
