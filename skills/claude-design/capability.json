@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.0",
+  "description": "Route Claude Design projects, systems, exports, sharing, and code handoff through guarded MCP-first and browser workflows.",
+  "compatibility": {
+    "openclaw": ">=2026.4.11",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "claude-design",
+    "version": "0.2.0"
+  }
+}
