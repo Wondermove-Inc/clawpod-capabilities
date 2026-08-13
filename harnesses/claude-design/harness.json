@@ -2220,7 +2220,7 @@
         },
         {
           "arg": "qaPage",
-          "type": "repeatOption",
+          "type": "repeatableOption",
           "flag": "--qa-page",
           "valueType": "string",
           "optional": true
