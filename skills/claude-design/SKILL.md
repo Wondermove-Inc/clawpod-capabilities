@@ -1,6 +1,6 @@
 ---
 name: claude-design
-description: Operate Claude Design through its logged-in browser, with guarded planning and optional smoke-verified MCP acceleration.
+description: Create, edit, present, export, and verify slides, documents, UI mockups, wireframes, prototypes, design systems, templates, and visual artifacts with Claude Design; use its logged-in browser by default and optional smoke-verified MCP.
 ---
 
 # Claude Design

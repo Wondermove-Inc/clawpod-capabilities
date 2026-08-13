@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "claude-design",
   "title": "Claude Design",
-  "description": "Browser-first Claude Design planning, exact approvals, artifact verification, auth readiness, and optional MCP diagnostics.",
+  "description": "Create, edit, present, export, and verify slides, documents, UI designs, wireframes, prototypes, design systems, templates, and other Claude Design artifacts with exact approvals and artifact checks.",
   "version": "0.3.0",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
@@ -13,7 +13,7 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Use for Claude Design through an authenticated claude.ai/design browser; MCP is optional only after a real tool smoke succeeds."
+    "Use when a user asks to create, revise, present, export, or verify slide decks, documents, UI mockups, wireframes, prototypes, design systems, templates, or other visual artifacts in Claude Design. Use the authenticated browser by default; MCP is optional only after a real authorized tool smoke succeeds."
   ],
   "capabilities": [
     "onboarding",

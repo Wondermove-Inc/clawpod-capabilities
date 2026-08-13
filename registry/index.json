@@ -47,7 +47,7 @@
       "id": "claude-design",
       "type": "skill",
       "version": "0.3.0",
-      "description": "Operate Claude Design through its logged-in browser, with guarded planning and optional smoke-verified MCP acceleration.",
+      "description": "Create, edit, present, export, and verify slides, documents, UI mockups, wireframes, prototypes, design systems, templates, and visual artifacts with Claude Design; use its logged-in browser by default and optional smoke-verified MCP.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -63,7 +63,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ca5a933fc83a3994d6487c2d75d0b900375d915ffd938767030655f9151cba15"
+          "sha256": "a95be10881972263771de069cc61f19c2c10ee0a666ee3aa7a6ad2e9f5f06c53"
         },
         {
           "path": "references/operations.md",
@@ -758,7 +758,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c3d537e68294b1b0ee077f60c77519864bcaf706b9c627a60ad287bb637177b1"
+          "sha256": "727ee1b9b6079ac267a52ca3dd4bb8a480fe2f0f0031d6baed46b3ac93a41df0"
         }
       ]
     },
