@@ -6,34 +6,36 @@ def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],text=True,capture_output=True,env=env); return p,json.loads(p.stdout)
 
 def test_version():
- p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.2.0'
+ p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.0'
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
-def test_onboarding_plan_complete():
- _,o=run('onboarding.plan'); assert o['data']['state']=='installed_not_connected' and o['data']['official_mcp']['url']=='https://api.anthropic.com/v1/design/mcp' and 'CLI commands' in o['data']['never_delegate_to_user'] and o['data']['human_only']==['sign-in when no reusable authentication exists','MFA','provider consent','credential-use authorization']
-def test_preflight_redacts_setup_token():
+def test_onboarding_plan_is_browser_first_and_minimal_human_input():
+ _,o=run('onboarding.plan'); d=o['data']; assert d['state']=='browser_ready_when_authenticated' and d['default_execution'].startswith('logged-in browser')
+ assert d['human_only']==['sign-in when browser authentication is absent','MFA','provider consent']
+ assert d['mcp']=={'required':False,'use_only_after_real_tool_smoke':True,'readiness_independent':True}
+ assert 'MCP endpoint registration' in d['never_delegate_to_user']
+def test_preflight_has_no_secret_or_cli_dependency():
  env={**os.environ,'CLAUDE_CODE_OAUTH_TOKEN':'TOP_SECRET_SENTINEL'};p,o=run('onboarding.preflight',env=env)
- assert o['data']['setup_token_present'] and 'TOP_SECRET_SENTINEL' not in p.stdout
-def test_onboarding_status_has_verified_state_contract():
- _,o=run('onboarding.status'); assert o['data']['connection_state'] in {'CONNECTED','NOT_CONNECTED'} and o['data']['official_mcp']['url']=='https://api.anthropic.com/v1/design/mcp' and o['data']['schema_discovered'] is False
-def test_auth_contract():
- _,o=run('auth.contract'); assert o['data']['setup_token_command']=='claude setup-token' and o['data']['setup_token_persisted'] is False and o['data']['agent_owns_mcp_registration'] is True
-def test_setup_token_plan_not_execute():
- _,o=run('auth.setup-token.plan'); assert o['data']['interactive'] and o['data']['command']==['claude','setup-token']
-def test_login_is_human_verification():
+ assert o['data']['default_execution']=='browser' and o['data']['mcp_required'] is False and 'TOP_SECRET_SENTINEL' not in p.stdout
+def test_onboarding_status_browser_readiness_independent_of_mcp():
+ _,o=run('onboarding.status'); d=o['data']; assert d['capability_readiness']=='READY_PENDING_BROWSER_AUTH_CHECK' and d['mcp_required'] is False
+def test_auth_contract_requires_only_browser_login_steps():
+ _,o=run('auth.contract'); d=o['data']; assert d['default_auth']=='existing claude.ai browser session' and d['mcp_oauth_required'] is False and d['mcp_registration_required'] is False
+def test_setup_token_deprecated_for_default_path():
+ _,o=run('auth.setup-token.plan'); assert o['data']['deprecated_for_default_path'] and o['data']['execute'] is False
+def test_login_is_browser_handoff():
  p,o=run('code.login.handoff'); assert p.returncode==2 and o['error']['code']=='HUMAN_VERIFICATION' and 'sign-in, MFA, or consent' in o['error']['message']
-def test_mcp_uses_verified_endpoint():
- _,o=run('mcp.inspect'); assert o['data']['official_url']=='https://api.anthropic.com/v1/design/mcp' and o['data']['tool_schema_discovered'] is False
-def test_mcp_validate_unavailable():
- p,o=run('mcp.validate'); assert p.returncode==2 and o['error']['code']=='BACKEND_UNAVAILABLE'
-def test_mcp_install_requires_observed_transport():
+def test_mcp_inspect_is_optional_and_connected_not_authorized():
+ _,o=run('mcp.inspect'); d=o['data']; assert d['optional'] and d['required_for_readiness'] is False and d['authorized'] is False and d['tool_smoke_succeeded'] is False
+ assert 'redirect_uri' in d['known_defect'] and 'Connected does not prove' in d['known_defect']
+def test_mcp_validate_failure_does_not_block_readiness():
+ p,o=run('mcp.validate'); assert p.returncode==2 and o['error']['code']=='BACKEND_UNAVAILABLE' and o['data']['required_for_readiness'] is False and 'real tool result' in o['data']['success_criterion']
+def test_mcp_install_is_not_default_and_requires_observed_transport():
  _,o=run('mcp.install-plan'); assert o['error']['code']=='INVALID_INPUT'
-def test_mcp_install_plan_does_not_execute():
- _,o=run('mcp.install-plan','--mcp-url','https://observed.example/mcp'); assert o['data']['execute'] is False
-def test_mcp_remove_requires_name():
+ _,o=run('mcp.install-plan','--mcp-url','https://observed.example/mcp'); assert o['data']['execute'] is False and o['data']['optional'] and o['data']['readiness_impact']=='none'
+def test_mcp_remove_plan_is_optional():
  _,o=run('mcp.remove-plan'); assert o['error']['code']=='INVALID_INPUT'
-def test_mcp_remove_plan():
- _,o=run('mcp.remove-plan','--mcp-name','observed-design'); assert o['data']['argv']==['claude','mcp','remove','observed-design']
+ _,o=run('mcp.remove-plan','--mcp-name','observed-design'); assert o['data']['argv']==['claude','mcp','remove','observed-design'] and o['data']['optional']
 
 @pytest.mark.parametrize('command',[ 'projects.list','projects.search','projects.present','design-systems.list','templates.list','admin.status','admin.permissions','admin.usage'])
 def test_reads_require_human_reconciliation(command):
@@ -72,10 +74,10 @@ def test_unknown_unsupported():
 def test_unsafe_identifier_rejected():
  _,o=run('projects.update','--project-id','../../etc/passwd'); assert o['error']['code']=='INVALID_INPUT'
 def test_manifest_contract():
- m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.2.0'
+ m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.0'
  assert all(x not in (ROOT/'harness.json').read_text() for x in ['minimum','maximum','minLength','enum'])
 def test_contracts_match_manifest():
- m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert c['commands']==list(m['commands'])
+ m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==56 and c['commands']==list(m['commands'])
 def test_no_secret_literals_in_distributables():
  text='\n'.join(p.read_text(errors='ignore') for p in ROOT.rglob('*') if p.is_file() and 'tests' not in p.parts)
  assert 'TOP_SECRET_SENTINEL' not in text

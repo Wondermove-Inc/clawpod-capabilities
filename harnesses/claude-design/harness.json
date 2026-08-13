@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "claude-design",
   "title": "Claude Design",
-  "description": "Typed guarded Claude Design planning, local verification, exact approvals, and human reconciliation without invented provider APIs.",
-  "version": "0.2.0",
+  "description": "Create, edit, present, export, and verify slides, documents, UI designs, wireframes, prototypes, design systems, templates, and other Claude Design artifacts with exact approvals and artifact checks.",
+  "version": "0.3.0",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -13,7 +13,7 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Onboard, inspect, create, edit, share, export, hand off, synchronize, or administer Claude Design"
+    "Use when a user asks to create, revise, present, export, or verify slide decks, documents, UI mockups, wireframes, prototypes, design systems, templates, or other visual artifacts in Claude Design. Use the authenticated browser by default; MCP is optional only after a real authorized tool smoke succeeds."
   ],
   "capabilities": [
     "onboarding",
@@ -26,7 +26,7 @@
     "artifact-verification"
   ],
   "authModel": {
-    "type": "existing-claude-session-or-protected-setup-token",
+    "type": "existing-claude-browser-session",
     "storesSecrets": false,
     "requiresHumanAccount": true
   },

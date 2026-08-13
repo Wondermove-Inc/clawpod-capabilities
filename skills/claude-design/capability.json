@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.0",
-  "description": "Route Claude Design projects, systems, exports, sharing, and code handoff through guarded MCP-first and browser workflows.",
+  "version": "0.3.0",
+  "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [
@@ -15,6 +15,6 @@
   },
   "linkedHarness": {
     "id": "claude-design",
-    "version": "0.2.0"
+    "version": "0.3.0"
   }
 }

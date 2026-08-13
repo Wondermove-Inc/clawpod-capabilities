@@ -46,8 +46,8 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.2.0",
-      "description": "Route Claude Design projects, systems, exports, sharing, and code handoff through guarded MCP-first and browser workflows.",
+      "version": "0.3.0",
+      "description": "Use Claude Design to create and refine professional visual artifacts, including presentations, documents, UI mockups, wireframes, prototypes, design systems, and templates.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -63,16 +63,16 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "de6dfa60d60739f37e27d55fdeb3025cf24347aa8e2ee303eff3272ec32a3bf9"
+          "sha256": "79f25c023510e3f4e5df6138850cc6e752b8211a589ce6ad4e8f4a7e2730a374"
         },
         {
           "path": "references/operations.md",
-          "sha256": "fd805fc884767a44ba59706374d0aa1214651b3adbe41302fe668716e60c0903"
+          "sha256": "95d9734f7ec4b2931d69abc90e67e8ec1976d1cab77f6b6c3ce3100132e26726"
         }
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.2.0"
+        "version": "0.3.0"
       }
     },
     {
@@ -725,8 +725,8 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.2.0",
-      "description": "Guarded Claude Design routing with official Claude Code discovery, exact previews, and browser handoffs.",
+      "version": "0.3.0",
+      "description": "Browser-first Claude Design guardrails, exact approvals, artifact verification, and optional MCP diagnostics.",
       "path": "harnesses/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -742,23 +742,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "99dfca42be523db38d1daab88468b0d65cf8e61419f1a085e8993765d217fd82"
+          "sha256": "96b9ad464ffb04d19afe0064774ee3d2ab2059ee9787b232f723547e4a572934"
         },
         {
           "path": "TEST.md",
-          "sha256": "e48debbd917c26a84402c5877b37c894f5d657e09616a2b6eb2053a788243152"
+          "sha256": "7d3465caa80093a8f26fffaa46486fd7ae1865e2cb6d8a6ecd370fe61f254a98"
         },
         {
           "path": "claude_design.py",
-          "sha256": "7cb745c544c02de36328f650a5f4c22bceadc417539ee99f8b69d8700138352b"
+          "sha256": "ce2da8583da22f73a856c89031fc9ba0f90c818f9c87fd8ac999851f8c3062ed"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "98c415ebe6698050dd8a81c560fc11235c6fa5068e2cd77eb6c26a51e32a99f7"
+          "sha256": "fe38102519500519568388c98d3da9c10e602d9db64f2e694fc4bf8496ece1fe"
         },
         {
           "path": "harness.json",
-          "sha256": "86953fccd496f2a9df85c9f0606614d164380df48e8fc5f4b786dcf6c086b32a"
+          "sha256": "727ee1b9b6079ac267a52ca3dd4bb8a480fe2f0f0031d6baed46b3ac93a41df0"
         }
       ]
     },

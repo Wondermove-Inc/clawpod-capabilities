@@ -57,7 +57,7 @@
     "admin.role-update.preview",
     "admin.role-update.apply"
   ],
-  "providerExecution": "HUMAN_VERIFICATION until official live MCP schema is discovered",
+  "providerExecution": "Logged-in claude.ai/design browser; MCP optional only after a real authorized tool smoke",
   "errors": [
     "APPROVAL_REQUIRED",
     "INVALID_INPUT",
@@ -65,5 +65,12 @@
     "HUMAN_VERIFICATION",
     "BACKEND_UNAVAILABLE",
     "UNSUPPORTED"
-  ]
+  ],
+  "browserReadiness": "Authenticated Design UI verified through desktop/browser",
+  "mcpPolicy": {
+    "required": false,
+    "connectedIsAuthorized": false,
+    "realToolSmokeRequired": true,
+    "knownDefect": "Claude Code 2.1.229 OAuth redirect_uri rejected by provider"
+  }
 }

@@ -4,10 +4,11 @@ from __future__ import annotations
 import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 DESIGN_URL="https://claude.ai/design"
 MCP_NAME="claude-design"
 MCP_URL="https://api.anthropic.com/v1/design/mcp"
+MCP_DEFECT="Claude Code 2.1.229 sends an OAuth redirect_uri that the provider rejects; transport Connected does not prove tool authorization."
 DESTINATIONS=["Adobe","Base44","Canva","Gamma","Lovable","Miro","Replit","Vercel","Wix","Claude Code"]
 FORMATS={"html":"text/html","pptx":"application/vnd.openxmlformats-officedocument.presentationml.presentation","pdf":"application/pdf"}
 PREVIEW_APPLY={
@@ -73,26 +74,26 @@ def parser():
 
 def main(argv=None):
  a=parser().parse_args(argv); c=a.command; v=vars(a)
- if c=="system.version":return envelope(c,data={"name":"claude-design","title":"Claude Design","version":VERSION,"provider_execution":"human_or_live_mcp_schema_required"})
- if c=="onboarding.plan":return envelope(c,data={"state":"installed_not_connected","approval_scope":"One connection approval covers bounded authentication and official MCP onboarding only; project mutations and external effects remain separately approved.","agent_steps":["inspect Claude Code and existing authentication","idempotently register official user-scope MCP","verify MCP get/list connectivity","discover live tool schema","run bounded read-only account/project smoke test","recover safe transient failures and report CONNECTED, DEGRADED, or BLOCKED"],"human_only":["sign-in when no reusable authentication exists","MFA","provider consent","credential-use authorization"],"never_delegate_to_user":["CLI commands","MCP endpoint entry","configuration editing","schema inspection","routine retries"],"official_mcp":{"name":MCP_NAME,"url":MCP_URL,"scope":"user","transport":"http"},"revocation":["claude mcp logout claude-design","claude mcp remove claude-design -s user","Claude account settings"],"no_secret_persistence":True})
- if c=="onboarding.preflight":
-  r=run_claude(["--version"]);return envelope(c,data={"claude":r,"setup_token_present":bool(os.getenv("CLAUDE_CODE_OAUTH_TOKEN")),"design_url":DESIGN_URL,"ready_for_login":r["available"]},warnings=["Presence of a setup token does not authorize its use."])
- if c=="onboarding.status":
-  get=run_claude(["mcp","get",MCP_NAME]); listed=run_claude(["mcp","list"]); connected=get.get("exit_code")==0 and "Connected" in (get.get("stdout","")+get.get("stderr","")); return envelope(c,data={"installed":True,"connection_state":"CONNECTED" if connected else "NOT_CONNECTED","official_mcp":{"name":MCP_NAME,"url":MCP_URL},"mcp_get":get,"mcp_list":listed,"schema_discovered":False},warnings=[] if connected else ["After approval, the agent must register and verify the official MCP automatically; do not delegate CLI work to the user."])
- if c=="auth.contract":return envelope(c,data={"setup_token_command":"claude setup-token","setup_token_env":"CLAUDE_CODE_OAUTH_TOKEN","setup_token_use_requires_approval":True,"setup_token_persisted":False,"login_handoff":"Agent starts and resumes the bounded login flow; user performs only sign-in, MFA, and provider consent when required.","existing_auth_reuse":True,"agent_owns_mcp_registration":True,"official_mcp":{"name":MCP_NAME,"url":MCP_URL,"scope":"user","transport":"http"}})
- if c=="auth.status":return envelope(c,data={"claude_cli":bool(shutil.which("claude")),"setup_token_present":bool(os.getenv("CLAUDE_CODE_OAUTH_TOKEN")),"identity":"not_safely_inferred"})
- if c=="auth.setup-token.plan":return envelope(c,data={"command":["claude","setup-token"],"interactive":True,"credential_use":True,"next":"Protect the resulting token; do not paste it into argv or files. Then run /design-login in Claude Code."})
- if c=="code.login.handoff":return handoff(c,{},"The agent starts the bounded Claude/MCP login flow. Complete only the provider sign-in, MFA, or consent screen if it appears; return control immediately afterward.","Claude Code MCP get/list, live schema, and read-only Claude Design source of truth")
- if c=="mcp.inspect":return envelope(c,data={"get":run_claude(["mcp","get",MCP_NAME]),"list":run_claude(["mcp","list"]),"official_design_mcp_documented":True,"official_name":MCP_NAME,"official_url":MCP_URL,"tool_schema_discovered":False},warnings=["Connectivity and live schema still require source-of-truth verification."])
- if c=="mcp.validate":return fail(c,"BACKEND_UNAVAILABLE","Run MCP get/list, discover the live schema, and execute a bounded read-only smoke test before claiming CONNECTED.",True,{"agent_next":["idempotently register the official MCP if absent","reuse existing auth or start bounded login","discover schema","run read-only smoke test"],"human_only":["sign-in","MFA","consent"]})
+ if c=="system.version":return envelope(c,data={"name":"claude-design","title":"Claude Design","version":VERSION,"provider_execution":"logged_in_browser","mcp_mode":"optional_acceleration"})
+ if c=="onboarding.plan":return envelope(c,data={"state":"browser_ready_when_authenticated","default_execution":"logged-in browser at "+DESIGN_URL,"approval_scope":"Browser authentication approval covers only bounded sign-in readiness; mutations and external effects remain separately approved.","agent_steps":["open Claude Design in the desktop/browser capability","reuse the logged-in browser session","verify the Design UI is readable","use browser workflows for projects, design systems, templates, administration, and exports"],"human_only":["sign-in when browser authentication is absent","MFA","provider consent"],"never_delegate_to_user":["CLI commands","MCP endpoint registration","configuration editing","schema inspection","routine retries"],"mcp":{"required":False,"use_only_after_real_tool_smoke":True,"readiness_independent":True},"revocation":["Claude account settings","browser session sign-out"],"no_secret_persistence":True})
+ if c=="onboarding.preflight":return envelope(c,data={"design_url":DESIGN_URL,"default_execution":"browser","browser_check":"Open with desktop/browser and verify authenticated Design UI; the pure Harness does not inspect cookies or browser state.","ready_for_browser_check":True,"mcp_required":False})
+ if c=="onboarding.status":return envelope(c,data={"installed":True,"capability_readiness":"READY_PENDING_BROWSER_AUTH_CHECK","default_execution":"browser","design_url":DESIGN_URL,"browser_authenticated":"not_safely_inferred","mcp_required":False},warnings=["Verify the logged-in Claude Design UI with the desktop/browser capability before provider work."])
+ if c=="auth.contract":return envelope(c,data={"default_auth":"existing claude.ai browser session","login_handoff":"Agent opens Claude Design; user performs only sign-in, MFA, or provider consent when the browser is not authenticated.","credential_files":False,"mcp_oauth_required":False,"mcp_registration_required":False,"browser_readiness_check":"authenticated Design UI is readable"})
+ if c=="auth.status":return envelope(c,data={"browser_authentication":"not_safely_inferred","verification":"desktop/browser source-of-truth check required","claude_cli_optional":bool(shutil.which("claude")),"mcp_required":False})
+ if c=="auth.setup-token.plan":return envelope(c,data={"deprecated_for_default_path":True,"execute":False,"reason":"Browser-first readiness does not require a Claude Code setup token or MCP OAuth."},warnings=["Use only for a separately approved Claude Code workflow, never for default Claude Design onboarding."])
+ if c=="code.login.handoff":return handoff(c,{},"Open Claude Design in the browser. If authentication is absent, complete only provider sign-in, MFA, or consent, then return control.","authenticated Claude Design UI")
+ if c=="mcp.inspect":
+  get=run_claude(["mcp","get",MCP_NAME]); listed=run_claude(["mcp","list"])
+  return envelope(c,data={"optional":True,"required_for_readiness":False,"get":get,"list":listed,"official_name":MCP_NAME,"official_url":MCP_URL,"tool_smoke_succeeded":False,"authorized":False,"known_defect":MCP_DEFECT},warnings=["A Connected transport is not proof of authorization. Do not use MCP until a real read-only tool call succeeds."])
+ if c=="mcp.validate":return fail(c,"BACKEND_UNAVAILABLE","Optional MCP acceleration is disabled until a real read-only Claude Design tool smoke succeeds. Browser capability readiness is unaffected.",True,{"required_for_readiness":False,"known_defect":MCP_DEFECT,"success_criterion":"real tool result, not transport Connected"})
  if c in {"mcp.install-plan","mcp.remove-plan"}:
   verb="add" if c.endswith("install-plan") else "remove"
-  if verb=="add" and not (a.mcp_command or a.mcp_url):return fail(c,"INVALID_INPUT","An observed official --mcp-command or --mcp-url is required; this harness will not invent one.")
+  if verb=="add" and not (a.mcp_command or a.mcp_url):return fail(c,"INVALID_INPUT","Optional MCP setup requires a separately observed provider-supported transport; default onboarding never installs it.")
   if verb=="remove":
    result=require_id(c,a.mcp_name,"mcp_name")
    if result is not None:return result
   argv=["claude","mcp",verb]+(([a.mcp_name] if a.mcp_name else []))
-  return envelope(c,data={"argv":argv,"execute":False,"requires_approval":True,"reconcile":"claude mcp list/get"})
+  return envelope(c,data={"argv":argv,"execute":False,"optional":True,"requires_separate_approval":True,"readiness_impact":"none","reconcile":"real tool smoke for install; list/get for removal"})
  if c=="projects.export.verify":
   if not a.output_path:return fail(c,"INVALID_INPUT","--output-path is required.")
   try: info=file_evidence(a.output_path)

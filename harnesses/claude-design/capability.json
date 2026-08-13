@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.0",
-  "description": "Guarded Claude Design routing with official Claude Code discovery, exact previews, and browser handoffs.",
+  "version": "0.3.0",
+  "description": "Browser-first Claude Design guardrails, exact approvals, artifact verification, and optional MCP diagnostics.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [
