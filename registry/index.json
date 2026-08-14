@@ -1205,7 +1205,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "4412566f8f7b84cdfb65eb7c470bd0df8994419df2a70b2f38cb99dcb874bb52"
+          "sha256": "9e671dcf5b6c17bd7bcea3595640365f0da63a1f07235bec0398284fdddbd16b"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1217,7 +1217,7 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "9e2ae9654a0dec484a14a844bf9eea240e4c4eaaffe4184248ccf2b6b1f792ac"
+          "sha256": "70865a70137061273c1c955887e41ad7712f155aa56ed3ec9ba2d8f9577395b5"
         },
         {
           "path": "google_workspace_core/high_level_reads.py",

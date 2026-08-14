@@ -3,6 +3,7 @@ import os
 import stat
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -187,3 +188,36 @@ def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_p
     (shared / ".local").rename(moved)
     with pytest.raises(BindingError, match="changed"):
         _verify_parent_snapshot(snapshot)
+
+
+def test_readonly_registry_absence_race_fails_without_bootstrap(tmp_path):
+    root = tmp_path / "state"
+    root.mkdir(mode=0o700)
+
+    def concurrent_bootstrap(_root):
+        lock = root / "bindings.v1.lock"
+        lock.write_bytes(b"")
+        lock.chmod(0o600)
+        return ({"schemaVersion": 1, "revision": 0, "updatedAt": "race",
+                 "bindings": {}, "migration": {"legacyScanCompletedAt": None}}, None)
+
+    with patch("google_workspace_core.bindings._read_registry", side_effect=concurrent_bootstrap), \
+         pytest.raises(BindingError, match="appeared"):
+        list_bindings(root)
+
+    assert not (root / "credentials").exists()
+    assert not (root / "backups").exists()
+    assert not (root / "bindings.v1.json").exists()
+
+
+def test_readonly_missing_root_is_not_created_and_is_repeatable(tmp_path):
+    root = tmp_path / "absent-state"
+    before = tmp_path.stat()
+    for _ in range(2):
+        items, revision = list_bindings(root)
+        assert items == [] and revision == 0
+        with pytest.raises(BindingError, match="no pod-local binding"):
+            resolve_binding(None, root)
+    after = tmp_path.stat()
+    assert not root.exists()
+    assert (before.st_dev, before.st_ino, before.st_mode) == (after.st_dev, after.st_ino, after.st_mode)

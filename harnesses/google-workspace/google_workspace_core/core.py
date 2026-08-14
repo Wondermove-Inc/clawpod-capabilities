@@ -10,7 +10,7 @@ from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
 from .scopes import enforce,required_scopes
 from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,transfer_load,transfer_store
-from .bindings import (BindingError,ensure_root,list_bindings,normalize_alias,resolve_binding,
+from .bindings import (BindingError,binding_root,ensure_root,list_bindings,normalize_alias,resolve_binding,
  plan_import,import_binding,plan_rename,rename_binding,plan_remove,remove_binding,
  register_staged_binding)
 from .permissions import check_permissions,plan_repair,repair_permissions
@@ -110,7 +110,8 @@ def local_auth(command,payload,out):
    browser_url=managed_browser_url(body)
    if bind:
     normalize_alias(payload.get("account"))
-    root=ensure_root();items,expected_revision=list_bindings(root=root);existing=next((item for item in items if item["alias"]==payload.get("account")),None)
+    root=binding_root()
+    items,expected_revision=list_bindings(root=root);existing=next((item for item in items if item["alias"]==payload.get("account")),None)
     if existing and not payload.get("overwrite",False):raise BindingError("BINDING_CONFLICT","binding alias already exists",{"alias":payload.get("account")})
     target={"operation":"login","alias":payload.get("account"),"replacesBinding":bool(existing),"revision":expected_revision}
     if payload.get("preview") or payload.get("dryRun"):
@@ -119,6 +120,7 @@ def local_auth(command,payload,out):
     if payload.get("confirm"):
      ok,reason=consume_preview(payload["confirm"],command,payload.get("account"),payload,target,None)
      if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=payload.get("account"))
+    root=ensure_root(root)
     name=os.urandom(16).hex()+".json";output_root=str(root/"credentials");output_path=name
    else:
     if not payload.get("outputPath"):raise BindingError("INVALID_ARGUMENT","outputPath is required when bind is false")

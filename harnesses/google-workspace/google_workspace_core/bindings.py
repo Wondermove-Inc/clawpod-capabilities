@@ -332,6 +332,98 @@ def _read_registry(root: Path):
     return validate_registry(_decode_document(raw, registry=True)), raw
 
 
+def _absent(path: Path):
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        return True
+    except OSError:
+        raise BindingError("BINDING_PATH_UNSAFE", "protected artifact could not be inspected safely") from None
+    return False
+
+
+@contextmanager
+def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
+    """Read registry state without bootstrapping any protected artifacts.
+
+    An established writer lock is shared.  Before first onboarding there is no
+    lock to share, so absence is snapshot-bound: a concurrent bootstrap makes
+    the read fail closed instead of allowing this path to create the lock.
+    """
+    root = Path(root) if root is not None else binding_root()
+    if not root.is_absolute():
+        raise BindingError("BINDING_PATH_UNSAFE", "binding root must be absolute")
+    root_missing = _absent(root)
+    if root_missing:
+        parents = _check_parent_chain(root)
+        if not _absent(root):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage appeared during inspection")
+        _verify_parent_snapshot(parents)
+        yield root, empty_registry(), None
+        if not _absent(root):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage appeared during inspection")
+        _verify_parent_snapshot(parents)
+        return
+
+    parents = _check_parent_chain(root / ".containment-check")
+    expected_gid = _forge_chain_gid(parents)
+    root_info = _check_artifact(root, directory=True, expected_gid=expected_gid)
+    lock = root / "bindings.v1.lock"
+    if _absent(lock):
+        doc, raw = _read_registry(root)
+        registry = root / "bindings.v1.json"
+
+        def verify_unlocked_snapshot():
+            if not _absent(lock):
+                raise BindingError("BINDING_PATH_UNSAFE", "binding lock appeared during inspection")
+            if raw is None and not _absent(registry):
+                raise BindingError("BINDING_PATH_UNSAFE", "binding registry appeared during inspection")
+            current_root = root.lstat()
+            if (root_info.st_dev, root_info.st_ino) != (current_root.st_dev, current_root.st_ino):
+                raise BindingError("BINDING_PATH_UNSAFE", "protected storage changed during inspection")
+            _verify_parent_snapshot(parents)
+
+        verify_unlocked_snapshot()
+        yield root, doc, raw
+        verify_unlocked_snapshot()
+        return
+
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(lock, flags)
+    except OSError:
+        raise BindingError("BINDING_PATH_UNSAFE", "binding lock is unsafe or unavailable") from None
+    acquired = False
+    try:
+        info = os.fstat(fd)
+        _check_info(info, expected_gid=root_info.st_gid)
+        if fcntl is None:
+            raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
+        deadline = time.monotonic() + timeout
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                acquired = True
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise BindingError("BINDING_LOCK_TIMEOUT", "binding registry lock timed out")
+                time.sleep(0.02)
+        current_lock, current_root = lock.lstat(), root.lstat()
+        if ((info.st_dev, info.st_ino) != (current_lock.st_dev, current_lock.st_ino)
+                or (root_info.st_dev, root_info.st_ino) != (current_root.st_dev, current_root.st_ino)):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage changed while locking")
+        doc, raw = _read_registry(root)
+        yield root, doc, raw
+    finally:
+        if acquired:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+            except OSError:
+                pass
+        os.close(fd)
+
+
 @contextmanager
 def locked_registry(root=None, timeout=LOCK_TIMEOUT):
     root = ensure_root(root)
@@ -493,7 +585,7 @@ def _account_for_subject(accounts, subject_hash, alias):
 
 
 def resolve_binding(alias=None, root=None):
-    with locked_registry(root) as (root, doc, _):
+    with readonly_registry(root) as (root, doc, _):
         if alias is not None:
             alias = normalize_alias(alias)
             if alias not in doc["bindings"]:
@@ -512,7 +604,7 @@ def resolve_binding(alias=None, root=None):
 
 
 def list_bindings(root=None, validate_paths=False):
-    with locked_registry(root) as (root, doc, _):
+    with readonly_registry(root) as (root, doc, _):
         items = []
         for alias, item in sorted(doc["bindings"].items()):
             healthy, check = True, "bindingHealthy"
@@ -559,7 +651,7 @@ def plan_import(alias, source, mode="copy", source_alias=None, overwrite=False, 
         replaceable = [repo / "skills", repo / "harnesses", repo / "registry"]
         if any(resolved == base or base in resolved.parents for base in replaceable):
             raise BindingError("BINDING_PATH_UNSAFE", "replaceable package files cannot be referenced")
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         old = doc["bindings"].get(alias)
         if old and not overwrite:
             raise BindingError("BINDING_CONFLICT", "binding alias already exists", {"alias": alias})
@@ -660,7 +752,7 @@ def register_staged_binding(alias, staged_path, *, source="login", overwrite=Fal
 
 def plan_rename(old_alias, new_alias, root=None):
     old_alias, new_alias = normalize_alias(old_alias), normalize_alias(new_alias)
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         if old_alias not in doc["bindings"]:
             raise BindingError("BINDING_NOT_FOUND", "binding alias was not found", {"alias": old_alias})
         if new_alias in doc["bindings"]:
@@ -686,7 +778,7 @@ def rename_binding(old_alias, new_alias, root=None, expected_revision=None):
 
 def plan_remove(alias, delete_credential=False, root=None):
     alias = normalize_alias(alias)
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         if alias not in doc["bindings"]:
             raise BindingError("BINDING_NOT_FOUND", "binding alias was not found", {"alias": alias})
         item = doc["bindings"][alias]
