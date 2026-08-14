@@ -14,6 +14,10 @@ from google_workspace_core.transport import ScriptedTransport,retry_request,HTTP
 from google_workspace_core.validation import validate,ValidationError
 
 class Tests(unittest.TestCase):
+ def setUp(self):
+  self.binding_root=tempfile.TemporaryDirectory();self.addCleanup(self.binding_root.cleanup)
+  isolated={'GOOGLE_WORKSPACE_BINDING_ROOT':str(Path(self.binding_root.name)/'bindings'),'GOOGLE_WORKSPACE_STATE_FILE':str(Path(self.binding_root.name)/'state.json')}
+  self.binding_root_patch=patch.dict(os.environ,isolated);self.binding_root_patch.start();self.addCleanup(self.binding_root_patch.stop)
  def cli(self,*args,env=None,input=None):
   e=os.environ.copy();e.update(env or {});return subprocess.run([sys.executable,str(CLI),*args],input=input,text=True,capture_output=True,env=e)
  def mock(self,response):

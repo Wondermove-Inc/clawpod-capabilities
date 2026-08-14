@@ -7,10 +7,10 @@ from google_workspace_core.core import run
 from google_workspace_core.state import issue_preview,consume_preview,bind_token,unbind_token
 class AdversarialContract(unittest.TestCase):
  def setUp(self):
-  self.d=tempfile.TemporaryDirectory();self.addCleanup(self.d.cleanup);os.environ['GOOGLE_WORKSPACE_STATE_FILE']=str(Path(self.d.name)/'state.json')
+  self.d=tempfile.TemporaryDirectory();self.addCleanup(self.d.cleanup);os.environ['GOOGLE_WORKSPACE_STATE_FILE']=str(Path(self.d.name)/'state.json');os.environ['GOOGLE_WORKSPACE_BINDING_ROOT']=str(Path(self.d.name)/'bindings')
  def mock(self,responses):
   p=Path(self.d.name)/('mock'+str(time.time_ns())+'.json');p.write_text(json.dumps(responses));os.environ['GOOGLE_WORKSPACE_MOCK_HTTP']=str(p);return p
- def tearDown(self):os.environ.pop('GOOGLE_WORKSPACE_MOCK_HTTP',None);os.environ.pop('GOOGLE_WORKSPACE_STATE_FILE',None)
+ def tearDown(self):os.environ.pop('GOOGLE_WORKSPACE_MOCK_HTTP',None);os.environ.pop('GOOGLE_WORKSPACE_STATE_FILE',None);os.environ.pop('GOOGLE_WORKSPACE_BINDING_ROOT',None)
  def test_all_schemas_are_specialized_and_scoped(self):
   for cmd,c in catalog().items():
    with self.subTest(cmd=cmd):
