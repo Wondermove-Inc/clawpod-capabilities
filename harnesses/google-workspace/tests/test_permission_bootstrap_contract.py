@@ -7,6 +7,7 @@ import os
 import stat
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -91,6 +92,142 @@ def test_mode_only_repair_is_idempotent_and_preserves_credential_bytes(tmp_path)
     assert credential.read_bytes() == before
     assert second_plan["changes"] == []
     assert repaired_again == []
+
+
+def test_metadata_only_status_and_repair_never_open_credential_bytes(tmp_path, monkeypatch):
+    root, credential = _forge_legacy_shape(tmp_path)
+    monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
+    real_open = os.open
+    real_read = os.read
+    credential_fds = set()
+
+    def guarded_open(path, flags, *args, **kwargs):
+        fd = real_open(path, flags, *args, **kwargs)
+        if Path(path) == credential:
+            credential_fds.add(fd)
+        return fd
+
+    def guarded_read(fd, size):
+        if fd in credential_fds:
+            raise AssertionError("credential bytes were read")
+        return real_read(fd, size)
+
+    with patch("os.read", side_effect=guarded_read), \
+         patch("os.open", side_effect=guarded_open):
+        out, code = run("auth.bindings.status", {})
+        repaired, _ = repair_permissions(root)
+    assert code == 0 and repaired
+    assert "CANARY" not in json.dumps(out)
+
+
+def test_stale_snapshot_rejected_before_first_chmod(tmp_path):
+    root, credential = _forge_legacy_shape(tmp_path)
+    plan = plan_repair(root)
+    credential.chmod(0o640)
+    with patch("os.fchmod") as chmod:
+        with pytest.raises(Exception, match="stale"):
+            repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+def test_parent_race_rejected_before_first_chmod(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    plan = plan_repair(root)
+    (tmp_path / "workspace").chmod(0o1777)
+    with patch("os.fchmod") as chmod:
+        with pytest.raises(Exception, match="stale"):
+            repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+def test_owner_mismatch_blocks_entire_plan(tmp_path):
+    root, credential = _forge_legacy_shape(tmp_path)
+    credential_inode = credential.lstat().st_ino
+    real_owned = __import__("google_workspace_core.permissions", fromlist=["_owned"])._owned
+
+    def synthetic_owner(info):
+        return False if info.st_ino == credential_inode else real_owned(info)
+
+    with patch("google_workspace_core.permissions._owned", side_effect=synthetic_owner), \
+         patch("os.fchmod") as chmod:
+        with pytest.raises(Exception):
+            repair_permissions(root)
+    chmod.assert_not_called()
+
+
+def test_backend_failure_rolls_back_all_modes(tmp_path, monkeypatch):
+    root, credential = _forge_legacy_shape(tmp_path)
+    before = {path: stat.S_IMODE(path.lstat().st_mode) for path in
+              (root, root / "credentials", credential)}
+    real_fchmod = os.fchmod
+    forward_calls = 0
+
+    def failing_fchmod(fd, mode):
+        nonlocal forward_calls
+        if mode in (0o700, 0o600):
+            forward_calls += 1
+            if forward_calls == 2:
+                raise OSError("synthetic chmod failure")
+        return real_fchmod(fd, mode)
+
+    monkeypatch.setattr(os, "fchmod", failing_fchmod)
+    with pytest.raises(OSError, match="synthetic"):
+        repair_permissions(root)
+    assert {path: stat.S_IMODE(path.lstat().st_mode) for path in before} == before
+
+
+@pytest.mark.parametrize("bad_root", ["relative", "../escape"])
+def test_malformed_or_non_absolute_root_fails_closed(bad_root):
+    with pytest.raises(Exception):
+        plan_repair(bad_root)
+
+
+def test_directory_symlink_escape_is_not_traversed(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    external = tmp_path / "external"
+    external.mkdir()
+    (external / "CANARY_EXTERNAL").write_bytes(b"never inspect")
+    credentials = root / "credentials"
+    for item in credentials.iterdir():
+        item.unlink()
+    credentials.rmdir()
+    credentials.symlink_to(external, target_is_directory=True)
+    with patch("os.scandir", wraps=os.scandir) as scandir:
+        with pytest.raises(Exception):
+            plan_repair(root)
+    assert all(Path(call.args[0]) != credentials for call in scandir.call_args_list
+               if not isinstance(call.args[0], int))
+
+
+def test_external_reference_and_malformed_registry_fail_closed(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    registry = root / "bindings.v1.json"
+    doc = json.loads(registry.read_text())
+    item = doc["bindings"]["work"]
+    item["externalReference"] = True
+    item["credentialRef"] = str(tmp_path / "outside.json")
+    registry.write_text(json.dumps(doc))
+    registry.chmod(0o600)
+    with pytest.raises(Exception, match="external"):
+        plan_repair(root)
+    registry.write_bytes(b"not-json")
+    registry.chmod(0o600)
+    with pytest.raises(Exception):
+        plan_repair(root)
+
+
+def test_confirm_digest_is_bound_to_exact_snapshot(tmp_path, monkeypatch):
+    root, credential = _forge_legacy_shape(tmp_path)
+    state = tmp_path / "preview-state.json"
+    monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
+    monkeypatch.setenv("GOOGLE_WORKSPACE_STATE_FILE", str(state))
+    preview, code = run("auth.bindings.permissions.repair", {"dryRun": True})
+    assert code == 0
+    credential.chmod(0o640)
+    confirmed, code = run("auth.bindings.permissions.repair", {"confirm": preview["data"]["effectDigest"]})
+    assert code == 4
+    assert confirmed["error"]["code"] == "APPROVAL_REQUIRED"
+    assert stat.S_IMODE(root.lstat().st_mode) == 0o2770
 
 
 @pytest.mark.parametrize("unsafe", ["symlink", "hardlink", "fifo"])

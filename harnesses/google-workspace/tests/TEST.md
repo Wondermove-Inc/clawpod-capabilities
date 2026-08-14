@@ -18,6 +18,7 @@ Desktop OAuth coverage includes loopback success, denied consent, missing refres
 - bounded automatic pagination and account/command/query-bound continuation tokens
 - live installed-Gateway prepare→run coverage for integer `pageSize=10`, JSON-string provider params, Gmail/Calendar `maxResults`, Drive `pageSize`, fractional/type rejection, and harness limit enforcement, all over scripted HTTP only
 - Forge mode-2777 binding-root compatibility across binding inspection and Gmail/Calendar/Drive alias reads, while preserving symlink, hardlink, non-sticky shared-parent, containment, and parent-race rejection
+- permission-first bootstrap status and snapshot-bound preview/confirm repair for legacy mode-02770 directories and mode-0660 files, including metadata-only redaction, idempotency, owner/type/link/containment rejection, stale parent/target races, and backend rollback
 - durable idempotency conflict/replay paths and per-item batch partial-result envelopes
 - scripted provider failures, unsafe retry suppression, MIME/header defense, time-zone/recurrence validation, traversal/symlink rejection, and secret redaction
 - dependency-free Drive media/multipart/resumable upload request paths, binary download/export, range resume, atomic writes, and SHA-256 verification

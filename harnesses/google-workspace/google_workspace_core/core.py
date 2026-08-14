@@ -49,7 +49,15 @@ def local_auth(command,payload,out):
   sub=action[len("bindings."):];body=payload.get("body",{});alias=payload.get("account")
   try:
    if sub=="list":items,revision=list_bindings();out["data"]={"items":items,"revision":revision};return out,0
-   if sub=="status":items,revision=list_bindings(validate_paths=True);out["data"]={"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)};return out,0
+   if sub=="status":
+    checks=check_permissions();permission_healthy=all(x["passed"] for x in checks)
+    data={"items":[],"revision":None,"permissionChecks":checks,"permissionHealthy":permission_healthy,"healthy":False}
+    if permission_healthy:
+     try:
+      items,revision=list_bindings(validate_paths=True);data.update({"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)})
+     except BindingError as status_error:
+      data["bindingStatus"]={"available":False,"code":status_error.code}
+    out["data"]=data;return out,0
    if sub=="resolve":
     resolved,_,_,item,revision=resolve_binding(alias);out["data"]={"resource":{"alias":resolved,"subjectHash":item["subjectHash"],"emailHint":item.get("emailHint"),"portable":not item.get("externalReference",False),"revision":revision}};return out,0
    if sub=="permissions.check":
@@ -71,7 +79,7 @@ def local_auth(command,payload,out):
    elif sub=="rename":doc=rename_binding(alias,body["newAlias"],expected_revision=expected);resource={"alias":body["newAlias"],"revision":doc["revision"],"identityUnchanged":True}
    elif sub=="remove":doc=remove_binding(alias,body.get("deleteCredential",False),expected_revision=expected);resource={"alias":alias,"removed":True,"credentialDeleted":bool(body.get("deleteCredential",False)),"revision":doc["revision"]}
    elif sub=="permissions.repair":
-    repaired,_=repair_permissions();resource={"repairedCategories":repaired}
+    repaired,_=repair_permissions(expected_plan=target);resource={"repairedCategories":repaired}
    else:
     migrated,revision,_=apply_migration([payload["inputPath"]],body.get("mappings"),None);resource={"migrated":migrated,"revision":revision}
    out["data"]={"resource":resource};out["effects"]=[{"kind":"confirmed","resourceIds":[alias] if alias else [],"effectDigest":payload["confirm"],"recoverability":target.get("recoverability","local-metadata")}];return out,0
