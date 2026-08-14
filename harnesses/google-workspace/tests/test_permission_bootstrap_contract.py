@@ -571,6 +571,101 @@ def test_confirm_digest_is_bound_to_exact_snapshot(tmp_path, monkeypatch):
     assert stat.S_IMODE(root.lstat().st_mode) == 0o2770
 
 
+def _legacy_gid_workspace(tmp_path, store_gid):
+    workspace, root, credential = _workspace_live_shape(tmp_path)
+    try:
+        os.chown(workspace, os.geteuid(), store_gid)
+    except OSError as exc:
+        pytest.skip(f"filesystem cannot represent synthetic store gid: {exc.errno}")
+    workspace.chmod(0o2777)
+    assert root.lstat().st_gid != store_gid
+    return workspace, root, credential
+
+
+@pytest.mark.skipif(not hasattr(os, "fchown") or os.geteuid() != 0,
+                    reason="requires synthetic distinct protected GIDs")
+@pytest.mark.parametrize("store_gid", [1, 65534])
+def test_repair_migrates_every_known_artifact_to_verified_store_gid(tmp_path, store_gid):
+    workspace, root, credential = _legacy_gid_workspace(tmp_path, store_gid)
+    registry_temp = root / (".bindings.v1." + "a" * 24 + ".tmp")
+    registry_temp.write_bytes(b"CANARY_STAGING_NOT_READ")
+    registry_temp.chmod(0o660)
+    tombstone = root / "credentials" / ("." + credential.name + ".delete-" + "b" * 16)
+    tombstone.write_bytes(b"CANARY_TOMBSTONE_NOT_READ")
+    tombstone.chmod(0o660)
+
+    plan = plan_repair(root)
+    assert plan["expectedIdentity"] == {"uid": os.geteuid(), "gid": store_gid}
+    assert {change["afterGid"] for change in plan["changes"]} == {store_gid}
+    repaired, _ = repair_permissions(root, expected_plan=plan)
+
+    artifacts = [root, root / "credentials", root / "backups", root / "bindings.v1.lock",
+                 root / "bindings.v1.json", credential, registry_temp, tombstone]
+    assert {item.lstat().st_gid for item in artifacts} == {store_gid}
+    assert repaired == ["directory", "file"]
+    assert plan_repair(root)["changes"] == []
+    assert stat.S_IMODE(workspace.lstat().st_mode) == 0o2777
+
+
+def test_fresh_install_repair_is_metadata_only_and_creates_nothing(tmp_path):
+    root = tmp_path / "fresh-store"
+    plan = plan_repair(root)
+    assert plan["changes"] == []
+    assert plan["absentArtifacts"] == [{"artifactId": "artifact-0001",
+                                         "snapshot": {"type": "absent"}}]
+    assert repair_permissions(root, expected_plan=plan)[0] == []
+    assert not root.exists()
+
+
+@pytest.mark.parametrize("relative", ["unknown", "credentials/not-a-credential",
+                                       "backups/not-a-backup.json"])
+def test_unknown_content_blocks_gid_migration_without_metadata_drift(tmp_path, relative):
+    _workspace, root, _credential = _workspace_live_shape(tmp_path)
+    path = root / relative
+    path.parent.mkdir(mode=0o700, exist_ok=True)
+    path.write_bytes(b"CANARY_UNKNOWN_NOT_READ")
+    before = {item: item.lstat() for item in [root, path]}
+    with patch("os.fchown") as chown, patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chown.assert_not_called()
+    chmod.assert_not_called()
+    assert {(item.lstat().st_ino, item.lstat().st_gid, stat.S_IMODE(item.lstat().st_mode))
+            for item in before} == {(info.st_ino, info.st_gid, stat.S_IMODE(info.st_mode))
+                                    for info in before.values()}
+
+
+def test_fchown_denial_rolls_back_prior_identity_and_modes_then_retry_succeeds(tmp_path):
+    _workspace, root, credential = _workspace_live_shape(tmp_path)
+    plan = plan_repair(root)
+    registry = root / "bindings.v1.json"
+    protected_bytes = {path: path.read_bytes() for path in [registry, credential]}
+    backups = {path.name: path.read_bytes() for path in (root / "backups").iterdir()}
+    source_bytes = (tmp_path / "source.json").read_bytes()
+    before = {path: (path.lstat().st_uid, path.lstat().st_gid,
+                     stat.S_IMODE(path.lstat().st_mode))
+              for path in (root, root / "credentials", credential)}
+    real_fchown = os.fchown
+    calls = 0
+
+    def deny_second(fd, uid, gid):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise OSError("synthetic chown denied")
+        return real_fchown(fd, uid, gid)
+
+    with patch("os.fchown", side_effect=deny_second), pytest.raises(OSError, match="denied"):
+        repair_permissions(root, expected_plan=plan)
+    assert {path: (path.lstat().st_uid, path.lstat().st_gid,
+                   stat.S_IMODE(path.lstat().st_mode)) for path in before} == before
+    assert {path: path.read_bytes() for path in protected_bytes} == protected_bytes
+    assert {path.name: path.read_bytes() for path in (root / "backups").iterdir()} == backups
+    assert (tmp_path / "source.json").read_bytes() == source_bytes
+    assert json.loads(registry.read_text())["revision"] == 1
+    repair_permissions(root, expected_plan=plan)
+    assert plan_repair(root)["changes"] == []
+
+
 @pytest.mark.parametrize("unsafe", ["symlink", "hardlink", "fifo"])
 def test_bootstrap_preview_fails_closed_for_unsafe_artifacts(tmp_path, unsafe):
     root, credential = _forge_legacy_shape(tmp_path)
