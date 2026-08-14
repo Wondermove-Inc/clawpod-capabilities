@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -331,9 +331,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -628,10 +626,9 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body",
           "transferRoot",
-          "outputPath"
+          "account"
         ],
         "properties": {
           "account": {
@@ -913,9 +910,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -1488,9 +1483,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -1783,9 +1776,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -2076,9 +2067,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -2369,9 +2358,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -2662,9 +2649,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -2956,7 +2941,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -3250,7 +3234,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -3544,7 +3527,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -3838,7 +3820,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -4131,9 +4112,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -4425,7 +4404,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -4719,7 +4697,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -5013,7 +4990,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -5308,7 +5284,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -5601,9 +5576,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -5894,9 +5867,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -6188,7 +6159,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -6482,7 +6452,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -6776,7 +6745,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -7069,9 +7037,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -7362,9 +7328,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -7655,9 +7619,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -7948,9 +7910,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -8242,7 +8202,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -8536,7 +8495,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -8830,7 +8788,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -9123,9 +9080,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -9416,9 +9371,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -9709,9 +9662,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -10003,7 +9954,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -10297,7 +10247,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -10590,9 +10539,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -10885,7 +10832,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -11178,9 +11124,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -11473,7 +11417,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -11768,7 +11711,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -12061,9 +12003,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -12356,7 +12296,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -12649,9 +12588,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -12942,9 +12879,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -13236,7 +13171,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -13529,9 +13463,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -13822,9 +13754,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -14115,9 +14045,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -14410,7 +14338,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -14704,9 +14631,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -14997,9 +14922,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -15290,9 +15213,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -15587,7 +15508,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -15884,7 +15804,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -16181,7 +16100,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -16477,9 +16395,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -16770,9 +16686,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -17063,9 +16977,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -17360,7 +17272,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -17656,9 +17567,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -17951,9 +17860,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -18246,9 +18153,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -18543,7 +18448,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -18839,9 +18743,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -19136,9 +19038,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -19429,9 +19329,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -19722,9 +19620,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -20015,9 +19911,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -20308,9 +20202,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -20601,9 +20493,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -20895,7 +20785,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -21189,7 +21078,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -21483,7 +21371,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -21776,9 +21663,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -22071,7 +21956,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -22364,9 +22248,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -22658,7 +22540,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -22952,7 +22833,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -23246,7 +23126,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -23539,9 +23418,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -23832,9 +23709,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -24130,7 +24005,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -24423,9 +24297,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -24716,9 +24588,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -25009,9 +24879,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -25304,7 +25172,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -25599,7 +25466,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -25894,7 +25760,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -26189,7 +26054,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -26484,7 +26348,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -26779,7 +26642,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -27074,9 +26936,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -27369,7 +27229,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -27663,7 +27522,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -27956,9 +27814,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -28249,9 +28105,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -28544,7 +28398,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -28839,7 +28692,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -29134,7 +28986,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -29429,9 +29280,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -29724,7 +29573,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -30018,7 +29866,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -30311,9 +30158,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -30604,9 +30449,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -30897,9 +30740,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -31190,9 +31031,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -31484,7 +31323,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -31778,7 +31616,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -32072,7 +31909,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body",
           "inputPath",
           "transferRoot"
@@ -32368,7 +32204,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "outputPath",
           "transferRoot"
         ],
@@ -32663,7 +32498,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "outputPath",
           "transferRoot"
         ],
@@ -32958,7 +32792,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -33252,7 +33085,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -33546,7 +33378,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -33840,7 +33671,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -34134,7 +33964,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -34427,9 +34256,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -34720,9 +34547,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -35013,9 +34838,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -35306,9 +35129,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -35599,9 +35420,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -35894,7 +35713,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -36189,7 +36007,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -36484,9 +36301,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -36777,9 +36592,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -37070,9 +36883,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -37365,7 +37176,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -37660,7 +37470,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -37955,9 +37764,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -38248,9 +38055,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -38541,9 +38346,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -38836,7 +38639,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -39131,7 +38933,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -39426,9 +39227,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -39719,9 +39518,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -40012,9 +39809,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -40307,7 +40102,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -40600,9 +40394,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -40893,9 +40685,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -41186,9 +40976,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -41480,7 +41268,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -41774,7 +41561,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -42067,9 +41853,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -42360,9 +42144,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -42653,9 +42435,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -42946,9 +42726,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -43239,9 +43017,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "account"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -43534,7 +43310,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -43829,7 +43604,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -44123,7 +43897,6 @@
       "inputSchema": {
         "type": "object",
         "required": [
-          "account",
           "body"
         ],
         "properties": {
@@ -44695,6 +44468,1459 @@
           "type": "booleanFlag",
           "flag": "--resume",
           "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.list": {
+      "description": "List pod-local credential aliases and sanitized metadata.",
+      "baseArgv": [
+        "auth.bindings.list"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.status": {
+      "description": "Validate binding registry, permissions, bundle shape, and identity.",
+      "baseArgv": [
+        "auth.bindings.status"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.resolve": {
+      "description": "Resolve one alias to sanitized metadata without exposing a path.",
+      "baseArgv": [
+        "auth.bindings.resolve"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.import": {
+      "description": "Copy or explicitly reference a validated legacy credential bundle.",
+      "baseArgv": [
+        "auth.bindings.import"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "account",
+          "inputPath"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.rename": {
+      "description": "Atomically rename a pod-local alias.",
+      "baseArgv": [
+        "auth.bindings.rename"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "account",
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.remove": {
+      "description": "Remove a binding, with separate explicit credential deletion.",
+      "baseArgv": [
+        "auth.bindings.remove"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "account"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.migrate": {
+      "description": "Preview or apply bounded deterministic legacy discovery.",
+      "baseArgv": [
+        "auth.bindings.migrate"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "inputPath"
+        ],
+        "properties": {
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "auth.bindings.permissions.check": {
+      "description": "Report protected-root permission defects.",
+      "baseArgv": [
+        "auth.bindings.permissions.check"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "auth.bindings.permissions.repair": {
+      "description": "Repair owned pod-local protected-root permissions.",
+      "baseArgv": [
+        "auth.bindings.permissions.repair"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "gmail.read": {
+      "description": "Perform bounded Gmail message or thread reads with normalized summaries.",
+      "baseArgv": [
+        "gmail.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "calendar.read": {
+      "description": "Perform bounded upcoming or ranged Calendar reads with normalized summaries.",
+      "baseArgv": [
+        "calendar.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "drive.read": {
+      "description": "Perform bounded Drive search, recent, or metadata reads.",
+      "baseArgv": [
+        "drive.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "integer"
+          },
+          "maxPages": {
+            "type": "integer"
+          },
+          "timeoutMs": {
+            "type": "integer"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
           "optional": true
         }
       ]

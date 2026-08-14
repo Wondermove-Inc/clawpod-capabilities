@@ -14,11 +14,15 @@ from google_workspace_core.transport import ScriptedTransport,retry_request,HTTP
 from google_workspace_core.validation import validate,ValidationError
 
 class Tests(unittest.TestCase):
+ def setUp(self):
+  self.binding_root=tempfile.TemporaryDirectory();self.addCleanup(self.binding_root.cleanup)
+  isolated={'GOOGLE_WORKSPACE_BINDING_ROOT':str(Path(self.binding_root.name)/'bindings'),'GOOGLE_WORKSPACE_STATE_FILE':str(Path(self.binding_root.name)/'state.json')}
+  self.binding_root_patch=patch.dict(os.environ,isolated);self.binding_root_patch.start();self.addCleanup(self.binding_root_patch.stop)
  def cli(self,*args,env=None,input=None):
   e=os.environ.copy();e.update(env or {});return subprocess.run([sys.executable,str(CLI),*args],input=input,text=True,capture_output=True,env=e)
  def mock(self,response):
   d=tempfile.TemporaryDirectory();p=Path(d.name)/'mock.json';p.write_text(json.dumps(response));self.addCleanup(d.cleanup);return str(p)
- def test_inventory_count(self):self.assertEqual(len(catalog()),152)
+ def test_inventory_count(self):self.assertEqual(len(catalog()),164)
  def test_inventory_services(self):self.assertTrue(all(any(k.startswith(x) for x in ('auth.','gmail.','calendar.','drive.')) for k in catalog()))
  def test_closed_schemas(self):self.assertTrue(all(not c['inputSchema']['additionalProperties'] for c in catalog().values()))
  def test_all_have_argmap(self):self.assertTrue(all(c['argMap'] for c in catalog().values()))
@@ -26,15 +30,15 @@ class Tests(unittest.TestCase):
  def test_destructive_safety(self):self.assertIn('destructive',catalog()['drive.files.delete']['safetyClasses'])
  def test_auth_safety(self):self.assertIn('secretUse',catalog()['auth.accounts.status']['safetyClasses'])
  def test_discovery_subprocess(self):
-  r=self.cli('--list-commands');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(len(o['data']['commands']),152)
+  r=self.cli('--list-commands');o=json.loads(r.stdout);self.assertEqual(r.returncode,0);self.assertEqual(len(o['data']['commands']),164)
  def test_unknown_one_json(self):
   r=self.cli('nope','--json');self.assertEqual(r.returncode,2);self.assertFalse(json.loads(r.stdout)['ok']);self.assertEqual(len(r.stdout.strip().splitlines()),1)
  def test_scope_list_no_auth(self):
   r=self.cli('auth.scopes.list','--json');self.assertEqual(r.returncode,0);self.assertIn('drive-file',json.loads(r.stdout)['data']['profiles'])
  def test_preview_requires_auth(self):
-  r=self.cli('gmail.messages.send','--account','work','--preview','--body','{"compose":{"to":["sink@example.invalid"],"subject":"x","text":"y"}}','--json');o=json.loads(r.stdout);self.assertEqual(r.returncode,3);self.assertEqual(o['error']['code'],'AUTH_REQUIRED')
+  r=self.cli('gmail.messages.send','--account','work','--preview','--body','{"compose":{"to":["sink@example.invalid"],"subject":"x","text":"y"}}','--json');o=json.loads(r.stdout);self.assertEqual(r.returncode,3);self.assertEqual(o['error']['code'],'BINDING_NOT_FOUND')
  def test_external_auth_before_confirm(self):
-  r=self.cli('calendar.events.insert','--account','work','--params','{"calendarId":"primary"}','--body','{"summary":"x"}','--json');self.assertEqual(r.returncode,3);self.assertEqual(json.loads(r.stdout)['error']['code'],'AUTH_REQUIRED')
+  r=self.cli('calendar.events.insert','--account','work','--params','{"calendarId":"primary"}','--body','{"summary":"x"}','--json');self.assertEqual(r.returncode,3);self.assertEqual(json.loads(r.stdout)['error']['code'],'BINDING_NOT_FOUND')
  def test_digest_stable(self):self.assertEqual(digest('x','a',{'body':{'b':1},'preview':True}),digest('x','a',{'body':{'b':1}}))
  def test_digest_account_bound(self):self.assertNotEqual(digest('x','a',{}),digest('x','b',{}))
  def test_gmail_url(self):self.assertEqual(operation('gmail.messages.get',{'messageId':'m'})['url'],'https://gmail.googleapis.com/gmail/v1/users/me/messages/m')

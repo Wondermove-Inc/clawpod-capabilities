@@ -278,9 +278,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -556,10 +554,9 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body",
         "transferRoot",
-        "outputPath"
+        "account"
       ],
       "properties": {
         "account": {
@@ -667,6 +664,9 @@
                 ]
               },
               "maxItems": 3
+            },
+            "bind": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -809,6 +809,9 @@
                       ]
                     },
                     "maxItems": 3
+                  },
+                  "bind": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -903,9 +906,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -1445,9 +1446,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -1742,9 +1741,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -2019,9 +2016,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -2298,9 +2293,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -2651,9 +2644,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -2949,7 +2940,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -3285,7 +3275,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -3627,7 +3616,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -3939,7 +3927,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -4250,9 +4237,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -4548,7 +4533,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -4854,7 +4838,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -5436,7 +5419,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -6018,7 +6000,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -6599,9 +6580,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -6952,9 +6931,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -7250,7 +7227,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -7588,7 +7564,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -7900,7 +7875,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -8211,9 +8185,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -8508,9 +8480,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -8817,9 +8787,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -9138,9 +9106,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -9436,7 +9402,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -9804,7 +9769,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -10186,7 +10150,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -10571,9 +10534,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -10868,9 +10829,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -11189,9 +11148,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -11487,7 +11444,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -12069,7 +12025,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -12668,9 +12623,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -12966,7 +12919,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -13565,9 +13517,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -13931,7 +13881,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -14267,7 +14216,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -14546,9 +14494,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -14844,7 +14790,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -15293,9 +15238,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -15614,9 +15557,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -15912,7 +15853,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -16365,9 +16305,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -16662,9 +16600,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -16983,9 +16919,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -17281,7 +17215,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -17588,9 +17521,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -17885,9 +17816,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -18206,9 +18135,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -18504,7 +18431,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -18944,7 +18870,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -19402,7 +19327,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -19859,9 +19783,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -20316,9 +20238,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -20637,9 +20557,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -20935,7 +20853,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -21242,9 +21159,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -21539,9 +21454,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -21876,9 +21789,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -22186,7 +22097,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -22513,9 +22423,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -22822,9 +22730,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -23131,9 +23037,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -23410,9 +23314,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -23731,9 +23633,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -24028,9 +23928,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -24371,9 +24269,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -24691,7 +24587,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -25063,7 +24958,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -25445,7 +25339,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -25826,9 +25719,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -26146,7 +26037,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -26545,9 +26435,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -26843,7 +26731,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -27173,7 +27060,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -27515,7 +27401,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -27856,9 +27741,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -28153,9 +28036,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -28495,7 +28376,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -28836,9 +28716,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -29347,9 +29225,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -29738,9 +29614,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -30262,7 +30136,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -31180,7 +31053,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -32098,7 +31970,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -33028,7 +32899,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -33958,7 +33828,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -34888,7 +34757,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -35829,9 +35697,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -36221,7 +36087,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -36789,7 +36654,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -37170,9 +37034,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -37529,9 +37391,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -37861,7 +37721,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -38267,7 +38126,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -38677,7 +38535,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -39086,9 +38943,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -39418,7 +39273,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -39834,7 +39688,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -40143,9 +39996,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -40462,9 +40313,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -40839,9 +40688,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -41216,9 +41063,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -41552,7 +41397,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -41996,7 +41840,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -42376,7 +42219,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body",
         "inputPath",
         "transferRoot"
@@ -42822,7 +42664,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "outputPath",
         "transferRoot"
       ],
@@ -43159,7 +43000,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "outputPath",
         "transferRoot"
       ],
@@ -43508,7 +43348,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -43904,7 +43743,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -44364,7 +44202,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -44780,7 +44617,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -45098,7 +44934,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -45415,9 +45250,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -45718,9 +45551,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -46005,9 +45836,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -46292,9 +46121,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -46665,9 +46492,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -47043,7 +46868,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -47481,7 +47305,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -47880,9 +47703,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -48225,9 +48046,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -48568,9 +48387,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -48916,7 +48733,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -49270,7 +49086,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -49603,9 +49418,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -49918,9 +49731,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -50273,9 +50084,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -50633,7 +50442,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -50981,7 +50789,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -51326,9 +51133,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -51653,9 +51458,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -51996,9 +51799,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -52344,7 +52145,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -52687,9 +52487,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -53002,9 +52800,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -53351,9 +53147,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -53687,7 +53481,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -54009,7 +53802,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -54404,9 +54196,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -54799,9 +54589,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -55194,9 +54982,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -55497,9 +55283,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -55806,9 +55590,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "account"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -56172,7 +55954,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -56594,7 +56375,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -56994,7 +56774,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "account",
         "body"
       ],
       "properties": {
@@ -57598,5 +57377,1272 @@
       "additionalProperties": false
     },
     "requiredScopes": []
+  },
+  "auth.bindings.list": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.status": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.resolve": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.import": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account",
+        "inputPath"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "copy",
+                "reference"
+              ]
+            },
+            "sourceAlias": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        },
+        "inputPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "overwrite": {
+          "type": "boolean"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.rename": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account",
+        "body"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "newAlias": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "newAlias"
+          ]
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.remove": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "deleteCredential": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.migrate": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inputPath"
+      ],
+      "properties": {
+        "dryRun": {
+          "type": "boolean"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mappings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "candidateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "alias": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "sourceAlias": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "mode": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "enum": [
+                      "copy",
+                      "reference"
+                    ]
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "candidateId",
+                  "alias"
+                ]
+              },
+              "maxItems": 1
+            }
+          }
+        },
+        "inputPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.permissions.check": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.bindings.permissions.repair": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "dryRun": {
+          "type": "boolean"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "gmail.read": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxItems": 100
+        },
+        "pageSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "pageToken": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "allPages": {
+          "type": "boolean"
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maxPages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 120000
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "messages",
+                "threads"
+              ]
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "q": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            "labelIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "maxItems": 100
+            },
+            "includeSpamTrash": {
+              "type": "boolean"
+            },
+            "includeBody": {
+              "type": "boolean"
+            }
+          }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": [
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ]
+  },
+  "calendar.read": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxItems": 100
+        },
+        "pageSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "pageToken": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "allPages": {
+          "type": "boolean"
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maxPages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 120000
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "calendarId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "timeMin": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "format": "date-time"
+            },
+            "timeMax": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "format": "date-time"
+            },
+            "timeZone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "singleEvents": {
+              "type": "boolean"
+            },
+            "orderBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "startTime",
+                "updated"
+              ]
+            }
+          }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": [
+      "https://www.googleapis.com/auth/calendar.events.readonly"
+    ]
+  },
+  "drive.read": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxItems": 100
+        },
+        "pageSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "pageToken": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "allPages": {
+          "type": "boolean"
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maxPages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 120000
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "search",
+                "recent",
+                "get"
+              ]
+            },
+            "fileId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "q": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            "spaces": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "^(drive|appDataFolder|photos)(,(drive|appDataFolder|photos))*$"
+            },
+            "corpora": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "user",
+                "domain",
+                "drive",
+                "allDrives"
+              ]
+            },
+            "driveId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "orderBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        },
+        "credentialPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": [
+      "https://www.googleapis.com/auth/drive.readonly"
+    ]
   }
 }

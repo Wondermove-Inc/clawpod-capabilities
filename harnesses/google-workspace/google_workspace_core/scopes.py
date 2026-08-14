@@ -4,6 +4,12 @@ CAL_SETTINGS="https://www.googleapis.com/auth/calendar.settings.readonly";CAL_LI
 DRIVE_META="https://www.googleapis.com/auth/drive.metadata.readonly";DRIVE_READ="https://www.googleapis.com/auth/drive.readonly";DRIVE_FILE="https://www.googleapis.com/auth/drive.file";DRIVE="https://www.googleapis.com/auth/drive"
 def required_scopes(c,safety=()):
  a=c.rsplit('.',1)[-1]
+ if c=='gmail.read':return {GMAIL_READ}
+ if c=='calendar.read':return {CAL_EVENTS_RO}
+ if c=='drive.read':return {DRIVE_READ}
+ if c=='gmail.read':return {GMAIL_READ}
+ if c=='calendar.read':return {CAL_EVENTS_RO}
+ if c=='drive.read':return {DRIVE_META}
  if c.startswith('gmail.settings.'):
   return {GMAIL_SHARING if any(x in c for x in ('forwardingAddresses','delegates','.smime.')) else GMAIL_SETTINGS}
  if c.startswith('gmail.labels.'):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import base64, hashlib, json, os, time, uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from .auth import CredentialProvider,AuthError
 from .catalog import catalog,operation,preflight,service_for,OperationError
@@ -10,8 +10,14 @@ from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
 from .scopes import enforce,required_scopes
 from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,transfer_load,transfer_store
+from .bindings import (BindingError,ensure_root,list_bindings,normalize_alias,resolve_binding,
+ plan_import,import_binding,plan_rename,rename_binding,plan_remove,remove_binding,
+ register_staged_binding)
+from .permissions import check_permissions,plan_repair,repair_permissions
+from .migration import plan_migration,apply_migration
+from .high_level_reads import normalize as normalize_high_level
 
-EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"NOT_FOUND":5,"CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
+EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"ACCOUNT_REQUIRED":3,"BINDING_NOT_FOUND":3,"BINDING_AMBIGUOUS":3,"BINDING_IDENTITY_MISMATCH":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"BINDING_PERMISSION_DENIED":4,"BINDING_PERMISSION_INSECURE":4,"NOT_FOUND":5,"CONFLICT":6,"BINDING_CONFLICT":6,"MIGRATION_CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"BINDING_LOCK_TIMEOUT":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"BINDING_PATH_UNSAFE":10,"BINDING_REGISTRY_CORRUPT":10,"BINDING_SCHEMA_UNSUPPORTED":11,"MIGRATION_REQUIRED":11,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
 SCOPES={"identity":["openid","email"],"workspace-max":["https://mail.google.com/","https://www.googleapis.com/auth/gmail.settings.basic","https://www.googleapis.com/auth/gmail.settings.sharing","https://www.googleapis.com/auth/calendar","https://www.googleapis.com/auth/drive"],"gmail-read":["https://www.googleapis.com/auth/gmail.readonly"],"gmail-compose":["https://www.googleapis.com/auth/gmail.compose"],"gmail-modify":["https://www.googleapis.com/auth/gmail.modify"],"gmail-settings":["https://www.googleapis.com/auth/gmail.settings.basic"],"calendar-read":["https://www.googleapis.com/auth/calendar.readonly"],"calendar-events":["https://www.googleapis.com/auth/calendar.events"],"drive-file":["https://www.googleapis.com/auth/drive.file"],"drive-read":["https://www.googleapis.com/auth/drive.readonly"],"drive-manage":["https://www.googleapis.com/auth/drive"]}
 
 def now(): return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
@@ -39,6 +45,38 @@ def managed_browser_url(body):
  return body.get("managedBrowserDevtoolsUrl") or os.environ.get("GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL") or os.environ.get("OPENCLAW_BROWSER_CDP_URL")
 def local_auth(command,payload,out):
  provider=CredentialProvider(payload.get("credentialPath")); action=command.split(".",1)[1]
+ if action.startswith("bindings."):
+  sub=action[len("bindings."):];body=payload.get("body",{});alias=payload.get("account")
+  try:
+   if sub=="list":items,revision=list_bindings();out["data"]={"items":items,"revision":revision};return out,0
+   if sub=="status":items,revision=list_bindings(validate_paths=True);out["data"]={"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)};return out,0
+   if sub=="resolve":
+    resolved,_,_,item,revision=resolve_binding(alias);out["data"]={"resource":{"alias":resolved,"subjectHash":item["subjectHash"],"emailHint":item.get("emailHint"),"portable":not item.get("externalReference",False),"revision":revision}};return out,0
+   if sub=="permissions.check":
+    checks=check_permissions();out["data"]={"checks":checks,"healthy":all(x["passed"] for x in checks)};return out,0
+   writes={"import","rename","remove","migrate","permissions.repair"}
+   if sub not in writes:return fail(command,payload,"INVALID_ARGUMENT","unknown bindings action",account=alias)
+   if sub=="import":target=plan_import(alias,payload["inputPath"],body.get("mode","copy"),body.get("sourceAlias"),payload.get("overwrite",False))
+   elif sub=="rename":target=plan_rename(alias,body["newAlias"])
+   elif sub=="remove":target=plan_remove(alias,body.get("deleteCredential",False))
+   elif sub=="permissions.repair":target=plan_repair()
+   else:target=plan_migration([payload["inputPath"]],body.get("mappings"))
+   if payload.get("preview") or payload.get("dryRun"):
+    token=issue_preview(command,alias,payload,target,None);recoverability=target.get("recoverability","local-metadata");out["effects"]=[{"kind":"planned","targets":target,"before":None,"after":{"operation":sub},"recoverability":recoverability,"effectDigest":token}];out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":token,"plan":target};return out,0
+   if not payload.get("confirm"):return fail(command,payload,"APPROVAL_REQUIRED","binding mutations require a fresh preview and confirmation",account=alias)
+   ok,reason=consume_preview(payload["confirm"],command,alias,payload,target,None)
+   if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=alias)
+   expected=target.get("revision")
+   if sub=="import":doc=import_binding(alias,payload["inputPath"],body.get("mode","copy"),body.get("sourceAlias"),payload.get("overwrite",False),expected_revision=expected);resource={"alias":alias,"revision":doc["revision"]}
+   elif sub=="rename":doc=rename_binding(alias,body["newAlias"],expected_revision=expected);resource={"alias":body["newAlias"],"revision":doc["revision"],"identityUnchanged":True}
+   elif sub=="remove":doc=remove_binding(alias,body.get("deleteCredential",False),expected_revision=expected);resource={"alias":alias,"removed":True,"credentialDeleted":bool(body.get("deleteCredential",False)),"revision":doc["revision"]}
+   elif sub=="permissions.repair":
+    repaired,_=repair_permissions();resource={"repairedCategories":repaired}
+   else:
+    migrated,revision,_=apply_migration([payload["inputPath"]],body.get("mappings"),None);resource={"migrated":migrated,"revision":revision}
+   out["data"]={"resource":resource};out["effects"]=[{"kind":"confirmed","resourceIds":[alias] if alias else [],"effectDigest":payload["confirm"],"recoverability":target.get("recoverability","local-metadata")}];return out,0
+  except BindingError as e:return fail(command,payload,e.code,str(e),account=alias,details=e.details)
+  except (OSError,KeyError,ValueError) as e:return fail(command,payload,"LOCAL_IO_ERROR","binding operation failed safely",account=alias)
  if action=="onboarding.decide":
   body=payload["body"];internal=body["projectInOrganization"] and body["allIntendedUsersOrganizationMembers"]
   testing=not internal and body["externalPublishingStatus"]=="testing"
@@ -55,26 +93,56 @@ def local_auth(command,payload,out):
  if action=="login":
   from .oauth_desktop import desktop_login,LoginError
   body=payload.get("body",{})
+  bind=body.get("bind",True);staged=None
   try:
    browser_url=managed_browser_url(body)
-   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=payload.get("outputPath"),alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False),managed_browser_devtools_url=browser_url,smoke_tests=body.get("smokeTests",[]))
+   if bind:
+    normalize_alias(payload.get("account"))
+    root=ensure_root();items,expected_revision=list_bindings(root=root);existing=next((item for item in items if item["alias"]==payload.get("account")),None)
+    if existing and not payload.get("overwrite",False):raise BindingError("BINDING_CONFLICT","binding alias already exists",{"alias":payload.get("account")})
+    target={"operation":"login","alias":payload.get("account"),"replacesBinding":bool(existing),"revision":expected_revision}
+    if payload.get("preview") or payload.get("dryRun"):
+     token=issue_preview(command,payload.get("account"),payload,target,None);out["effects"]=[{"kind":"planned","targets":target,"before":None,"after":{"bound":True},"recoverability":"local-metadata","effectDigest":token}];out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":token,"plan":target};return out,0
+    if existing and not payload.get("confirm"):return fail(command,payload,"APPROVAL_REQUIRED","replacing a binding requires a fresh preview and confirmation",account=payload.get("account"))
+    if payload.get("confirm"):
+     ok,reason=consume_preview(payload["confirm"],command,payload.get("account"),payload,target,None)
+     if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=payload.get("account"))
+    name=os.urandom(16).hex()+".json";output_root=str(root/"credentials");output_path=name
+   else:
+    if not payload.get("outputPath"):raise BindingError("INVALID_ARGUMENT","outputPath is required when bind is false")
+    output_root=None;output_path=payload.get("outputPath")
+   result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=output_path,output_root=output_root,alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False) if not bind else False,managed_browser_devtools_url=browser_url,smoke_tests=body.get("smokeTests",[]))
+   if bind:
+    staged=root/"credentials"/name
+    if any(not item.get("ok") for item in result.get("smokeTests",{}).values()):
+     staged.unlink(missing_ok=True);raise LoginError("requested post-login smoke test failed")
+    doc=register_staged_binding(payload.get("account"),staged,overwrite=payload.get("overwrite",False),root=root,expected_revision=expected_revision)
+    result["bound"]=True;result["revision"]=doc["revision"]
+   else:
+    result["bound"]=False;out["warnings"].append({"code":"MIGRATION_REQUIRED","message":"file-only login is deprecated; import the bundle into pod-local bindings"})
    result["desktopLocal"]=True;result["browserMode"]="managed-devtools" if browser_url else "system-browser"
-  except LoginError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
+  except (LoginError,BindingError) as e:
+   if staged is not None:staged.unlink(missing_ok=True)
+   return fail(command,payload,getattr(e,"code","AUTH_REQUIRED"),str(e),account=payload.get("account"),details=getattr(e,"details",{}))
   out["data"]={"resource":result};return out,0
  if action=="accounts.list":
   if not provider.path: out["data"]={"items":[]};return out,0
   try:doc=provider.read_document()
-  except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
+  except AuthError as e:return fail(command,payload,e.code,str(e),account=payload.get("account"),details=e.details)
   items=doc.get("accounts",doc);out["data"]={"items":[{"alias":a,"email":v.get("email"),"subject":v.get("subject_hash"),"scopes":v.get("scopes",[])} for a,v in items.items()]};return out,0
  try:item=provider.load(payload.get("account"))
- except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=payload.get("account"))
+ except AuthError as e:return fail(command,payload,e.code,str(e),account=payload.get("account"),details=e.details)
  safe={k:item.get(k) for k in ("email","subject_hash","scopes","expires_at")}
  if action=="scopes.check":
   required=set(sum((SCOPES.get(x,[]) for x in payload.get("body",{}).get("profiles",[])),[]));safe["missing"]=sorted(required-set(item.get("scopes",[])))
  out["data"]={"resource":safe};return out,0
 
 def run(command,payload):
- account=payload.get("account") or os.environ.get("GOOGLE_WORKSPACE_ACCOUNT"); out=envelope(command,payload,account)
+ explicit_account=payload.get("account");explicit_path=payload.get("credentialPath");environment_account=os.environ.get("GOOGLE_WORKSPACE_ACCOUNT")
+ # A typed credentialPath is the complete selection boundary. In particular,
+ # credentialPath-without-account must inspect that bundle and must not inherit
+ # the deprecated environment alias.
+ account=explicit_account if explicit_account is not None else (None if explicit_path else environment_account);out=envelope(command,payload,account)
  if command not in catalog(): return fail(command,payload,"INVALID_ARGUMENT","unknown command",account=account)
  # Validate batch items independently so one malformed item produces a per-item
  # PARTIAL_FAILURE instead of rejecting the entire batch before any work starts.
@@ -95,7 +163,11 @@ def run(command,payload):
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  if command.startswith("auth."): return local_auth(command,payload,out)
- try: op=operation(command,payload.get("params",{}))
+ operation_params=dict(payload.get("params",{}))
+ if command=="calendar.read":
+  instant=datetime.now(timezone.utc)
+  operation_params.setdefault("timeMin",instant.isoformat().replace("+00:00","Z"));operation_params.setdefault("timeMax",(instant+timedelta(days=7)).isoformat().replace("+00:00","Z"))
+ try: op=operation(command,operation_params)
  except OperationError as e:
   code="UNSUPPORTED_BY_CONTRACT" if "not implemented" in str(e) else "INVALID_ARGUMENT"
   return fail(command,payload,code,str(e),account=account)
@@ -108,9 +180,12 @@ def run(command,payload):
  mock=os.environ.get("GOOGLE_WORKSPACE_MOCK_HTTP"); transport=ScriptedTransport(mock) if mock else Transport()
  try:
   if mock: token="synthetic-test-token";meta={"email":"fake@example.invalid","subject_hash":"fake","scopes":sum(SCOPES.values(),[])+["https://www.googleapis.com/auth/gmail.settings.basic","https://www.googleapis.com/auth/gmail.settings.sharing","https://www.googleapis.com/auth/calendar","https://www.googleapis.com/auth/calendar.acl"]}
-  else: token,meta=CredentialProvider(payload.get("credentialPath")).token(account)
+  else:
+   provider=CredentialProvider(explicit_path,allow_environment_path=False);token,meta=provider.token(account)
+   if provider.resolved_alias and account is None:account=provider.resolved_alias;out["account"]={"alias":account}
+   if explicit_account is None and explicit_path is None and environment_account:out["warnings"].append({"code":"DEPRECATED_ENV_SELECTOR","message":"GOOGLE_WORKSPACE_ACCOUNT is deprecated; pass account explicitly"})
   needed=enforce(command,meta.get("scopes",[]),safety)
- except AuthError as e:return fail(command,payload,"AUTH_REQUIRED",str(e),account=account)
+ except AuthError as e:return fail(command,payload,e.code,str(e),account=account,details=e.details)
  except PermissionError as e:return fail(command,payload,"INSUFFICIENT_SCOPE",str(e),account=account)
  try:validate(payload,None,command,semantic=True)
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
@@ -167,9 +242,13 @@ def run(command,payload):
  params={k:v for k,v in payload.get("params",{}).items() if k not in op.get("pathParams",set()) and k not in ("userId","kind")}
  params.update(op.get("query",{}))
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
- if payload.get("pageSize"):params["pageSize"]=payload["pageSize"]
+ if payload.get("pageSize"):
+  params["maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"]=payload["pageSize"]
+ elif command in ("gmail.read","calendar.read","drive.read"):
+  params["maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"]=50
+ page_size_key="maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"
  if payload.get("allPages") and payload.get("maxItems") is not None:
-  params["pageSize"]=min(params.get("pageSize",500),payload["maxItems"])
+  params[page_size_key]=min(params.get(page_size_key,500),payload["maxItems"])
  if payload.get("pageToken"):
   try:params["pageToken"]=unbind_token(payload["pageToken"],command,account,{k:v for k,v in params.items() if k!="pageToken"})
   except ValueError as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
@@ -213,13 +292,14 @@ def run(command,payload):
    max_pages=payload.get("maxPages",100);max_items=payload.get("maxItems",10000);key=next((k for k,v in data.items() if isinstance(v,list)),None)
    if key:data[key]=data[key][:max_items]
    while key and isinstance(data,dict) and data.get("nextPageToken") and pages<max_pages and len(data[key])<max_items:
-    remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],"pageSize":min(remaining,payload.get('pageSize') or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
+    remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],page_size_key:min(remaining,payload.get('pageSize') or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
     if isinstance(nxt.get(key),list):data[key].extend(nxt[key][:remaining]);data["nextPageToken"]=nxt.get("nextPageToken")
     else:break
  except HTTPError as e:
   code=provider_error(e)
   if command in ("gmail.messages.send","gmail.drafts.send") and e.status>=500:code="AMBIGUOUS_COMMIT"
   return fail(command,payload,code,str(e),status=e.status,reason=e.reason,account=account)
+ if out.get("account") is None:out["account"]={}
  out["account"].update({"email":meta.get("email"),"subject":meta.get("subject_hash")})
  if resume_prefix:
   content_range=rh.get('Content-Range') or rh.get('content-range');expected_prefix=f'bytes {len(resume_prefix)}-'
@@ -232,6 +312,8 @@ def run(command,payload):
    target_path=safe_path(payload.get("transferRoot") or ".",payload["outputPath"],output=True);atomic_write(target_path,raw,payload.get("overwrite",False) or bool(resume_prefix));data={"transfer":{"path":str(target_path),"bytes":len(raw),"sha256":actual,"mimeType":rh.get("Content-Type"),"resumed":bool(resume_prefix),"remoteId":payload.get("params",{}).get("fileId")}}
   except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
  out["provenance"].update({"providerStatus":status,"retryCount":retries,"etag":data.get("etag"),"effectiveFields":payload.get("fields",[]),"requiredScopes":needed})
+ normalized,next_token=normalize_high_level(command,data,payload.get("params",{}))
+ if normalized is not None:data={"items":normalized,"nextPageToken":next_token}
  items=next((data[k] for k in ("messages","threads","labels","drafts","history","items","files","permissions","comments","replies","revisions","drives","changes","events","calendars","rules") if isinstance(data.get(k),list)),None)
  if items is not None:
   raw_next=data.get("nextPageToken");bound=bind_token(raw_next,command,account,{k:v for k,v in params.items() if k!="pageToken"}) if raw_next else None
@@ -244,5 +326,5 @@ def run(command,payload):
   except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
  if payload.get("idempotencyKey"):idempotency_store(payload["idempotencyKey"],command,account,payload,out)
  audit=os.environ.get("GOOGLE_WORKSPACE_AUDIT_FILE")
- if audit:append_audit(audit,{"timestamp":now(),"command":command,"requestId":out["requestId"],"account":account,"inputHash":hashlib.sha256(canonical(redact(payload)).encode()).hexdigest(),"safetyClasses":safety,"result":"ok","effects":out["effects"]})
+ if audit:append_audit(audit,{"command":command,"requestId":out["requestId"],"alias":account,"inputHash":hashlib.sha256(canonical(redact(payload)).encode()).hexdigest(),"safetyClasses":safety,"resultCode":"ok","effectDigests":[item.get("effectDigest") for item in out["effects"] if item.get("effectDigest")]})
  return out,0

@@ -8,7 +8,8 @@ from .security import canonical
 TTL=600
 
 def path():
- return Path(os.environ.get("GOOGLE_WORKSPACE_STATE_FILE",Path.home()/".local/state/clawpod/google-workspace.json"))
+ default=Path(os.environ.get("XDG_STATE_HOME",Path.home()/".local/state"))/"clawpod/google-workspace.json"
+ return Path(os.environ.get("GOOGLE_WORKSPACE_STATE_FILE",default))
 @contextmanager
 def locked():
  p=path();p.parent.mkdir(parents=True,exist_ok=True); lock=p.with_suffix(p.suffix+".lock")

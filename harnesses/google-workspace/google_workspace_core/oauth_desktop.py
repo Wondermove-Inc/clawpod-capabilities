@@ -161,11 +161,11 @@ def _smoke(token, services, timeout, request=_smoke_request):
 def desktop_login(*, transfer_root, client_path, output_path, alias, profiles, timeout=180, overwrite=False,
                   managed_browser_devtools_url=None, smoke_tests=(), open_browser=webbrowser.open,
                   post_json=_post_json, get_identity=_get_identity, smoke_request=_smoke_request,
-                  open_devtools=_open_devtools, server_factory=HTTPServer):
+                  open_devtools=_open_devtools, server_factory=HTTPServer, output_root=None):
     if not isinstance(alias,str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,64}",alias): raise LoginError("invalid account alias")
     if not isinstance(timeout,(int,float)) or not 5<=timeout<=600: raise LoginError("timeout must be between 5 and 600 seconds")
     endpoint=_devtools_endpoint(managed_browser_devtools_url)
-    cp=_private_file(transfer_root,client_path);op=_private_file(transfer_root,output_path,existing=False);c=_client(cp)
+    cp=_private_file(transfer_root,client_path);op=_private_file(output_root or transfer_root,output_path,existing=False);c=_client(cp)
     from .core import SCOPES
     try: requested=_canonical_scopes(sum((SCOPES[p] for p in profiles),[])+SCOPES["identity"])
     except Exception: raise LoginError("unknown scope profile") from None
@@ -204,4 +204,4 @@ def desktop_login(*, transfer_root, client_path, output_path, alias, profiles, t
     # Smoke failures must not discard a valid refresh token and force the user
     # through consent again. Return only bounded diagnostics for later recovery.
     smoke=_smoke(token["access_token"],smoke_services,timeout,smoke_request)
-    return {"alias":alias,"email":email.lower(),"subject_hash":accounts[alias]["subject_hash"],"scopes":sorted(granted),"credentialPath":str(Path(output_path)),"smokeTests":smoke}
+    return {"alias":alias,"email":email.lower(),"subject_hash":accounts[alias]["subject_hash"],"scopes":sorted(granted),"smokeTests":smoke}
