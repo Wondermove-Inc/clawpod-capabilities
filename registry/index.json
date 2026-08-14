@@ -450,7 +450,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "99da4b61e22d816056d060c4bc274f9eeead597cb3744f239824ee17f7001a63"
+          "sha256": "7e4b107f5395ef123446f4ebe04df2f24399c13fd4280d40cdd6dcdfae04edfe"
         },
         {
           "path": "references/onboarding.md",
@@ -1205,7 +1205,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "d913c16a0eeb683068cc0cbac38c74b091846310db65bf6e7e1b0fb4fe965679"
+          "sha256": "025564cc0eb4d493adb5b06234657f2c2d2631fce661d39d20a80a0b6d0e04a6"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1237,7 +1237,7 @@
         },
         {
           "path": "google_workspace_core/permissions.py",
-          "sha256": "23e76a6c20627d5270d85e6e585d5e3ccef7c32c1d24cd75f81ddae8205c9c56"
+          "sha256": "aca5961f06c6a0ac1e21f87016fb6fa8856b51782b732914db814ba51066e67f"
         },
         {
           "path": "google_workspace_core/scopes.py",

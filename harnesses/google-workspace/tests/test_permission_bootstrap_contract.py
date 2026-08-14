@@ -16,7 +16,23 @@ sys.path.insert(0, str(PACKAGE))
 
 from google_workspace_core.bindings import import_binding
 from google_workspace_core.core import run
-from google_workspace_core.permissions import plan_repair, repair_permissions
+from google_workspace_core.permissions import _exact_forge_location, plan_repair, repair_permissions
+
+
+@pytest.fixture(autouse=True)
+def synthetic_forge_location(monkeypatch):
+    synthetic = lambda paths: [path.name for path in paths] == \
+        ["root", ".local", "state", "openclaw", "google-workspace"]
+    monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
+    monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location", synthetic)
+
+
+def test_exact_forge_location_is_absolute_and_not_a_named_lookalike():
+    exact = [Path("/root"), Path("/root/.local"), Path("/root/.local/state"),
+             Path("/root/.local/state/openclaw"),
+             Path("/root/.local/state/openclaw/google-workspace")]
+    assert _exact_forge_location(exact)
+    assert not _exact_forge_location([Path("/tmp") / path.relative_to("/") for path in exact])
 
 
 def _bundle(path):
@@ -33,7 +49,15 @@ def _forge_legacy_shape(tmp_path):
     process_root = tmp_path / "root"
     process_root.mkdir()
     process_root.chmod(0o2777)
-    root = process_root / "protected"
+    local = process_root / ".local"
+    state = local / "state"
+    openclaw = state / "openclaw"
+    root = openclaw / "google-workspace"
+    local.mkdir(mode=0o2775)
+    state.mkdir(mode=0o2775)
+    openclaw.mkdir(mode=0o2775)
+    for intermediate in (local, state, openclaw):
+        intermediate.chmod(0o2775)
     import_binding("work", _bundle(tmp_path / "source.json"), source_alias="legacy", root=root)
     credential = next((root / "credentials").iterdir())
     # Reproduce metadata only: the implementation must not need these bytes.
@@ -73,7 +97,7 @@ def test_repair_preview_binds_exact_opaque_targets_and_snapshots(tmp_path):
     assert len(plan["changes"]) >= 3
     assert {change["afterMode"] for change in plan["changes"]} == {"0o700", "0o600"}
     assert all(change["artifactId"].startswith("artifact-") for change in plan["changes"])
-    assert all(set(change["snapshot"]) >= {"device", "inode", "uid", "type", "linkCount", "mode"} for change in plan["changes"])
+    assert all(set(change["snapshot"]) >= {"device", "inode", "uid", "gid", "type", "linkCount", "mode"} for change in plan["changes"])
     assert not _contains_path(plan, root)
     assert not _contains_path(plan, credential)
 
@@ -125,7 +149,7 @@ def test_stale_snapshot_rejected_before_first_chmod(tmp_path):
     plan = plan_repair(root)
     credential.chmod(0o640)
     with patch("os.fchmod") as chmod:
-        with pytest.raises(Exception, match="stale"):
+        with pytest.raises(Exception, match="stale|writable"):
             repair_permissions(root, expected_plan=plan)
     chmod.assert_not_called()
 
@@ -135,8 +159,39 @@ def test_parent_race_rejected_before_first_chmod(tmp_path):
     plan = plan_repair(root)
     (tmp_path / "root").chmod(0o1777)
     with patch("os.fchmod") as chmod:
-        with pytest.raises(Exception, match="stale"):
+        with pytest.raises(Exception, match="stale|writable"):
             repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+def test_exact_complete_forge_chain_is_modeled_without_normalization(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    plan = plan_repair(root)
+    modes = [item["snapshot"]["mode"] for item in plan["parentSnapshots"][-5:]]
+    assert modes == ["0o2777", "0o2775", "0o2775", "0o2775", "0o2770"]
+
+
+@pytest.mark.parametrize("name", [".local", "state", "openclaw"])
+@pytest.mark.parametrize("bad_mode", [0o2755, 0o2770, 0o2777, 0o775])
+def test_forge_intermediate_requires_exact_02775(tmp_path, name, bad_mode):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    intermediate = next(path for path in root.parents if path.name == name)
+    intermediate.chmod(bad_mode)
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
+@pytest.mark.parametrize("renamed", ["local", "states", "open-claw", "protected"])
+def test_forge_chain_names_are_exact(tmp_path, renamed):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    target = {"local": root.parents[2], "states": root.parents[1],
+              "open-claw": root.parent, "protected": root}[renamed]
+    replacement = target.with_name(renamed)
+    target.rename(replacement)
+    shifted_root = replacement if target == root else replacement / root.relative_to(target)
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(shifted_root)
     chmod.assert_not_called()
 
 
@@ -152,12 +207,26 @@ def test_other_writable_parent_requires_exact_forge_or_sticky_mode(tmp_path, bad
 def test_forge_parent_must_be_process_owned(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
     parent_inode = (tmp_path / "root").lstat().st_ino
-    real_owned = __import__("google_workspace_core.permissions", fromlist=["_owned"])._owned
+    real_trusted = __import__("google_workspace_core.permissions", fromlist=["_trusted_identity"])._trusted_identity
 
-    def synthetic_owner(info):
-        return False if info.st_ino == parent_inode else real_owned(info)
+    def synthetic_owner(snapshot):
+        return False if snapshot["inode"] == parent_inode else real_trusted(snapshot)
 
-    with patch("google_workspace_core.permissions._owned", side_effect=synthetic_owner), \
+    with patch("google_workspace_core.permissions._trusted_identity", side_effect=synthetic_owner), \
+         patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
+def test_foreign_group_in_chain_fails_closed(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    parent_inode = root.parent.lstat().st_ino
+    real_trusted = __import__("google_workspace_core.permissions", fromlist=["_trusted_identity"])._trusted_identity
+
+    def synthetic_group(snapshot):
+        return False if snapshot["inode"] == parent_inode else real_trusted(snapshot)
+
+    with patch("google_workspace_core.permissions._trusted_identity", side_effect=synthetic_group), \
          patch("os.fchmod") as chmod, pytest.raises(Exception):
         repair_permissions(root)
     chmod.assert_not_called()
@@ -169,7 +238,7 @@ def test_root_rename_swap_after_preview_fails_before_chmod(tmp_path):
     moved = root.with_name("protected-moved")
     root.rename(moved)
     root.mkdir(mode=0o700)
-    with patch("os.fchmod") as chmod, pytest.raises(Exception, match="stale|unsafe"):
+    with patch("os.fchmod") as chmod, pytest.raises(Exception, match="stale|unsafe|writable"):
         repair_permissions(root, expected_plan=plan)
     chmod.assert_not_called()
 

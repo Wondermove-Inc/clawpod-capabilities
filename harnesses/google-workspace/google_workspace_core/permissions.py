@@ -18,6 +18,20 @@ def _owned(info):
     return not hasattr(os, "geteuid") or info.st_uid == os.geteuid()
 
 
+def _process_group(info):
+    return not hasattr(os, "getegid") or info.st_gid == os.getegid()
+
+
+def _trusted_identity(snapshot):
+    return (snapshot["uid"] == (os.geteuid() if hasattr(os, "geteuid") else snapshot["uid"])
+            and snapshot["gid"] == (os.getegid() if hasattr(os, "getegid") else snapshot["gid"]))
+
+
+def _exact_forge_location(paths):
+    expected = tuple(Path("/root/.local/state/openclaw/google-workspace").parents)[::-1][1:]
+    return tuple(paths) == expected + (Path("/root/.local/state/openclaw/google-workspace"),)
+
+
 def _mode(info):
     return stat.S_IMODE(info.st_mode)
 
@@ -33,7 +47,7 @@ def _kind(info):
 
 
 def _snapshot(info):
-    return {"device": info.st_dev, "inode": info.st_ino, "uid": info.st_uid,
+    return {"device": info.st_dev, "inode": info.st_ino, "uid": info.st_uid, "gid": info.st_gid,
             "type": _kind(info), "linkCount": info.st_nlink, "mode": oct(_mode(info))}
 
 
@@ -44,10 +58,10 @@ def _same_snapshot(info, snapshot):
 def _root_and_parents(root):
     """Validate lexical/resolved containment and snapshot the trusted chain.
 
-    The protected root itself is the private boundary that repair establishes.
-    An exact process-owned 02777 ancestor is the sole non-sticky shared Forge
-    exception and is never returned as a repair target. Sticky shared parents
-    must likewise have exact 01777 semantics and be process-owned.
+    The sole non-sticky shared exception is the complete observed Forge suffix:
+    root 02777, .local/state/openclaw 02775, and google-workspace 02770.
+    Every member must be process UID/GID owned. No prefix or partial suffix is
+    trusted. Exact process-owned 01777 remains the generic sticky-parent case.
     """
     root = Path(root)
     if not root.is_absolute() or Path(os.path.abspath(root)) != root:
@@ -62,12 +76,25 @@ def _root_and_parents(root):
             raise BindingError("BINDING_PATH_UNSAFE", "protected path is unavailable") from None
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected path contains an unsafe parent")
-        if current != root and info.st_mode & 0o022:
-            if not _owned(info) or _mode(info) not in (0o1777, 0o2777):
-                raise BindingError("BINDING_PATH_UNSAFE", "protected parent is writable by another user")
         chain.append((current, _snapshot(info)))
+    suffix_names = ("root", ".local", "state", "openclaw", "google-workspace")
+    suffix_modes = (0o2777, 0o2775, 0o2775, 0o2775)
+    forge_start = len(chain) - len(suffix_names)
+    forge_paths = [path for path, _snapshot_value in chain[forge_start:]] if forge_start >= 0 else []
+    exact_forge = forge_start >= 0 and _exact_forge_location(forge_paths) and all(
+        path.name == name and _trusted_identity(snapshot)
+        and (int(snapshot["mode"], 8) == mode if name != "google-workspace"
+             else int(snapshot["mode"], 8) in (0o2770, 0o700))
+        for (path, snapshot), name, mode in zip(chain[forge_start:], suffix_names, (*suffix_modes, 0o2770))
+    )
+    for number, (_path, snapshot) in enumerate(chain[:-1]):
+        if int(snapshot["mode"], 8) & 0o022:
+            in_forge_suffix = exact_forge and number >= forge_start
+            exact_sticky = int(snapshot["mode"], 8) == 0o1777 and _trusted_identity(snapshot)
+            if not in_forge_suffix and not exact_sticky:
+                raise BindingError("BINDING_PATH_UNSAFE", "protected parent is writable by another user")
     root_info = chain[-1][1]
-    if root_info["type"] != "directory" or not _owned(root.lstat()):
+    if root_info["type"] != "directory" or not _owned(root.lstat()) or not _process_group(root.lstat()):
         raise BindingError("BINDING_PERMISSION_DENIED", "protected root has an unsafe type or owner")
     shared_ancestors = [snapshot for path, snapshot in chain[:-1]
                         if int(snapshot["mode"], 8) & 0o022]
@@ -77,7 +104,7 @@ def _root_and_parents(root):
         private_boundary = any(snapshot["uid"] == root_info["uid"]
                                and not int(snapshot["mode"], 8) & 0o022
                                for _path, snapshot in descendants)
-        pending_boundary = _mode(root.lstat()) == 0o2770
+        pending_boundary = exact_forge
         if not private_boundary and not pending_boundary:
             raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an exact protected containment boundary")
     try:
@@ -160,7 +187,7 @@ def _discover(root):
         expected = 0o700 if directory else 0o600
         kind = _kind(info)
         right_type = kind == ("directory" if directory else "file")
-        owner = _owned(info)
+        owner = _owned(info) and _process_group(info)
         one_link = directory or os.name == "nt" or info.st_nlink == 1
         current_mode = _mode(info)
         passed = right_type and owner and one_link and (os.name == "nt" or current_mode == expected)

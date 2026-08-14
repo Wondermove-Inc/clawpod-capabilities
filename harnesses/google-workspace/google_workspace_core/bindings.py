@@ -102,8 +102,8 @@ def _private(info, directory=False):
 
 
 def _check_info(info, *, directory=False, hardlink=True):
-    if not _owned(info):
-        raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current user")
+    if not _owned(info) or (hasattr(os, "getegid") and info.st_gid != os.getegid()):
+        raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current process identity")
     if not _private(info, directory):
         raise BindingError("BINDING_PERMISSION_INSECURE", "protected artifact has an unsafe type or permissions")
     if hardlink and not directory and os.name != "nt" and info.st_nlink != 1:
@@ -121,14 +121,17 @@ def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=T
     return info
 
 
+def _exact_forge_location(paths):
+    expected = tuple(Path("/root/.local/state/openclaw/google-workspace").parents)[::-1][1:]
+    return tuple(paths) == expected + (Path("/root/.local/state/openclaw/google-workspace"),)
+
+
 def _parent_snapshot(path: Path):
     """Validate and snapshot ancestors without following links.
 
-    A sticky collaborative parent, including Forge's process-owned setgid
-    mode 02777 root, is acceptable only with exact mode semantics, process
-    ownership, and a protected path that crosses a current-user-owned non-shared directory
-    before reaching the artifact. Later non-sticky shared directories remain
-    unsafe.
+    The only non-sticky shared exception is Forge's complete process-owned
+    root/.local/state/openclaw/google-workspace suffix with exact modes
+    02777/02775/02775/02775/0700. Exact 01777 remains the generic sticky case.
     """
     if not path.is_absolute():
         raise BindingError("BINDING_PATH_UNSAFE", "protected file path must be absolute")
@@ -142,33 +145,32 @@ def _parent_snapshot(path: Path):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unavailable") from None
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unsafe")
-        if info.st_mode & 0o022:
-            shared_mode = stat.S_IMODE(info.st_mode)
-            exact_shared = shared_mode in (0o1777, 0o2777)
-            if not exact_shared:
+        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid))
+    forge_names = ("root", ".local", "state", "openclaw", "google-workspace")
+    forge_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o700)
+    forge_start = next((start for start in range(len(ancestors) - len(forge_names) + 1)
+                        if all(item[0].name == name and stat.S_IMODE(item[3]) == mode
+                               and (not hasattr(os, "geteuid") or item[4] == os.geteuid())
+                               and (not hasattr(os, "getegid") or item[5] == os.getegid())
+                               for item, name, mode in
+                               zip(ancestors[start:start + len(forge_names)], forge_names, forge_modes))
+                        and _exact_forge_location([item[0] for item in
+                                                  ancestors[start:start + len(forge_names)]])), -1)
+    exact_forge = forge_start >= 0
+    for number, (current, _device, _inode, mode, owner, group) in enumerate(ancestors):
+        if mode & 0o022:
+            forge_member = exact_forge and forge_start <= number < forge_start + len(forge_names)
+            sticky = stat.S_IMODE(mode) == 0o1777
+            process_owned = (not hasattr(os, "geteuid") or owner == os.geteuid())
+            process_group = (not hasattr(os, "getegid") or group == os.getegid())
+            if not ((forge_member or sticky) and process_owned and process_group):
                 raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
-            if not _owned(info):
-                raise BindingError("BINDING_PATH_UNSAFE", "shared protected-file parent has an untrusted owner")
-            # A sticky shared directory, including Forge's exact setgid 02777
-            # process root, is only an ingress point.
-            # Require an already-existing private ownership boundary below it.
-            descendants = path.parts[len(current.parts):-1]
-            boundary = current
-            safe_boundary = False
-            for descendant in descendants:
-                boundary /= descendant
-                try:
-                    boundary_info = boundary.lstat()
-                except OSError:
-                    break
-                if stat.S_ISLNK(boundary_info.st_mode) or not stat.S_ISDIR(boundary_info.st_mode):
-                    break
-                if _owned(boundary_info) and not boundary_info.st_mode & 0o022:
-                    safe_boundary = True
-                    break
-            if not safe_boundary:
+            descendants = ancestors[number + 1:]
+            if not any(_owned_path and not descendant_mode & 0o022
+                       for _path, _dev, _ino, descendant_mode, descendant_owner, descendant_group in descendants
+                       for _owned_path in [(not hasattr(os, "geteuid") or descendant_owner == os.geteuid())
+                                           and (not hasattr(os, "getegid") or descendant_group == os.getegid())]):
                 raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an owned private containment boundary")
-        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid))
     return ancestors
 
 
@@ -177,12 +179,12 @@ def _check_parent_chain(path: Path):
 
 
 def _verify_parent_snapshot(snapshot):
-    for path, device, inode, mode, owner in snapshot:
+    for path, device, inode, mode, owner, group in snapshot:
         try:
             info = path.lstat()
         except OSError:
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access") from None
-        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid) != (device, inode, mode, owner):
+        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid) != (device, inode, mode, owner, group):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access")
 
 

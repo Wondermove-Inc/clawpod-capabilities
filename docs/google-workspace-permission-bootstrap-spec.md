@@ -12,11 +12,14 @@ A metadata-only `lstat(2)` reproduction on Forge observed the relevant legacy sh
 
 | Artifact | Type | Mode | Ownership/link observation |
 |---|---|---:|---|
-| `/root` process ancestor | directory | `02777` | process-owned Forge setgid collaborative boundary |
+| `/root` process ancestor | directory | `02777` | process UID/GID-owned Forge setgid collaborative boundary |
+| `/root/.local` | directory | `02775` | process UID/GID-owned exact intermediate |
+| `/root/.local/state` | directory | `02775` | process UID/GID-owned exact intermediate |
+| `/root/.local/state/openclaw` | directory | `02775` | process UID/GID-owned exact intermediate |
 | protected credential/binding directory | directory | `02770` | current pod user owns it |
 | credential file | regular, non-symlink | `0660` | current pod user owns it, link count 1 |
 
-Paths above describe the deployment shape only. Harness output MUST omit paths or replace each with a deterministic request-local opaque artifact identifier. The process-owned `02777` ancestor is accepted only by the exact Forge parent exception. Exact process-owned `01777` is the only sticky-parent form accepted; arbitrary other-writable modes and owners remain forbidden. The ancestor is never a repair target. The protected directory and credential file are insecure because group permission bits remain set.
+Paths above describe the deployment shape only. Harness output MUST omit paths or replace each with a deterministic request-local opaque artifact identifier. The non-sticky exception applies only to this complete named chain with these exact, unnormalized modes and process UID/GID ownership. No generic `02777` or `02775` trust exists. Exact process-owned `01777` is the only generic sticky-parent form accepted; arbitrary other-writable modes, owners, and groups remain forbidden. Intermediates are never repair targets. The protected directory and credential file are insecure because group permission bits remain set.
 
 Current `auth.bindings.status` enters `list_bindings(validate_paths=True)`, which locks/parses the registry, resolves every `credentialRef`, and parses each credential bundle before it can provide useful permission diagnostics. Current repair preview calls `check_permissions`, but returns only repeated artifact categories, silently suppresses registry parse failures, and does not bind its effect digest to exact inode snapshots. Apply re-enumerates names and chmods from a new snapshot, so the preview is not an exact object set.
 
@@ -30,9 +33,9 @@ Permission repair is sufficient for the reproduced state when a registry already
 2. Discovery is bounded to the configured protected root, its fixed registry/lock/credentials/backups artifacts, and direct children of the two fixed directories. No recursive traversal occurs.
 3. Output contains check IDs, current/intended modes, type, repairability, and opaque artifact IDs. It contains no root, credential, or registry path and no file content.
 4. Before preview, validate every parent and target with `lstat`: trusted parent chain; containment beneath the lexical and resolved protected root; current effective-user ownership; expected directory or regular-file type; no symlink/reparse point; and link count 1 for files. Unsupported types fail closed.
-5. Preview records `(device, inode, type, uid, link count, mode)` for every exact target. The effect digest covers the operation, root identity, ordered opaque target IDs, snapshots, and intended mode changes. It previews `02770 -> 0700` for protected directories and `0660 -> 0600` for files.
+5. Preview records `(device, inode, type, uid, gid, link count, mode)` for every exact target. The effect digest covers the operation, root identity, ordered opaque target IDs, snapshots, and intended mode changes. It previews `02770 -> 0700` for protected directories and `0660 -> 0600` for files.
 6. Confirmation requires a fresh matching digest. Apply reopens/revalidates every target without following links and compares the full snapshot before changing anything. Any owner, inode, type, link-count, containment, or mode race fails closed before the first chmod. A platform without safe no-follow chmod/ACL semantics fails closed.
-7. Apply changes mode bits only, to `0700` for directories and `0600` for files. It never creates, copies, deletes, renames, parses, rewrites, or changes ownership/content. It never touches external references or the trusted `/workspace` ancestor.
+7. Apply changes mode bits only, to `0700` for directories and `0600` for files. It never creates, copies, deletes, renames, parses, rewrites, or changes ownership/content. It never touches external references or the trusted `/root/.local/state/openclaw` ancestor chain.
 8. Apply verifies the post-change inode/type/owner/link count and intended mode. A second preview is an empty plan and a confirmed repeat is a no-op, with no chmod calls.
 9. Any owner mismatch, symlink, hardlink, escape, parent-chain race, target race, or unsupported type blocks the entire plan. External references are neither resolved nor targeted. Partial repair is forbidden.
 
@@ -40,7 +43,8 @@ Permission repair is sufficient for the reproduced state when a registry already
 
 | Case | Check/status | Preview | Confirm/apply |
 |---|---|---|---|
-| `02777` exact process-owned Forge ancestor | pass parent trust | ancestor omitted | never changed |
+| complete `02777 -> 02775 -> 02775 -> 02775` exact process UID/GID-owned Forge chain | pass parent trust | ancestors omitted | never changed |
+| partial, renamed, or mode-normalized Forge chain | failed, not repairable | fail closed | no mutation |
 | owned directory `02770` | insecure, repairable | exact opaque target, `02770 -> 0700` | mode-only repair |
 | owned regular file `0660`, nlink 1 | insecure, repairable | exact opaque target, `0660 -> 0600` | mode-only repair |
 | credential bytes malformed/unreadable | permission result still returned | preview still returned | bytes never opened or rewritten |
