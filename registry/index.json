@@ -458,7 +458,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "c3171cdaf94c613ede2150bd53fec713e609620925d6b554122dfbce73635ce2"
+          "sha256": "9fd620735a1f2ea7dfd09dd5e5a8663438aaf0f0ef5754f75f65cbf9b9f978c9"
         },
         {
           "path": "references/scopes.md",
@@ -1185,7 +1185,7 @@
       "files": [
         {
           "path": "CHANGES-v0.3.5.md",
-          "sha256": "c681eb8280129e0af9747f34de42e78e9d1c509d9a71025c7d51808d780bd3ea"
+          "sha256": "504379a21052413aae36c0edc7bdf6f6c66bcdd03f48a8df65890dc30b2f10c2"
         },
         {
           "path": "EVIDENCE-v0.3.0-regressions.md",
@@ -1193,7 +1193,7 @@
         },
         {
           "path": "EVIDENCE-v0.3.5-binding-gid.md",
-          "sha256": "2ecc7e4ab804d49c06af95c3ac37a2d23c5ecc7c9173dd729ec5d2c89aae40eb"
+          "sha256": "204154318a2b58b40d96155ecf6e3f03c4c7fe401648fbabe1785a877642b93d"
         },
         {
           "path": "command_contracts.json",
@@ -1213,7 +1213,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "063bdd0601e06fb00a0e11aaa96d5434b518b285de3366aa88808c4a54c57242"
+          "sha256": "9dd766162ffbfc201538baf2a3c8838cc9165c94cd5bdc9b5d51aeafbd2ec0be"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1241,7 +1241,7 @@
         },
         {
           "path": "google_workspace_core/oauth_desktop.py",
-          "sha256": "0e170aaf8514026106e014209cad2d1aab0585b48625683a8703d78bb47c22a7"
+          "sha256": "6744aad13702fd8121315178100831b8dc498a177e7fe3ff1d43fe52eaa62706"
         },
         {
           "path": "google_workspace_core/permissions.py",

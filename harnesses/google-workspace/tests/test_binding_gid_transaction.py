@@ -11,6 +11,7 @@ PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 
 from google_workspace_core.bindings import BindingError, import_binding, list_bindings
+from google_workspace_core.oauth_desktop import LoginError, _atomic_bundle
 
 
 def _bundle(path, subject="subject-one"):
@@ -36,7 +37,7 @@ def test_import_inherits_protected_gid_not_process_default_gid(tmp_path, monkeyp
     workspace.chmod(0o2777)
     root = workspace / "private-root"
     source = _bundle(tmp_path / "legacy.json")
-    monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location",
+    monkeypatch.setattr("google_workspace_core.bindings._exact_governed_location",
                         lambda paths: [p.name for p in paths] == ["workspace", "private-root"])
 
     result = import_binding("work", source, source_alias="legacy", root=root)
@@ -68,7 +69,7 @@ def test_fchown_failure_removes_uncommitted_credential_and_preserves_source(tmp_
             raise OSError("synthetic chown failure")
         return real_fchown(fd, uid, gid)
 
-    with patch("os.fchown", side_effect=fail_credential), pytest.raises(BindingError, match="metadata|written"):
+    with patch("os.fchown", side_effect=fail_credential), pytest.raises(BindingError, match="ownership|metadata|written"):
         import_binding("work", source, source_alias="legacy", root=root)
     assert source.exists()
     assert list((root / "credentials").iterdir()) == []
@@ -145,3 +146,79 @@ def test_post_replace_fsync_failure_rolls_back_revision_backup_and_credential(tm
     assert list_bindings(root)[1] == 1
     assert second.exists()
     assert import_binding("second", second, source_alias="legacy", root=root)["revision"] == 2
+
+
+@pytest.mark.skipif(not hasattr(os, "fchown") or os.geteuid() != 0,
+                    reason="requires root-owned synthetic protected GIDs")
+@pytest.mark.parametrize("store_gid", [1, 1000, 65534])
+@pytest.mark.parametrize("alias", ["work", "agent.two"])
+@pytest.mark.parametrize("setgid", [False, True])
+def test_every_agent_uses_verified_store_gid_not_process_identity(
+        tmp_path, monkeypatch, store_gid, alias, setgid):
+    parent = tmp_path / "protected-parent"
+    parent.mkdir(mode=0o700)
+    try:
+        os.chown(parent, os.geteuid(), store_gid)
+    except OSError as exc:
+        pytest.skip(f"filesystem cannot represent synthetic gid: {exc.errno}")
+    parent.chmod(0o2700 if setgid else 0o700)
+    root = parent / "state"
+    source = _bundle(parent / "legacy.json")
+    os.chown(source, os.geteuid(), store_gid)
+    assert os.getegid() != store_gid
+    monkeypatch.setattr(os, "getgroups", lambda: [store_gid, store_gid + 33])
+
+    result = import_binding(alias, source, source_alias="legacy", root=root)
+
+    assert result["revision"] == 1
+    artifacts = [root / "credentials", root / "backups", root / "bindings.v1.lock",
+                 root / "bindings.v1.json", *(root / "credentials").iterdir()]
+    assert {item.lstat().st_gid for item in artifacts} == {store_gid}
+    assert list_bindings(root)[1] == 1
+
+
+def test_missing_fchown_fails_closed_and_removes_new_store(tmp_path, monkeypatch):
+    root = tmp_path / "state"
+    monkeypatch.delattr(os, "fchown")
+    with pytest.raises(BindingError, match="ownership control"):
+        import_binding("work", _bundle(tmp_path / "legacy.json"),
+                       source_alias="legacy", root=root)
+    assert not root.exists()
+
+
+def test_directory_fchown_denial_cleans_only_new_artifact(tmp_path):
+    root = tmp_path / "state"
+    root.mkdir(mode=0o700)
+    with patch("os.fchown", side_effect=OSError("denied")), \
+            pytest.raises(BindingError, match="ownership"):
+        import_binding("work", _bundle(tmp_path / "legacy.json"),
+                       source_alias="legacy", root=root)
+    assert root.exists()
+    assert not (root / "credentials").exists()
+    assert not (root / "bindings.v1.lock").exists()
+
+
+def test_oauth_staging_uses_exact_output_parent_identity(tmp_path):
+    output = tmp_path / "bundle.json"
+    calls = []
+    real_fchown = os.fchown
+
+    def record(fd, uid, gid):
+        calls.append((uid, gid))
+        return real_fchown(fd, uid, gid)
+
+    with patch("os.fchown", side_effect=record):
+        _atomic_bundle(output, {"accounts": {}}, overwrite=False)
+    parent = tmp_path.lstat()
+    assert calls == [(parent.st_uid, parent.st_gid)]
+    assert output.lstat().st_gid == parent.st_gid
+    assert not list(tmp_path.glob(".*.part"))
+
+
+def test_oauth_staging_missing_fchown_fails_closed(tmp_path, monkeypatch):
+    output = tmp_path / "bundle.json"
+    monkeypatch.delattr(os, "fchown")
+    with pytest.raises(LoginError, match="ownership control"):
+        _atomic_bundle(output, {"accounts": {}}, overwrite=False)
+    assert not output.exists()
+    assert not list(tmp_path.glob(".*.part"))

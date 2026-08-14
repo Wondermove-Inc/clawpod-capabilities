@@ -72,7 +72,9 @@ def _atomic_bundle(path, doc, overwrite):
         parent=os.fstat(dir_fd)
         if not stat.S_ISDIR(parent.st_mode):raise LoginError("output parent is unsafe")
         fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=dir_fd)
-        if hasattr(os,"fchown"):os.fchown(fd,-1,parent.st_gid)
+        fchown=getattr(os,"fchown",None)
+        if fchown is None:raise LoginError("descriptor ownership control is unavailable")
+        fchown(fd,parent.st_uid,parent.st_gid)
         os.fchmod(fd,0o600)
         offset=0
         while offset<len(data):

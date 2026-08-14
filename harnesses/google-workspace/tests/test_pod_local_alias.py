@@ -118,7 +118,7 @@ def forge_binding_root(tmp_path):
 def synthetic_forge_location(monkeypatch):
     synthetic = lambda paths: [path.name for path in paths] == \
         ["root", ".local", "state", "openclaw", "google-workspace"]
-    monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location", synthetic)
+    monkeypatch.setattr("google_workspace_core.bindings._exact_governed_location", synthetic)
     monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
 
 

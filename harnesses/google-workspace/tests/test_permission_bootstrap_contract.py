@@ -26,7 +26,7 @@ def synthetic_forge_location(monkeypatch):
                                or (len(paths) == 2 and paths[0].name == "workspace"
                                    and paths[1].parent == paths[0]))
     monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
-    monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location", synthetic)
+    monkeypatch.setattr("google_workspace_core.bindings._exact_governed_location", synthetic)
 
 
 def test_exact_forge_location_is_absolute_and_not_a_named_lookalike():
