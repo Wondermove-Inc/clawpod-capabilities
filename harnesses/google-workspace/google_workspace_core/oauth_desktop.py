@@ -66,19 +66,39 @@ def _smoke_request(url, token, timeout):
     except Exception: raise LoginError("post-login smoke test failed") from None
 
 def _atomic_bundle(path, doc, overwrite):
-    data=(json.dumps(doc,sort_keys=True,separators=(",",":"),ensure_ascii=False)+"\n").encode();tmp=path.parent/("."+path.name+"."+secrets.token_hex(8)+".part");fd=None
+    data=(json.dumps(doc,sort_keys=True,separators=(",",":"),ensure_ascii=False)+"\n").encode();name="."+path.name+"."+secrets.token_hex(8)+".part";fd=dir_fd=None
     try:
-        fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-        with os.fdopen(fd,"wb") as f: fd=None;f.write(data);f.flush();os.fsync(f.fileno())
-        if overwrite: os.replace(tmp,path)
+        dir_fd=os.open(path.parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0))
+        parent=os.fstat(dir_fd)
+        if not stat.S_ISDIR(parent.st_mode):raise LoginError("output parent is unsafe")
+        fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=dir_fd)
+        fchown=getattr(os,"fchown",None)
+        if fchown is None:raise LoginError("descriptor ownership control is unavailable")
+        fchown(fd,parent.st_uid,parent.st_gid)
+        os.fchmod(fd,0o600)
+        offset=0
+        while offset<len(data):
+            written=os.write(fd,data[offset:])
+            if written<=0:raise OSError("short credential write")
+            offset+=written
+        os.fsync(fd);info=os.fstat(fd);current=os.stat(name,dir_fd=dir_fd,follow_symlinks=False)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink!=1 or stat.S_IMODE(info.st_mode)!=0o600 or info.st_gid!=parent.st_gid or (info.st_dev,info.st_ino,info.st_size)!=(current.st_dev,current.st_ino,current.st_size) or info.st_size!=len(data):raise LoginError("credential output changed during creation")
+        os.close(fd);fd=None
+        if overwrite: os.replace(name,path.name,src_dir_fd=dir_fd,dst_dir_fd=dir_fd)
         else:
-            try: os.link(tmp,path);tmp.unlink()
+            try: os.link(name,path.name,src_dir_fd=dir_fd,dst_dir_fd=dir_fd,follow_symlinks=False);os.unlink(name,dir_fd=dir_fd)
             except FileExistsError: raise LoginError("output exists; pass overwrite explicitly") from None
-        os.chmod(path,0o600)
+        final=os.stat(path.name,dir_fd=dir_fd,follow_symlinks=False)
+        if not stat.S_ISREG(final.st_mode) or final.st_nlink!=1 or stat.S_IMODE(final.st_mode)!=0o600 or final.st_gid!=parent.st_gid:raise LoginError("credential output verification failed")
+        os.fsync(dir_fd)
+    except LoginError:raise
+    except OSError:raise LoginError("credential output could not be committed safely") from None
     finally:
         if fd is not None: os.close(fd)
-        try: tmp.unlink()
-        except FileNotFoundError: pass
+        if dir_fd is not None:
+            try: os.unlink(name,dir_fd=dir_fd)
+            except FileNotFoundError: pass
+            os.close(dir_fd)
 
 def _receiver(state, timeout, server_factory=HTTPServer):
     result={};done=threading.Event(); expected_host={"127.0.0.1"}
