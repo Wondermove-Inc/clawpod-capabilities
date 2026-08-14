@@ -22,9 +22,12 @@ def _process_group(info):
     return not hasattr(os, "getegid") or info.st_gid == os.getegid()
 
 
+def _process_owner(snapshot):
+    return snapshot["uid"] == (os.geteuid() if hasattr(os, "geteuid") else snapshot["uid"])
+
+
 def _trusted_identity(snapshot):
-    return (snapshot["uid"] == (os.geteuid() if hasattr(os, "geteuid") else snapshot["uid"])
-            and snapshot["gid"] == (os.getegid() if hasattr(os, "getegid") else snapshot["gid"]))
+    return _process_owner(snapshot) and (not hasattr(os, "getegid") or snapshot["gid"] == os.getegid())
 
 
 def _exact_forge_location(paths):
@@ -81,8 +84,9 @@ def _root_and_parents(root):
     suffix_modes = (0o2777, 0o2775, 0o2775, 0o2775)
     forge_start = len(chain) - len(suffix_names)
     forge_paths = [path for path, _snapshot_value in chain[forge_start:]] if forge_start >= 0 else []
+    forge_gid = chain[forge_start][1]["gid"] if forge_start >= 0 else None
     exact_forge = forge_start >= 0 and _exact_forge_location(forge_paths) and all(
-        path.name == name and _trusted_identity(snapshot)
+        path.name == name and _process_owner(snapshot) and snapshot["gid"] == forge_gid
         and (int(snapshot["mode"], 8) == mode if name != "google-workspace"
              else int(snapshot["mode"], 8) in (0o2770, 0o700))
         for (path, snapshot), name, mode in zip(chain[forge_start:], suffix_names, (*suffix_modes, 0o2770))
@@ -94,7 +98,8 @@ def _root_and_parents(root):
             if not in_forge_suffix and not exact_sticky:
                 raise BindingError("BINDING_PATH_UNSAFE", "protected parent is writable by another user")
     root_info = chain[-1][1]
-    if root_info["type"] != "directory" or not _owned(root.lstat()) or not _process_group(root.lstat()):
+    root_group_ok = root_info["gid"] == forge_gid if exact_forge else _process_group(root.lstat())
+    if root_info["type"] != "directory" or not _owned(root.lstat()) or not root_group_ok:
         raise BindingError("BINDING_PERMISSION_DENIED", "protected root has an unsafe type or owner")
     shared_ancestors = [snapshot for path, snapshot in chain[:-1]
                         if int(snapshot["mode"], 8) & 0o022]
@@ -187,7 +192,8 @@ def _discover(root):
         expected = 0o700 if directory else 0o600
         kind = _kind(info)
         right_type = kind == ("directory" if directory else "file")
-        owner = _owned(info) and _process_group(info)
+        expected_gid = chain[-1][1]["gid"]
+        owner = _owned(info) and info.st_gid == expected_gid
         one_link = directory or os.name == "nt" or info.st_nlink == 1
         current_mode = _mode(info)
         passed = right_type and owner and one_link and (os.name == "nt" or current_mode == expected)

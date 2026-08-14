@@ -101,8 +101,9 @@ def _private(info, directory=False):
     return expected_type and not stat.S_ISLNK(info.st_mode) and (os.name == "nt" or stat.S_IMODE(info.st_mode) == expected_mode)
 
 
-def _check_info(info, *, directory=False, hardlink=True):
-    if not _owned(info) or (hasattr(os, "getegid") and info.st_gid != os.getegid()):
+def _check_info(info, *, directory=False, hardlink=True, expected_gid=None):
+    trusted_gid = os.getegid() if expected_gid is None and hasattr(os, "getegid") else expected_gid
+    if not _owned(info) or (trusted_gid is not None and info.st_gid != trusted_gid):
         raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current process identity")
     if not _private(info, directory):
         raise BindingError("BINDING_PERMISSION_INSECURE", "protected artifact has an unsafe type or permissions")
@@ -110,20 +111,31 @@ def _check_info(info, *, directory=False, hardlink=True):
         raise BindingError("BINDING_PATH_UNSAFE", "protected file must have exactly one hard link")
 
 
-def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True):
+def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True, expected_gid=None):
+    if expected_gid is None and Path(path).is_absolute():
+        parents = _parent_snapshot(Path(path))
+        expected_gid = _forge_chain_gid(parents)
     try:
         info = path.lstat()
     except FileNotFoundError:
         if allow_missing:
             return None
         raise BindingError("BINDING_PATH_UNSAFE", "required protected artifact is missing") from None
-    _check_info(info, directory=directory, hardlink=hardlink)
+    _check_info(info, directory=directory, hardlink=hardlink, expected_gid=expected_gid)
     return info
 
 
 def _exact_forge_location(paths):
     expected = tuple(Path("/root/.local/state/openclaw/google-workspace").parents)[::-1][1:]
     return tuple(paths) == expected + (Path("/root/.local/state/openclaw/google-workspace"),)
+
+
+def _forge_chain_gid(ancestors):
+    for start in range(len(ancestors) - 4):
+        segment = ancestors[start:start + 5]
+        if _exact_forge_location([item[0] for item in segment]) and len({item[5] for item in segment}) == 1:
+            return segment[0][5]
+    return None
 
 
 def _parent_snapshot(path: Path):
@@ -149,9 +161,9 @@ def _parent_snapshot(path: Path):
     forge_names = ("root", ".local", "state", "openclaw", "google-workspace")
     forge_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o700)
     forge_start = next((start for start in range(len(ancestors) - len(forge_names) + 1)
-                        if all(item[0].name == name and stat.S_IMODE(item[3]) == mode
+                        if len({item[5] for item in ancestors[start:start + len(forge_names)]}) == 1
+                        and all(item[0].name == name and stat.S_IMODE(item[3]) == mode
                                and (not hasattr(os, "geteuid") or item[4] == os.geteuid())
-                               and (not hasattr(os, "getegid") or item[5] == os.getegid())
                                for item, name, mode in
                                zip(ancestors[start:start + len(forge_names)], forge_names, forge_modes))
                         and _exact_forge_location([item[0] for item in
@@ -162,14 +174,15 @@ def _parent_snapshot(path: Path):
             forge_member = exact_forge and forge_start <= number < forge_start + len(forge_names)
             sticky = stat.S_IMODE(mode) == 0o1777
             process_owned = (not hasattr(os, "geteuid") or owner == os.geteuid())
-            process_group = (not hasattr(os, "getegid") or group == os.getegid())
-            if not ((forge_member or sticky) and process_owned and process_group):
+            trusted_group = (group == ancestors[forge_start][5]) if forge_member else (not hasattr(os, "getegid") or group == os.getegid())
+            if not ((forge_member or sticky) and process_owned and trusted_group):
                 raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
             descendants = ancestors[number + 1:]
             if not any(_owned_path and not descendant_mode & 0o022
                        for _path, _dev, _ino, descendant_mode, descendant_owner, descendant_group in descendants
                        for _owned_path in [(not hasattr(os, "geteuid") or descendant_owner == os.geteuid())
-                                           and (not hasattr(os, "getegid") or descendant_group == os.getegid())]):
+                                           and (descendant_group == ancestors[forge_start][5] if exact_forge else
+                                                (not hasattr(os, "getegid") or descendant_group == os.getegid()))]):
                 raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an owned private containment boundary")
     return ancestors
 
@@ -197,7 +210,8 @@ def _open_checked(path: Path, *, max_bytes: int, hardlink=True):
         raise BindingError("BINDING_PATH_UNSAFE", "protected file could not be opened safely") from None
     try:
         info = os.fstat(fd)
-        _check_info(info, hardlink=hardlink)
+        expected_gid = _forge_chain_gid(parents)
+        _check_info(info, hardlink=hardlink, expected_gid=expected_gid)
         current = path.lstat()
         if (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file changed while it was opened")
@@ -243,15 +257,16 @@ def ensure_root(root=None) -> Path:
         # A setgid collaborative ancestor can propagate its bit despite the
         # requested mkdir mode. Remove inherited group semantics before use.
         os.chmod(root, 0o700, follow_symlinks=False)
-    _check_artifact(root, directory=True)
-    _check_parent_chain(root / ".containment-check")
+    parents = _check_parent_chain(root / ".containment-check")
+    expected_gid = _forge_chain_gid(parents)
+    _check_artifact(root, directory=True, expected_gid=expected_gid)
     for name in ("credentials", "backups"):
         path = root / name
         try:
             path.mkdir(mode=0o700, exist_ok=True)
         except OSError:
             raise BindingError("BINDING_PERMISSION_DENIED", "protected directory cannot be created securely") from None
-        _check_artifact(path, directory=True)
+        _check_artifact(path, directory=True, expected_gid=expected_gid)
     return root
 
 
@@ -330,7 +345,7 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
     acquired = False
     try:
         info = os.fstat(fd)
-        _check_info(info)
+        _check_info(info, expected_gid=root.lstat().st_gid)
         if fcntl is None:
             raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
         deadline = time.monotonic() + timeout

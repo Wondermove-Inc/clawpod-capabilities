@@ -207,12 +207,12 @@ def test_other_writable_parent_requires_exact_forge_or_sticky_mode(tmp_path, bad
 def test_forge_parent_must_be_process_owned(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
     parent_inode = (tmp_path / "root").lstat().st_ino
-    real_trusted = __import__("google_workspace_core.permissions", fromlist=["_trusted_identity"])._trusted_identity
+    real_owner = __import__("google_workspace_core.permissions", fromlist=["_process_owner"])._process_owner
 
     def synthetic_owner(snapshot):
-        return False if snapshot["inode"] == parent_inode else real_trusted(snapshot)
+        return False if snapshot["inode"] == parent_inode else real_owner(snapshot)
 
-    with patch("google_workspace_core.permissions._trusted_identity", side_effect=synthetic_owner), \
+    with patch("google_workspace_core.permissions._process_owner", side_effect=synthetic_owner), \
          patch("os.fchmod") as chmod, pytest.raises(Exception):
         repair_permissions(root)
     chmod.assert_not_called()
@@ -220,16 +220,36 @@ def test_forge_parent_must_be_process_owned(tmp_path):
 
 def test_foreign_group_in_chain_fails_closed(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
-    parent_inode = root.parent.lstat().st_ino
-    real_trusted = __import__("google_workspace_core.permissions", fromlist=["_trusted_identity"])._trusted_identity
-
-    def synthetic_group(snapshot):
-        return False if snapshot["inode"] == parent_inode else real_trusted(snapshot)
-
-    with patch("google_workspace_core.permissions._trusted_identity", side_effect=synthetic_group), \
-         patch("os.fchmod") as chmod, pytest.raises(Exception):
+    os.chown(root.parent, -1, 1234)
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
         repair_permissions(root)
     chmod.assert_not_called()
+
+
+def test_exact_runtime_uid_gid_0_0_accepts_uniform_forge_gid_1000(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    chain = [tmp_path / "root", root.parents[2], root.parents[1], root.parent, root]
+    artifacts = [root / "credentials", root / "backups", *root.iterdir(),
+                 *(root / "credentials").iterdir()]
+    for path in dict.fromkeys(chain + artifacts):
+        os.chown(path, 0, 1000, follow_symlinks=False)
+    with patch("os.geteuid", return_value=0), patch("os.getegid", return_value=0), \
+         patch("os.getgroups", return_value=[]):
+        plan = plan_repair(root)
+    assert [item["snapshot"]["gid"] for item in plan["parentSnapshots"][-5:]] == [1000] * 5
+    assert plan["changes"]
+
+
+@pytest.mark.parametrize("groups", [[], [0], [1000], [0, 1000, 2000]])
+def test_exact_forge_rule_does_not_depend_on_supplementary_groups(tmp_path, groups):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    for path in [tmp_path / "root", root.parents[2], root.parents[1], root.parent, root,
+                 root / "credentials", root / "backups", *root.iterdir(),
+                 *(root / "credentials").iterdir()]:
+        os.chown(path, 0, 1000, follow_symlinks=False)
+    with patch("os.geteuid", return_value=0), patch("os.getegid", return_value=0), \
+         patch("os.getgroups", return_value=groups):
+        assert plan_repair(root)["changes"]
 
 
 def test_root_rename_swap_after_preview_fails_before_chmod(tmp_path):
