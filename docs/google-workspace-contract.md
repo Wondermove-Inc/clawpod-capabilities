@@ -20,6 +20,8 @@ The shared name is safe because AgentSkills and CLI Harnesses are distinct capab
 
 The capability is an API client, not a replacement UI, sync engine, mail server, file system, webhook receiver, or credential vault. Gmail, Calendar, and Drive resource IDs remain opaque strings. Human-readable names never substitute for IDs when a command can mutate or delete a resource.
 
+Permission-only status and repair preview treat absent optional `credentials/` and `backups/` directories as absent/non-applicable. They do not make parent trust false, trigger registry or credential parsing, or create either directory. Their absence is included in the opaque preview snapshot so create-after-snapshot races fail closed.
+
 ## 2. Repository fit and architecture
 
 This design follows the repository's existing paired-package pattern:
@@ -496,3 +498,11 @@ Google Workspace 0.3.0 adds protected pod-local account aliases without adding a
 Resolution precedence is: explicit typed `credentialPath` plus account, explicit typed path with its sole account, explicit account resolved as a pod-local alias, deprecated `GOOGLE_WORKSPACE_ACCOUNT` as an alias selector, then the sole healthy binding. Invalid explicit selectors never fall through and multiple bindings require an account. `auth.bindings.*` diagnostics never return filesystem paths.
 
 Binding writes use a private advisory lock, revision-checked previews, same-directory durable replacement, and bounded metadata-only backups. Import/migration do not delete legacy bundles. Package replacement and rollback must leave the protected root untouched. A rollback to 0.2.6 remains usable by supplying the referenced bundle through the typed `credentialPath`; 0.2.6 does not understand pod-local aliases.
+
+# Permission-first binding bootstrap (0.3.1)
+
+`auth.bindings.status` and `auth.bindings.permissions.check` perform bounded metadata discovery before registry, alias, or credential validation. Status returns sanitized permission checks even when binding or credential validation is unavailable. Checks expose deterministic request-local opaque artifact IDs, type, current mode, intended mode, and repairability; they never expose protected paths or file bytes.
+
+`auth.bindings.permissions.repair --dry-run` binds its effect digest to the protected-root identity, the ordered trusted-parent snapshots, and every exact target snapshot `(device, inode, type, uid, gid, link count, mode)`. Confirmation recomputes that plan and then reopens all targets with no-follow semantics before the first mode change. It changes only process-UID-owned, chain-GID-pinned contained directories to `0700` and process-UID-owned, chain-GID-pinned single-link regular files to `0600`, verifies both descriptors and names after the change, and is idempotent. The existing exact `/root/.local/state/openclaw/google-workspace` exception remains unchanged. The separate narrow `/workspace` exception accepts only the exact absolute `/workspace` ancestor at `02777` when its next component is the process-UID-owned protected root/private containment boundary at exactly `0700` or legacy pre-repair `02770`; both share one uniform chain GID. `/workspace` is never a general trusted prefix, and the ancestor is never a repair target. Extra components before the private boundary, arbitrary deeper paths, wrong modes, mixed identities, symlinks, and multi-link credential files are rejected.
+
+The complete operation fails closed for an untrusted or changed parent UID/GID, lexical/resolved escape, symlink, unsupported type, wrong/unknown owner or group, file hardlink, stale digest or snapshot, missing safe no-follow primitives, or chmod/postcondition failure. Every target is validated before mutation, and an apply failure triggers best-effort rollback through the already-open exact inode descriptors. Repair never reads or rewrites credential/registry content, resolves aliases, invokes a provider, creates/deletes/renames artifacts, changes ownership, or implicitly migrates a missing binding.

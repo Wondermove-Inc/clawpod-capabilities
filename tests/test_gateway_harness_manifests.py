@@ -155,6 +155,89 @@ try {
             self.assertIn("--page-size", item["argv"])
             self.assertEqual(item["argv"][item["argv"].index("--page-size") + 1], "10")
 
+    def test_google_workspace_installed_prepare_run_does_not_bootstrap_credentials(self):
+        if not RUNTIME_ROOT.is_dir():
+            self.skipTest("current OpenClaw Gateway runtime is not installed")
+        script = r"""
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+const discovery = await import(process.argv[1]);
+const runner = await import(process.argv[2]);
+const workspace = process.argv[3];
+const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'gw-installed-'));
+const installedRoot = path.join(sandbox, 'installed');
+const packageRoot = path.join(installedRoot, 'harnesses', 'google-workspace');
+const bindingRoot = path.join(sandbox, 'state', 'openclaw', 'google-workspace');
+const canary = path.join(sandbox, 'must-not-parse.json');
+function snapshot(root) {
+  const result = {};
+  function walk(current, relative = '.') {
+    const info = fs.lstatSync(current);
+    const record = {mode: info.mode, size: info.size, ino: info.ino, mtimeMs: info.mtimeMs, type: info.isDirectory() ? 'directory' : 'file'};
+    if (info.isFile()) record.sha256 = crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex');
+    result[relative] = record;
+    if (info.isDirectory()) for (const name of fs.readdirSync(current).sort()) walk(path.join(current, name), relative === '.' ? name : path.join(relative, name));
+  }
+  walk(root);
+  return result;
+}
+try {
+  fs.mkdirSync(path.dirname(packageRoot), {recursive: true});
+  fs.cpSync(path.join(workspace, 'harnesses', 'google-workspace'), packageRoot, {recursive: true});
+  fs.mkdirSync(bindingRoot, {recursive: true, mode: 0o700});
+  fs.chmodSync(bindingRoot, 0o700);
+  fs.writeFileSync(canary, 'MALFORMED_CREDENTIAL_CANARY');
+  fs.chmodSync(canary, 0o600);
+  const report = discovery.d({workspaceDir: installedRoot, roots: [path.join(installedRoot, 'harnesses')]});
+  const entry = report.entries.find(item => item.name === 'google-workspace');
+  if (!entry || !entry.validation.ok) throw new Error('installed google-workspace harness was not discoverable and valid');
+  entry.trust.trustState = 'trusted';
+  entry.runEligible = true;
+  const cases = [
+    ['gmail.messages.list', {}],
+    ['calendar.events.list', {params: JSON.stringify({calendarId: 'primary'})}],
+    ['drive.files.list', {}],
+  ];
+  const before = snapshot(bindingRoot);
+  const results = [];
+  for (let repeat = 0; repeat < 2; repeat++) for (const [command, input] of cases) {
+    const intent = runner.d({entry, commandName: command, input, workspaceDir: installedRoot});
+    const prepared = snapshot(bindingRoot);
+    const executed = runner.f(intent, {secretEnv: {
+      GOOGLE_WORKSPACE_BINDING_ROOT: bindingRoot,
+      GOOGLE_WORKSPACE_CREDENTIAL_FILE: canary,
+    }});
+    results.push({command, repeat, prepared, exitCode: executed.exitCode, output: JSON.parse(executed.stdout)});
+  }
+  console.log(JSON.stringify({before, after: snapshot(bindingRoot), results,
+    credentialsExists: fs.existsSync(path.join(bindingRoot, 'credentials')),
+    backupsExists: fs.existsSync(path.join(bindingRoot, 'backups')),
+    registryExists: fs.existsSync(path.join(bindingRoot, 'bindings.v1.json')),
+    lockExists: fs.existsSync(path.join(bindingRoot, 'bindings.v1.lock'))}));
+} finally {
+  fs.rmSync(sandbox, {recursive: true, force: true});
+}
+"""
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script, self._gateway_module().as_uri(),
+             self._gateway_runner_module().as_uri(), str(ROOT)],
+            text=True, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        evidence = json.loads(result.stdout)
+        self.assertEqual(evidence["before"], evidence["after"])
+        self.assertFalse(any(evidence[key] for key in
+                             ("credentialsExists", "backupsExists", "registryExists", "lockExists")))
+        self.assertEqual(len(evidence["results"]), 6)
+        for item in evidence["results"]:
+            self.assertEqual(item["prepared"], evidence["before"], item)
+            self.assertEqual(item["exitCode"], 3, item)
+            self.assertFalse(item["output"]["ok"], item)
+            self.assertEqual(item["output"]["error"]["code"], "AUTH_REQUIRED", item)
+            self.assertNotIn("CANARY", json.dumps(item["output"]))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,6 +3,7 @@ import os
 import stat
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -101,14 +102,29 @@ def test_high_level_reads_are_bounded_normalizers():
     assert items[0]["ownerCount"] == 1 and "private" not in json.dumps(items)
 
 
-def test_forge_2777_workspace_binding_commands_and_alias_reads(tmp_path, monkeypatch):
+def forge_binding_root(tmp_path):
+    shared = tmp_path / "root"
+    shared.mkdir()
+    shared.chmod(0o2777)
+    current = shared
+    for name in (".local", "state", "openclaw"):
+        current = current / name
+        current.mkdir()
+        current.chmod(0o2775)
+    return shared, current / "google-workspace"
+
+
+@pytest.fixture(autouse=True)
+def synthetic_forge_location(monkeypatch):
+    synthetic = lambda paths: [path.name for path in paths] == \
+        ["root", ".local", "state", "openclaw", "google-workspace"]
+    monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location", synthetic)
+    monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
+
+
+def test_forge_2777_process_root_binding_commands_and_alias_reads(tmp_path, monkeypatch):
     """Reproduce Forge's collaborative parent without contacting Google."""
-    forge = tmp_path / "workspace"
-    forge.mkdir()
-    forge.chmod(0o2777)
-    pod = forge / "pod-owned"
-    pod.mkdir(mode=0o700)
-    root = pod / "bindings"
+    _forge, root = forge_binding_root(tmp_path)
     source = bundle(tmp_path / "legacy.json")
     import_binding("work", source, source_alias="legacy", root=root)
     monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
@@ -138,30 +154,21 @@ def test_forge_2777_workspace_binding_commands_and_alias_reads(tmp_path, monkeyp
 
 def test_forge_shared_parent_requires_exact_mode_and_private_boundary(tmp_path):
     source = bundle(tmp_path / "legacy.json")
-    shared = tmp_path / "workspace"
-    shared.mkdir()
-    shared.chmod(0o2777)
-    private = shared / "owned"
-    private.mkdir(mode=0o700)
-    import_binding("work", source, source_alias="legacy", root=private / "bindings")
+    shared, root = forge_binding_root(tmp_path)
+    import_binding("work", source, source_alias="legacy", root=root)
 
     shared.chmod(0o0777)
     with pytest.raises(BindingError, match="writable by another user"):
-        list_bindings(private / "bindings")
+        list_bindings(root)
 
     shared.chmod(0o2777)
-    private.chmod(0o0770)
-    with pytest.raises(BindingError, match="writable by another user|containment boundary"):
-        list_bindings(private / "bindings")
+    root.chmod(0o0770)
+    with pytest.raises(BindingError, match="writable by another user|containment boundary|unsafe type or permissions"):
+        list_bindings(root)
 
 
 def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_path):
-    shared = tmp_path / "workspace"
-    shared.mkdir()
-    shared.chmod(0o2777)
-    private = shared / "owned"
-    private.mkdir(mode=0o700)
-    root = private / "bindings"
+    shared, root = forge_binding_root(tmp_path)
     import_binding("work", bundle(tmp_path / "legacy.json"), source_alias="legacy", root=root)
 
     credential = next((root / "credentials").iterdir())
@@ -170,14 +177,47 @@ def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_p
         resolve_binding("work", root)
     (tmp_path / "second-link.json").unlink()
 
-    link = private / "linked-root"
+    link = root.parent / "linked-root"
     link.symlink_to(root, target_is_directory=True)
     with pytest.raises(BindingError, match="unsafe"):
         list_bindings(link)
 
     probe = root / "bindings.v1.json"
     snapshot = _check_parent_chain(probe)
-    moved = shared / "moved-owned"
-    private.rename(moved)
+    moved = shared / "moved-local"
+    (shared / ".local").rename(moved)
     with pytest.raises(BindingError, match="changed"):
         _verify_parent_snapshot(snapshot)
+
+
+def test_readonly_registry_absence_race_fails_without_bootstrap(tmp_path):
+    root = tmp_path / "state"
+    root.mkdir(mode=0o700)
+
+    def concurrent_bootstrap(_root):
+        lock = root / "bindings.v1.lock"
+        lock.write_bytes(b"")
+        lock.chmod(0o600)
+        return ({"schemaVersion": 1, "revision": 0, "updatedAt": "race",
+                 "bindings": {}, "migration": {"legacyScanCompletedAt": None}}, None)
+
+    with patch("google_workspace_core.bindings._read_registry", side_effect=concurrent_bootstrap), \
+         pytest.raises(BindingError, match="appeared"):
+        list_bindings(root)
+
+    assert not (root / "credentials").exists()
+    assert not (root / "backups").exists()
+    assert not (root / "bindings.v1.json").exists()
+
+
+def test_readonly_missing_root_is_not_created_and_is_repeatable(tmp_path):
+    root = tmp_path / "absent-state"
+    before = tmp_path.stat()
+    for _ in range(2):
+        items, revision = list_bindings(root)
+        assert items == [] and revision == 0
+        with pytest.raises(BindingError, match="no pod-local binding"):
+            resolve_binding(None, root)
+    after = tmp_path.stat()
+    assert not root.exists()
+    assert (before.st_dev, before.st_ino, before.st_mode) == (after.st_dev, after.st_ino, after.st_mode)

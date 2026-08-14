@@ -101,34 +101,57 @@ def _private(info, directory=False):
     return expected_type and not stat.S_ISLNK(info.st_mode) and (os.name == "nt" or stat.S_IMODE(info.st_mode) == expected_mode)
 
 
-def _check_info(info, *, directory=False, hardlink=True):
-    if not _owned(info):
-        raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current user")
+def _check_info(info, *, directory=False, hardlink=True, expected_gid=None):
+    trusted_gid = os.getegid() if expected_gid is None and hasattr(os, "getegid") else expected_gid
+    if not _owned(info) or (trusted_gid is not None and info.st_gid != trusted_gid):
+        raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current process identity")
     if not _private(info, directory):
         raise BindingError("BINDING_PERMISSION_INSECURE", "protected artifact has an unsafe type or permissions")
     if hardlink and not directory and os.name != "nt" and info.st_nlink != 1:
         raise BindingError("BINDING_PATH_UNSAFE", "protected file must have exactly one hard link")
 
 
-def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True):
+def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True, expected_gid=None):
+    if expected_gid is None and Path(path).is_absolute():
+        parents = _parent_snapshot(Path(path))
+        expected_gid = _forge_chain_gid(parents)
     try:
         info = path.lstat()
     except FileNotFoundError:
         if allow_missing:
             return None
         raise BindingError("BINDING_PATH_UNSAFE", "required protected artifact is missing") from None
-    _check_info(info, directory=directory, hardlink=hardlink)
+    _check_info(info, directory=directory, hardlink=hardlink, expected_gid=expected_gid)
     return info
+
+
+def _exact_forge_location(paths):
+    paths = tuple(paths)
+    root = Path("/root/.local/state/openclaw/google-workspace")
+    root_chain = tuple(root.parents)[::-1][1:] + (root,)
+    workspace_boundary = (len(paths) == 2 and paths[0] == Path("/workspace")
+                          and paths[1].parent == paths[0])
+    return paths == root_chain or workspace_boundary
+
+
+def _forge_chain_gid(ancestors):
+    for start in range(len(ancestors) - 1):
+        segment = ancestors[start:start + 2]
+        if _exact_forge_location([item[0] for item in segment]) and len({item[5] for item in segment}) == 1:
+            return segment[0][5]
+    for start in range(len(ancestors) - 4):
+        segment = ancestors[start:start + 5]
+        if _exact_forge_location([item[0] for item in segment]) and len({item[5] for item in segment}) == 1:
+            return segment[0][5]
+    return None
 
 
 def _parent_snapshot(path: Path):
     """Validate and snapshot ancestors without following links.
 
-    A sticky collaborative parent, plus Forge's narrowly identified setgid
-    ``/workspace`` mode 2777, is acceptable only when it is trusted-owned and
-    the protected path crosses a current-user-owned, non-shared directory
-    before reaching the artifact. Later non-sticky shared directories remain
-    unsafe.
+    The existing /root exception is unchanged.  The /workspace exception is
+    only its exact 02777 ancestor followed immediately by the process-owned
+    private protected root at 0700. Exact 01777 remains the generic sticky case.
     """
     if not path.is_absolute():
         raise BindingError("BINDING_PATH_UNSAFE", "protected file path must be absolute")
@@ -142,36 +165,44 @@ def _parent_snapshot(path: Path):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unavailable") from None
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unsafe")
-        if info.st_mode & 0o022:
-            forge_collaborative = (
-                current.name == "workspace"
-                and stat.S_IMODE(info.st_mode) == 0o2777
-            )
-            if not info.st_mode & stat.S_ISVTX and not forge_collaborative:
+        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid))
+    forge_names = ("root", ".local", "state", "openclaw", "google-workspace")
+    forge_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o700)
+    forge_length = len(forge_modes)
+    forge_start = next((start for start in range(len(ancestors) - forge_length + 1)
+                        if len({item[5] for item in ancestors[start:start + forge_length]}) == 1
+                        and all(item[0].name == name and stat.S_IMODE(item[3]) == mode
+                               and (not hasattr(os, "geteuid") or item[4] == os.geteuid())
+                               for item, name, mode in
+                               zip(ancestors[start:start + forge_length], forge_names, forge_modes))
+                        and _exact_forge_location([item[0] for item in
+                                                  ancestors[start:start + forge_length]])), -1)
+    workspace_start = next((start for start in range(len(ancestors) - 1)
+                            if _exact_forge_location([item[0] for item in ancestors[start:start + 2]])
+                            and len({item[5] for item in ancestors[start:start + 2]}) == 1
+                            and stat.S_IMODE(ancestors[start][3]) == 0o2777
+                            and stat.S_IMODE(ancestors[start + 1][3]) == 0o700
+                            and all(not hasattr(os, "geteuid") or item[4] == os.geteuid()
+                                    for item in ancestors[start:start + 2])), -1)
+    if forge_start < 0:
+        forge_start = workspace_start
+        forge_length = 2
+    exact_forge = forge_start >= 0
+    for number, (current, _device, _inode, mode, owner, group) in enumerate(ancestors):
+        if mode & 0o022:
+            forge_member = exact_forge and forge_start <= number < forge_start + forge_length
+            sticky = stat.S_IMODE(mode) == 0o1777
+            process_owned = (not hasattr(os, "geteuid") or owner == os.geteuid())
+            trusted_group = (group == ancestors[forge_start][5]) if forge_member else (not hasattr(os, "getegid") or group == os.getegid())
+            if not ((forge_member or sticky) and process_owned and trusted_group):
                 raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
-            trusted_owners = {os.geteuid(), 0} if hasattr(os, "geteuid") else {info.st_uid}
-            if info.st_uid not in trusted_owners:
-                raise BindingError("BINDING_PATH_UNSAFE", "shared protected-file parent has an untrusted owner")
-            # A sticky shared directory, or Forge's specifically identified
-            # setgid /workspace collaboration root, is only an ingress point.
-            # Require an already-existing private ownership boundary below it.
-            descendants = path.parts[len(current.parts):-1]
-            boundary = current
-            safe_boundary = False
-            for descendant in descendants:
-                boundary /= descendant
-                try:
-                    boundary_info = boundary.lstat()
-                except OSError:
-                    break
-                if stat.S_ISLNK(boundary_info.st_mode) or not stat.S_ISDIR(boundary_info.st_mode):
-                    break
-                if _owned(boundary_info) and not boundary_info.st_mode & 0o022:
-                    safe_boundary = True
-                    break
-            if not safe_boundary:
+            descendants = ancestors[number + 1:]
+            if not any(_owned_path and not descendant_mode & 0o022
+                       for _path, _dev, _ino, descendant_mode, descendant_owner, descendant_group in descendants
+                       for _owned_path in [(not hasattr(os, "geteuid") or descendant_owner == os.geteuid())
+                                           and (descendant_group == ancestors[forge_start][5] if exact_forge else
+                                                (not hasattr(os, "getegid") or descendant_group == os.getegid()))]):
                 raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an owned private containment boundary")
-        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid))
     return ancestors
 
 
@@ -180,12 +211,12 @@ def _check_parent_chain(path: Path):
 
 
 def _verify_parent_snapshot(snapshot):
-    for path, device, inode, mode, owner in snapshot:
+    for path, device, inode, mode, owner, group in snapshot:
         try:
             info = path.lstat()
         except OSError:
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access") from None
-        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid) != (device, inode, mode, owner):
+        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid) != (device, inode, mode, owner, group):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access")
 
 
@@ -198,7 +229,8 @@ def _open_checked(path: Path, *, max_bytes: int, hardlink=True):
         raise BindingError("BINDING_PATH_UNSAFE", "protected file could not be opened safely") from None
     try:
         info = os.fstat(fd)
-        _check_info(info, hardlink=hardlink)
+        expected_gid = _forge_chain_gid(parents)
+        _check_info(info, hardlink=hardlink, expected_gid=expected_gid)
         current = path.lstat()
         if (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file changed while it was opened")
@@ -244,15 +276,16 @@ def ensure_root(root=None) -> Path:
         # A setgid collaborative ancestor can propagate its bit despite the
         # requested mkdir mode. Remove inherited group semantics before use.
         os.chmod(root, 0o700, follow_symlinks=False)
-    _check_artifact(root, directory=True)
-    _check_parent_chain(root / ".containment-check")
+    parents = _check_parent_chain(root / ".containment-check")
+    expected_gid = _forge_chain_gid(parents)
+    _check_artifact(root, directory=True, expected_gid=expected_gid)
     for name in ("credentials", "backups"):
         path = root / name
         try:
             path.mkdir(mode=0o700, exist_ok=True)
         except OSError:
             raise BindingError("BINDING_PERMISSION_DENIED", "protected directory cannot be created securely") from None
-        _check_artifact(path, directory=True)
+        _check_artifact(path, directory=True, expected_gid=expected_gid)
     return root
 
 
@@ -318,6 +351,98 @@ def _read_registry(root: Path):
     return validate_registry(_decode_document(raw, registry=True)), raw
 
 
+def _absent(path: Path):
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        return True
+    except OSError:
+        raise BindingError("BINDING_PATH_UNSAFE", "protected artifact could not be inspected safely") from None
+    return False
+
+
+@contextmanager
+def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
+    """Read registry state without bootstrapping any protected artifacts.
+
+    An established writer lock is shared.  Before first onboarding there is no
+    lock to share, so absence is snapshot-bound: a concurrent bootstrap makes
+    the read fail closed instead of allowing this path to create the lock.
+    """
+    root = Path(root) if root is not None else binding_root()
+    if not root.is_absolute():
+        raise BindingError("BINDING_PATH_UNSAFE", "binding root must be absolute")
+    root_missing = _absent(root)
+    if root_missing:
+        parents = _check_parent_chain(root)
+        if not _absent(root):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage appeared during inspection")
+        _verify_parent_snapshot(parents)
+        yield root, empty_registry(), None
+        if not _absent(root):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage appeared during inspection")
+        _verify_parent_snapshot(parents)
+        return
+
+    parents = _check_parent_chain(root / ".containment-check")
+    expected_gid = _forge_chain_gid(parents)
+    root_info = _check_artifact(root, directory=True, expected_gid=expected_gid)
+    lock = root / "bindings.v1.lock"
+    if _absent(lock):
+        doc, raw = _read_registry(root)
+        registry = root / "bindings.v1.json"
+
+        def verify_unlocked_snapshot():
+            if not _absent(lock):
+                raise BindingError("BINDING_PATH_UNSAFE", "binding lock appeared during inspection")
+            if raw is None and not _absent(registry):
+                raise BindingError("BINDING_PATH_UNSAFE", "binding registry appeared during inspection")
+            current_root = root.lstat()
+            if (root_info.st_dev, root_info.st_ino) != (current_root.st_dev, current_root.st_ino):
+                raise BindingError("BINDING_PATH_UNSAFE", "protected storage changed during inspection")
+            _verify_parent_snapshot(parents)
+
+        verify_unlocked_snapshot()
+        yield root, doc, raw
+        verify_unlocked_snapshot()
+        return
+
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(lock, flags)
+    except OSError:
+        raise BindingError("BINDING_PATH_UNSAFE", "binding lock is unsafe or unavailable") from None
+    acquired = False
+    try:
+        info = os.fstat(fd)
+        _check_info(info, expected_gid=root_info.st_gid)
+        if fcntl is None:
+            raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
+        deadline = time.monotonic() + timeout
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                acquired = True
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise BindingError("BINDING_LOCK_TIMEOUT", "binding registry lock timed out")
+                time.sleep(0.02)
+        current_lock, current_root = lock.lstat(), root.lstat()
+        if ((info.st_dev, info.st_ino) != (current_lock.st_dev, current_lock.st_ino)
+                or (root_info.st_dev, root_info.st_ino) != (current_root.st_dev, current_root.st_ino)):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected storage changed while locking")
+        doc, raw = _read_registry(root)
+        yield root, doc, raw
+    finally:
+        if acquired:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+            except OSError:
+                pass
+        os.close(fd)
+
+
 @contextmanager
 def locked_registry(root=None, timeout=LOCK_TIMEOUT):
     root = ensure_root(root)
@@ -331,7 +456,7 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
     acquired = False
     try:
         info = os.fstat(fd)
-        _check_info(info)
+        _check_info(info, expected_gid=root.lstat().st_gid)
         if fcntl is None:
             raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
         deadline = time.monotonic() + timeout
@@ -479,7 +604,7 @@ def _account_for_subject(accounts, subject_hash, alias):
 
 
 def resolve_binding(alias=None, root=None):
-    with locked_registry(root) as (root, doc, _):
+    with readonly_registry(root) as (root, doc, _):
         if alias is not None:
             alias = normalize_alias(alias)
             if alias not in doc["bindings"]:
@@ -498,7 +623,7 @@ def resolve_binding(alias=None, root=None):
 
 
 def list_bindings(root=None, validate_paths=False):
-    with locked_registry(root) as (root, doc, _):
+    with readonly_registry(root) as (root, doc, _):
         items = []
         for alias, item in sorted(doc["bindings"].items()):
             healthy, check = True, "bindingHealthy"
@@ -545,7 +670,7 @@ def plan_import(alias, source, mode="copy", source_alias=None, overwrite=False, 
         replaceable = [repo / "skills", repo / "harnesses", repo / "registry"]
         if any(resolved == base or base in resolved.parents for base in replaceable):
             raise BindingError("BINDING_PATH_UNSAFE", "replaceable package files cannot be referenced")
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         old = doc["bindings"].get(alias)
         if old and not overwrite:
             raise BindingError("BINDING_CONFLICT", "binding alias already exists", {"alias": alias})
@@ -646,7 +771,7 @@ def register_staged_binding(alias, staged_path, *, source="login", overwrite=Fal
 
 def plan_rename(old_alias, new_alias, root=None):
     old_alias, new_alias = normalize_alias(old_alias), normalize_alias(new_alias)
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         if old_alias not in doc["bindings"]:
             raise BindingError("BINDING_NOT_FOUND", "binding alias was not found", {"alias": old_alias})
         if new_alias in doc["bindings"]:
@@ -672,7 +797,7 @@ def rename_binding(old_alias, new_alias, root=None, expected_revision=None):
 
 def plan_remove(alias, delete_credential=False, root=None):
     alias = normalize_alias(alias)
-    with locked_registry(root) as (_, doc, __):
+    with readonly_registry(root) as (_, doc, __):
         if alias not in doc["bindings"]:
             raise BindingError("BINDING_NOT_FOUND", "binding alias was not found", {"alias": alias})
         item = doc["bindings"][alias]

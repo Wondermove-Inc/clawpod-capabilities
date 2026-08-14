@@ -10,7 +10,7 @@ from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
 from .scopes import enforce,required_scopes
 from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,transfer_load,transfer_store
-from .bindings import (BindingError,ensure_root,list_bindings,normalize_alias,resolve_binding,
+from .bindings import (BindingError,binding_root,ensure_root,list_bindings,normalize_alias,resolve_binding,
  plan_import,import_binding,plan_rename,rename_binding,plan_remove,remove_binding,
  register_staged_binding)
 from .permissions import check_permissions,plan_repair,repair_permissions
@@ -49,7 +49,19 @@ def local_auth(command,payload,out):
   sub=action[len("bindings."):];body=payload.get("body",{});alias=payload.get("account")
   try:
    if sub=="list":items,revision=list_bindings();out["data"]={"items":items,"revision":revision};return out,0
-   if sub=="status":items,revision=list_bindings(validate_paths=True);out["data"]={"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)};return out,0
+   if sub=="status":
+    checks=check_permissions();permission_healthy=all(x["passed"] for x in checks)
+    data={"items":[],"revision":None,"permissionChecks":checks,"permissionHealthy":permission_healthy,"healthy":False}
+    bootstrap_artifact_absent=any(x.get("checkId") in {"registryPresent","credentialsDirectoryPresent","backupsDirectoryPresent"}
+                                  and x.get("present") is False for x in checks)
+    if permission_healthy and not bootstrap_artifact_absent:
+     try:
+      items,revision=list_bindings(validate_paths=True);data.update({"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)})
+     except BindingError as status_error:
+      data["bindingStatus"]={"available":False,"code":status_error.code}
+    elif permission_healthy:
+     data["bindingStatus"]={"available":False,"code":"BINDING_NOT_FOUND"}
+    out["data"]=data;return out,0
    if sub=="resolve":
     resolved,_,_,item,revision=resolve_binding(alias);out["data"]={"resource":{"alias":resolved,"subjectHash":item["subjectHash"],"emailHint":item.get("emailHint"),"portable":not item.get("externalReference",False),"revision":revision}};return out,0
    if sub=="permissions.check":
@@ -71,7 +83,7 @@ def local_auth(command,payload,out):
    elif sub=="rename":doc=rename_binding(alias,body["newAlias"],expected_revision=expected);resource={"alias":body["newAlias"],"revision":doc["revision"],"identityUnchanged":True}
    elif sub=="remove":doc=remove_binding(alias,body.get("deleteCredential",False),expected_revision=expected);resource={"alias":alias,"removed":True,"credentialDeleted":bool(body.get("deleteCredential",False)),"revision":doc["revision"]}
    elif sub=="permissions.repair":
-    repaired,_=repair_permissions();resource={"repairedCategories":repaired}
+    repaired,_=repair_permissions(expected_plan=target);resource={"repairedCategories":repaired}
    else:
     migrated,revision,_=apply_migration([payload["inputPath"]],body.get("mappings"),None);resource={"migrated":migrated,"revision":revision}
    out["data"]={"resource":resource};out["effects"]=[{"kind":"confirmed","resourceIds":[alias] if alias else [],"effectDigest":payload["confirm"],"recoverability":target.get("recoverability","local-metadata")}];return out,0
@@ -98,7 +110,8 @@ def local_auth(command,payload,out):
    browser_url=managed_browser_url(body)
    if bind:
     normalize_alias(payload.get("account"))
-    root=ensure_root();items,expected_revision=list_bindings(root=root);existing=next((item for item in items if item["alias"]==payload.get("account")),None)
+    root=binding_root()
+    items,expected_revision=list_bindings(root=root);existing=next((item for item in items if item["alias"]==payload.get("account")),None)
     if existing and not payload.get("overwrite",False):raise BindingError("BINDING_CONFLICT","binding alias already exists",{"alias":payload.get("account")})
     target={"operation":"login","alias":payload.get("account"),"replacesBinding":bool(existing),"revision":expected_revision}
     if payload.get("preview") or payload.get("dryRun"):
@@ -107,6 +120,7 @@ def local_auth(command,payload,out):
     if payload.get("confirm"):
      ok,reason=consume_preview(payload["confirm"],command,payload.get("account"),payload,target,None)
      if not ok:return fail(command,payload,"APPROVAL_REQUIRED",reason,account=payload.get("account"))
+    root=ensure_root(root)
     name=os.urandom(16).hex()+".json";output_root=str(root/"credentials");output_path=name
    else:
     if not payload.get("outputPath"):raise BindingError("INVALID_ARGUMENT","outputPath is required when bind is false")
