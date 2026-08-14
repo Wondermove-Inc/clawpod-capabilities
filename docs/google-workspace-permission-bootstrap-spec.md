@@ -1,6 +1,6 @@
 # Google Workspace credential permission bootstrap specification
 
-Status: implemented 0.3.1 contract
+Status: implemented 0.3.3 contract
 
 Canonical baseline: `origin/main` at `2cfa36fafbc69dd48751d118247c422686e7f276` (PR #130)
 
@@ -38,6 +38,7 @@ Permission repair is sufficient for the reproduced state when a registry already
 7. Apply changes mode bits only, to `0700` for directories and `0600` for files. It never creates, copies, deletes, renames, parses, rewrites, or changes ownership/content. It never touches external references or the trusted `/root/.local/state/openclaw` ancestor chain.
 8. Apply verifies the post-change inode/type/owner/link count and intended mode. A second preview is an empty plan and a confirmed repeat is a no-op, with no chmod calls.
 9. Any owner mismatch, symlink, hardlink, escape, parent-chain race, target race, or unsupported type blocks the entire plan. External references are neither resolved nor targeted. Partial repair is forbidden.
+10. `credentials/` and `backups/` are optional. Their absence is a passed, non-applicable observation: it does not fail `parentTrust`, block status or repair preview, or authorize creation. Preview records the opaque absent observations, and confirmation fails closed if either path appears after the snapshot. When the optional registry is absent, status reports binding metadata unavailable without entering registry bootstrap or creating storage.
 
 ## Acceptance matrix
 
@@ -50,6 +51,7 @@ Permission repair is sufficient for the reproduced state when a registry already
 | credential bytes malformed/unreadable | permission result still returned | preview still returned | bytes never opened or rewritten |
 | already `0700`/`0600` | healthy | empty target set | no-op; idempotent |
 | alias missing/unresolvable | binding health may be unhealthy | permission preview still works | permission-only result |
+| `credentials/` and/or `backups/` absent | passed, non-applicable; parent trust unchanged | no creation effect; absence snapshot-bound | never created; appearance invalidates preview |
 | owner mismatch/unknown owner | failed, not repairable | fail closed | no mutation |
 | symlink/reparse point | failed, not repairable | fail closed | no mutation |
 | regular-file hardlink count >1 | failed, not repairable | fail closed | no mutation |

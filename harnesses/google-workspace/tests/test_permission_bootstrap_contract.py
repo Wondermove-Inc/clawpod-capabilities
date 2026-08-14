@@ -68,6 +68,108 @@ def _forge_legacy_shape(tmp_path):
     return root, credential
 
 
+def _forge_real_state_without_optional_directories(tmp_path):
+    """Exact observed modes for /root/.../google-workspace, with optional dirs absent."""
+    process_root = tmp_path / "root"
+    process_root.mkdir()
+    process_root.chmod(0o2777)
+    local = process_root / ".local"
+    state = local / "state"
+    openclaw = state / "openclaw"
+    root = openclaw / "google-workspace"
+    for path in (local, state, openclaw):
+        path.mkdir(mode=0o2775)
+        path.chmod(0o2775)
+    root.mkdir(mode=0o2770)
+    root.chmod(0o2770)
+    assert not (root / "credentials").exists()
+    assert not (root / "backups").exists()
+    return root
+
+
+def test_exact_real_state_absent_optional_directories_is_metadata_only(tmp_path, monkeypatch):
+    root = _forge_real_state_without_optional_directories(tmp_path)
+    monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
+    monkeypatch.setenv("GOOGLE_WORKSPACE_STATE_FILE", str(tmp_path / "preview-state.json"))
+
+    with patch("google_workspace_core.core.list_bindings",
+               side_effect=AssertionError("status must not parse an absent registry")):
+        status, code = run("auth.bindings.status", {})
+        preview, preview_code = run("auth.bindings.permissions.repair", {"dryRun": True})
+
+    assert code == preview_code == 0
+    checks = status["data"]["permissionChecks"]
+    assert next(check for check in checks if check["checkId"] == "parentTrust")["passed"] is True
+    for check_id in ("credentialsDirectoryPresent", "backupsDirectoryPresent"):
+        check = next(check for check in checks if check["checkId"] == check_id)
+        assert check == {"checkId": check_id, "artifactId": check["artifactId"],
+                         "passed": True, "repairAvailable": False,
+                         "present": False, "applicable": False}
+    plan = preview["data"]["plan"]
+    assert [change["beforeMode"] for change in plan["changes"]] == ["0o2770"]
+    assert len(plan["absentArtifacts"]) == 4  # two directories plus optional registry and lock
+    assert all(item["snapshot"] == {"type": "absent"} for item in plan["absentArtifacts"])
+    assert not (root / "credentials").exists()
+    assert not (root / "backups").exists()
+
+
+def test_absent_optional_directory_created_after_snapshot_fails_before_chmod(tmp_path):
+    root = _forge_real_state_without_optional_directories(tmp_path)
+    plan = plan_repair(root)
+    real_open = os.open
+    created = False
+
+    def create_after_snapshot(path, flags, *args, **kwargs):
+        nonlocal created
+        fd = real_open(path, flags, *args, **kwargs)
+        if Path(path) == root and not created:
+            created = True
+            (root / "credentials").mkdir(mode=0o700)
+        return fd
+
+    with patch("os.open", side_effect=create_after_snapshot), patch("os.fchmod") as chmod, \
+         pytest.raises(Exception, match="appeared|stale|changed"):
+        repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+def test_status_does_not_parse_present_registry_when_optional_directories_are_absent(tmp_path, monkeypatch):
+    root = _forge_real_state_without_optional_directories(tmp_path)
+    root.chmod(0o700)
+    registry = root / "bindings.v1.json"
+    registry.write_bytes(b"malformed CANARY_REGISTRY_BYTES")
+    registry.chmod(0o600)
+    monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
+
+    with patch("google_workspace_core.core.list_bindings",
+               side_effect=AssertionError("status must not enter registry bootstrap")):
+        status, code = run("auth.bindings.status", {})
+
+    assert code == 0
+    assert status["data"]["permissionHealthy"] is True
+    assert status["data"]["bindingStatus"] == {"available": False, "code": "BINDING_NOT_FOUND"}
+    assert "CANARY" not in json.dumps(status)
+    assert not (root / "credentials").exists()
+    assert not (root / "backups").exists()
+
+
+@pytest.mark.parametrize("name,kind", [("credentials", "symlink"), ("backups", "file")])
+def test_present_optional_directory_wrong_type_fails_closed(tmp_path, name, kind):
+    root = _forge_real_state_without_optional_directories(tmp_path)
+    path = root / name
+    if kind == "symlink":
+        path.symlink_to(tmp_path, target_is_directory=True)
+    else:
+        path.write_bytes(b"")
+        path.chmod(0o600)
+    checks = __import__("google_workspace_core.permissions", fromlist=["check_permissions"]).check_permissions(root)
+    assert next(check for check in checks if check["checkId"] == "parentTrust")["passed"] is True
+    assert any(not check["passed"] for check in checks if check["checkId"] != "parentTrust")
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
 def _contains_path(value, path):
     return str(path) in json.dumps(value, sort_keys=True)
 
@@ -220,34 +322,38 @@ def test_forge_parent_must_be_process_owned(tmp_path):
 
 def test_foreign_group_in_chain_fails_closed(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
-    os.chown(root.parent, -1, 1234)
-    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+    parent_inode = root.parent.lstat().st_ino
+    real_snapshot = __import__("google_workspace_core.permissions", fromlist=["_snapshot"])._snapshot
+
+    def mixed_group(info):
+        snapshot = real_snapshot(info)
+        if info.st_ino == parent_inode:
+            snapshot["gid"] += 1
+        return snapshot
+
+    with patch("google_workspace_core.permissions._snapshot", side_effect=mixed_group), \
+         patch("os.fchmod") as chmod, pytest.raises(Exception):
         repair_permissions(root)
     chmod.assert_not_called()
 
 
-def test_exact_runtime_uid_gid_0_0_accepts_uniform_forge_gid_1000(tmp_path):
+def test_runtime_uid_accepts_uniform_forge_gid_distinct_from_process_gid(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
-    chain = [tmp_path / "root", root.parents[2], root.parents[1], root.parent, root]
-    artifacts = [root / "credentials", root / "backups", *root.iterdir(),
-                 *(root / "credentials").iterdir()]
-    for path in dict.fromkeys(chain + artifacts):
-        os.chown(path, 0, 1000, follow_symlinks=False)
-    with patch("os.geteuid", return_value=0), patch("os.getegid", return_value=0), \
+    forge_gid = root.lstat().st_gid
+    with patch("os.geteuid", return_value=root.lstat().st_uid), patch("os.getegid", return_value=forge_gid + 1), \
+         patch("google_workspace_core.permissions._trusted_identity", return_value=True), \
          patch("os.getgroups", return_value=[]):
         plan = plan_repair(root)
-    assert [item["snapshot"]["gid"] for item in plan["parentSnapshots"][-5:]] == [1000] * 5
+    assert [item["snapshot"]["gid"] for item in plan["parentSnapshots"][-5:]] == [forge_gid] * 5
     assert plan["changes"]
 
 
 @pytest.mark.parametrize("groups", [[], [0], [1000], [0, 1000, 2000]])
 def test_exact_forge_rule_does_not_depend_on_supplementary_groups(tmp_path, groups):
     root, _credential = _forge_legacy_shape(tmp_path)
-    for path in [tmp_path / "root", root.parents[2], root.parents[1], root.parent, root,
-                 root / "credentials", root / "backups", *root.iterdir(),
-                 *(root / "credentials").iterdir()]:
-        os.chown(path, 0, 1000, follow_symlinks=False)
-    with patch("os.geteuid", return_value=0), patch("os.getegid", return_value=0), \
+    forge_gid = root.lstat().st_gid
+    with patch("os.geteuid", return_value=root.lstat().st_uid), patch("os.getegid", return_value=forge_gid + 1), \
+         patch("google_workspace_core.permissions._trusted_identity", return_value=True), \
          patch("os.getgroups", return_value=groups):
         assert plan_repair(root)["changes"]
 

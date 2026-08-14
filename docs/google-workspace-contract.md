@@ -20,6 +20,8 @@ The shared name is safe because AgentSkills and CLI Harnesses are distinct capab
 
 The capability is an API client, not a replacement UI, sync engine, mail server, file system, webhook receiver, or credential vault. Gmail, Calendar, and Drive resource IDs remain opaque strings. Human-readable names never substitute for IDs when a command can mutate or delete a resource.
 
+Permission-only status and repair preview treat absent optional `credentials/` and `backups/` directories as absent/non-applicable. They do not make parent trust false, trigger registry or credential parsing, or create either directory. Their absence is included in the opaque preview snapshot so create-after-snapshot races fail closed.
+
 ## 2. Repository fit and architecture
 
 This design follows the repository's existing paired-package pattern:

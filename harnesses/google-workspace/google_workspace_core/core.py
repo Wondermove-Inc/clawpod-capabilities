@@ -52,11 +52,15 @@ def local_auth(command,payload,out):
    if sub=="status":
     checks=check_permissions();permission_healthy=all(x["passed"] for x in checks)
     data={"items":[],"revision":None,"permissionChecks":checks,"permissionHealthy":permission_healthy,"healthy":False}
-    if permission_healthy:
+    bootstrap_artifact_absent=any(x.get("checkId") in {"registryPresent","credentialsDirectoryPresent","backupsDirectoryPresent"}
+                                  and x.get("present") is False for x in checks)
+    if permission_healthy and not bootstrap_artifact_absent:
      try:
       items,revision=list_bindings(validate_paths=True);data.update({"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)})
      except BindingError as status_error:
       data["bindingStatus"]={"available":False,"code":status_error.code}
+    elif permission_healthy:
+     data["bindingStatus"]={"available":False,"code":"BINDING_NOT_FOUND"}
     out["data"]=data;return out,0
    if sub=="resolve":
     resolved,_,_,item,revision=resolve_binding(alias);out["data"]={"resource":{"alias":resolved,"subjectHash":item["subjectHash"],"emailHint":item.get("emailHint"),"portable":not item.get("externalReference",False),"revision":revision}};return out,0

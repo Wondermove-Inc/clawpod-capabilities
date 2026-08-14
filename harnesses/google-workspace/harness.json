@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [

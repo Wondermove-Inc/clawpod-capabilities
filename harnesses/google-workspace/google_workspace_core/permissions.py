@@ -8,8 +8,9 @@ from pathlib import Path
 from .bindings import BindingError, binding_root
 
 
-DIRECTORIES = (("root", Path(".")), ("credentialsDirectory", Path("credentials")),
-               ("backupsDirectory", Path("backups")))
+DIRECTORIES = (("root", Path("."), False),
+               ("credentialsDirectory", Path("credentials"), True),
+               ("backupsDirectory", Path("backups"), True))
 FILES = (("registry", Path("bindings.v1.json"), True),
          ("lock", Path("bindings.v1.lock"), True))
 
@@ -140,12 +141,23 @@ def _verify_targets(targets):
             raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during validation")
 
 
+def _verify_absent(absent):
+    for _artifact_id, path in absent:
+        try:
+            path.lstat()
+        except FileNotFoundError:
+            continue
+        except OSError:
+            raise BindingError("BINDING_PATH_UNSAFE", "absent artifact changed during validation") from None
+        raise BindingError("BINDING_PATH_UNSAFE", "absent artifact appeared during validation")
+
+
 def _discover(root):
     root = Path(root)
     chain = _root_and_parents(root)
     artifacts = []
-    for category, relative in DIRECTORIES:
-        artifacts.append((category, relative, True, False))
+    for category, relative, optional in DIRECTORIES:
+        artifacts.append((category, relative, True, optional))
     for category, relative, optional in FILES:
         artifacts.append((category, relative, False, optional))
     for directory, category in ((Path("credentials"), "credentialFile"),
@@ -173,6 +185,7 @@ def _discover(root):
 
     checks = []
     targets = []
+    absent = []
     blocked = []
     for number, (category, relative, directory, optional) in enumerate(artifacts, 1):
         artifact_id = f"artifact-{number:04d}"
@@ -184,8 +197,11 @@ def _discover(root):
             info = path.lstat()
         except FileNotFoundError:
             check = {"checkId": category + "Present", "artifactId": artifact_id,
-                     "passed": bool(optional), "repairAvailable": False}
+                     "passed": bool(optional), "repairAvailable": False,
+                     "present": False, "applicable": not optional}
             checks.append(check)
+            if optional:
+                absent.append((artifact_id, path))
             if not optional:
                 blocked.append(check["checkId"])
             continue
@@ -200,6 +216,7 @@ def _discover(root):
         repairable = os.name != "nt" and right_type and owner and one_link
         check = {"checkId": category + "Permissions", "artifactId": artifact_id,
                  "passed": passed, "repairAvailable": repairable,
+                 "present": True, "applicable": True,
                  "currentMode": oct(current_mode), "intendedMode": oct(expected), "type": kind}
         checks.append(check)
         if not passed:
@@ -209,14 +226,15 @@ def _discover(root):
                 blocked.append(check["checkId"])
     _verify_chain(chain)
     _verify_targets(targets)
-    return chain, checks, targets, sorted(set(blocked))
+    _verify_absent(absent)
+    return chain, checks, targets, absent, sorted(set(blocked))
 
 
 def check_permissions(root=None):
     root = Path(root) if root is not None else binding_root()
     try:
-        chain, checks, _targets, blocked = _discover(root)
-        parent = {"checkId": "parentTrust", "passed": not blocked,
+        chain, checks, _targets, _absent, _blocked = _discover(root)
+        parent = {"checkId": "parentTrust", "passed": True,
                   "repairAvailable": False, "artifactId": "artifact-parent",
                   "currentMode": None, "intendedMode": None, "type": "parent-chain"}
         return [parent, *checks]
@@ -228,7 +246,7 @@ def check_permissions(root=None):
 
 def plan_repair(root=None):
     root = Path(root) if root is not None else binding_root()
-    chain, _checks, targets, blocked = _discover(root)
+    chain, _checks, targets, absent, blocked = _discover(root)
     if blocked:
         raise BindingError("BINDING_PERMISSION_DENIED",
                            "permission repair cannot safely address every defect",
@@ -241,12 +259,14 @@ def plan_repair(root=None):
             "rootIdentity": {"device": chain[-1][1]["device"], "inode": chain[-1][1]["inode"]},
             "parentSnapshots": [{"artifactId": f"parent-{number:04d}", "snapshot": snapshot}
                                 for number, (_path, snapshot) in enumerate(chain, 1)],
+            "absentArtifacts": [{"artifactId": artifact_id, "snapshot": {"type": "absent"}}
+                                for artifact_id, _path in absent],
             "changes": changes, "intendedDirectoryMode": "0o700", "intendedFileMode": "0o600"}
 
 
 def repair_permissions(root=None, expected_plan=None):
     root = Path(root) if root is not None else binding_root()
-    chain, _checks, targets, blocked = _discover(root)
+    chain, _checks, targets, absent, blocked = _discover(root)
     if blocked:
         raise BindingError("BINDING_PERMISSION_DENIED", "permission repair refused an unsafe artifact",
                            {"checkIds": blocked})
@@ -254,6 +274,8 @@ def repair_permissions(root=None, expected_plan=None):
                     "rootIdentity": {"device": chain[-1][1]["device"], "inode": chain[-1][1]["inode"]},
                     "parentSnapshots": [{"artifactId": f"parent-{number:04d}", "snapshot": snapshot}
                                         for number, (_path, snapshot) in enumerate(chain, 1)],
+                    "absentArtifacts": [{"artifactId": artifact_id, "snapshot": {"type": "absent"}}
+                                        for artifact_id, _path in absent],
                     "changes": [{"artifactId": aid, "beforeMode": oct(_mode(info)),
                                  "afterMode": oct(mode), "type": _kind(info), "snapshot": _snapshot(info)}
                                 for aid, _path, info, mode in targets],
@@ -280,6 +302,7 @@ def repair_permissions(root=None, expected_plan=None):
             if not _same_snapshot(os.fstat(fd), _snapshot(before)):
                 raise BindingError("BINDING_PATH_UNSAFE", "repair target changed after preview")
         _verify_chain(chain)
+        _verify_absent(absent)
         for _artifact_id, path, fd, _expected, before in opened:
             try:
                 current = path.lstat()
@@ -301,6 +324,7 @@ def repair_permissions(root=None, expected_plan=None):
                     raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during permission repair") from None
                 if not _same_snapshot(after, invariant) or not _same_snapshot(current, invariant):
                     raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during permission repair")
+            _verify_absent(absent)
             _verify_chain([(path, dict(snapshot, mode=(oct(0o700) if path == root else snapshot["mode"])))
                            for path, snapshot in chain])
         except Exception:
