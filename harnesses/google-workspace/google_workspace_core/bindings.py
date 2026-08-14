@@ -126,11 +126,19 @@ def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=T
 
 
 def _exact_forge_location(paths):
-    expected = tuple(Path("/root/.local/state/openclaw/google-workspace").parents)[::-1][1:]
-    return tuple(paths) == expected + (Path("/root/.local/state/openclaw/google-workspace"),)
+    paths = tuple(paths)
+    root = Path("/root/.local/state/openclaw/google-workspace")
+    root_chain = tuple(root.parents)[::-1][1:] + (root,)
+    workspace_boundary = (len(paths) == 2 and paths[0] == Path("/workspace")
+                          and paths[1].parent == paths[0])
+    return paths == root_chain or workspace_boundary
 
 
 def _forge_chain_gid(ancestors):
+    for start in range(len(ancestors) - 1):
+        segment = ancestors[start:start + 2]
+        if _exact_forge_location([item[0] for item in segment]) and len({item[5] for item in segment}) == 1:
+            return segment[0][5]
     for start in range(len(ancestors) - 4):
         segment = ancestors[start:start + 5]
         if _exact_forge_location([item[0] for item in segment]) and len({item[5] for item in segment}) == 1:
@@ -141,9 +149,9 @@ def _forge_chain_gid(ancestors):
 def _parent_snapshot(path: Path):
     """Validate and snapshot ancestors without following links.
 
-    The only non-sticky shared exception is Forge's complete process-owned
-    root/.local/state/openclaw/google-workspace suffix with exact modes
-    02777/02775/02775/02775/0700. Exact 01777 remains the generic sticky case.
+    The existing /root exception is unchanged.  The /workspace exception is
+    only its exact 02777 ancestor followed immediately by the process-owned
+    private protected root at 0700. Exact 01777 remains the generic sticky case.
     """
     if not path.is_absolute():
         raise BindingError("BINDING_PATH_UNSAFE", "protected file path must be absolute")
@@ -160,18 +168,29 @@ def _parent_snapshot(path: Path):
         ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid))
     forge_names = ("root", ".local", "state", "openclaw", "google-workspace")
     forge_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o700)
-    forge_start = next((start for start in range(len(ancestors) - len(forge_names) + 1)
-                        if len({item[5] for item in ancestors[start:start + len(forge_names)]}) == 1
+    forge_length = len(forge_modes)
+    forge_start = next((start for start in range(len(ancestors) - forge_length + 1)
+                        if len({item[5] for item in ancestors[start:start + forge_length]}) == 1
                         and all(item[0].name == name and stat.S_IMODE(item[3]) == mode
                                and (not hasattr(os, "geteuid") or item[4] == os.geteuid())
                                for item, name, mode in
-                               zip(ancestors[start:start + len(forge_names)], forge_names, forge_modes))
+                               zip(ancestors[start:start + forge_length], forge_names, forge_modes))
                         and _exact_forge_location([item[0] for item in
-                                                  ancestors[start:start + len(forge_names)]])), -1)
+                                                  ancestors[start:start + forge_length]])), -1)
+    workspace_start = next((start for start in range(len(ancestors) - 1)
+                            if _exact_forge_location([item[0] for item in ancestors[start:start + 2]])
+                            and len({item[5] for item in ancestors[start:start + 2]}) == 1
+                            and stat.S_IMODE(ancestors[start][3]) == 0o2777
+                            and stat.S_IMODE(ancestors[start + 1][3]) == 0o700
+                            and all(not hasattr(os, "geteuid") or item[4] == os.geteuid()
+                                    for item in ancestors[start:start + 2])), -1)
+    if forge_start < 0:
+        forge_start = workspace_start
+        forge_length = 2
     exact_forge = forge_start >= 0
     for number, (current, _device, _inode, mode, owner, group) in enumerate(ancestors):
         if mode & 0o022:
-            forge_member = exact_forge and forge_start <= number < forge_start + len(forge_names)
+            forge_member = exact_forge and forge_start <= number < forge_start + forge_length
             sticky = stat.S_IMODE(mode) == 0o1777
             process_owned = (not hasattr(os, "geteuid") or owner == os.geteuid())
             trusted_group = (group == ancestors[forge_start][5]) if forge_member else (not hasattr(os, "getegid") or group == os.getegid())

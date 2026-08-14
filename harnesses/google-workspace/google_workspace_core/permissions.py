@@ -32,8 +32,12 @@ def _trusted_identity(snapshot):
 
 
 def _exact_forge_location(paths):
-    expected = tuple(Path("/root/.local/state/openclaw/google-workspace").parents)[::-1][1:]
-    return tuple(paths) == expected + (Path("/root/.local/state/openclaw/google-workspace"),)
+    paths = tuple(paths)
+    root = Path("/root/.local/state/openclaw/google-workspace")
+    root_chain = tuple(root.parents)[::-1][1:] + (root,)
+    workspace_boundary = (len(paths) == 2 and paths[0] == Path("/workspace")
+                          and paths[1].parent == paths[0])
+    return paths == root_chain or workspace_boundary
 
 
 def _mode(info):
@@ -62,10 +66,9 @@ def _same_snapshot(info, snapshot):
 def _root_and_parents(root):
     """Validate lexical/resolved containment and snapshot the trusted chain.
 
-    The sole non-sticky shared exception is the complete observed Forge suffix:
-    root 02777, .local/state/openclaw 02775, and google-workspace 02770.
-    Every member must be process UID/GID owned. No prefix or partial suffix is
-    trusted. Exact process-owned 01777 remains the generic sticky-parent case.
+    The existing /root exception is its complete named Forge chain.  The
+    separate /workspace exception is only the 02777 ancestor plus its immediate
+    process-owned private protected root.  Both pin one uniform chain GID.
     """
     root = Path(root)
     if not root.is_absolute() or Path(os.path.abspath(root)) != root:
@@ -81,17 +84,30 @@ def _root_and_parents(root):
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected path contains an unsafe parent")
         chain.append((current, _snapshot(info)))
-    suffix_names = ("root", ".local", "state", "openclaw", "google-workspace")
-    suffix_modes = (0o2777, 0o2775, 0o2775, 0o2775)
-    forge_start = len(chain) - len(suffix_names)
+    root_names = ("root", ".local", "state", "openclaw", "google-workspace")
+    root_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o2770)
+    forge_start = len(chain) - len(root_names)
     forge_paths = [path for path, _snapshot_value in chain[forge_start:]] if forge_start >= 0 else []
     forge_gid = chain[forge_start][1]["gid"] if forge_start >= 0 else None
-    exact_forge = forge_start >= 0 and _exact_forge_location(forge_paths) and all(
+    exact_root = forge_start >= 0 and _exact_forge_location(forge_paths) and all(
         path.name == name and _process_owner(snapshot) and snapshot["gid"] == forge_gid
         and (int(snapshot["mode"], 8) == mode if name != "google-workspace"
              else int(snapshot["mode"], 8) in (0o2770, 0o700))
-        for (path, snapshot), name, mode in zip(chain[forge_start:], suffix_names, (*suffix_modes, 0o2770))
+        for (path, snapshot), name, mode in zip(chain[forge_start:], root_names, root_modes)
     )
+    workspace_start = len(chain) - 2
+    workspace_paths = [path for path, _snapshot_value in chain[workspace_start:]] \
+        if workspace_start >= 0 else []
+    workspace_gid = chain[workspace_start][1]["gid"] if workspace_start >= 0 else None
+    exact_workspace = workspace_start >= 0 and _exact_forge_location(workspace_paths) and all(
+        _process_owner(snapshot) and snapshot["gid"] == workspace_gid
+        for _path, snapshot in chain[workspace_start:]
+    ) and int(chain[workspace_start][1]["mode"], 8) == 0o2777 \
+      and int(chain[workspace_start + 1][1]["mode"], 8) in (0o2770, 0o700)
+    exact_forge = exact_root or exact_workspace
+    if exact_workspace:
+        forge_start = workspace_start
+        forge_gid = workspace_gid
     for number, (_path, snapshot) in enumerate(chain[:-1]):
         if int(snapshot["mode"], 8) & 0o022:
             in_forge_suffix = exact_forge and number >= forge_start

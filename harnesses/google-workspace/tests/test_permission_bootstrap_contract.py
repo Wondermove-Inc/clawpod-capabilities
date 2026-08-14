@@ -21,18 +21,29 @@ from google_workspace_core.permissions import _exact_forge_location, plan_repair
 
 @pytest.fixture(autouse=True)
 def synthetic_forge_location(monkeypatch):
-    synthetic = lambda paths: [path.name for path in paths] == \
-        ["root", ".local", "state", "openclaw", "google-workspace"]
+    synthetic = lambda paths: ([path.name for path in paths] ==
+                               ["root", ".local", "state", "openclaw", "google-workspace"]
+                               or (len(paths) == 2 and paths[0].name == "workspace"
+                                   and paths[1].parent == paths[0]))
     monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
     monkeypatch.setattr("google_workspace_core.bindings._exact_forge_location", synthetic)
 
 
 def test_exact_forge_location_is_absolute_and_not_a_named_lookalike():
-    exact = [Path("/root"), Path("/root/.local"), Path("/root/.local/state"),
-             Path("/root/.local/state/openclaw"),
-             Path("/root/.local/state/openclaw/google-workspace")]
-    assert _exact_forge_location(exact)
-    assert not _exact_forge_location([Path("/tmp") / path.relative_to("/") for path in exact])
+    root = Path("/root/.local/state/openclaw/google-workspace")
+    root_chain = [Path("/root"), Path("/root/.local"), Path("/root/.local/state"),
+                  Path("/root/.local/state/openclaw"), root]
+    assert _exact_forge_location(root_chain)
+    assert _exact_forge_location([Path("/workspace"), Path("/workspace/private-root")])
+    assert not _exact_forge_location([Path("/workspace")])
+    assert not _exact_forge_location([Path("/workspace"), Path("/workspace/a"),
+                                      Path("/workspace/a/private-root")])
+    assert not _exact_forge_location([Path("/workspace-copy"),
+                                      Path("/workspace-copy/private-root")])
+    assert not _exact_forge_location([Path("/workspace"), Path("/workspace/.local"),
+                                      Path("/workspace/.local/state"),
+                                      Path("/workspace/.local/state/openclaw"),
+                                      Path("/workspace/.local/state/openclaw/google-workspace")])
 
 
 def _bundle(path):
@@ -66,6 +77,81 @@ def _forge_legacy_shape(tmp_path):
     (root / "credentials").chmod(0o2770)
     credential.chmod(0o660)
     return root, credential
+
+
+def _workspace_live_shape(tmp_path):
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    workspace.chmod(0o2777)
+    root = workspace / "private-root"
+    import_binding("work", _bundle(tmp_path / "source.json"), source_alias="legacy", root=root)
+    credential = next((root / "credentials").iterdir())
+    credential.write_bytes(b"not-json CANARY_CREDENTIAL_BYTES")
+    root.chmod(0o2770)
+    (root / "credentials").chmod(0o2770)
+    credential.chmod(0o660)
+    return workspace, root, credential
+
+
+def test_workspace_live_shape_is_repaired_only_across_immediate_private_boundary(tmp_path):
+    workspace, root, credential = _workspace_live_shape(tmp_path)
+
+    plan = plan_repair(root)
+    repaired, _ = repair_permissions(root, expected_plan=plan)
+
+    assert repaired == ["directory", "file"]
+    assert [item["snapshot"]["mode"] for item in plan["parentSnapshots"][-2:]] == \
+        ["0o2777", "0o2770"]
+    assert stat.S_IMODE(workspace.lstat().st_mode) == 0o2777
+    assert stat.S_IMODE(root.lstat().st_mode) == 0o700
+    assert stat.S_IMODE(credential.lstat().st_mode) == 0o600
+    assert plan_repair(root)["changes"] == []
+
+
+def test_workspace_boundary_requires_one_uniform_chain_gid(tmp_path):
+    workspace, root, _credential = _workspace_live_shape(tmp_path)
+    workspace_inode = workspace.lstat().st_ino
+    real_snapshot = __import__("google_workspace_core.permissions", fromlist=["_snapshot"])._snapshot
+
+    def mixed_group(info):
+        snapshot = real_snapshot(info)
+        if info.st_ino == workspace_inode:
+            snapshot["gid"] += 1
+        return snapshot
+
+    with patch("google_workspace_core.permissions._snapshot", side_effect=mixed_group), \
+         patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
+@pytest.mark.parametrize("defect", ["lookalike", "deeper", "wrong-workspace-mode",
+                                     "wrong-boundary-mode", "symlink", "hardlink"])
+def test_workspace_exception_rejects_adversarial_shapes_before_chmod(tmp_path, defect):
+    workspace, root, credential = _workspace_live_shape(tmp_path)
+    if defect == "lookalike":
+        collision = tmp_path / "workspace-copy"
+        workspace.rename(collision)
+        root = collision / root.relative_to(workspace)
+    elif defect == "deeper":
+        intermediate = workspace / "extra"
+        intermediate.mkdir(mode=0o700)
+        moved = intermediate / "private-root"
+        root.rename(moved)
+        root = moved
+    elif defect == "wrong-workspace-mode":
+        workspace.chmod(0o2775)
+    elif defect == "wrong-boundary-mode":
+        root.chmod(0o2750)
+    elif defect == "symlink":
+        credential.unlink()
+        credential.symlink_to(tmp_path / "source.json")
+    else:
+        os.link(credential, tmp_path / "credential-hardlink")
+
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
 
 
 def _forge_real_state_without_optional_directories(tmp_path):

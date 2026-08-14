@@ -19,7 +19,13 @@ A metadata-only `lstat(2)` reproduction on Forge observed the relevant legacy sh
 | protected credential/binding directory | directory | `02770` | current pod user owns it |
 | credential file | regular, non-symlink | `0660` | current pod user owns it, link count 1 |
 
-Paths above describe the deployment shape only. Harness output MUST omit paths or replace each with a deterministic request-local opaque artifact identifier. The non-sticky exception applies only to this complete named chain with these exact, unnormalized modes and process UID ownership and one uniform exact Forge chain GID. No generic `02777` or `02775` trust exists. Exact process-owned `01777` is the only generic sticky-parent form accepted; arbitrary other-writable modes, owners, and groups remain forbidden. Intermediates are never repair targets. The protected directory and credential file are insecure because group permission bits remain set.
+Live metadata documents a different `/workspace` shape: exact absolute
+`/workspace` at `02777`, followed immediately by one process-UID-owned private
+protected directory at `0700` (legacy pre-repair `02770`), then a single-link
+regular credential file. The two directories have one uniform chain GID. There
+is no `/workspace/.local` chain.
+
+Paths above describe the deployment shapes only. Harness output MUST omit paths or replace each with a deterministic request-local opaque artifact identifier. The existing exact `/root/.local/state/openclaw/google-workspace` rule is unchanged. The `/workspace` exception applies only when the next component is that owned private containment boundary/protected root, with the exact modes above and uniform GID. It is not a prefix rule: an extra component before the boundary, an arbitrary deeper root, a lookalike ancestor, or any path that does not cross the immediate private boundary is forbidden. Exact process-owned `01777` remains the only generic sticky-parent form. Ancestors are never repair targets; the legacy protected root and a credential file at `0660` are repairable.
 
 Current `auth.bindings.status` enters `list_bindings(validate_paths=True)`, which locks/parses the registry, resolves every `credentialRef`, and parses each credential bundle before it can provide useful permission diagnostics. Current repair preview calls `check_permissions`, but returns only repeated artifact categories, silently suppresses registry parse failures, and does not bind its effect digest to exact inode snapshots. Apply re-enumerates names and chmods from a new snapshot, so the preview is not an exact object set.
 
@@ -44,7 +50,9 @@ Permission repair is sufficient for the reproduced state when a registry already
 
 | Case | Check/status | Preview | Confirm/apply |
 |---|---|---|---|
-| complete `02777 -> 02775 -> 02775 -> 02775` exact process-UID-owned with one uniform exact Forge chain GID Forge chain | pass parent trust | ancestors omitted | never changed |
+| existing exact `/root/.local/state/openclaw/google-workspace` chain | pass parent trust | ancestors omitted | never changed |
+| exact `/workspace 02777 -> immediate owned private root 0700` with one uniform chain GID | pass parent trust | ancestors omitted | never changed |
+| same `/workspace` shape with legacy private root `02770` | insecure, repairable | exact opaque root target | mode-only repair to `0700` |
 | partial, renamed, or mode-normalized Forge chain | failed, not repairable | fail closed | no mutation |
 | owned directory `02770` | insecure, repairable | exact opaque target, `02770 -> 0700` | mode-only repair |
 | owned regular file `0660`, nlink 1 | insecure, repairable | exact opaque target, `0660 -> 0600` | mode-only repair |

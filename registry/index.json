@@ -432,7 +432,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -458,7 +458,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "3fb2ca918435858ec56d36e06f99f9e2d50cd269be33a48ae135563c305496fb"
+          "sha256": "ae50221bf6a48d4ed29f12a2c62dc68abeb578b6c6a11f147f55c8cf8258352e"
         },
         {
           "path": "references/scopes.md",
@@ -467,7 +467,7 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.3.3"
+        "version": "0.3.4"
       }
     },
     {
@@ -1167,7 +1167,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1205,7 +1205,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "9e671dcf5b6c17bd7bcea3595640365f0da63a1f07235bec0398284fdddbd16b"
+          "sha256": "57887257c880ed78b01cb7b5103d6baa5f58ceb257a51b33b35daae5f328fd42"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1237,7 +1237,7 @@
         },
         {
           "path": "google_workspace_core/permissions.py",
-          "sha256": "e89f33c017c22a86bb76e7f929c5d4e98c57a3ad4db5e0a256460fb44b93a7e7"
+          "sha256": "c6a697c31ea431ad7f10460975f4b2f8f87dd86640890cc462a0e072ba83daa7"
         },
         {
           "path": "google_workspace_core/scopes.py",
@@ -1261,7 +1261,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "1f57535f2caf82d8dbe099e6f4c9895fe44a3f91e993ea4096ed008674cf2c38"
+          "sha256": "e856c1e80fe19187678c308d42bad5abe15d9463b947193ae1e2a79cb13252af"
         },
         {
           "path": "scripts/generate_schemas.py",
