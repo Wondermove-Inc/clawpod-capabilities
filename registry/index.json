@@ -458,7 +458,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "f458541cce7b816e87f7a8f29d205dba040d0c3c031a2ffcce20f9c7ccbab695"
+          "sha256": "3fb2ca918435858ec56d36e06f99f9e2d50cd269be33a48ae135563c305496fb"
         },
         {
           "path": "references/scopes.md",
@@ -1184,8 +1184,12 @@
       },
       "files": [
         {
+          "path": "EVIDENCE-v0.3.0-regressions.md",
+          "sha256": "f24463baea591d15ade162bba63b222b6cd130461501bf82f13649a2a8c3119e"
+        },
+        {
           "path": "command_contracts.json",
-          "sha256": "51f37e36f23bce86935d39146f3caec0b46c33452aabbaa8b928f8fe53266341"
+          "sha256": "f77b881f2e9dad815ccdd6a0ad0e9770afa8fa7ab21a444e569a49bf140a3d1c"
         },
         {
           "path": "google_workspace.py",
@@ -1201,7 +1205,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "c00b18c9a0f5f20d9730be7a69c1a85ad5bce6179824b2db5d5a7264f0fa711b"
+          "sha256": "b69fa87a13d06dd976582758d1b815e0e5d13c31deb5743bc7ab8f708e83f2f5"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1209,11 +1213,11 @@
         },
         {
           "path": "google_workspace_core/contracts.py",
-          "sha256": "d137a4f2ce22257d805c87c83ac729091744acc32573be46605377706492522a"
+          "sha256": "1025d8f5de6dcb8dd07ec2fcd1701f53be9b9da8d1627160c5c64e580e65eb7a"
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "c21d192fcb62caa59c91748847473e111af6328338e6c181750ca54c742aba6c"
+          "sha256": "42edbee260344b8c5cdecfd71565d82d362c816a63c563b70f1d676842d3ee63"
         },
         {
           "path": "google_workspace_core/high_level_reads.py",
@@ -1257,11 +1261,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "fc821cee6bbdb91608364f2179d0750e1a372fd191d3b00a0634664153246d2a"
+          "sha256": "68aeb37718d89a06f76cfbdb1f4cf8cad764c05c6b74bbd3ec2a0bb57791b2ca"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "54644e9306c0cd6d6af7412319a1e5ddd8e28f5ae41c913f9ce45adec4b28702"
+          "sha256": "0e530a8e754541e0a8d28db09280c113e865f6f047e2e19cd872ca4cf02794ee"
         }
       ]
     },

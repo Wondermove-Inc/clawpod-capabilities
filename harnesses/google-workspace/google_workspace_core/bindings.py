@@ -121,10 +121,19 @@ def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=T
     return info
 
 
-def _check_parent_chain(path: Path):
+def _parent_snapshot(path: Path):
+    """Validate and snapshot ancestors without following links.
+
+    A sticky collaborative parent, plus Forge's narrowly identified setgid
+    ``/workspace`` mode 2777, is acceptable only when it is trusted-owned and
+    the protected path crosses a current-user-owned, non-shared directory
+    before reaching the artifact. Later non-sticky shared directories remain
+    unsafe.
+    """
     if not path.is_absolute():
         raise BindingError("BINDING_PATH_UNSAFE", "protected file path must be absolute")
     current = Path(path.anchor)
+    ancestors = []
     for part in path.parts[1:-1]:
         current /= part
         try:
@@ -133,12 +142,55 @@ def _check_parent_chain(path: Path):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unavailable") from None
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unsafe")
-        if info.st_mode & 0o022 and not info.st_mode & stat.S_ISVTX:
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
+        if info.st_mode & 0o022:
+            forge_collaborative = (
+                current.name == "workspace"
+                and stat.S_IMODE(info.st_mode) == 0o2777
+            )
+            if not info.st_mode & stat.S_ISVTX and not forge_collaborative:
+                raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
+            trusted_owners = {os.geteuid(), 0} if hasattr(os, "geteuid") else {info.st_uid}
+            if info.st_uid not in trusted_owners:
+                raise BindingError("BINDING_PATH_UNSAFE", "shared protected-file parent has an untrusted owner")
+            # A sticky shared directory, or Forge's specifically identified
+            # setgid /workspace collaboration root, is only an ingress point.
+            # Require an already-existing private ownership boundary below it.
+            descendants = path.parts[len(current.parts):-1]
+            boundary = current
+            safe_boundary = False
+            for descendant in descendants:
+                boundary /= descendant
+                try:
+                    boundary_info = boundary.lstat()
+                except OSError:
+                    break
+                if stat.S_ISLNK(boundary_info.st_mode) or not stat.S_ISDIR(boundary_info.st_mode):
+                    break
+                if _owned(boundary_info) and not boundary_info.st_mode & 0o022:
+                    safe_boundary = True
+                    break
+            if not safe_boundary:
+                raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an owned private containment boundary")
+        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid))
+    return ancestors
+
+
+def _check_parent_chain(path: Path):
+    return _parent_snapshot(path)
+
+
+def _verify_parent_snapshot(snapshot):
+    for path, device, inode, mode, owner in snapshot:
+        try:
+            info = path.lstat()
+        except OSError:
+            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access") from None
+        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid) != (device, inode, mode, owner):
+            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access")
 
 
 def _open_checked(path: Path, *, max_bytes: int, hardlink=True):
-    _check_parent_chain(path)
+    parents = _check_parent_chain(path)
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         fd = os.open(path, flags)
@@ -166,6 +218,7 @@ def _open_checked(path: Path, *, max_bytes: int, hardlink=True):
         after = os.fstat(fd)
         if (info.st_dev, info.st_ino, info.st_size) != (after.st_dev, after.st_ino, after.st_size):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file changed while it was read")
+        _verify_parent_snapshot(parents)
         return raw, info
     finally:
         os.close(fd)
@@ -175,22 +228,24 @@ def ensure_root(root=None) -> Path:
     root = Path(root) if root is not None else binding_root()
     if not root.is_absolute():
         raise BindingError("BINDING_PATH_UNSAFE", "binding root must be absolute")
-    current = Path(root.anchor)
-    for part in root.parts[1:-1]:
-        current /= part
-        try:
-            info = current.lstat()
-        except FileNotFoundError:
-            continue
-        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
-            raise BindingError("BINDING_PATH_UNSAFE", "binding root parent is unsafe")
-        if info.st_mode & 0o022 and not info.st_mode & stat.S_ISVTX:
-            raise BindingError("BINDING_PATH_UNSAFE", "binding root parent is writable by another user")
+    try:
+        root.lstat()
+        root_existed = True
+    except FileNotFoundError:
+        root_existed = False
     try:
         root.mkdir(mode=0o700, parents=True, exist_ok=True)
     except OSError:
         raise BindingError("BINDING_PERMISSION_DENIED", "binding root cannot be created securely") from None
+    if not root_existed:
+        created = root.lstat()
+        if not _owned(created) or not stat.S_ISDIR(created.st_mode) or stat.S_ISLNK(created.st_mode):
+            raise BindingError("BINDING_PATH_UNSAFE", "new binding root has an unsafe owner or type")
+        # A setgid collaborative ancestor can propagate its bit despite the
+        # requested mkdir mode. Remove inherited group semantics before use.
+        os.chmod(root, 0o700, follow_symlinks=False)
     _check_artifact(root, directory=True)
+    _check_parent_chain(root / ".containment-check")
     for name in ("credentials", "backups"):
         path = root / name
         try:

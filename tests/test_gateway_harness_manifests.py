@@ -52,6 +52,13 @@ import(process.argv[1]).then(async m => {
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return json.loads(result.stdout)
 
+    def _gateway_runner_module(self):
+        modules = list((RUNTIME_ROOT / "dist").glob("pi-embedded-runner-*.js"))
+        modules = [path for path in modules if "buildCliHarnessRunIntent as d" in path.read_text(errors="ignore")]
+        if len(modules) != 1:
+            self.fail(f"expected one installed Gateway runner module, found {modules}")
+        return modules[0]
+
     def test_all_canonical_harnesses_match_live_gateway_parser(self):
         paths = sorted(ROOT.glob(HARNESS_GLOB))
         self.assertEqual(len(paths), 18, f"expected 18 canonical Harness manifests, found {len(paths)}")
@@ -89,6 +96,64 @@ import(process.argv[1]).then(async m => {
             tuple(map(int, package["version"].split("."))),
             tuple(map(int, PINNED_GATEWAY_VERSION.split("."))),
         )
+
+    def test_google_workspace_live_gateway_prepare_and_run_pagination(self):
+        if not RUNTIME_ROOT.is_dir():
+            self.skipTest("current OpenClaw Gateway runtime is not installed")
+        script = r"""
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+const discovery = await import(process.argv[1]);
+const runner = await import(process.argv[2]);
+const workspace = process.argv[3];
+const report = discovery.d({workspaceDir: workspace, roots: [path.join(workspace, 'harnesses')]});
+const entry = report.entries.find(item => item.name === 'google-workspace');
+if (!entry || !entry.validation.ok) throw new Error('google-workspace harness was not discoverable and valid');
+entry.trust.trustState = 'trusted';
+entry.runEligible = true;
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'gw-gateway-'));
+const mock = path.join(dir, 'mock.json');
+const cases = [
+  ['gmail.messages.list', {pageSize: 10}, {messages: []}],
+  ['calendar.events.list', {pageSize: 10, params: JSON.stringify({calendarId: 'primary'})}, {items: []}],
+  ['drive.files.list', {pageSize: 10}, {files: []}],
+  ['gmail.messages.list', {params: JSON.stringify({maxResults: 10})}, {messages: []}],
+  ['calendar.events.list', {params: JSON.stringify({calendarId: 'primary', maxResults: 10})}, {items: []}],
+  ['drive.files.list', {params: JSON.stringify({pageSize: 10})}, {files: []}],
+];
+const results = [];
+try {
+  for (const [command, input, response] of cases) {
+    fs.writeFileSync(mock, JSON.stringify([{body: response}]));
+    const intent = runner.d({entry, commandName: command, input, workspaceDir: workspace});
+    const executed = runner.f(intent, {secretEnv: {GOOGLE_WORKSPACE_MOCK_HTTP: mock}});
+    results.push({command, input, argv: intent.argv, exitCode: executed.exitCode, output: JSON.parse(executed.stdout)});
+  }
+  let rejected = 0;
+  for (const invalid of [10.5, '10', true]) {
+    try { runner.d({entry, commandName: 'drive.files.list', input: {pageSize: invalid}, workspaceDir: workspace}); }
+    catch { rejected += 1; }
+  }
+  console.log(JSON.stringify({results, rejected}));
+} finally {
+  fs.rmSync(dir, {recursive: true, force: true});
+}
+"""
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script, self._gateway_module().as_uri(), self._gateway_runner_module().as_uri(), str(ROOT)],
+            text=True, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        evidence = json.loads(result.stdout)
+        self.assertEqual(evidence["rejected"], 3)
+        self.assertEqual(len(evidence["results"]), 6)
+        for item in evidence["results"]:
+            self.assertEqual(item["exitCode"], 0, item)
+            self.assertTrue(item["output"]["ok"], item)
+        for item in evidence["results"][:3]:
+            self.assertIn("--page-size", item["argv"])
+            self.assertEqual(item["argv"][item["argv"].index("--page-size") + 1], "10")
 
 
 if __name__ == "__main__":

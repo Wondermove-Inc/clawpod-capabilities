@@ -239,14 +239,19 @@ def run(command,payload):
    existing=safe_path(payload.get("transferRoot") or ".",payload["outputPath"],output=True)
    if existing.exists():resume_prefix=existing.read_bytes();headers["Range"]=f"bytes={len(resume_prefix)}-"
   except Exception as e:return fail(command,payload,"LOCAL_IO_ERROR",str(e),account=account)
- params={k:v for k,v in payload.get("params",{}).items() if k not in op.get("pathParams",set()) and k not in ("userId","kind")}
+ provider_page_key="maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"
+ provider_page_size=payload.get("params",{}).get(provider_page_key)
+ if payload.get("pageSize") is not None and provider_page_size is not None and payload["pageSize"] != provider_page_size:
+  return fail(command,payload,"INVALID_ARGUMENT",f"pageSize conflicts with params.{provider_page_key}",account=account)
+ effective_page_size=payload.get("pageSize") if payload.get("pageSize") is not None else provider_page_size
+ params={k:v for k,v in payload.get("params",{}).items() if k not in op.get("pathParams",set()) and k not in ("userId","kind","maxResults","pageSize")}
  params.update(op.get("query",{}))
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
- if payload.get("pageSize"):
-  params["maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"]=payload["pageSize"]
+ if effective_page_size is not None:
+  params[provider_page_key]=effective_page_size
  elif command in ("gmail.read","calendar.read","drive.read"):
   params["maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"]=50
- page_size_key="maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"
+ page_size_key=provider_page_key
  if payload.get("allPages") and payload.get("maxItems") is not None:
   params[page_size_key]=min(params.get(page_size_key,500),payload["maxItems"])
  if payload.get("pageToken"):
@@ -292,7 +297,7 @@ def run(command,payload):
    max_pages=payload.get("maxPages",100);max_items=payload.get("maxItems",10000);key=next((k for k,v in data.items() if isinstance(v,list)),None)
    if key:data[key]=data[key][:max_items]
    while key and isinstance(data,dict) and data.get("nextPageToken") and pages<max_pages and len(data[key])<max_items:
-    remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],page_size_key:min(remaining,payload.get('pageSize') or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
+    remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],page_size_key:min(remaining,effective_page_size or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
     if isinstance(nxt.get(key),list):data[key].extend(nxt[key][:remaining]);data["nextPageToken"]=nxt.get("nextPageToken")
     else:break
  except HTTPError as e:
