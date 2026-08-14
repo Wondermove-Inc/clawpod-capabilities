@@ -30,10 +30,10 @@ def _bundle(path):
 
 
 def _forge_legacy_shape(tmp_path):
-    workspace = tmp_path / "workspace"
-    workspace.mkdir()
-    workspace.chmod(0o2777)
-    root = workspace / "protected"
+    process_root = tmp_path / "root"
+    process_root.mkdir()
+    process_root.chmod(0o2777)
+    root = process_root / "protected"
     import_binding("work", _bundle(tmp_path / "source.json"), source_alias="legacy", root=root)
     credential = next((root / "credentials").iterdir())
     # Reproduce metadata only: the implementation must not need these bytes.
@@ -133,10 +133,68 @@ def test_stale_snapshot_rejected_before_first_chmod(tmp_path):
 def test_parent_race_rejected_before_first_chmod(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
     plan = plan_repair(root)
-    (tmp_path / "workspace").chmod(0o1777)
+    (tmp_path / "root").chmod(0o1777)
     with patch("os.fchmod") as chmod:
         with pytest.raises(Exception, match="stale"):
             repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+@pytest.mark.parametrize("bad_mode", [0o0777, 0o1770, 0o2770, 0o3777])
+def test_other_writable_parent_requires_exact_forge_or_sticky_mode(tmp_path, bad_mode):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    (tmp_path / "root").chmod(bad_mode)
+    with patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
+def test_forge_parent_must_be_process_owned(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    parent_inode = (tmp_path / "root").lstat().st_ino
+    real_owned = __import__("google_workspace_core.permissions", fromlist=["_owned"])._owned
+
+    def synthetic_owner(info):
+        return False if info.st_ino == parent_inode else real_owned(info)
+
+    with patch("google_workspace_core.permissions._owned", side_effect=synthetic_owner), \
+         patch("os.fchmod") as chmod, pytest.raises(Exception):
+        repair_permissions(root)
+    chmod.assert_not_called()
+
+
+def test_root_rename_swap_after_preview_fails_before_chmod(tmp_path):
+    root, _credential = _forge_legacy_shape(tmp_path)
+    plan = plan_repair(root)
+    moved = root.with_name("protected-moved")
+    root.rename(moved)
+    root.mkdir(mode=0o700)
+    with patch("os.fchmod") as chmod, pytest.raises(Exception, match="stale|unsafe"):
+        repair_permissions(root, expected_plan=plan)
+    chmod.assert_not_called()
+
+
+def test_target_swap_after_open_fails_before_first_chmod(tmp_path):
+    root, credential = _forge_legacy_shape(tmp_path)
+    plan = plan_repair(root)
+    replacement = tmp_path / "replacement"
+    replacement.write_bytes(b"replacement")
+    replacement.chmod(0o660)
+    real_open = os.open
+    swapped = False
+
+    def swapping_open(path, flags, *args, **kwargs):
+        nonlocal swapped
+        fd = real_open(path, flags, *args, **kwargs)
+        if Path(path) == credential and not swapped:
+            swapped = True
+            credential.unlink()
+            replacement.rename(credential)
+        return fd
+
+    with patch("os.open", side_effect=swapping_open), patch("os.fchmod") as chmod, \
+         pytest.raises(Exception, match="changed"):
+        repair_permissions(root, expected_plan=plan)
     chmod.assert_not_called()
 
 
@@ -199,7 +257,7 @@ def test_directory_symlink_escape_is_not_traversed(tmp_path):
                if not isinstance(call.args[0], int))
 
 
-def test_external_reference_and_malformed_registry_fail_closed(tmp_path):
+def test_external_reference_and_malformed_registry_are_not_read(tmp_path):
     root, _credential = _forge_legacy_shape(tmp_path)
     registry = root / "bindings.v1.json"
     doc = json.loads(registry.read_text())
@@ -207,13 +265,15 @@ def test_external_reference_and_malformed_registry_fail_closed(tmp_path):
     item["externalReference"] = True
     item["credentialRef"] = str(tmp_path / "outside.json")
     registry.write_text(json.dumps(doc))
-    registry.chmod(0o600)
-    with pytest.raises(Exception, match="external"):
-        plan_repair(root)
+    registry.chmod(0o660)
+    before = registry.read_bytes()
+    assert plan_repair(root)["changes"]
+    assert registry.read_bytes() == before
     registry.write_bytes(b"not-json")
-    registry.chmod(0o600)
-    with pytest.raises(Exception):
-        plan_repair(root)
+    registry.chmod(0o660)
+    before = registry.read_bytes()
+    assert plan_repair(root)["changes"]
+    assert registry.read_bytes() == before
 
 
 def test_confirm_digest_is_bound_to_exact_snapshot(tmp_path, monkeypatch):

@@ -3,10 +3,9 @@ from __future__ import annotations
 
 import os
 import stat
-import json
 from pathlib import Path
 
-from .bindings import BindingError, MAX_REGISTRY, binding_root, validate_registry
+from .bindings import BindingError, binding_root
 
 
 DIRECTORIES = (("root", Path(".")), ("credentialsDirectory", Path("credentials")),
@@ -46,8 +45,9 @@ def _root_and_parents(root):
     """Validate lexical/resolved containment and snapshot the trusted chain.
 
     The protected root itself is the private boundary that repair establishes.
-    An exact owned ``workspace`` 02777 ancestor is the sole non-sticky shared
-    Forge exception and is never returned as a repair target.
+    An exact process-owned 02777 ancestor is the sole non-sticky shared Forge
+    exception and is never returned as a repair target. Sticky shared parents
+    must likewise have exact 01777 semantics and be process-owned.
     """
     root = Path(root)
     if not root.is_absolute() or Path(os.path.abspath(root)) != root:
@@ -63,15 +63,23 @@ def _root_and_parents(root):
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected path contains an unsafe parent")
         if current != root and info.st_mode & 0o022:
-            forge = current.name == "workspace" and _mode(info) == 0o2777
-            sticky = bool(info.st_mode & stat.S_ISVTX)
-            trusted = info.st_uid in ({os.geteuid(), 0} if hasattr(os, "geteuid") else {info.st_uid})
-            if not trusted or not (sticky or forge):
+            if not _owned(info) or _mode(info) not in (0o1777, 0o2777):
                 raise BindingError("BINDING_PATH_UNSAFE", "protected parent is writable by another user")
         chain.append((current, _snapshot(info)))
     root_info = chain[-1][1]
     if root_info["type"] != "directory" or not _owned(root.lstat()):
         raise BindingError("BINDING_PERMISSION_DENIED", "protected root has an unsafe type or owner")
+    shared_ancestors = [snapshot for path, snapshot in chain[:-1]
+                        if int(snapshot["mode"], 8) & 0o022]
+    if shared_ancestors:
+        descendants = chain[chain.index(next(item for item in chain[:-1]
+                                            if int(item[1]["mode"], 8) & 0o022)) + 1:]
+        private_boundary = any(snapshot["uid"] == root_info["uid"]
+                               and not int(snapshot["mode"], 8) & 0o022
+                               for _path, snapshot in descendants)
+        pending_boundary = _mode(root.lstat()) == 0o2770
+        if not private_boundary and not pending_boundary:
+            raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an exact protected containment boundary")
     try:
         if root.resolve(strict=True) != root:
             raise BindingError("BINDING_PATH_UNSAFE", "protected root resolves outside its lexical location")
@@ -88,6 +96,16 @@ def _verify_chain(chain):
             raise BindingError("BINDING_PATH_UNSAFE", "protected parent changed after preview") from None
         if not _same_snapshot(info, snapshot):
             raise BindingError("BINDING_PATH_UNSAFE", "protected parent changed after preview")
+
+
+def _verify_targets(targets):
+    for _artifact_id, path, before, _expected in targets:
+        try:
+            current = path.lstat()
+        except OSError:
+            raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during validation") from None
+        if not _same_snapshot(current, _snapshot(before)):
+            raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during validation")
 
 
 def _discover(root):
@@ -156,46 +174,9 @@ def _discover(root):
                 targets.append((artifact_id, path, info, expected))
             else:
                 blocked.append(check["checkId"])
+    _verify_chain(chain)
+    _verify_targets(targets)
     return chain, checks, targets, sorted(set(blocked))
-
-
-def _reject_external_references(root):
-    """Inspect registry metadata only; credential references are never opened."""
-    path = Path(root) / "bindings.v1.json"
-    try:
-        before = path.lstat()
-    except FileNotFoundError:
-        return
-    if _kind(before) != "file" or not _owned(before) or before.st_nlink != 1 or before.st_size > MAX_REGISTRY:
-        raise BindingError("BINDING_PERMISSION_DENIED", "binding registry is unsafe for repair planning")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        fd = os.open(path, flags)
-    except OSError:
-        raise BindingError("BINDING_PATH_UNSAFE", "binding registry could not be inspected safely") from None
-    try:
-        if not _same_snapshot(os.fstat(fd), _snapshot(before)):
-            raise BindingError("BINDING_PATH_UNSAFE", "binding registry changed during repair planning")
-        raw = b""
-        while len(raw) <= MAX_REGISTRY:
-            chunk = os.read(fd, min(65536, MAX_REGISTRY + 1 - len(raw)))
-            if not chunk:
-                break
-            raw += chunk
-        if len(raw) > MAX_REGISTRY:
-            raise BindingError("BINDING_REGISTRY_CORRUPT", "binding registry exceeds its size limit")
-        try:
-            doc = validate_registry(json.loads(raw.decode("utf-8")))
-        except BindingError:
-            raise
-        except (UnicodeError, ValueError, RecursionError):
-            raise BindingError("BINDING_REGISTRY_CORRUPT", "binding registry is malformed") from None
-        if any(item.get("externalReference") for item in doc["bindings"].values()):
-            raise BindingError("BINDING_PATH_UNSAFE", "external credential references cannot be permission-repaired")
-        if not _same_snapshot(os.fstat(fd), _snapshot(before)):
-            raise BindingError("BINDING_PATH_UNSAFE", "binding registry changed during repair planning")
-    finally:
-        os.close(fd)
 
 
 def check_permissions(root=None):
@@ -219,7 +200,6 @@ def plan_repair(root=None):
         raise BindingError("BINDING_PERMISSION_DENIED",
                            "permission repair cannot safely address every defect",
                            {"checkIds": blocked})
-    _reject_external_references(root)
     changes = [{"artifactId": artifact_id, "beforeMode": oct(_mode(info)),
                 "afterMode": oct(expected), "type": _kind(info),
                 "snapshot": _snapshot(info)}
@@ -237,7 +217,6 @@ def repair_permissions(root=None, expected_plan=None):
     if blocked:
         raise BindingError("BINDING_PERMISSION_DENIED", "permission repair refused an unsafe artifact",
                            {"checkIds": blocked})
-    _reject_external_references(root)
     current_plan = {"operation": "permissions.repair",
                     "rootIdentity": {"device": chain[-1][1]["device"], "inode": chain[-1][1]["inode"]},
                     "parentSnapshots": [{"artifactId": f"parent-{number:04d}", "snapshot": snapshot}
@@ -264,19 +243,30 @@ def repair_permissions(root=None, expected_plan=None):
                 fd = os.open(path, flags)
             except OSError:
                 raise BindingError("BINDING_PATH_UNSAFE", "repair target could not be reopened safely") from None
-            opened.append((artifact_id, fd, expected, _snapshot(before)))
+            opened.append((artifact_id, path, fd, expected, _snapshot(before)))
             if not _same_snapshot(os.fstat(fd), _snapshot(before)):
                 raise BindingError("BINDING_PATH_UNSAFE", "repair target changed after preview")
         _verify_chain(chain)
+        for _artifact_id, path, fd, _expected, before in opened:
+            try:
+                current = path.lstat()
+            except OSError:
+                raise BindingError("BINDING_PATH_UNSAFE", "repair target changed after preview") from None
+            if not _same_snapshot(current, before) or not _same_snapshot(os.fstat(fd), before):
+                raise BindingError("BINDING_PATH_UNSAFE", "repair target changed after preview")
         changed = []
         try:
-            for _artifact_id, fd, expected, before in opened:
+            for _artifact_id, _path, fd, expected, before in opened:
                 os.fchmod(fd, expected)
                 changed.append((fd, int(before["mode"], 8)))
-            for _artifact_id, fd, expected, before in opened:
+            for _artifact_id, path, fd, expected, before in opened:
                 after = os.fstat(fd)
                 invariant = dict(before, mode=oct(expected))
-                if not _same_snapshot(after, invariant):
+                try:
+                    current = path.lstat()
+                except OSError:
+                    raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during permission repair") from None
+                if not _same_snapshot(after, invariant) or not _same_snapshot(current, invariant):
                     raise BindingError("BINDING_PATH_UNSAFE", "repair target changed during permission repair")
             _verify_chain([(path, dict(snapshot, mode=(oct(0o700) if path == root else snapshot["mode"])))
                            for path, snapshot in chain])
@@ -289,7 +279,7 @@ def repair_permissions(root=None, expected_plan=None):
                     pass
             raise
     finally:
-        for _artifact_id, fd, _expected, _before in opened:
+        for _artifact_id, _path, fd, _expected, _before in opened:
             os.close(fd)
     repaired = sorted({"directory" if change[3] == 0o700 else "file" for change in targets})
     return repaired, current_plan

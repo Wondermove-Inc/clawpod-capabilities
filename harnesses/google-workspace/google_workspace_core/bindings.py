@@ -124,9 +124,9 @@ def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=T
 def _parent_snapshot(path: Path):
     """Validate and snapshot ancestors without following links.
 
-    A sticky collaborative parent, plus Forge's narrowly identified setgid
-    ``/workspace`` mode 2777, is acceptable only when it is trusted-owned and
-    the protected path crosses a current-user-owned, non-shared directory
+    A sticky collaborative parent, including Forge's process-owned setgid
+    mode 02777 root, is acceptable only with exact mode semantics, process
+    ownership, and a protected path that crosses a current-user-owned non-shared directory
     before reaching the artifact. Later non-sticky shared directories remain
     unsafe.
     """
@@ -143,17 +143,14 @@ def _parent_snapshot(path: Path):
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unsafe")
         if info.st_mode & 0o022:
-            forge_collaborative = (
-                current.name == "workspace"
-                and stat.S_IMODE(info.st_mode) == 0o2777
-            )
-            if not info.st_mode & stat.S_ISVTX and not forge_collaborative:
+            shared_mode = stat.S_IMODE(info.st_mode)
+            exact_shared = shared_mode in (0o1777, 0o2777)
+            if not exact_shared:
                 raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
-            trusted_owners = {os.geteuid(), 0} if hasattr(os, "geteuid") else {info.st_uid}
-            if info.st_uid not in trusted_owners:
+            if not _owned(info):
                 raise BindingError("BINDING_PATH_UNSAFE", "shared protected-file parent has an untrusted owner")
-            # A sticky shared directory, or Forge's specifically identified
-            # setgid /workspace collaboration root, is only an ingress point.
+            # A sticky shared directory, including Forge's exact setgid 02777
+            # process root, is only an ingress point.
             # Require an already-existing private ownership boundary below it.
             descendants = path.parts[len(current.parts):-1]
             boundary = current

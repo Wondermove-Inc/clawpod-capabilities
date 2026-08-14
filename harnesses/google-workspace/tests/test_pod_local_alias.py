@@ -101,9 +101,9 @@ def test_high_level_reads_are_bounded_normalizers():
     assert items[0]["ownerCount"] == 1 and "private" not in json.dumps(items)
 
 
-def test_forge_2777_workspace_binding_commands_and_alias_reads(tmp_path, monkeypatch):
+def test_forge_2777_process_root_binding_commands_and_alias_reads(tmp_path, monkeypatch):
     """Reproduce Forge's collaborative parent without contacting Google."""
-    forge = tmp_path / "workspace"
+    forge = tmp_path / "root"
     forge.mkdir()
     forge.chmod(0o2777)
     pod = forge / "pod-owned"
@@ -138,7 +138,7 @@ def test_forge_2777_workspace_binding_commands_and_alias_reads(tmp_path, monkeyp
 
 def test_forge_shared_parent_requires_exact_mode_and_private_boundary(tmp_path):
     source = bundle(tmp_path / "legacy.json")
-    shared = tmp_path / "workspace"
+    shared = tmp_path / "root"
     shared.mkdir()
     shared.chmod(0o2777)
     private = shared / "owned"
@@ -156,7 +156,7 @@ def test_forge_shared_parent_requires_exact_mode_and_private_boundary(tmp_path):
 
 
 def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_path):
-    shared = tmp_path / "workspace"
+    shared = tmp_path / "root"
     shared.mkdir()
     shared.chmod(0o2777)
     private = shared / "owned"

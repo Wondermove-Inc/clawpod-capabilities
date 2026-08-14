@@ -1205,7 +1205,7 @@
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "b69fa87a13d06dd976582758d1b815e0e5d13c31deb5743bc7ab8f708e83f2f5"
+          "sha256": "d913c16a0eeb683068cc0cbac38c74b091846310db65bf6e7e1b0fb4fe965679"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -1237,7 +1237,7 @@
         },
         {
           "path": "google_workspace_core/permissions.py",
-          "sha256": "6351bab2146eb40d28559ca801457210d4b9de38d93c6fdc79149992dff99708"
+          "sha256": "23e76a6c20627d5270d85e6e585d5e3ccef7c32c1d24cd75f81ddae8205c9c56"
         },
         {
           "path": "google_workspace_core/scopes.py",
