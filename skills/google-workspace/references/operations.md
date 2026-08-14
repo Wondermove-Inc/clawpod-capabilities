@@ -8,3 +8,10 @@ The manifest is the command source of truth and declares all practical Gmail v1,
 - Watches: this harness creates/stops provider channels but is not a webhook/Pub/Sub receiver. Require a separately protected receiver and channel-token store.
 - OAuth login: a supervising PKCE callback receiver and protected token writer are required. The harness must fail closed if they are absent.
 - Credential selection: provide the protected bundle through typed `credentialPath` / `--credential-path` for authenticated auth, Gmail, Calendar, and Drive commands. Keep `account` as the alias selector. Do not place the path in free-form text or output.
+
+## v0.3.0 compatibility migration
+
+- Forge binding roots may live below the collaborative `/workspace` mode-2777 parent when that parent is trusted-owned and the path crosses an owned private directory before the protected root. Existing roots remain schema-compatible; no registry rewrite is required. Symlinks, hardlinks, non-sticky shared ancestors other than Forge's exact `/workspace` exception, containment escapes, and path-swap races remain rejected.
+- Prefer top-level `pageSize` as an integer from 1 through 500. Gateway 2026.4.11 represents that field as JSON `number` during prepare because its validator does not distinguish JavaScript integers; the `argMap` integer gate rejects fractional values before execution, and the harness rich schema revalidates the integer and limits.
+- Provider-form pagination is retained for compatibility: Gmail and Calendar accept `params.maxResults`; Drive accepts `params.pageSize`. Through the current Gateway, pass the typed provider object as its deterministic JSON-string argv representation (for example, `params: "{\"pageSize\":10}"`). Direct CLI JSON input continues to accept an object. A top-level/provider value pair must match or the harness rejects it instead of choosing one silently.
+- No credential or binding migration is necessary when upgrading from 0.3.0. When rolling back to 0.2.6, aliases are unavailable; use the existing typed `credentialPath` compatibility field and leave the protected binding registry untouched.

@@ -48,5 +48,17 @@ class ReleaseAuditV4(unittest.TestCase):
    def request(self,*args,**kwargs):seen.append(dict(kwargs.get('query') or {}));return super().request(*args,**kwargs)
   core.ScriptedTransport=Capture;self.addCleanup(setattr,core,'ScriptedTransport',old)
   self.mock([{'body':{'files':[{'id':'1'}],'nextPageToken':'unused'}}]);out,code=run('drive.files.list',{'account':'a','allPages':True,'pageSize':100,'maxItems':1});self.assertEqual(code,0,out);self.assertEqual(seen,[{'pageSize':1}])
+ def test_provider_pagination_params_are_normalized_and_bounded(self):
+  import google_workspace_core.core as core
+  seen=[];old=core.ScriptedTransport
+  class Capture(old):
+   def request(self,*args,**kwargs):seen.append(dict(kwargs.get('query') or {}));return super().request(*args,**kwargs)
+  core.ScriptedTransport=Capture;self.addCleanup(setattr,core,'ScriptedTransport',old)
+  cases=(('gmail.messages.list',{'maxResults':10},{'messages':[]},'maxResults'),('calendar.events.list',{'calendarId':'primary','maxResults':10},{'items':[]},'maxResults'),('drive.files.list',{'pageSize':10},{'files':[]},'pageSize'))
+  for command,params,response,key in cases:
+   self.mock([{'body':response}]);out,code=run(command,{'account':'a','params':params});self.assertEqual(code,0,out);self.assertEqual(seen[-1][key],10)
+  self.mock([{'body':{'files':[]}}]);out,code=run('drive.files.list',{'account':'a','pageSize':10,'params':{'pageSize':11}});self.assertEqual((code,out['error']['code']),(2,'INVALID_ARGUMENT'))
+  for value in (0,501,True,'10'):
+   out,code=run('drive.files.list',{'account':'a','params':{'pageSize':value}});self.assertEqual((code,out['error']['code']),(2,'INVALID_ARGUMENT'))
 
 if __name__=='__main__':unittest.main()

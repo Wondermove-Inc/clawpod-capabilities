@@ -13,7 +13,9 @@ from google_workspace_core.auth import CredentialProvider
 from google_workspace_core.bindings import (
     BindingError, binding_root, import_binding, list_bindings, normalize_alias,
     remove_binding, rename_binding, resolve_binding, restore_registry_backup,
+    _check_parent_chain, _verify_parent_snapshot,
 )
+from google_workspace_core.core import run
 from google_workspace_core.high_level_reads import normalize
 from google_workspace_core.migration import apply_migration, preview_candidates
 from google_workspace_core.permissions import check_permissions, repair_permissions
@@ -97,3 +99,85 @@ def test_high_level_reads_are_bounded_normalizers():
     assert items[0]["attendeeCount"] == 2
     items, _ = normalize("drive.read", {"files": [{"id": "f", "owners": [{"emailAddress": "private"}]}]})
     assert items[0]["ownerCount"] == 1 and "private" not in json.dumps(items)
+
+
+def test_forge_2777_workspace_binding_commands_and_alias_reads(tmp_path, monkeypatch):
+    """Reproduce Forge's collaborative parent without contacting Google."""
+    forge = tmp_path / "workspace"
+    forge.mkdir()
+    forge.chmod(0o2777)
+    pod = forge / "pod-owned"
+    pod.mkdir(mode=0o700)
+    root = pod / "bindings"
+    source = bundle(tmp_path / "legacy.json")
+    import_binding("work", source, source_alias="legacy", root=root)
+    monkeypatch.setenv("GOOGLE_WORKSPACE_BINDING_ROOT", str(root))
+
+    for command, payload in (
+        ("auth.bindings.list", {}),
+        ("auth.bindings.status", {}),
+        ("auth.bindings.resolve", {"account": "work"}),
+    ):
+        out, code = run(command, payload)
+        assert code == 0, out
+        assert "work" in json.dumps(out)
+
+    mock = tmp_path / "mock.json"
+    monkeypatch.setenv("GOOGLE_WORKSPACE_MOCK_HTTP", str(mock))
+    cases = (
+        ("gmail.messages.list", {}, {"messages": []}),
+        ("calendar.events.list", {"params": {"calendarId": "primary"}}, {"items": []}),
+        ("drive.files.list", {}, {"files": []}),
+    )
+    for command, payload, response in cases:
+        mock.write_text(json.dumps([{"body": response}]), encoding="utf-8")
+        out, code = run(command, {"account": "work", **payload})
+        assert code == 0, out
+        assert out["account"]["alias"] == "work"
+
+
+def test_forge_shared_parent_requires_exact_mode_and_private_boundary(tmp_path):
+    source = bundle(tmp_path / "legacy.json")
+    shared = tmp_path / "workspace"
+    shared.mkdir()
+    shared.chmod(0o2777)
+    private = shared / "owned"
+    private.mkdir(mode=0o700)
+    import_binding("work", source, source_alias="legacy", root=private / "bindings")
+
+    shared.chmod(0o0777)
+    with pytest.raises(BindingError, match="writable by another user"):
+        list_bindings(private / "bindings")
+
+    shared.chmod(0o2777)
+    private.chmod(0o0770)
+    with pytest.raises(BindingError, match="writable by another user|containment boundary"):
+        list_bindings(private / "bindings")
+
+
+def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_path):
+    shared = tmp_path / "workspace"
+    shared.mkdir()
+    shared.chmod(0o2777)
+    private = shared / "owned"
+    private.mkdir(mode=0o700)
+    root = private / "bindings"
+    import_binding("work", bundle(tmp_path / "legacy.json"), source_alias="legacy", root=root)
+
+    credential = next((root / "credentials").iterdir())
+    os.link(credential, tmp_path / "second-link.json")
+    with pytest.raises(BindingError, match="hard link"):
+        resolve_binding("work", root)
+    (tmp_path / "second-link.json").unlink()
+
+    link = private / "linked-root"
+    link.symlink_to(root, target_is_directory=True)
+    with pytest.raises(BindingError, match="unsafe"):
+        list_bindings(link)
+
+    probe = root / "bindings.v1.json"
+    snapshot = _check_parent_chain(probe)
+    moved = shared / "moved-owned"
+    private.rename(moved)
+    with pytest.raises(BindingError, match="changed"):
+        _verify_parent_snapshot(snapshot)

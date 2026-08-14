@@ -35,7 +35,9 @@ SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId'
 PAGED={'list','search','instances'}
 def allowed_query(cmd,action):
  out=set()
- if action in PAGED:out|={'q','query','orderBy','maxResults'}
+ if action in PAGED:
+  out|={'q','query','orderBy'}
+  out.add('maxResults' if cmd.startswith(('gmail.','calendar.')) else 'pageSize')
  if cmd.startswith('gmail.messages.list'):out|={'labelIds','includeSpamTrash'}
  if cmd.startswith('gmail.threads.list'):out|={'labelIds','includeSpamTrash'}
  if cmd=='gmail.history.list':out|={'startHistoryId','labelId','historyTypes'}
@@ -164,11 +166,11 @@ for cmd,c in commands.items():
    exact_surface(c,s,('preview','dryRun','confirm','requestId'))
   continue
  if cmd=='gmail.read':
-  props['params']=O({'mode':S(enum=['messages','threads']),'userId':S(),'q':S(maxLength=20000),'labelIds':A(S(),maxItems=100),'includeSpamTrash':{'type':'boolean'},'includeBody':{'type':'boolean'}});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+  props['params']=O({'mode':S(enum=['messages','threads']),'userId':S(),'q':S(maxLength=20000),'labelIds':A(S(),maxItems=100),'includeSpamTrash':{'type':'boolean'},'includeBody':{'type':'boolean'},'maxResults':QUERY_TYPES['maxResults']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  if cmd=='calendar.read':
-  props['params']=O({'calendarId':S(),'timeMin':S(format='date-time'),'timeMax':S(format='date-time'),'timeZone':S(),'singleEvents':{'type':'boolean'},'orderBy':S(enum=['startTime','updated'])});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+  props['params']=O({'calendarId':S(),'timeMin':S(format='date-time'),'timeMax':S(format='date-time'),'timeZone':S(),'singleEvents':{'type':'boolean'},'orderBy':S(enum=['startTime','updated']),'maxResults':QUERY_TYPES['maxResults']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  if cmd=='drive.read':
-  props['params']=O({'mode':S(enum=['search','recent','get']),'fileId':S(),'q':S(maxLength=20000),'spaces':QUERY_TYPES['spaces'],'corpora':QUERY_TYPES['corpora'],'driveId':S(),'orderBy':S()});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+  props['params']=O({'mode':S(enum=['search','recent','get']),'fileId':S(),'q':S(maxLength=20000),'spaces':QUERY_TYPES['spaces'],'corpora':QUERY_TYPES['corpora'],'driveId':S(),'orderBy':S(),'pageSize':QUERY_TYPES['pageSize']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()
  for key in sorted(allowed_query(cmd,op['action'])):
@@ -202,7 +204,10 @@ def lifecycle_schema(node):
  if 'type' in node:
   # The runtime enforces a type only when it is a single JSON type string.
   # Omitting union types is clearer than retaining an accepted-but-ignored list.
-  if isinstance(node['type'],str):out['type']=node['type']
+  if isinstance(node['type'],str):
+   # Gateway 2026.4.11 reports JavaScript integers as schema type "number".
+   # The argMap integer valueType remains the operational integral-value gate.
+   out['type']='number' if node['type']=='integer' else node['type']
  if isinstance(node.get('required'),list):out['required']=list(node['required'])
  if isinstance(node.get('properties'),dict):
   out['properties']={name:lifecycle_schema(value) for name,value in node['properties'].items()}
