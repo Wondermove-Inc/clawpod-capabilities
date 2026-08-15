@@ -1,0 +1,23 @@
+Desktop 3.0.0 adversarial validation, 2026-08-15 Asia/Seoul
+
+PASS: pytest -q harnesses/desktop/tests tests/test_desktop_gateway_prepare.py tests/test_gateway_harness_manifests.py
+Result: 23 passed in 4.84s
+
+PASS: python3 harnesses/desktop/tests/run_adversarial_benchmark.py
+Result: 19/19 passed; successRate=1.0; p50=22.302ms; p95=98.351ms; retries=0; recoveryRate=0.0; falseClicks=0; unsafeSideEffects=0.
+
+PASS: python3 scripts/validate.py
+Result: OK, validated 38 capability entries.
+
+PASS: python3 scripts/sync_registry.py --check
+Result: registry/index.json is synchronized.
+
+PASS: git diff --check
+Result: no whitespace errors.
+
+INFORMATIONAL NON-DESKTOP GATE: pytest -q
+Result: collection stopped on 3 pre-existing clawpod-cloud-webhooks import-resolution errors, because the installed site-package shadows the repository package and lacks create_preview. No Desktop test failed. The bounded Desktop plus live-Gateway suite above is green.
+
+Environment limitation: DISPLAY=:99 and AT-SPI are available, but DBUS_SESSION_BUS_ADDRESS is absent. Portal-backed settings/file-picker mutations and true DPI/theme pixel fidelity were intentionally not performed. They remain for the linked installed-session validation card. Planning, approval, timeout, cleanup, CAPTCHA, redaction, and zero-side-effect paths were tested here.
+
+Corrected defect: backend stdout/stderr could reflect a secret supplied under a sensitive input key. desktop.py now collects those values and scrubs them from all nested backend result strings. Regression: test_backend_echo_cannot_exfiltrate_named_secret.

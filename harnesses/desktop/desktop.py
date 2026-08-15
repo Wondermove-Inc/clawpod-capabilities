@@ -11,6 +11,23 @@ def redact(v):
  if isinstance(v,dict): return {k:('[REDACTED]' if re.search(r'pass|secret|token|otp|authorization|clipboard',k,re.I) else redact(x)) for k,x in v.items()}
  if isinstance(v,list): return [redact(x) for x in v]
  return v
+def sensitive_values(v):
+ out=[]
+ if isinstance(v,dict):
+  for k,x in v.items():
+   if re.search(r'pass|secret|token|otp|authorization|clipboard',k,re.I) and isinstance(x,(str,int,float)):
+    if str(x): out.append(str(x))
+   else: out.extend(sensitive_values(x))
+ elif isinstance(v,list):
+  for x in v: out.extend(sensitive_values(x))
+ return out
+def scrub(v,secrets):
+ if isinstance(v,dict): return {k:scrub(x,secrets) for k,x in v.items()}
+ if isinstance(v,list): return [scrub(x,secrets) for x in v]
+ if isinstance(v,str):
+  for secret in secrets:
+   v=v.replace(secret,'[REDACTED]')
+ return v
 def digest(x): return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def safe_root(p):
  root=pathlib.Path(os.environ.get('DESKTOP_RUNS_ROOT','/workspace/desktop-runs')).resolve(); q=pathlib.Path(p or root/f'run-{uuid.uuid4().hex[:12]}')
@@ -22,7 +39,7 @@ def error(code,msg,category='validation',retryable=False,details=None,remediatio
  return {'code':code,'message':msg,'category':category,'retryable':retryable,'details':details or {},'remediation':remediation}
 def emit(cmd,rid,status,result=None,err=None,warnings=None,approval=None,revision=0,started=None,attempt=1,max_attempts=1):
  end=time.time(); o={'schemaVersion':SCHEMA,'requestId':rid,'command':cmd,'status':status,'revision':revision,'result':result or {},'error':err,'warnings':warnings or [],'artifacts':[],'approval':approval,'timing':{'startedAt':dt.datetime.fromtimestamp(started or end,dt.timezone.utc).isoformat(),'endedAt':now(),'durationMs':int((end-(started or end))*1000)},'retry':{'attempt':attempt,'maxAttempts':max_attempts,'retryable':bool(err and err.get('retryable'))}}; print(json.dumps(o,ensure_ascii=False,separators=(',',':')))
-def backend(): return os.environ.get('DESKTOP_SYSTEM_CLI','/workspace/skills/desktop/desktop')
+def backend(): return os.environ.get('DESKTOP_SYSTEM_CLI') or shutil.which('desktop') or '/workspace/skills/desktop/desktop'
 def valid_approval(path,request_digest):
  if not path:return None
  p=pathlib.Path(path)
@@ -36,6 +53,7 @@ def main():
   inp=json.loads(a.input or '{}')
   if not isinstance(inp,dict): raise ValueError()
  except Exception: emit(cmd,rid,'failed',err=error('INVALID_INPUT','--input must be a JSON object.')); return 10
+ secrets=sensitive_values(inp)
  request={'command':cmd,'input':redact(inp),'idempotencyKey':a.idempotency_key,'expectedRevision':a.expected_revision}; request_digest=digest(request)
  if STOP.search(json.dumps(inp)):
   emit(cmd,rid,'blocked',err=error('HUMAN_VERIFICATION','Automation stopped before protected interaction.','policy',False,{},'Complete verification manually, then resume after re-observation.'),started=started); return 32
@@ -62,8 +80,8 @@ def main():
   argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
   try: p=subprocess.run(argv,capture_output=True,text=True,timeout=max(1,min(a.timeout_ms,120000))/1000,env={**os.environ,'DESKTOP_FAST_INPUT':'1'}); result={'exitCode':p.returncode,'stdout':p.stdout[-8000:],'stderr':p.stderr[-4000:],'backendArgv':[pathlib.Path(argv[0]).name]+argv[1:]}
   except subprocess.TimeoutExpired: emit(cmd,rid,'failed',err=error('TIMEOUT','Backend deadline exceeded.','backend',True),started=started); return 21
-  if p.returncode: code='AT_SPI_UNAVAILABLE' if p.returncode==4 else 'TARGET_NOT_FOUND'; emit(cmd,rid,'failed',redact(result),error(code,'System desktop CLI failed.','backend',code=='AT_SPI_UNAVAILABLE'),started=started); return 24 if p.returncode==4 else 20
- result=redact(result)
+  if p.returncode: code='AT_SPI_UNAVAILABLE' if p.returncode==4 else 'TARGET_NOT_FOUND'; emit(cmd,rid,'failed',scrub(redact(result),secrets),error(code,'System desktop CLI failed.','backend',code=='AT_SPI_UNAVAILABLE'),started=started); return 24 if p.returncode==4 else 20
+ result=scrub(redact(result),secrets)
  if mutation: st['revision']+=1; st['idempotency'][a.idempotency_key]={'digest':request_digest,'result':result}; state.write_text(json.dumps(st,indent=2))
  ev=run/'events.jsonl'; seq=sum(1 for _ in ev.open())+1 if ev.exists() else 1; ev.open('a').write(json.dumps({'sequence':seq,'at':now(),'command':cmd,'requestDigest':request_digest,'status':'succeeded'})+'\n')
  emit(cmd,rid,'succeeded',result,revision=st['revision'],started=started); return 0

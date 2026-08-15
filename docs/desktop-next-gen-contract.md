@@ -1,6 +1,6 @@
 # Desktop Skill + Harness 차세대 설치 단위 계약
 
-- 상태: **design candidate, not installed or published**
+- 상태: **3.0.0 candidate installed locally for validation, not published**
 - canonical name: `desktop` (Skill과 Harness가 동일 이름을 공유)
 - registry-first 결정: installed v2.0.0을 **REFINE**, Browser/Playwright/provider Harness와 **COMPOSE**, 새 capability 생성 아님
 - 근거: `/workspace/desktop-audit/AUDIT.md` (2026-08-15)

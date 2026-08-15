@@ -1150,7 +1150,7 @@
         },
         {
           "path": "EVIDENCE-v3.0.0.md",
-          "sha256": "8f8d7d4787875e14bda7fc0edb3e2d98ad622e36772617cca2d2f2bd49ed5d89"
+          "sha256": "8e69ac34faf7c964962b9fb4014465cb1916f5934d45b867c2d561014c6e1142"
         },
         {
           "path": "command_contracts.json",
@@ -1158,7 +1158,7 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "73bedff0f4e86e4360e9374f1bef6268de5afd7b18e5a040be4e80fb4c023bff"
+          "sha256": "ac28941bbd86f5e4b03a29ef4b127eeb93e78563fa975997a79e985c7afeca3c"
         },
         {
           "path": "harness.json",
