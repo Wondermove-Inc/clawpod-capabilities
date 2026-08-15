@@ -346,6 +346,41 @@
       }
     },
     {
+      "id": "desktop",
+      "type": "skill",
+      "version": "3.0.0",
+      "description": "Use for native desktop, browser chrome, or OS-dialog GUI work: inspect accessible UI, operate pointer, keyboard, dialogs, or files, and verify with redacted evidence. Prefer Browser/Playwright, node screen, or typed APIs when applicable.",
+      "path": "skills/desktop",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "destructive",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "c705d27920e2aa8fb065a9b2854c763ab9563101c0938228cee11787b508b368"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "48144b74452647b5d9baeecf430745fa0452e7d14d914188412d009cd3c17e4c"
+        },
+        {
+          "path": "references/safety.md",
+          "sha256": "6e66f7adbe765eb8f76a7e52da2524914e3477b4389f81a7a79ad22c4e81f0d5"
+        }
+      ],
+      "linkedHarness": {
+        "id": "desktop",
+        "version": "3.0.0"
+      }
+    },
+    {
       "id": "enterprise-newsletter",
       "type": "skill",
       "version": "0.1.5",
@@ -1089,6 +1124,45 @@
         {
           "path": "harness.json",
           "sha256": "b970f6360b45d4e6922c66553c362121cf286c0bf638c9d307c08208c6d84738"
+        }
+      ]
+    },
+    {
+      "id": "desktop",
+      "type": "harness",
+      "version": "3.0.0",
+      "description": "Wrap the installed desktop CLI with typed GUI commands, approvals, recovery, and redacted evidence.",
+      "path": "harnesses/desktop",
+      "compatibility": {
+        "openclaw": ">=2026.4.11",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "destructive",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "CHANGES-v3.0.0.md",
+          "sha256": "34818e3028e5cd648c899f13f4942ba7261ce15cc86465cdf32d0a5514332b90"
+        },
+        {
+          "path": "EVIDENCE-v3.0.0.md",
+          "sha256": "8f8d7d4787875e14bda7fc0edb3e2d98ad622e36772617cca2d2f2bd49ed5d89"
+        },
+        {
+          "path": "command_contracts.json",
+          "sha256": "16aebf8225ee854571844431836c959a609f4ff8f3984c88a644e5835e885983"
+        },
+        {
+          "path": "desktop.py",
+          "sha256": "73bedff0f4e86e4360e9374f1bef6268de5afd7b18e5a040be4e80fb4c023bff"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "bf89f109634d39a3f8b4794b6f8a26e367b8ab323299fa0c39ccfac89a32d359"
         }
       ]
     },

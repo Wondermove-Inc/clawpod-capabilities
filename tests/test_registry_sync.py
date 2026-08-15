@@ -52,7 +52,7 @@ class RegistrySyncTests(unittest.TestCase):
     def test_registry_skill_descriptions_exactly_match_frontmatter(self) -> None:
         registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
         skills = [entry for entry in registry["capabilities"] if entry["type"] == "skill"]
-        self.assertEqual(len(skills), 18)
+        self.assertEqual(len(skills), 19)
         for entry in skills:
             expected = skill_description(ROOT / entry["path"] / "SKILL.md")
             self.assertEqual(entry["description"], expected, entry["id"])

@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "3.0.0",
+  "compatibility": {
+    "openclaw": ">=2026.4.11",
+    "platforms": [
+      "linux"
+    ]
+  },
+  "safety": {
+    "risk": "destructive",
+    "approvalRequired": true
+  },
+  "description": "Route native GUI work through the typed Desktop Harness after checking safer direct surfaces.",
+  "linkedHarness": {
+    "id": "desktop",
+    "version": "3.0.0"
+  },
+  "descriptionSource": "skill-frontmatter"
+}
