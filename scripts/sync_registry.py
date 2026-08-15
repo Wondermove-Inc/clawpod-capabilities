@@ -80,8 +80,8 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
     if not isinstance(version, str) or not SEMVER.fullmatch(version):
         raise SyncError(f"{path} version must be semantic version text")
     description = value["description"]
-    if not isinstance(description, str) or not 10 <= len(description) <= 240:
-        raise SyncError(f"{path} description must contain 10-240 characters")
+    if not isinstance(description, str) or not 10 <= len(description) <= 500:
+        raise SyncError(f"{path} description must contain 10-500 characters")
     description_source = value.get("descriptionSource", "package-metadata")
     if description_source not in {"package-metadata", "skill-frontmatter"}:
         raise SyncError(f"{path} descriptionSource must be package-metadata or skill-frontmatter")

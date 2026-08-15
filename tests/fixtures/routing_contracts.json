@@ -269,15 +269,15 @@
   },
   "desktop": {
     "positive": [
-      "Operate a native desktop application through visible GUI",
-      "Handle browser chrome or an operating-system dialog",
-      "Recover and verify a bounded GUI task with redacted evidence",
-      "Compose a native file dialog handoff after browser DOM automation"
+      "Observe and operate a native desktop application when no typed API or DOM fits",
+      "Handle an operating-system dialog or browser chrome outside the web DOM",
+      "Recover and visually verify a bounded native GUI task",
+      "Compose a native file-dialog handoff after Browser DOM automation"
     ],
     "negative": [
-      "Inspect and click a normal web-page DOM element with Playwright",
-      "Capture or operate an attached remote device screen through its node",
-      "Read or mutate service state through its typed API",
+      "Inspect and click a normal web-page DOM element with Browser",
+      "Capture or operate an attached remote device screen through nodes",
+      "Read or mutate service state through its provider API",
       "Extract text from a PDF image with OCR",
       "Generate a standalone marketing image"
     ],

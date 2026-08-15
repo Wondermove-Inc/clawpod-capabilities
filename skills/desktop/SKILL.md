@@ -1,6 +1,6 @@
 ---
 name: desktop
-description: "Use for native app or OS-dialog handoffs when no typed API or DOM fits. Inspect, focus, operate pointer, keyboard, dialogs, and drag/drop, then verify. Prefer Browser for DOM and node screen remotely; compose Desktop only for native steps."
+description: "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs."
 ---
 
 # Desktop

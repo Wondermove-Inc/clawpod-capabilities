@@ -349,7 +349,7 @@
       "id": "desktop",
       "type": "skill",
       "version": "3.0.0",
-      "description": "Use for native app or OS-dialog handoffs when no typed API or DOM fits. Inspect, focus, operate pointer, keyboard, dialogs, and drag/drop, then verify. Prefer Browser for DOM and node screen remotely; compose Desktop only for native steps.",
+      "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
       "path": "skills/desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -364,7 +364,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "3b6c67f08df8c19ee12eef2e172fa02637320c8529c314e9b9566c7bfed17851"
+          "sha256": "f5d90661c6db718fbf87ff1c38abceeb1f380b595f2637c513cc64332fa0fb10"
         },
         {
           "path": "references/operations.md",
@@ -1131,7 +1131,7 @@
       "id": "desktop",
       "type": "harness",
       "version": "3.0.0",
-      "description": "Wrap the installed desktop CLI with typed GUI commands, approvals, recovery, and redacted evidence.",
+      "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
       "path": "harnesses/desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1162,7 +1162,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "b716becf04d7dce8fdab9dffebf510cac2f41a665aaa566da6af09ebb264b903"
+          "sha256": "24feccefac509fba139a6fda33e6bfedf1267194a04f3bf6b794ad6b3a08f545"
         },
         {
           "path": "precision_lab/README.md",

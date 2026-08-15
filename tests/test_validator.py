@@ -30,7 +30,7 @@ class ValidatorTests(unittest.TestCase):
     def test_invalid_entry_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
             index = copy / "registry" / "index.json"
             data = json.loads(index.read_text(encoding="utf-8"))
             data["capabilities"] = [{"id": "Bad Name"}]
@@ -43,7 +43,7 @@ class ValidatorTests(unittest.TestCase):
     def test_unsupported_harness_safety_class_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
             manifest = copy / "harnesses" / "atlassian" / "harness.json"
             data = json.loads(manifest.read_text(encoding="utf-8"))
             data["commands"]["auth.sites.list"]["safetyClasses"] = ["unsupportedClass"]
@@ -56,7 +56,7 @@ class ValidatorTests(unittest.TestCase):
     def test_harness_path_arguments_require_runtime_roles(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
             manifest = copy / "harnesses" / "clawpod-capability-registry" / "harness.json"
             data = json.loads(manifest.read_text(encoding="utf-8"))
             target_root = next(arg for arg in data["commands"]["install"]["argMap"] if arg["arg"] == "targetRoot")
@@ -70,7 +70,7 @@ class ValidatorTests(unittest.TestCase):
     def test_harness_command_unknown_fields_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
             manifest = copy / "harnesses" / "verified-research" / "harness.json"
             data = json.loads(manifest.read_text(encoding="utf-8"))
             data["commands"]["source.fetch"]["retryPolicy"] = {"mode": "none", "maxAttempts": 1}
@@ -83,7 +83,7 @@ class ValidatorTests(unittest.TestCase):
     def test_skill_frontmatter_name_must_match_registry_id(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             copy = Path(directory) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
             skill = copy / "skills" / "clawpod-capability-registry" / "SKILL.md"
             text = skill.read_text(encoding="utf-8")
             skill.write_text(text.replace("name: clawpod-capability-registry", "name: wrong-name", 1), encoding="utf-8")

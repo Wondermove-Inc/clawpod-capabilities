@@ -12,7 +12,7 @@
     "risk": "destructive",
     "approvalRequired": true
   },
-  "description": "Route native GUI work through the typed Desktop Harness after checking safer direct surfaces.",
+  "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
   "linkedHarness": {
     "id": "desktop",
     "version": "3.0.0"

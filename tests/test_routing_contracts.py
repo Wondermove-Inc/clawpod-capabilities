@@ -50,10 +50,35 @@ class RoutingContractTests(unittest.TestCase):
 
     def test_desktop_routes_only_native_handoffs_and_names_composition_boundaries(self) -> None:
         description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")
-        for phrase in ("native", "DOM", "node screen", "typed API", "compose Desktop"):
+        for phrase in (
+            "native apps or OS dialogs",
+            "observation, operation, or recovery",
+            "typed API or DOM",
+            "pointer/keyboard",
+            "windows/dialogs",
+            "drag/drop",
+            "visually QA, verify, and recover",
+            "Browser handles DOM web",
+            "nodes remote device screens",
+            "provider APIs service data",
+            "Compose Desktop only for native handoffs",
+        ):
             self.assertIn(phrase, description)
+
+        for metadata_path in (
+            ROOT / "skills" / "desktop" / "capability.json",
+            ROOT / "harnesses" / "desktop" / "capability.json",
+        ):
+            self.assertEqual(json.loads(metadata_path.read_text(encoding="utf-8"))["description"], description)
+        desktop_registry_entries = [
+            entry for entry in json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))["capabilities"]
+            if entry["id"] == "desktop"
+        ]
+        self.assertEqual(len(desktop_registry_entries), 2)
+        self.assertTrue(all(entry["description"] == description for entry in desktop_registry_entries))
+
         negatives = " ".join(self.contracts["desktop"]["negative"])
-        for collision in ("Playwright", "remote device screen", "typed API"):
+        for collision in ("Browser", "nodes", "provider API"):
             self.assertIn(collision, negatives)
 
 

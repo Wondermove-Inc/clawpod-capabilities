@@ -3,15 +3,15 @@
   "kind": "openclaw.harness.v1",
   "name": "desktop",
   "title": "Desktop",
-  "description": "Use for native app or OS-dialog handoffs when no typed API or DOM fits. Inspect, focus, operate pointer, keyboard, dialogs, and drag/drop, then verify. Prefer Browser for DOM and node screen remotely; compose Desktop only for native steps.",
+  "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
   "version": "3.0.0",
   "entrypoint": "./desktop.py",
   "packageRoot": ".",
   "whenToUse": [
-    "Operate a native desktop application through visible GUI",
-    "Handle browser chrome or an operating-system dialog",
-    "Recover and verify a bounded GUI task with redacted evidence",
-    "Compose a native file dialog handoff after browser DOM automation"
+    "Observe and operate a native desktop application when no typed API or DOM fits",
+    "Handle an operating-system dialog or browser chrome outside the web DOM",
+    "Recover and visually verify a bounded native GUI task",
+    "Compose a native file-dialog handoff after Browser DOM automation"
   ],
   "capabilities": [
     "native-gui",

@@ -12,5 +12,5 @@
     "risk": "destructive",
     "approvalRequired": true
   },
-  "description": "Wrap the installed desktop CLI with typed GUI commands, approvals, recovery, and redacted evidence."
+  "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs."
 }

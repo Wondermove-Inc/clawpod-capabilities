@@ -26,7 +26,7 @@ class RegistrySyncTests(unittest.TestCase):
 
     def copy_repository(self, directory: str) -> Path:
         copy = Path(directory) / "repo"
-        shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+        shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
         return copy
 
     def test_repository_registry_is_synchronized(self) -> None:
