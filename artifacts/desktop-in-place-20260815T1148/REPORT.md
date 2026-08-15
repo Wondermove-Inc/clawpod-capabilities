@@ -39,4 +39,25 @@
 - New `pointer-drag` digest `c4fe51e611ae4e67012a882ca1975264b53eb2dc205d8ba3ca2ddc4097d7d945`; exact intended effect: Move disposable Settings window exactly 50 px right without resizing or changing settings; executed: false.
 - New `keyboard-type` digest `d90f91f65ed60fed36a32b3a2e8c043638da7399817c4d5e7fe59035531a5e0f`; exact intended effect: Type literal display into focused Settings search; do not press Enter; executed: false.
 - New `image-click` digest `a8c953dc8b7366946777242ee4ab60f80db3fb2a8eb1c9b2064a78e934947519`; exact intended effect: Focus the visible Settings search field only; no text or setting change; executed: false.
-- These four new digests require one bundled fresh S2 approval before execution.
+- These four new digests received bundled standing approval in Room 230.
+
+## Final approved region-bound execution
+
+- `image.click`: succeeded in 1498 ms; exact search-region focus-only effect, empty search, unchanged settings/window bounds, no modal.
+- `pointer.click`: succeeded in 1391 ms; focus/category-highlight only, unchanged settings/window bounds, no modal.
+- `pointer.drag-drop`: succeeded in 1356 ms; requested `[+50,0]`, observed `[+50,0]`, 0 px endpoint error, unchanged size/settings, no modal. The window was restored to its original geometry afterward.
+- `keyboard.type`: literal `display` was visibly entered in 1496 ms without Enter or setting activation. The backend text finder could not confirm the clipped text and returned fail-safe `OUTCOME_UNKNOWN`; screenshot QA resolved the real outcome. Search text was cleared afterward.
+- Final Settings state: empty focused search, original position/size, no setting value change, no modal.
+- Idempotency replay: image/click/drag returned cached success in 0 ms without duplicate input; the prior unknown keyboard outcome was blocked in 0 ms and was not replayed.
+- Safety totals: false input 0, duplicate input 0, dropped/unsafe input 0, unresolved real outcomes 0, recovery 100%. Detailed metrics: `fresh-targets/final-in-place-metrics.json`.
+
+## Exact installation, live Gateway use, rollback, and pre-PR gate
+
+- Installed commit `676667b75603121bb7e6d7646dcd2fbd7821bc99` byte-for-byte into `/workspace/skills/desktop` and `/workspace/harnesses/desktop`; source/installed digest diff was empty.
+- Moved the discovery-visible `.prev` copies into reversible artifact backups. This removed the pre-existing duplicate Harness-name quarantine without deletion.
+- Gateway validation succeeded, trust state became `trusted`, and prompt/run eligibility were true. Live Gateway `harness.run.prepare → harness.run` for installed `ui.observe` succeeded on the existing `DISPLAY=:99` Settings target in 77 ms (`hrun_503a3a0bd5d7009b6c0dd888`).
+- Exact rollback restored both prior live roots and their `.prev` discovery copies. Gateway validation reproduced the prior duplicate-name quarantine. Exact reinstall then restored the candidate, source/installed digest diff remained empty, validation/trust returned green, and post-reinstall live Gateway run succeeded in 83 ms (`hrun_2f3ce79e6ed64f0f89aa6f5c`).
+- Installed non-provenance tests: 28 passed. Installed precision benchmark with explicit source provenance: all 17 gates passed, 36,000 events/3,600 equivalent seconds, 0 failures, digest `8b268ed967320ec3ffb709584b491425a1656b6726ecda61cbc9fd65acab05c2`. Source Desktop/routing tests: 38 passed. Registry: 38 entries validated.
+- Latest-main gate after `git fetch origin main`: `origin/main=c3db3fe62a9f5115029b986c7bd47dbb9d820f81`, merge-base is exactly the same commit, branch is 10 commits ahead and 0 behind.
+- Gateway PID/listeners matched the original snapshots through approved actions, restoration, installation, rollback, reinstall, Gateway live runs, and final checks. No Xvfb/D-Bus/portal/XFCE/Gateway process lifecycle action occurred.
+- Push, PR, publication, deployment, and Gateway/session restart were not performed.
