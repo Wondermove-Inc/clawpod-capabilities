@@ -1,0 +1,39 @@
+{
+  "approvedActions": {
+    "approved-drag": {
+      "rc": 20,
+      "status": "failed",
+      "error": "STALE_TARGET",
+      "durationMs": 296
+    },
+    "approved-file-dialog": {
+      "rc": 20,
+      "status": "failed",
+      "error": "TARGET_NOT_FOUND",
+      "durationMs": 8
+    },
+    "approved-image": {
+      "rc": 20,
+      "status": "failed",
+      "error": "STALE_TARGET",
+      "durationMs": 326
+    },
+    "approved-keyboard": {
+      "rc": 20,
+      "status": "failed",
+      "error": "TARGET_NOT_FOUND",
+      "durationMs": 15
+    }
+  },
+  "postActionScreenshotSha256": {
+    "screen-after-drag.png": "1222842e9469c83178917d5b7593367c997087273e5cb536edc4ce4dae50a9f6",
+    "screen-after-file-dialog.png": "1222842e9469c83178917d5b7593367c997087273e5cb536edc4ce4dae50a9f6",
+    "screen-after-image.png": "1222842e9469c83178917d5b7593367c997087273e5cb536edc4ce4dae50a9f6",
+    "screen-after-keyboard.png": "1222842e9469c83178917d5b7593367c997087273e5cb536edc4ce4dae50a9f6"
+  },
+  "allScreenshotsIdentical": true,
+  "descriptionExactEquality": true,
+  "descriptionSha256": "1b9b7668bd39d840f452a6073c33b0c9f407de9f6deaf1a30ea4e403b3799973",
+  "gatewayPidInvariant": true,
+  "gatewayListenersInvariant": true
+}
