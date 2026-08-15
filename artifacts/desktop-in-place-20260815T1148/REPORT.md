@@ -29,3 +29,14 @@
 - `image-click` digest `4afadac727195b7f556990ba79853cb9e8bb7d0adc3b23d4e28ac423027043e3`; intended effect: Focus the visible Settings search field only; no text or setting change; executed: false.
 - File-dialog preview intentionally omitted: no file dialog was visibly present, so creating another non-current target would repeat the placeholder defect.
 - Gateway PID/listeners matched before/after S0/S1 observation, visible-window focus, capture, and preview generation. S2 actions were not executed.
+
+## Approved fresh digest execution and region-bound refinement
+
+- Executed the four Room-230-approved digests exactly. The first attempt exposed an unhandled screenshot-metadata shape (`screenshot` object vs path) before dispatch; after correction, all four failed closed as `STALE_TARGET`. No S2 input was dispatched and the visible Settings state remained unchanged.
+- Root cause: full-screen digest included unrelated changing pixels outside the target window. Replaced it with a stdlib PNG-decoded visual-region digest bound to the visible Settings bounds or image template region. This preserves visual freshness while excluding the unrelated panel clock.
+- Region stability proof: `{'expected': '42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352', 'actual': '42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352', 'stable': True}` across independent captures.
+- New `pointer-click` digest `6da262b22a0611ea9f811f66ca7270fdaab4ae266738684c5fb27ec223c45717`; exact intended effect: Focus only; no setting activation or value change; executed: false.
+- New `pointer-drag` digest `c4fe51e611ae4e67012a882ca1975264b53eb2dc205d8ba3ca2ddc4097d7d945`; exact intended effect: Move disposable Settings window exactly 50 px right without resizing or changing settings; executed: false.
+- New `keyboard-type` digest `d90f91f65ed60fed36a32b3a2e8c043638da7399817c4d5e7fe59035531a5e0f`; exact intended effect: Type literal display into focused Settings search; do not press Enter; executed: false.
+- New `image-click` digest `a8c953dc8b7366946777242ee4ab60f80db3fb2a8eb1c9b2064a78e934947519`; exact intended effect: Focus the visible Settings search field only; no text or setting change; executed: false.
+- These four new digests require one bundled fresh S2 approval before execution.

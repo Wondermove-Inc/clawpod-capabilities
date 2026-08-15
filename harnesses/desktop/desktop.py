@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, subprocess, time, uuid
+import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, time, uuid, zlib
 VERSION='3.0.0'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
 OBS=set('capabilities environment.preflight session.list session.get app.list app.get window.list window.get screen.list screen.capture ui.observe ui.find ui.read ui.table ui.wait ui.verify image.locate dialog.inspect clipboard.inspect download.inspect task.get task.events task.artifacts'.split())
 S1=set('app.launch app.focus window.activate window.move window.resize window.minimize window.maximize window.restore pointer.move pointer.scroll keyboard.key keyboard.shortcut'.split())
@@ -70,23 +70,52 @@ def precision_error(inp):
  if not required.issubset(target): return error('STALE_TARGET','Target lacks fresh window, revision, or digest identity.','conflict',False)
  if kind=='accessibility' and not (target.get('nodeId') or target.get('name')): return error('PRECISION_TARGET_REQUIRED','Accessibility target requires nodeId or name.','policy')
  if kind=='image':
-  if inp.get('visionFallbackSupported') is not True or not target.get('templateHash') or target.get('confidence') is None or not target.get('screenshotDigest'):
+  if inp.get('visionFallbackSupported') is not True or not target.get('templateHash') or target.get('confidence') is None or not target.get('screenshotDigest') or not target.get('visualRegion'):
    return error('VISION_FALLBACK_UNSUPPORTED','Image fallback was not explicitly supported with screenshot/template hashes and confidence.','policy',False)
  if kind=='coordinate':
-  if not all(k in target for k in ('x','y','screenshotDigest','monitor','scale')):
+  if not all(k in target for k in ('x','y','screenshotDigest','visualRegion','monitor','scale')):
    return error('COORDINATE_APPROVAL_REQUIRED','Coordinate fallback requires digest-bound screen, monitor, scale, and point identity.','policy',False)
  if not isinstance(post,dict) or not post:
   return error('POSTCONDITION_REQUIRED','Click-like actions require an explicit postcondition.','policy',False,{},'Describe a read-only state that confirms the action exactly once.')
  return None
+def png_region_digest(path,region):
+ data=path.read_bytes(); pos=8; width=height=bit_depth=color_type=interlace=None; compressed=b''
+ while pos<len(data):
+  length=struct.unpack('>I',data[pos:pos+4])[0]; kind=data[pos+4:pos+8]; chunk=data[pos+8:pos+8+length]; pos+=12+length
+  if kind==b'IHDR':width,height,bit_depth,color_type,_,_,interlace=struct.unpack('>IIBBBBB',chunk)
+  elif kind==b'IDAT':compressed+=chunk
+  elif kind==b'IEND':break
+ channels={0:1,2:3,4:2,6:4}.get(color_type)
+ if bit_depth!=8 or interlace!=0 or not channels:raise ValueError('unsupported screenshot PNG format')
+ raw=zlib.decompress(compressed); stride=width*channels; rows=[]; prior=bytearray(stride); i=0
+ for _ in range(height):
+  filt=raw[i]; i+=1; scan=bytearray(raw[i:i+stride]); i+=stride
+  for j in range(stride):
+   left=scan[j-channels] if j>=channels else 0; up=prior[j]; upper_left=prior[j-channels] if j>=channels else 0
+   if filt==1:scan[j]=(scan[j]+left)&255
+   elif filt==2:scan[j]=(scan[j]+up)&255
+   elif filt==3:scan[j]=(scan[j]+((left+up)//2))&255
+   elif filt==4:
+    p=left+up-upper_left; pa=abs(p-left); pb=abs(p-up); pc=abs(p-upper_left); scan[j]=(scan[j]+(left if pa<=pb and pa<=pc else up if pb<=pc else upper_left))&255
+   elif filt!=0:raise ValueError('unsupported screenshot PNG filter')
+  rows.append(bytes(scan)); prior=scan
+ x,y,w,h=region
+ if not all(isinstance(v,int) for v in region) or x<0 or y<0 or w<1 or h<1 or x+w>width or y+h>height:raise ValueError('visual region outside screenshot')
+ crop=b''.join(row[x*channels:(x+w)*channels] for row in rows[y:y+h])
+ return hashlib.sha256(struct.pack('>III',w,h,channels)+crop).hexdigest()
 def target_identity(observation,target):
  if all(k in observation for k in ('revision','targetDigest','windowId')):
   return {'windowId':str(observation['windowId']),'observedRevision':observation['revision'],'targetDigest':observation['targetDigest'],'nodeId':target.get('nodeId'),'name':target.get('name'),'app':None,'bbox':None,'focused':bool(observation.get('focused',False))}
  active=observation.get('active_window') or {}; window_id=str(active.get('window_id') or '')
  if target.get('kind') in {'coordinate','image'}:
-  screenshot=pathlib.Path(observation.get('screenshot') or '')
+  screenshot_value=observation.get('screenshot') or ''
+  screenshot=pathlib.Path(screenshot_value.get('path','') if isinstance(screenshot_value,dict) else screenshot_value)
   if not screenshot.is_file():return None
-  screenshot_digest=hashlib.sha256(screenshot.read_bytes()).hexdigest()
-  stable={'windowId':window_id,'screenshotDigest':screenshot_digest,'screen':observation.get('screen')}
+  region=target.get('visualRegion')
+  if not isinstance(region,list) or len(region)!=4:return None
+  try:screenshot_digest=png_region_digest(screenshot,region)
+  except (OSError,ValueError,zlib.error):return None
+  stable={'windowId':window_id,'screenshotDigest':screenshot_digest,'visualRegion':region,'screen':observation.get('screen')}
   if target.get('kind')=='coordinate':stable.update({'point':[target.get('x'),target.get('y')],'monitor':target.get('monitor'),'scale':target.get('scale')})
   else:stable.update({'templateHash':target.get('templateHash'),'confidence':target.get('confidence')})
   target_digest=digest(stable)

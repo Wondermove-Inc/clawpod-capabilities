@@ -1,4 +1,5 @@
-import json, os, pathlib, subprocess, tempfile
+import importlib.util, json, os, pathlib, subprocess, tempfile
+from PIL import Image
 CLI=pathlib.Path(__file__).parents[1]/'desktop.py'
 def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],capture_output=True,text=True,env={**os.environ,**(env or {})}); return p,json.loads(p.stdout)
@@ -55,6 +56,14 @@ def test_screen_capture_without_path_uses_a_fresh_run_scoped_artifact():
   run_root=pathlib.Path('/tmp/desktop-runs')/('capture-'+next(tempfile._get_candidate_names()))
   p,o=run('screen.capture','--run-root',str(run_root),env={'DESKTOP_SYSTEM_CLI':str(backend)})
   assert p.returncode==0 and str(run_root/'screenshot.png') in log.read_text()
+
+def test_region_digest_ignores_unrelated_clock_pixels_but_detects_target_change():
+ spec=importlib.util.spec_from_file_location('desktop_harness',CLI); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+ with tempfile.TemporaryDirectory() as d:
+  path=pathlib.Path(d)/'screen.png'; image=Image.new('RGB',(20,20),'white'); image.save(path)
+  baseline=module.png_region_digest(path,[5,5,10,10])
+  image.putpixel((0,0),(0,0,0)); image.save(path); assert module.png_region_digest(path,[5,5,10,10])==baseline
+  image.putpixel((6,6),(0,0,0)); image.save(path); assert module.png_region_digest(path,[5,5,10,10])!=baseline
 
 def test_keyboard_type_requires_a_fresh_target_outside_dry_run():
  with tempfile.TemporaryDirectory() as d:

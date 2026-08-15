@@ -51,8 +51,8 @@ def payload(kind="accessibility"):
     target = {"kind": kind, "windowId": "win-1", "observedRevision": 7,
               "targetDigest": "target-v7"}
     if kind == "accessibility": target["nodeId"] = "node-9"
-    if kind == "image": target.update(templateHash="sha256:template", screenshotDigest="sha256:screen", confidence=.99)
-    if kind == "coordinate": target.update(x=10, y=11, screenshotDigest="sha256:screen", monitor="DP-1", scale=1.25)
+    if kind == "image": target.update(templateHash="sha256:template", screenshotDigest="sha256:screen", visualRegion=[0,0,10,10], confidence=.99)
+    if kind == "coordinate": target.update(x=10, y=11, screenshotDigest="sha256:screen", visualRegion=[0,0,10,10], monitor="DP-1", scale=1.25)
     return {"target": target, "postcondition": {"kind": "state", "equals": "open"}}
 
 

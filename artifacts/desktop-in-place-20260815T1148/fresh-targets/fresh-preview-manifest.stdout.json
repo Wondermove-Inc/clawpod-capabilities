@@ -7,8 +7,9 @@
       "width": 1920,
       "height": 1080
     },
-    "screenshot": "artifacts/desktop-in-place-20260815T1148/fresh-targets/screen-settings-final.png",
-    "screenshotDigest": "9d392ab66fe894f7a4babb32c99d7966e8796b28c02028af1d31b5af3a4a0dac",
+    "screenshot": "artifacts/desktop-in-place-20260815T1148/fresh-targets/screen-settings-v2.png",
+    "screenshotDigest": "590418e4ef752d8e164b3ca57ce2261f9d3c3efeed6d30cff6244f0cc223635b",
+    "windowRegionDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
     "visibleBounds": [
       538,
       261,
@@ -20,15 +21,21 @@
     "pointer-click": {
       "command": "pointer.click",
       "idempotencyKey": "fresh-settings-click-v1",
-      "requestDigest": "a0f76c42612778ee6755f2e06d638602f5adf5a089145bfb294c4fa01842db6b",
+      "requestDigest": "6da262b22a0611ea9f811f66ca7270fdaab4ae266738684c5fb27ec223c45717",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 2637889791,
-        "targetDigest": "9d3b00ffc19fa9d4acb5b5dbfb1a5f9c27a569f8bf5d369a094a2238722528a0",
+        "observedRevision": 529051422,
+        "targetDigest": "1f88af1ebc3632c589e40668a1eced6d6845b57d28d55f7130ec7be98958622f",
         "x": 700,
         "y": 520,
-        "screenshotDigest": "9d392ab66fe894f7a4babb32c99d7966e8796b28c02028af1d31b5af3a4a0dac",
+        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "visualRegion": [
+          538,
+          261,
+          844,
+          534
+        ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
       },
@@ -51,15 +58,21 @@
     "pointer-drag": {
       "command": "pointer.drag-drop",
       "idempotencyKey": "fresh-settings-drag-v1",
-      "requestDigest": "0963e3c7f9bb527a28a62aa803807494d4185d1168b46e880b75996169f743f2",
+      "requestDigest": "c4fe51e611ae4e67012a882ca1975264b53eb2dc205d8ba3ca2ddc4097d7d945",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 1265229280,
-        "targetDigest": "4b69dde0234f58d33115534aea202b4ba59dd19381ca26186c6d15554035d141",
+        "observedRevision": 4137752271,
+        "targetDigest": "f6a116cf66a944f2a15fa6a3785ed7152ac43066e916b40249ab2857ce637148",
         "x": 800,
         "y": 280,
-        "screenshotDigest": "9d392ab66fe894f7a4babb32c99d7966e8796b28c02028af1d31b5af3a4a0dac",
+        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "visualRegion": [
+          538,
+          261,
+          844,
+          534
+        ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
       },
@@ -81,15 +94,21 @@
     "keyboard-type": {
       "command": "keyboard.type",
       "idempotencyKey": "fresh-settings-type-v1",
-      "requestDigest": "98e67f1a69b2a8d282df3000aaa6bea0e0cc27518781c4fe40676583e8565264",
+      "requestDigest": "d90f91f65ed60fed36a32b3a2e8c043638da7399817c4d5e7fe59035531a5e0f",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 3095662028,
-        "targetDigest": "b8840dcc8c2b5d6f81432b62e910246110215d4080ec4c4cc67c97ca46582e6f",
+        "observedRevision": 1328046937,
+        "targetDigest": "4f286359b2a0d73c7ccf841317760df2deaa0fb41cc310320de0b5a58e2decf4",
         "x": 1280,
         "y": 345,
-        "screenshotDigest": "9d392ab66fe894f7a4babb32c99d7966e8796b28c02028af1d31b5af3a4a0dac",
+        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "visualRegion": [
+          538,
+          261,
+          844,
+          534
+        ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
       },
@@ -106,14 +125,20 @@
     "image-click": {
       "command": "image.click",
       "idempotencyKey": "fresh-settings-image-v1",
-      "requestDigest": "4afadac727195b7f556990ba79853cb9e8bb7d0adc3b23d4e28ac423027043e3",
+      "requestDigest": "a8c953dc8b7366946777242ee4ab60f80db3fb2a8eb1c9b2064a78e934947519",
       "target": {
         "kind": "image",
         "windowId": "52428807",
-        "observedRevision": 2143315859,
-        "targetDigest": "7fc067931067b0bf8dd4fa7e3ba802def2ee9f3e257521ad58207802113e9ae4",
-        "templateHash": "d892d510b86dbbc5605bd976a730f2c19cb2f78311c0b9e4bec91236c2a34017",
-        "screenshotDigest": "9d392ab66fe894f7a4babb32c99d7966e8796b28c02028af1d31b5af3a4a0dac",
+        "observedRevision": 2475414826,
+        "targetDigest": "938bd52a828e948fa6bbe76925a50b3df7c59aaab1548ec922fea4699f8b3947",
+        "templateHash": "238dae4e61c936f2bf52e8c2d9fd16392b185adab04450a944e3fdc4be565315",
+        "screenshotDigest": "a284a90389f6ec7b3d033691bb9f168659f339a682ce5b5b40f37ea995401075",
+        "visualRegion": [
+          1205,
+          300,
+          165,
+          90
+        ],
         "confidence": 0.99
       },
       "postcondition": {

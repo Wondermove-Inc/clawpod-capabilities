@@ -1158,7 +1158,7 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "0e850e2b43760166099df4339065e69515c130db9ba72055873c382fa15a4e40"
+          "sha256": "4bcffe5d118fee346254038fb9df23422415d52b985127355736cb93efcb0f19"
         },
         {
           "path": "harness.json",
