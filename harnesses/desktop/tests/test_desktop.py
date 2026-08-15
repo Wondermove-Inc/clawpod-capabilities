@@ -35,3 +35,32 @@ def test_app_launch_does_not_report_success_without_a_visible_window():
   backend.chmod(0o755)
   p,o=run('app.launch','--input','{"args":["file","/tmp/example.txt"]}','--idempotency-key','launch-no-window',env={'DESKTOP_SYSTEM_CLI':str(backend)})
   assert p.returncode==20 and o['status']=='failed' and o['error']['code']=='POSTCONDITION_NOT_CONFIRMED'
+
+def test_ui_observe_emits_real_target_identities_for_fresh_previews():
+ observation={'active_window':{'window_id':'42','title':'Disposable','error':None},'nodes':[{'id':'node:1','path':'1','app':'terminal','role':'frame','name':'Disposable','bbox':{'x':10,'y':20,'width':300,'height':200},'actions':['click']}]}
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'
+  backend.write_text("#!/bin/sh\necho '" + json.dumps(observation,separators=(",",":")) + "'\n")
+  backend.chmod(0o755)
+  p,o=run('ui.observe',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  target=o['result']['observation']['targets'][0]
+  assert p.returncode==0 and target['windowId']=='42' and target['nodeId']=='node:1'
+  assert target['targetDigest']!='preview-only' and isinstance(target['observedRevision'],int) and target['focused'] is True
+
+def test_screen_capture_without_path_uses_a_fresh_run_scoped_artifact():
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'; log=pathlib.Path(d)/'argv'
+  backend.write_text(f"#!/bin/sh\nprintf '%s\\n' \"$@\" > {log}\n")
+  backend.chmod(0o755)
+  run_root=pathlib.Path('/tmp/desktop-runs')/('capture-'+next(tempfile._get_candidate_names()))
+  p,o=run('screen.capture','--run-root',str(run_root),env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  assert p.returncode==0 and str(run_root/'screenshot.png') in log.read_text()
+
+def test_keyboard_type_requires_a_fresh_target_outside_dry_run():
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'; backend.write_text('#!/bin/sh\nexit 0\n'); backend.chmod(0o755)
+  body='{"args":["preview text"],"postcondition":{"textPresent":"preview text"}}'
+  _,preview=run('keyboard.type','--input',body,'--idempotency-key','typed-target','--dry-run',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  receipt=pathlib.Path(d)/'approval.json'; receipt.write_text(json.dumps({'requestDigest':preview['result']['requestDigest'],'expiresAt':'2999-01-01T00:00:00+00:00'}))
+  p,o=run('keyboard.type','--input',body,'--idempotency-key','typed-target','--approval-file',str(receipt),env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  assert p.returncode==31 and o['error']['code']=='PRECISION_TARGET_REQUIRED'

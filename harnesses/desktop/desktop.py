@@ -7,7 +7,7 @@ S1=set('app.launch app.focus window.activate window.move window.resize window.mi
 S4={'window.close','process.terminate','process.kill'}
 MAP={'app.list':['apps','--json'],'screen.capture':['screenshot'],'ui.observe':['observe','--json'],'ui.find':['find'],'ui.read':['read'],'ui.table':['table','--json'],'ui.wait':['wait'],'ui.verify':['verify'],'image.locate':['locate-image'],'app.launch':['open'],'app.focus':['focus'],'app.close':['close'],'pointer.click':['click'],'pointer.double-click':['dblclick'],'pointer.right-click':['rclick'],'pointer.scroll':['scroll'],'keyboard.type':['type'],'keyboard.key':['key'],'keyboard.shortcut':['key'],'keyboard.select':['select'],'image.click':['click-image']}
 PRECISION_CLICKS={'pointer.click','pointer.double-click','pointer.right-click','image.click'}
-PRECISION_ACTIONS=PRECISION_CLICKS|{'pointer.drag-drop'}
+PRECISION_ACTIONS=PRECISION_CLICKS|{'pointer.drag-drop','keyboard.type'}
 PORTAL_ACTIONS={'dialog.respond','file-dialog.open','file-dialog.save','file-dialog.choose-directory','file-dialog.cancel'}
 def now(): return dt.datetime.now(dt.timezone.utc).isoformat()
 def redact(v):
@@ -70,18 +70,49 @@ def precision_error(inp):
  if not required.issubset(target): return error('STALE_TARGET','Target lacks fresh window, revision, or digest identity.','conflict',False)
  if kind=='accessibility' and not (target.get('nodeId') or target.get('name')): return error('PRECISION_TARGET_REQUIRED','Accessibility target requires nodeId or name.','policy')
  if kind=='image':
-  if inp.get('visionFallbackSupported') is not True or not target.get('templateHash') or target.get('confidence') is None:
-   return error('VISION_FALLBACK_UNSUPPORTED','Image fallback was not explicitly supported with template hash and confidence.','policy',False)
+  if inp.get('visionFallbackSupported') is not True or not target.get('templateHash') or target.get('confidence') is None or not target.get('screenshotDigest'):
+   return error('VISION_FALLBACK_UNSUPPORTED','Image fallback was not explicitly supported with screenshot/template hashes and confidence.','policy',False)
  if kind=='coordinate':
   if not all(k in target for k in ('x','y','screenshotDigest','monitor','scale')):
    return error('COORDINATE_APPROVAL_REQUIRED','Coordinate fallback requires digest-bound screen, monitor, scale, and point identity.','policy',False)
  if not isinstance(post,dict) or not post:
   return error('POSTCONDITION_REQUIRED','Click-like actions require an explicit postcondition.','policy',False,{},'Describe a read-only state that confirms the action exactly once.')
  return None
+def target_identity(observation,target):
+ if all(k in observation for k in ('revision','targetDigest','windowId')):
+  return {'windowId':str(observation['windowId']),'observedRevision':observation['revision'],'targetDigest':observation['targetDigest'],'nodeId':target.get('nodeId'),'name':target.get('name'),'app':None,'bbox':None,'focused':bool(observation.get('focused',False))}
+ active=observation.get('active_window') or {}; window_id=str(active.get('window_id') or '')
+ if target.get('kind') in {'coordinate','image'}:
+  screenshot=pathlib.Path(observation.get('screenshot') or '')
+  if not screenshot.is_file():return None
+  screenshot_digest=hashlib.sha256(screenshot.read_bytes()).hexdigest()
+  stable={'windowId':window_id,'screenshotDigest':screenshot_digest,'screen':observation.get('screen')}
+  if target.get('kind')=='coordinate':stable.update({'point':[target.get('x'),target.get('y')],'monitor':target.get('monitor'),'scale':target.get('scale')})
+  else:stable.update({'templateHash':target.get('templateHash'),'confidence':target.get('confidence')})
+  target_digest=digest(stable)
+  return {'windowId':window_id,'observedRevision':int(target_digest[:8],16),'targetDigest':target_digest,'screenshotDigest':screenshot_digest,'nodeId':None,'name':None,'app':None,'bbox':None,'focused':bool(window_id and not active.get('error'))}
+ nodes=observation.get('nodes') or []
+ node=None
+ if target.get('nodeId'):
+  node=next((n for n in nodes if n.get('id')==target['nodeId']),None)
+ elif target.get('name'):
+  node=next((n for n in nodes if n.get('name')==target['name']),None)
+ if not node:return None
+ stable_node={k:node.get(k) for k in ('id','path','app','role','name','bbox','actions')}
+ target_digest=digest({'windowId':window_id,'target':stable_node})
+ return {'windowId':window_id,'observedRevision':int(target_digest[:8],16),'targetDigest':target_digest,'nodeId':node.get('id'),'name':node.get('name'),'app':node.get('app'),'bbox':node.get('bbox'),'focused':bool(window_id and not active.get('error'))}
+def observation_index(observation):
+ active=observation.get('active_window') or {}; out=[]
+ for node in observation.get('nodes') or []:
+  if node.get('id') and node.get('bbox'):
+   identity=target_identity(observation,{'nodeId':node['id']})
+   if identity:out.append(identity)
+ return {'activeWindow':active,'targets':out}
 def observation_matches(observation,target):
- return (observation.get('revision')==target.get('observedRevision') and
-         observation.get('targetDigest')==target.get('targetDigest') and
-         observation.get('windowId')==target.get('windowId'))
+ identity=target_identity(observation,target)
+ return bool(identity and identity['observedRevision']==target.get('observedRevision') and
+         identity['targetDigest']==target.get('targetDigest') and
+         identity['windowId']==str(target.get('windowId')))
 def validate_drag(inp):
  drag=inp.get('drag')
  if not isinstance(drag,dict): return None,error('DRAG_TRAJECTORY_REQUIRED','Drag requires a bounded linear trajectory.','policy')
@@ -136,7 +167,7 @@ def main():
    if cmd=='pointer.drag-drop':
     trajectory,policy_error=validate_drag(inp)
     if policy_error: emit(cmd,rid,'blocked',err=policy_error,revision=st['revision'],started=started); return 31
-   target=inp['target']; observation={}; observe_argv=[backend()]+MAP['ui.observe']
+   target=inp['target']; observation={}; precision_screenshot=run/'precision-observe.png'; observe_argv=[backend()]+MAP['ui.observe']+['--screenshot',str(precision_screenshot)]
    for observation_attempt in range(2):
     observed,timeout=backend_call(observe_argv,a.timeout_ms)
     if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Re-observation deadline exceeded before any input.','backend',True,{'phase':'observe','attempt':observation_attempt+1}),revision=st['revision'],started=started,attempt=observation_attempt+1,max_attempts=2); return 21
@@ -148,12 +179,14 @@ def main():
     if observation_matches(observation,target): break
    else:
     emit(cmd,rid,'failed',err=error('STALE_TARGET','Target identity changed after bounded re-observation.','conflict',False,{'observedRevision':observation.get('revision'),'observedTargetDigest':observation.get('targetDigest')},'Acquire a new target and fresh digest-bound approval.'),revision=st['revision'],started=started); return 20
-   if not observation.get('focused',False):
+   identity=target_identity(observation,target)
+   if not identity or not identity.get('focused',False):
     focus_argv=[backend()]+MAP['app.focus']+[str(target['windowId'])]
     focused,timeout=backend_call(focus_argv,a.timeout_ms)
     if timeout or focused.returncode: emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Target window could not be focused before action.','backend',False),revision=st['revision'],started=started); return 20
-    verified,timeout=backend_call(observe_argv,a.timeout_ms)
-    if timeout or verified.returncode or not observation_matches(parsed_stdout(verified),target) or not parsed_stdout(verified).get('focused',False):
+    verified,timeout=backend_call(observe_argv,a.timeout_ms); verified_observation=parsed_stdout(verified) if verified else {}
+    verified_identity=target_identity(verified_observation,target)
+    if timeout or verified.returncode or not observation_matches(verified_observation,target) or not verified_identity or not verified_identity.get('focused',False):
      emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Focus or target identity changed before action.','conflict',False),revision=st['revision'],started=started); return 20
    argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
    if trajectory: argv+=['--trajectory-json',json.dumps(trajectory,separators=(',',':'))]
@@ -172,10 +205,15 @@ def main():
     result['postconditionConfirmed']=True
     if trajectory: result['trajectory']=trajectory
   else:
-   argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
+   args=[str(x) for x in inp.get('args',[])]
+   if cmd=='screen.capture' and not args:
+    args=[str(run/'screenshot.png')]
+   argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+args
    p,timeout=backend_call(argv,a.timeout_ms)
    if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Backend deadline exceeded before a confirmed side effect.','backend',not mutation,{'phase':'observation' if not mutation else 'mutation'}),started=started); return 21
    result=backend_result(p,argv)
+   if cmd=='ui.observe' and not p.returncode:
+    result['observation']=observation_index(parsed_stdout(p))
   if p.returncode: code='AT_SPI_UNAVAILABLE' if p.returncode==4 else 'TARGET_NOT_FOUND'; emit(cmd,rid,'failed',scrub(redact(result),secrets),error(code,'System desktop CLI failed.','backend',code=='AT_SPI_UNAVAILABLE'),started=started); return 24 if p.returncode==4 else 20
   if cmd=='app.launch' and re.search(r'window not detected|window (?:was )?not found',p.stdout+'\n'+p.stderr,re.I):
    emit(cmd,rid,'failed',scrub(redact(result),secrets),error('POSTCONDITION_NOT_CONFIRMED','The process launch returned but no application window was observed.','backend',False,{'phase':'launch-observation'},'Inspect the launch command or file association; do not treat process creation as a visible GUI success.'),started=started); return 20
