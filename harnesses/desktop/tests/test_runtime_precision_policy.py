@@ -118,11 +118,21 @@ def test_uncertain_click_is_never_replayed_with_same_idempotency_key(tmp_path):
     assert [row[0] for row in calls(log)].count("click") == 1
 
 
-def test_coordinate_keyboard_does_not_deadlock_when_pointer_is_already_at_target(monkeypatch):
+def test_precision_pointer_actions_do_not_deadlock_at_same_position(monkeypatch):
     monkeypatch.setattr(DESKTOP.shutil, "which", lambda _: "/usr/bin/xdotool")
-    argv = DESKTOP.coordinate_keyboard_argv({"x": 10, "y": 11}, ["display"])
-    assert argv == ["/usr/bin/xdotool", "mousemove", "10", "11", "click", "1", "type", "--delay", "20", "display"]
-    assert "--sync" not in argv
+    coordinate = {"kind": "coordinate", "x": 10, "y": 11}
+    image = {"kind": "image", "visualRegion": [20, 30, 40, 10]}
+    trajectory = {"points": [[1, 2], [3, 4], [5, 6]]}
+    argvs = [
+        DESKTOP.safe_pointer_argv(coordinate, "keyboard.type", ["display"]),
+        DESKTOP.safe_pointer_argv(coordinate, "pointer.click"),
+        DESKTOP.safe_pointer_argv(image, "image.click"),
+        DESKTOP.safe_pointer_argv(coordinate, "pointer.drag-drop", trajectory=trajectory),
+    ]
+    assert all("--sync" not in argv for argv in argvs)
+    assert argvs[0][-1] == "display"
+    assert argvs[2][1:4] == ["mousemove", "40", "35"]
+    assert argvs[3][-2:] == ["mouseup", "1"]
 
 
 def test_coordinate_keyboard_postcondition_uses_bounded_visual_readback(monkeypatch):

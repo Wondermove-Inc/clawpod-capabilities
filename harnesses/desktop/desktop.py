@@ -56,10 +56,20 @@ def backend_call(argv,timeout_ms):
   return None, 'timeout'
 def backend_result(p,argv):
  return {'exitCode':p.returncode,'stdout':p.stdout[-8000:],'stderr':p.stderr[-4000:],'backendArgv':[pathlib.Path(argv[0]).name]+argv[1:]}
-def coordinate_keyboard_argv(target,args):
+def safe_pointer_argv(target,cmd,args=(),trajectory=None):
  # xdotool mousemove --sync can wait forever when the pointer is already at the
  # requested coordinate. Focus/readback provide the synchronization boundary.
- return [shutil.which('xdotool') or 'xdotool','mousemove',str(target['x']),str(target['y']),'click','1','type','--delay','20',*map(str,args)]
+ tool=shutil.which('xdotool') or 'xdotool'
+ if cmd=='keyboard.type':return [tool,'mousemove',str(target['x']),str(target['y']),'click','1','type','--delay','20',*map(str,args)]
+ if cmd in PRECISION_CLICKS:
+  if target['kind']=='image':x,y=target['visualRegion'][0]+target['visualRegion'][2]//2,target['visualRegion'][1]+target['visualRegion'][3]//2
+  else:x,y=target['x'],target['y']
+  return [tool,'mousemove',str(x),str(y),'click','1']
+ if cmd=='pointer.drag-drop' and trajectory:
+  argv=[tool,'mousemove',str(trajectory['points'][0][0]),str(trajectory['points'][0][1]),'mousedown','1']
+  for point in trajectory['points'][1:]:argv+=['mousemove',str(point[0]),str(point[1])]
+  return argv+['mouseup','1']
+ return None
 def xwindow_geometry(window_id):
  tool=shutil.which('xdotool')
  if not tool:return None
@@ -250,16 +260,8 @@ def main():
     if timeout or verified.returncode or not observation_matches(verified_observation,target) or not verified_identity or not verified_identity.get('focused',False):
      emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Focus or target identity changed before action.','conflict',False),revision=st['revision'],started=started); return 20
    before_geometry=xwindow_geometry(target['windowId'])
-   if target['kind']=='coordinate' and cmd=='keyboard.type':
-    argv=coordinate_keyboard_argv(target,inp.get('args',[]))
-   elif target['kind']=='coordinate' and cmd in PRECISION_CLICKS:
-    argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(target['x']),str(target['y']),'click','1']
-   elif target['kind']!='accessibility' and cmd=='pointer.drag-drop' and trajectory:
-    argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(trajectory['points'][0][0]),str(trajectory['points'][0][1]),'mousedown','1']
-    for point in trajectory['points'][1:]:argv+=['mousemove','--sync',str(point[0]),str(point[1])]
-    argv+=['mouseup','1']
-   elif target['kind']=='image' and cmd=='image.click':
-    region=target['visualRegion']; argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(region[0]+region[2]//2),str(region[1]+region[3]//2),'click','1']
+   if target['kind']!='accessibility' and (cmd in PRECISION_CLICKS or cmd in {'keyboard.type','pointer.drag-drop'}):
+    argv=safe_pointer_argv(target,cmd,inp.get('args',[]),trajectory)
    else:
     argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
     if trajectory:argv+=['--trajectory-json',json.dumps(trajectory,separators=(',',':'))]

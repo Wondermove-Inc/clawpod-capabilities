@@ -73,3 +73,10 @@
 - Transactional candidate cycle at `/workspace/artifacts/desktop-inplace-install-20260815T1240`: source/installed digest diff empty, installed version 3.0.0, installed live preflight succeeded with backend/display/D-Bus/AT-SPI all true, then prior live roots were restored byte-for-byte (content hashes identical). Gateway PID 665 and its three listener snapshots were invariant throughout install, live use, and rollback.
 - Latest-main gate refreshed: `origin/main=c3db3fe62a9f5115029b986c7bd47dbb9d820f81`, merge-base exactly equals origin/main, branch 0 behind. No rebase was needed.
 - Final corrective commit is recorded after this report update. No push, PR, publish, release, deploy, merge, or process restart was performed.
+
+## Same-position precision-action deterministic closure
+
+- Extended the same-position deadlock correction to coordinate click, image click, and every drag trajectory move. All non-accessibility precision pointer dispatch now omits `mousemove --sync`; pre-dispatch focus verification and post-action active-window/geometry/readback remain mandatory.
+- Fresh approved reruns, never checkpoint replay: v9 image focus succeeded in 1436 ms, v9 pointer focus succeeded in 1421 ms, v10 keyboard literal succeeded in 2739 ms, and v11 exact +50 px drag succeeded in 1283 ms with 0 px error and unchanged 834x500 size. Search text and window position were restored.
+- The v10 first drag targeted client geometry rather than the decoration and produced no movement; its `OUTCOME_UNKNOWN` was visually/readback-resolved as no effect and not replayed. v11 used a fresh target/digest/key at the observed decoration coordinate and succeeded.
+- Regression coverage asserts no `--sync` across keyboard, coordinate click, image click, and drag argv construction. Gateway PID/listeners remained invariant around every fresh observation, preview, execution, cleanup, and restore.
