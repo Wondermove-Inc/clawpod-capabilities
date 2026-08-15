@@ -56,6 +56,34 @@ def backend_call(argv,timeout_ms):
   return None, 'timeout'
 def backend_result(p,argv):
  return {'exitCode':p.returncode,'stdout':p.stdout[-8000:],'stderr':p.stderr[-4000:],'backendArgv':[pathlib.Path(argv[0]).name]+argv[1:]}
+def xwindow_geometry(window_id):
+ tool=shutil.which('xdotool')
+ if not tool:return None
+ p=subprocess.run([tool,'getwindowgeometry','--shell',str(window_id)],capture_output=True,text=True)
+ if p.returncode:return None
+ values={}
+ for line in p.stdout.splitlines():
+  if '=' in line:
+   k,v=line.split('=',1)
+   if v.lstrip('-').isdigit():values[k]=int(v)
+ return values if all(k in values for k in ('X','Y','WIDTH','HEIGHT')) else None
+def verify_effect(post,target,before_geometry,trajectory=None):
+ tool=shutil.which('xdotool'); window_id=str(target.get('windowId')); checks={}
+ if not tool:return False,{'xdotool':False}
+ active=subprocess.run([tool,'getactivewindow'],capture_output=True,text=True); checks['activeWindowId']=active.stdout.strip(); checks['activeWindowMatch']=active.returncode==0 and active.stdout.strip()==window_id
+ after=xwindow_geometry(window_id); checks['beforeGeometry']=before_geometry; checks['afterGeometry']=after
+ if post.get('searchFieldText'):
+  found=subprocess.run([backend()]+MAP['ui.find']+[str(post['searchFieldText']),'--app','xfce4-settings-manager'],capture_output=True,text=True,timeout=5)
+  checks['searchTextPresent']=found.returncode==0
+ if before_geometry and after:
+  checks['sizeUnchanged']=(before_geometry['WIDTH'],before_geometry['HEIGHT'])==(after['WIDTH'],after['HEIGHT'])
+  if post.get('windowBoundsUnchanged') is not None:checks['boundsUnchanged']=before_geometry==after
+  if trajectory:
+   dx=round(trajectory['points'][-1][0]-trajectory['points'][0][0]); dy=round(trajectory['points'][-1][1]-trajectory['points'][0][1]); checks['dragDeltaMatch']=(after['X']-before_geometry['X'],after['Y']-before_geometry['Y'])==(dx,dy)
+ required=[checks['activeWindowMatch']]
+ for key in ('searchTextPresent','sizeUnchanged','boundsUnchanged','dragDeltaMatch'):
+  if key in checks:required.append(checks[key])
+ return all(required),checks
 def parsed_stdout(p):
  try:
   value=json.loads(p.stdout)
@@ -217,8 +245,20 @@ def main():
     verified_identity=target_identity(verified_observation,target)
     if timeout or verified.returncode or not observation_matches(verified_observation,target) or not verified_identity or not verified_identity.get('focused',False):
      emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Focus or target identity changed before action.','conflict',False),revision=st['revision'],started=started); return 20
-   argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
-   if trajectory: argv+=['--trajectory-json',json.dumps(trajectory,separators=(',',':'))]
+   before_geometry=xwindow_geometry(target['windowId'])
+   if target['kind']=='coordinate' and cmd=='keyboard.type':
+    argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(target['x']),str(target['y']),'click','1','type','--delay','20',*map(str,inp.get('args',[]))]
+   elif target['kind']=='coordinate' and cmd in PRECISION_CLICKS:
+    argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(target['x']),str(target['y']),'click','1']
+   elif target['kind']!='accessibility' and cmd=='pointer.drag-drop' and trajectory:
+    argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(trajectory['points'][0][0]),str(trajectory['points'][0][1]),'mousedown','1']
+    for point in trajectory['points'][1:]:argv+=['mousemove','--sync',str(point[0]),str(point[1])]
+    argv+=['mouseup','1']
+   elif target['kind']=='image' and cmd=='image.click':
+    region=target['visualRegion']; argv=[shutil.which('xdotool') or 'xdotool','mousemove','--sync',str(region[0]+region[2]//2),str(region[1]+region[3]//2),'click','1']
+   else:
+    argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+[str(x) for x in inp.get('args',[])]
+    if trajectory:argv+=['--trajectory-json',json.dumps(trajectory,separators=(',',':'))]
    st['idempotency'][a.idempotency_key]={'digest':request_digest,'status':'outcome_unknown','result':{'checkpointToken':'cp_'+request_digest[:24]}}
    state.write_text(json.dumps(st,indent=2))
    p,timeout=backend_call(argv,a.timeout_ms)
@@ -226,18 +266,20 @@ def main():
     emit(cmd,rid,'partial',st['idempotency'][a.idempotency_key]['result'],error('OUTCOME_UNKNOWN','Action deadline expired after dispatch; it will not be replayed.','backend',False,{'phase':'action'}),revision=st['revision'],started=started); return 40
    result=backend_result(p,argv)
    if not p.returncode:
-    verify_argv=[backend()]+MAP['ui.verify']+[json.dumps(inp['postcondition'],separators=(',',':'))]
-    verified,timeout=backend_call(verify_argv,a.timeout_ms)
-    if timeout or verified.returncode:
+    if target['kind']=='accessibility':
+     verify_argv=[backend()]+MAP['ui.verify']+[json.dumps(inp['postcondition'],separators=(',',':'))]; verified,verify_timeout=backend_call(verify_argv,a.timeout_ms); confirmed=not verify_timeout and not verified.returncode; verification={'backendVerify':confirmed}
+    else:confirmed,verification=verify_effect(inp['postcondition'],target,before_geometry,trajectory)
+    result['verification']=verification
+    if not confirmed:
      result['checkpointToken']='cp_'+request_digest[:24]
      emit(cmd,rid,'partial',scrub(redact(result),secrets),error('OUTCOME_UNKNOWN','Action returned but its postcondition was not confirmed; replay is forbidden.','backend',False,{'phase':'postcondition'}),revision=st['revision'],started=started); return 40
     result['postconditionConfirmed']=True
     if trajectory: result['trajectory']=trajectory
   else:
    args=[str(x) for x in inp.get('args',[])]
-   if cmd=='screen.capture' and not args:
-    args=[str(run/'screenshot.png')]
-   argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+args
+   if cmd=='screen.capture' and not args:args=[str(run/'screenshot.png')]
+   if cmd=='window.move' and len(args)==3:argv=[shutil.which('xdotool') or 'xdotool','windowmove',args[0],args[1],args[2]]
+   else:argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+args
    p,timeout=backend_call(argv,a.timeout_ms)
    if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Backend deadline exceeded before a confirmed side effect.','backend',not mutation,{'phase':'observation' if not mutation else 'mutation'}),started=started); return 21
    result=backend_result(p,argv)

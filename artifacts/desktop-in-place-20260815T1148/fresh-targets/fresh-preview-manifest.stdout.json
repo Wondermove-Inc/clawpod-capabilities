@@ -21,20 +21,20 @@
     "pointer-click": {
       "command": "pointer.click",
       "idempotencyKey": "fresh-settings-click-v1",
-      "requestDigest": "6da262b22a0611ea9f811f66ca7270fdaab4ae266738684c5fb27ec223c45717",
+      "requestDigest": "5458641aa18877cb698bf5a7cd4c64931874199c82f6f577483edd500cab89fd",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 529051422,
-        "targetDigest": "1f88af1ebc3632c589e40668a1eced6d6845b57d28d55f7130ec7be98958622f",
+        "observedRevision": 711228621,
+        "targetDigest": "2a647ccd6ab484cb9bdf2d179c1e791b105ec9380c84033bfa1b90e298825bb2",
         "x": 700,
         "y": 520,
-        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
         "visualRegion": [
-          538,
-          261,
-          844,
-          534
+          700,
+          265,
+          200,
+          25
         ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
@@ -58,20 +58,20 @@
     "pointer-drag": {
       "command": "pointer.drag-drop",
       "idempotencyKey": "fresh-settings-drag-v1",
-      "requestDigest": "c4fe51e611ae4e67012a882ca1975264b53eb2dc205d8ba3ca2ddc4097d7d945",
+      "requestDigest": "e881e9f35f528d3e36d7b3598d3a2fe6c3c235cccae1616d3335b4c826188db1",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 4137752271,
-        "targetDigest": "f6a116cf66a944f2a15fa6a3785ed7152ac43066e916b40249ab2857ce637148",
+        "observedRevision": 2930554969,
+        "targetDigest": "aeacb8592a3e1864025a9861f66af1be9405ad46060a023895c35087da812304",
         "x": 800,
         "y": 280,
-        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
         "visualRegion": [
-          538,
-          261,
-          844,
-          534
+          700,
+          265,
+          200,
+          25
         ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
@@ -94,20 +94,20 @@
     "keyboard-type": {
       "command": "keyboard.type",
       "idempotencyKey": "fresh-settings-type-v1",
-      "requestDigest": "d90f91f65ed60fed36a32b3a2e8c043638da7399817c4d5e7fe59035531a5e0f",
+      "requestDigest": "d1ff3606033e6dc6b72241ad9c53bbc0a04925e20717a5ce5af18d8ee8bf8f27",
       "target": {
         "kind": "coordinate",
         "windowId": "52428807",
-        "observedRevision": 1328046937,
-        "targetDigest": "4f286359b2a0d73c7ccf841317760df2deaa0fb41cc310320de0b5a58e2decf4",
+        "observedRevision": 1687838617,
+        "targetDigest": "649a5f99c7107cc0aec3c1686023557300c4ebc8eb75003aefa6ff9256909784",
         "x": 1280,
         "y": 345,
-        "screenshotDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
         "visualRegion": [
-          538,
-          261,
-          844,
-          534
+          700,
+          265,
+          200,
+          25
         ],
         "monitor": "DISPLAY=:99;screen=0",
         "scale": 1.0
@@ -125,19 +125,19 @@
     "image-click": {
       "command": "image.click",
       "idempotencyKey": "fresh-settings-image-v1",
-      "requestDigest": "a8c953dc8b7366946777242ee4ab60f80db3fb2a8eb1c9b2064a78e934947519",
+      "requestDigest": "560b33684c5f60743a20ad9cea48cff1e40c19599bae5a742fd8e8528135d11b",
       "target": {
         "kind": "image",
         "windowId": "52428807",
-        "observedRevision": 2475414826,
-        "targetDigest": "938bd52a828e948fa6bbe76925a50b3df7c59aaab1548ec922fea4699f8b3947",
+        "observedRevision": 2582035745,
+        "targetDigest": "99e6bd2183aa1bdbaf13e9c479b2dc83f29f264ccf9239c40913f42b0baf5e42",
         "templateHash": "238dae4e61c936f2bf52e8c2d9fd16392b185adab04450a944e3fdc4be565315",
-        "screenshotDigest": "a284a90389f6ec7b3d033691bb9f168659f339a682ce5b5b40f37ea995401075",
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
         "visualRegion": [
-          1205,
-          300,
-          165,
-          90
+          700,
+          265,
+          200,
+          25
         ],
         "confidence": 0.99
       },

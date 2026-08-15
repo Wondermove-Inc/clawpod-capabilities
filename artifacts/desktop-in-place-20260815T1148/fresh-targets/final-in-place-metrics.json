@@ -1,0 +1,91 @@
+{
+  "executions": {
+    "image": {
+      "status": "succeeded",
+      "error": null,
+      "durationMs": 1498,
+      "postconditionConfirmed": true
+    },
+    "click": {
+      "status": "succeeded",
+      "error": null,
+      "durationMs": 1391,
+      "postconditionConfirmed": true
+    },
+    "keyboard": {
+      "status": "partial",
+      "error": "OUTCOME_UNKNOWN",
+      "durationMs": 1496,
+      "postconditionConfirmed": false
+    },
+    "drag": {
+      "status": "succeeded",
+      "error": null,
+      "durationMs": 1356,
+      "postconditionConfirmed": true
+    }
+  },
+  "visualQA": {
+    "image": "focus-only, empty search, unchanged bounds/settings, no modal",
+    "click": "focus-only/category highlight, unchanged bounds and no setting value change",
+    "keyboard": "literal display visibly present (left-clipped as play), no Enter, no setting value change, no modal; OUTCOME_UNKNOWN resolved by screenshot",
+    "drag": "exact +50px X delta, 0px Y delta, size unchanged, no setting value change; window restored afterward"
+  },
+  "safety": {
+    "falseInput": 0,
+    "duplicateInput": 0,
+    "unsafeInput": 0,
+    "unresolvedOutcome": 0,
+    "gatewayPidListenerChanges": 0,
+    "processLifecycleActions": 0
+  },
+  "metrics": {
+    "confirmedActionLatencyMs": [
+      1498,
+      1391,
+      1356
+    ],
+    "keyboardDispatchToVisualResolutionMs": 1496,
+    "dragPixelError": 0,
+    "dragRequestedDelta": [
+      50,
+      0
+    ],
+    "dragObservedDelta": [
+      50,
+      0
+    ],
+    "replay": {
+      "image-click": {
+        "returncode": 0,
+        "status": "succeeded",
+        "error": null,
+        "durationMs": 0,
+        "revision": 1
+      },
+      "pointer-click": {
+        "returncode": 0,
+        "status": "succeeded",
+        "error": null,
+        "durationMs": 0,
+        "revision": 1
+      },
+      "pointer-drag": {
+        "returncode": 0,
+        "status": "succeeded",
+        "error": null,
+        "durationMs": 0,
+        "revision": 1
+      },
+      "keyboard-type": {
+        "returncode": 40,
+        "status": "blocked",
+        "error": "OUTCOME_UNKNOWN",
+        "durationMs": 0,
+        "revision": 0
+      }
+    },
+    "confirmedLatencyMedianMs": 1391,
+    "confirmedLatencyMaxMs": 1498
+  }
+}
