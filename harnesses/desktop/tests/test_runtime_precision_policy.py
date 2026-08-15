@@ -4,9 +4,13 @@ import os
 import pathlib
 import stat
 import subprocess
+import importlib.util
 
 
 CLI = pathlib.Path(__file__).parents[1] / "desktop.py"
+SPEC = importlib.util.spec_from_file_location("desktop_harness", CLI)
+DESKTOP = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(DESKTOP)
 
 
 def make_backend(tmp_path, observe_rows, *, verify="ok"):
@@ -112,6 +116,29 @@ def test_uncertain_click_is_never_replayed_with_same_idempotency_key(tmp_path):
     second, output = invoke("pointer.click", body, backend, run_root, extra=flags)
     assert second.returncode == 40 and output["error"]["code"] == "OUTCOME_UNKNOWN"
     assert [row[0] for row in calls(log)].count("click") == 1
+
+
+def test_coordinate_keyboard_does_not_deadlock_when_pointer_is_already_at_target(monkeypatch):
+    monkeypatch.setattr(DESKTOP.shutil, "which", lambda _: "/usr/bin/xdotool")
+    argv = DESKTOP.coordinate_keyboard_argv({"x": 10, "y": 11}, ["display"])
+    assert argv == ["/usr/bin/xdotool", "mousemove", "10", "11", "click", "1", "type", "--delay", "20", "display"]
+    assert "--sync" not in argv
+
+
+def test_coordinate_keyboard_postcondition_uses_bounded_visual_readback(monkeypatch):
+    class Result:
+        returncode = 0
+        stdout = "win-1\n"
+    monkeypatch.setattr(DESKTOP.shutil, "which", lambda _: "/usr/bin/xdotool")
+    monkeypatch.setattr(DESKTOP.subprocess, "run", lambda *a, **k: Result())
+    geometry = {"X": 1, "Y": 2, "WIDTH": 300, "HEIGHT": 200}
+    monkeypatch.setattr(DESKTOP, "xwindow_geometry", lambda _: geometry)
+    post = {"searchFieldText": "display", "windowBoundsUnchanged": True}
+    target = {"windowId": "win-1"}
+    confirmed, proof = DESKTOP.verify_effect(post, target, geometry, before_visual="before", after_visual="after")
+    assert confirmed is True and proof["searchRegionChanged"] is True and proof["typedLiteral"] == "display"
+    confirmed, proof = DESKTOP.verify_effect(post, target, geometry, before_visual="same", after_visual="same")
+    assert confirmed is False and proof["searchRegionChanged"] is False
 
 
 def test_drag_trajectory_is_linear_and_bounded(tmp_path):

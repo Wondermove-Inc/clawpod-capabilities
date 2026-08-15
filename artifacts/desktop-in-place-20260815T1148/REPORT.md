@@ -61,3 +61,15 @@
 - Latest-main gate after `git fetch origin main`: `origin/main=c3db3fe62a9f5115029b986c7bd47dbb9d820f81`, merge-base is exactly the same commit, branch is 10 commits ahead and 0 behind.
 - Gateway PID/listeners matched the original snapshots through approved actions, restoration, installation, rollback, reinstall, Gateway live runs, and final checks. No Xvfb/D-Bus/portal/XFCE/Gateway process lifecycle action occurred.
 - Push, PR, publication, deployment, and Gateway/session restart were not performed.
+
+## Corrective OUTCOME_UNKNOWN closure and final gate
+
+- Diagnosed the remaining keyboard uncertainty precisely: `xdotool mousemove --sync` can wait until the action deadline when the pointer is already at the requested coordinate. The v7 checkpoint expired before dispatching text; post-action screenshot confirmed an empty focused search, so it was reconciled without replay.
+- Removed `--sync` only from coordinate keyboard pointer positioning and retained focus verification plus post-action readback. Added regressions for the already-at-target deadlock and bounded visual postcondition confirmation.
+- A new fresh target, digest, idempotency key, and standing-approval receipt were used for v8. `keyboard.type` succeeded in 2819 ms with exact argv literal `display`, active-window match, unchanged 834x500 geometry, changed search region, and `postconditionConfirmed=true`. Visual QA showed the filtered Appearance result, no Enter-triggered modal or setting change; at the existing oversized dark-theme rendering the field visibly clips the left `dis` and shows suffix `play`. Search state was cleared afterward.
+- The earlier successful v4 image focus, pointer focus, and exact +50 px drag remained checkpointed and were not replayed. Their readbacks prove 0 px drag error, unchanged size/settings, and no modal; window position was restored.
+- Safe app/file-dialog/editor/file-manager/modal/fallback coverage remains evidenced by the prior in-place bundle and real-session matrix. No absent file dialog was synthesized in the existing session, avoiding a placeholder target; unsupported/absent targets continued to fail closed.
+- Source final gate: 40 Desktop/routing/Gateway-prepare tests passed; all 38 capability entries validated after registry regeneration.
+- Transactional candidate cycle at `/workspace/artifacts/desktop-inplace-install-20260815T1240`: source/installed digest diff empty, installed version 3.0.0, installed live preflight succeeded with backend/display/D-Bus/AT-SPI all true, then prior live roots were restored byte-for-byte (content hashes identical). Gateway PID 665 and its three listener snapshots were invariant throughout install, live use, and rollback.
+- Latest-main gate refreshed: `origin/main=c3db3fe62a9f5115029b986c7bd47dbb9d820f81`, merge-base exactly equals origin/main, branch 0 behind. No rebase was needed.
+- Final corrective commit is recorded after this report update. No push, PR, publish, release, deploy, merge, or process restart was performed.
