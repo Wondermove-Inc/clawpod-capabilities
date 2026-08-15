@@ -27,3 +27,11 @@ def test_image_mismatch_and_window_ambiguity_contracts_present():
  c=json.loads((CLI.parent/'command_contracts.json').read_text())['commands']; assert 'image.locate' in c and 'window.list' in c and c['image.click']['safetyClass']=='S2'
 def test_partial_failure_taxonomy_and_secrets_redacted():
  p,o=run('task.plan','--input','{"password":"never-log"}','--idempotency-key','x','--dry-run'); assert 'never-log' not in p.stdout and '[REDACTED]' in p.stdout
+
+def test_app_launch_does_not_report_success_without_a_visible_window():
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'
+  backend.write_text("#!/bin/sh\necho 'Launched: example'\necho 'WARNING: Window not detected after 10s (app may still be loading)'\n")
+  backend.chmod(0o755)
+  p,o=run('app.launch','--input','{"args":["file","/tmp/example.txt"]}','--idempotency-key','launch-no-window',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  assert p.returncode==20 and o['status']=='failed' and o['error']['code']=='POSTCONDITION_NOT_CONFIRMED'

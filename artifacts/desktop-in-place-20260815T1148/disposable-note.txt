@@ -1,0 +1,2 @@
+Desktop in-place validation
+Unicode: 한글 검증

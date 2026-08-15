@@ -177,6 +177,8 @@ def main():
    if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Backend deadline exceeded before a confirmed side effect.','backend',not mutation,{'phase':'observation' if not mutation else 'mutation'}),started=started); return 21
    result=backend_result(p,argv)
   if p.returncode: code='AT_SPI_UNAVAILABLE' if p.returncode==4 else 'TARGET_NOT_FOUND'; emit(cmd,rid,'failed',scrub(redact(result),secrets),error(code,'System desktop CLI failed.','backend',code=='AT_SPI_UNAVAILABLE'),started=started); return 24 if p.returncode==4 else 20
+  if cmd=='app.launch' and re.search(r'window not detected|window (?:was )?not found',p.stdout+'\n'+p.stderr,re.I):
+   emit(cmd,rid,'failed',scrub(redact(result),secrets),error('POSTCONDITION_NOT_CONFIRMED','The process launch returned but no application window was observed.','backend',False,{'phase':'launch-observation'},'Inspect the launch command or file association; do not treat process creation as a visible GUI success.'),started=started); return 20
  result=scrub(redact(result),secrets)
  if mutation: st['revision']+=1; st['idempotency'][a.idempotency_key]={'digest':request_digest,'status':'succeeded','result':result}; state.write_text(json.dumps(st,indent=2))
  ev=run/'events.jsonl'; seq=sum(1 for _ in ev.open())+1 if ev.exists() else 1; ev.open('a').write(json.dumps({'sequence':seq,'at':now(),'command':cmd,'requestDigest':request_digest,'status':'succeeded'})+'\n')

@@ -1,6 +1,6 @@
 ---
 name: desktop
-description: "Use for native desktop, browser chrome, or OS-dialog GUI work: inspect accessible UI, operate pointer, keyboard, dialogs, or files, and verify with redacted evidence. Prefer Browser/Playwright, node screen, or typed APIs when applicable."
+description: "Use for native app or OS-dialog handoffs when no typed API or DOM fits. Inspect, focus, operate pointer, keyboard, dialogs, and drag/drop, then verify. Prefer Browser for DOM and node screen remotely; compose Desktop only for native steps."
 ---
 
 # Desktop
@@ -9,11 +9,13 @@ Prefer Browser/Playwright for DOM work, node screen for an attached remote scree
 
 ## Workflow
 
-1. Run `desktop environment.preflight --input '{}'` and stop on unavailable AT-SPI or backend state.
-2. Observe before acting. Prefer stable accessible targets over images or coordinates.
-3. Preview S2-S4 actions and obtain a fresh digest-bound approval. Never put secret values in arguments, previews, evidence, or task files.
-4. Execute bounded observe, act, verify steps with idempotency keys and expected revisions.
-5. Stop on CAPTCHA or human verification. Ask the human to complete it, then re-observe before resuming.
-6. Report partial commits and unknown outcomes explicitly, then perform ownership-scoped cleanup.
+1. Run `desktop environment.preflight --input '{}'` and stop on unavailable AT-SPI, D-Bus session, or backend state.
+2. Observe before acting. Use accessibility targets first. Permit image fallback only when explicitly supported, and use digest-bound coordinates only as a last resort.
+3. Bind precision actions to a fresh window, observed revision, target digest, and explicit read-only postcondition. Re-observe stale targets within the bounded policy, then stop rather than approximate.
+4. Preview S2-S4 actions and obtain a fresh digest-bound approval. Never put secret values in arguments, previews, evidence, or task files.
+5. Verify focus immediately before input. Dispatch click-like actions at most once per idempotency key, confirm their postcondition, and never replay an unknown outcome automatically.
+6. Use bounded drag trajectories and deadlines. Stop on focus drift, target drift, unsupported fallback, missing postcondition, or uncertain effect.
+7. Stop on CAPTCHA or human verification. Ask the human to complete it, then re-observe before resuming.
+8. Report partial commits and unknown outcomes explicitly, then perform ownership-scoped cleanup.
 
 Read [operations](references/operations.md) for command families and [safety](references/safety.md) before mutations.

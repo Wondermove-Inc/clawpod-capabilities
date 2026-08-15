@@ -48,6 +48,14 @@ class RoutingContractTests(unittest.TestCase):
             self.assertNotRegex(description, r"\b(?:WHEN|CAN)\s*:", capability)
             self.assertRegex(description, r"\b(?:Use|use)\b", capability)
 
+    def test_desktop_routes_only_native_handoffs_and_names_composition_boundaries(self) -> None:
+        description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")
+        for phrase in ("native", "DOM", "node screen", "typed API", "compose Desktop"):
+            self.assertIn(phrase, description)
+        negatives = " ".join(self.contracts["desktop"]["negative"])
+        for collision in ("Playwright", "remote device screen", "typed API"):
+            self.assertIn(collision, negatives)
+
 
 if __name__ == "__main__":
     unittest.main()

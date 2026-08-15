@@ -349,7 +349,7 @@
       "id": "desktop",
       "type": "skill",
       "version": "3.0.0",
-      "description": "Use for native desktop, browser chrome, or OS-dialog GUI work: inspect accessible UI, operate pointer, keyboard, dialogs, or files, and verify with redacted evidence. Prefer Browser/Playwright, node screen, or typed APIs when applicable.",
+      "description": "Use for native app or OS-dialog handoffs when no typed API or DOM fits. Inspect, focus, operate pointer, keyboard, dialogs, and drag/drop, then verify. Prefer Browser for DOM and node screen remotely; compose Desktop only for native steps.",
       "path": "skills/desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -364,7 +364,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c705d27920e2aa8fb065a9b2854c763ab9563101c0938228cee11787b508b368"
+          "sha256": "3b6c67f08df8c19ee12eef2e172fa02637320c8529c314e9b9566c7bfed17851"
         },
         {
           "path": "references/operations.md",
@@ -1158,11 +1158,11 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "ed3103d3bc8e77f396efe269543c10ae958a6a88d1988b82b815dbf213f8bd39"
+          "sha256": "c3f93672c80092fe4a7541799696266da07a2d1a5ca27b0316d3fd3afc328000"
         },
         {
           "path": "harness.json",
-          "sha256": "bf89f109634d39a3f8b4794b6f8a26e367b8ab323299fa0c39ccfac89a32d359"
+          "sha256": "b716becf04d7dce8fdab9dffebf510cac2f41a665aaa566da6af09ebb264b903"
         },
         {
           "path": "precision_lab/README.md",
