@@ -5,7 +5,7 @@ import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-VERSION="0.3.6"
+VERSION="0.3.7"
 DESIGN_URL="https://claude.ai/design"
 LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
