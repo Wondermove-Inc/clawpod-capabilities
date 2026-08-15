@@ -1,20 +1,289 @@
 {
-  "atlassian": {"positive": ["Update the Jira issue after approval", "Read this Confluence page", "Add an attachment to a Jira ticket"], "negative": ["Open a GitHub pull request", "Edit a Notion page"], "adjacent": ["github", "notion"]},
-  "claude-design": {"positive": ["Create a presentation deck", "Refine this UI wireframe", "Export and verify the design system"], "negative": ["Generate a standalone product photo", "Render a localized video"], "adjacent": ["clawpod-image-studio", "clawpod-video-studio"]},
-  "clawpod-capability-registry": {"positive": ["Find a capability for this task", "Install and validate this capability", "Roll back the capability update"], "negative": ["Coordinate two coding agents", "Run the selected capability's domain task"], "adjacent": ["codex-claude-project-development"]},
-  "clawpod-cloud-webhooks": {"positive": ["Inspect ClawPod webhook events", "Preview a playbook rule change", "Verify a webhook source update"], "negative": ["Expose my local server publicly", "Configure a production webhook host"], "adjacent": ["cloudflare-quick-tunnel-preview"]},
-  "clawpod-image-studio": {"positive": ["Generate a standalone campaign image", "Compare OpenAI and Recraft image outputs", "Quality-check this edited photo"], "negative": ["Build a presentation deck", "Produce a narrated video"], "adjacent": ["claude-design", "clawpod-video-studio"]},
-  "clawpod-ocr": {"positive": ["Extract Korean text from this PDF", "Export OCR results from these images", "Create an OCR comparison DOCX"], "negative": ["Fact-check the claims in this PDF", "Edit the document layout"], "adjacent": ["verified-research"]},
-  "clawpod-video-studio": {"positive": ["Create a product launch video", "Localize and resume this video job", "Run media QA before export"], "negative": ["Generate one standalone still image", "Design a slide deck"], "adjacent": ["clawpod-image-studio", "claude-design"]},
-  "cloudflare-quick-tunnel-preview": {"positive": ["Expose this loopback preview temporarily", "Start an accountless Quick Tunnel", "Stop the temporary preview tunnel"], "negative": ["Host this production service", "Inspect ClawPod webhook rules"], "adjacent": ["clawpod-cloud-webhooks"]},
-  "codex-claude-project-development": {"positive": ["Onboard Claude for this project", "Resume a cross-process coding session", "Coordinate Codex and Claude leases"], "negative": ["Make this edit in the current process", "Open a GitHub issue"], "adjacent": ["github", "clawpod-capability-registry"]},
-  "enterprise-newsletter": {"positive": ["Render the enterprise newsletter", "Validate a capability catalog", "Release-bind the approved brief"], "negative": ["Send the transactional email now", "Research sources for these claims"], "adjacent": ["resend-email", "verified-research"]},
-  "github": {"positive": ["Open a GitHub pull request", "Inspect the failed Actions run", "Create a guarded repository release"], "negative": ["Update a Jira issue", "Coordinate durable coding sessions"], "adjacent": ["atlassian", "codex-claude-project-development"]},
-  "google-workspace": {"positive": ["Search approved Gmail mail", "Create a Google Calendar event", "Change a Drive file permission"], "negative": ["Send through Resend", "Edit a Notion database"], "adjacent": ["resend-email", "notion", "synology-smb-storage"]},
-  "memory-graph": {"positive": ["Connect decisions to later outcomes", "Reconcile people projects and events", "Export the private evidence graph"], "negative": ["Look up one simple remembered fact", "Capture public research citations"], "adjacent": ["verified-research"]},
-  "notion": {"positive": ["Read a Notion page", "Update a Notion data source", "Inspect Notion webhook events"], "negative": ["Edit a Confluence page", "Change a Google Drive permission"], "adjacent": ["atlassian", "google-workspace"]},
-  "resend-email": {"positive": ["Verify a Resend sender", "Preview a transactional email", "Deliver the approved message retry-safely"], "negative": ["Manage my Gmail inbox", "Compose the newsletter content"], "adjacent": ["google-workspace", "enterprise-newsletter"]},
-  "synology-smb-storage": {"positive": ["Discover Synology SMB shares", "Mount the approved NAS share", "Restore the artifact storage mount"], "negative": ["Upload this to Google Drive", "Administer every NAS setting"], "adjacent": ["google-workspace"]},
-  "verified-research": {"positive": ["Cross-check these factual claims", "Capture citations with confidence", "Resolve contradictions in the evidence bundle"], "negative": ["Brainstorm taglines without research", "Import this supplied YouTube transcript"], "adjacent": ["youtube-evidence-analysis", "clawpod-ocr", "memory-graph", "enterprise-newsletter"]},
-  "youtube-evidence-analysis": {"positive": ["Normalize this YouTube URL", "Import the supplied video transcript", "Validate these timestamp citations"], "negative": ["Download captions from YouTube", "Cross-check external factual claims"], "adjacent": ["verified-research"]}
+  "atlassian": {
+    "positive": [
+      "Update the Jira issue after approval",
+      "Read this Confluence page",
+      "Add an attachment to a Jira ticket"
+    ],
+    "negative": [
+      "Open a GitHub pull request",
+      "Edit a Notion page"
+    ],
+    "adjacent": [
+      "github",
+      "notion"
+    ]
+  },
+  "claude-design": {
+    "positive": [
+      "Create a presentation deck",
+      "Refine this UI wireframe",
+      "Export and verify the design system"
+    ],
+    "negative": [
+      "Generate a standalone product photo",
+      "Render a localized video"
+    ],
+    "adjacent": [
+      "clawpod-image-studio",
+      "clawpod-video-studio"
+    ]
+  },
+  "clawpod-capability-registry": {
+    "positive": [
+      "Find a capability for this task",
+      "Install and validate this capability",
+      "Roll back the capability update"
+    ],
+    "negative": [
+      "Coordinate two coding agents",
+      "Run the selected capability's domain task"
+    ],
+    "adjacent": [
+      "codex-claude-project-development"
+    ]
+  },
+  "clawpod-cloud-webhooks": {
+    "positive": [
+      "Inspect ClawPod webhook events",
+      "Preview a playbook rule change",
+      "Verify a webhook source update"
+    ],
+    "negative": [
+      "Expose my local server publicly",
+      "Configure a production webhook host"
+    ],
+    "adjacent": [
+      "cloudflare-quick-tunnel-preview"
+    ]
+  },
+  "clawpod-image-studio": {
+    "positive": [
+      "Generate a standalone campaign image",
+      "Compare OpenAI and Recraft image outputs",
+      "Quality-check this edited photo"
+    ],
+    "negative": [
+      "Build a presentation deck",
+      "Produce a narrated video"
+    ],
+    "adjacent": [
+      "claude-design",
+      "clawpod-video-studio",
+      "desktop"
+    ]
+  },
+  "clawpod-ocr": {
+    "positive": [
+      "Extract Korean text from this PDF",
+      "Export OCR results from these images",
+      "Create an OCR comparison DOCX"
+    ],
+    "negative": [
+      "Fact-check the claims in this PDF",
+      "Edit the document layout"
+    ],
+    "adjacent": [
+      "verified-research",
+      "desktop"
+    ]
+  },
+  "clawpod-video-studio": {
+    "positive": [
+      "Create a product launch video",
+      "Localize and resume this video job",
+      "Run media QA before export"
+    ],
+    "negative": [
+      "Generate one standalone still image",
+      "Design a slide deck"
+    ],
+    "adjacent": [
+      "clawpod-image-studio",
+      "claude-design"
+    ]
+  },
+  "cloudflare-quick-tunnel-preview": {
+    "positive": [
+      "Expose this loopback preview temporarily",
+      "Start an accountless Quick Tunnel",
+      "Stop the temporary preview tunnel"
+    ],
+    "negative": [
+      "Host this production service",
+      "Inspect ClawPod webhook rules"
+    ],
+    "adjacent": [
+      "clawpod-cloud-webhooks"
+    ]
+  },
+  "codex-claude-project-development": {
+    "positive": [
+      "Onboard Claude for this project",
+      "Resume a cross-process coding session",
+      "Coordinate Codex and Claude leases"
+    ],
+    "negative": [
+      "Make this edit in the current process",
+      "Open a GitHub issue"
+    ],
+    "adjacent": [
+      "github",
+      "clawpod-capability-registry"
+    ]
+  },
+  "enterprise-newsletter": {
+    "positive": [
+      "Render the enterprise newsletter",
+      "Validate a capability catalog",
+      "Release-bind the approved brief"
+    ],
+    "negative": [
+      "Send the transactional email now",
+      "Research sources for these claims"
+    ],
+    "adjacent": [
+      "resend-email",
+      "verified-research"
+    ]
+  },
+  "github": {
+    "positive": [
+      "Open a GitHub pull request",
+      "Inspect the failed Actions run",
+      "Create a guarded repository release"
+    ],
+    "negative": [
+      "Update a Jira issue",
+      "Coordinate durable coding sessions"
+    ],
+    "adjacent": [
+      "atlassian",
+      "codex-claude-project-development"
+    ]
+  },
+  "google-workspace": {
+    "positive": [
+      "Search approved Gmail mail",
+      "Create a Google Calendar event",
+      "Change a Drive file permission"
+    ],
+    "negative": [
+      "Send through Resend",
+      "Edit a Notion database"
+    ],
+    "adjacent": [
+      "resend-email",
+      "notion",
+      "synology-smb-storage"
+    ]
+  },
+  "memory-graph": {
+    "positive": [
+      "Connect decisions to later outcomes",
+      "Reconcile people projects and events",
+      "Export the private evidence graph"
+    ],
+    "negative": [
+      "Look up one simple remembered fact",
+      "Capture public research citations"
+    ],
+    "adjacent": [
+      "verified-research"
+    ]
+  },
+  "notion": {
+    "positive": [
+      "Read a Notion page",
+      "Update a Notion data source",
+      "Inspect Notion webhook events"
+    ],
+    "negative": [
+      "Edit a Confluence page",
+      "Change a Google Drive permission"
+    ],
+    "adjacent": [
+      "atlassian",
+      "google-workspace"
+    ]
+  },
+  "resend-email": {
+    "positive": [
+      "Verify a Resend sender",
+      "Preview a transactional email",
+      "Deliver the approved message retry-safely"
+    ],
+    "negative": [
+      "Manage my Gmail inbox",
+      "Compose the newsletter content"
+    ],
+    "adjacent": [
+      "google-workspace",
+      "enterprise-newsletter"
+    ]
+  },
+  "synology-smb-storage": {
+    "positive": [
+      "Discover Synology SMB shares",
+      "Mount the approved NAS share",
+      "Restore the artifact storage mount"
+    ],
+    "negative": [
+      "Upload this to Google Drive",
+      "Administer every NAS setting"
+    ],
+    "adjacent": [
+      "google-workspace"
+    ]
+  },
+  "verified-research": {
+    "positive": [
+      "Cross-check these factual claims",
+      "Capture citations with confidence",
+      "Resolve contradictions in the evidence bundle"
+    ],
+    "negative": [
+      "Brainstorm taglines without research",
+      "Import this supplied YouTube transcript"
+    ],
+    "adjacent": [
+      "youtube-evidence-analysis",
+      "clawpod-ocr",
+      "memory-graph",
+      "enterprise-newsletter"
+    ]
+  },
+  "youtube-evidence-analysis": {
+    "positive": [
+      "Normalize this YouTube URL",
+      "Import the supplied video transcript",
+      "Validate these timestamp citations"
+    ],
+    "negative": [
+      "Download captions from YouTube",
+      "Cross-check external factual claims"
+    ],
+    "adjacent": [
+      "verified-research"
+    ]
+  },
+  "desktop": {
+    "positive": [
+      "Observe and operate a native desktop application when no typed API or DOM fits",
+      "Handle an operating-system dialog or browser chrome outside the web DOM",
+      "Recover and visually verify a bounded native GUI task",
+      "Compose a native file-dialog handoff after Browser DOM automation"
+    ],
+    "negative": [
+      "Inspect and click a normal web-page DOM element with Browser",
+      "Capture or operate an attached remote device screen through nodes",
+      "Read or mutate service state through its provider API",
+      "Extract text from a PDF image with OCR",
+      "Generate a standalone marketing image"
+    ],
+    "adjacent": [
+      "clawpod-ocr",
+      "clawpod-image-studio"
+    ]
+  }
 }

@@ -1,0 +1,4 @@
+image-click 20 failed STALE_TARGET
+pointer-click 20 failed STALE_TARGET
+keyboard-type 20 failed STALE_TARGET
+pointer-drag 20 failed STALE_TARGET

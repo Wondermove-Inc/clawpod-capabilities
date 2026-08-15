@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "desktop.precision.environment.v1",
+  "environments": [
+    {"id": "hd-light-dbus", "width": 1280, "height": 720, "scale": 1.0, "dpi": 96, "theme": "light", "dbusSession": true},
+    {"id": "fhd-dark-no-dbus", "width": 1920, "height": 1080, "scale": 1.25, "dpi": 120, "theme": "dark", "dbusSession": false},
+    {"id": "qhd-light-dbus", "width": 2560, "height": 1440, "scale": 1.5, "dpi": 144, "theme": "light", "dbusSession": true},
+    {"id": "4k-dark-no-dbus", "width": 3840, "height": 2160, "scale": 2.0, "dpi": 192, "theme": "dark", "dbusSession": false}
+  ]
+}

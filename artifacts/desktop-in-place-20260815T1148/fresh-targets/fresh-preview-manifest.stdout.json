@@ -1,0 +1,155 @@
+{
+  "source": {
+    "display": ":99",
+    "windowId": "52428807",
+    "title": "Settings",
+    "screen": {
+      "width": 1920,
+      "height": 1080
+    },
+    "screenshot": "artifacts/desktop-in-place-20260815T1148/fresh-targets/screen-settings-v2.png",
+    "screenshotDigest": "590418e4ef752d8e164b3ca57ce2261f9d3c3efeed6d30cff6244f0cc223635b",
+    "windowRegionDigest": "42b6f71599fa79064f6b2ae3265c2a1de1a5cdc465a63f6c0609c27436fd8352",
+    "visibleBounds": [
+      538,
+      261,
+      844,
+      534
+    ]
+  },
+  "previews": {
+    "pointer-click": {
+      "command": "pointer.click",
+      "idempotencyKey": "fresh-settings-click-v1",
+      "requestDigest": "5458641aa18877cb698bf5a7cd4c64931874199c82f6f577483edd500cab89fd",
+      "target": {
+        "kind": "coordinate",
+        "windowId": "52428807",
+        "observedRevision": 711228621,
+        "targetDigest": "2a647ccd6ab484cb9bdf2d179c1e791b105ec9380c84033bfa1b90e298825bb2",
+        "x": 700,
+        "y": 520,
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
+        "visualRegion": [
+          700,
+          265,
+          200,
+          25
+        ],
+        "monitor": "DISPLAY=:99;screen=0",
+        "scale": 1.0
+      },
+      "postcondition": {
+        "kind": "read-only",
+        "activeWindowId": "52428807",
+        "windowTitle": "Settings",
+        "windowBoundsUnchanged": [
+          538,
+          261,
+          844,
+          534
+        ],
+        "effect": "Focus only; no setting activation or value change"
+      },
+      "intendedEffect": "Focus only; no setting activation or value change",
+      "approvalRequired": true,
+      "executed": false
+    },
+    "pointer-drag": {
+      "command": "pointer.drag-drop",
+      "idempotencyKey": "fresh-settings-drag-v1",
+      "requestDigest": "e881e9f35f528d3e36d7b3598d3a2fe6c3c235cccae1616d3335b4c826188db1",
+      "target": {
+        "kind": "coordinate",
+        "windowId": "52428807",
+        "observedRevision": 2930554969,
+        "targetDigest": "aeacb8592a3e1864025a9861f66af1be9405ad46060a023895c35087da812304",
+        "x": 800,
+        "y": 280,
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
+        "visualRegion": [
+          700,
+          265,
+          200,
+          25
+        ],
+        "monitor": "DISPLAY=:99;screen=0",
+        "scale": 1.0
+      },
+      "postcondition": {
+        "kind": "read-only",
+        "windowTitle": "Settings",
+        "expectedBounds": [
+          588,
+          261,
+          844,
+          534
+        ],
+        "effect": "Move disposable Settings window exactly 50 px right without resizing or changing settings"
+      },
+      "intendedEffect": "Move disposable Settings window exactly 50 px right without resizing or changing settings",
+      "approvalRequired": true,
+      "executed": false
+    },
+    "keyboard-type": {
+      "command": "keyboard.type",
+      "idempotencyKey": "fresh-settings-type-v1",
+      "requestDigest": "d1ff3606033e6dc6b72241ad9c53bbc0a04925e20717a5ce5af18d8ee8bf8f27",
+      "target": {
+        "kind": "coordinate",
+        "windowId": "52428807",
+        "observedRevision": 1687838617,
+        "targetDigest": "649a5f99c7107cc0aec3c1686023557300c4ebc8eb75003aefa6ff9256909784",
+        "x": 1280,
+        "y": 345,
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
+        "visualRegion": [
+          700,
+          265,
+          200,
+          25
+        ],
+        "monitor": "DISPLAY=:99;screen=0",
+        "scale": 1.0
+      },
+      "postcondition": {
+        "kind": "read-only",
+        "windowTitle": "Settings",
+        "searchFieldText": "display",
+        "effect": "Type literal display into focused Settings search; do not press Enter"
+      },
+      "intendedEffect": "Type literal display into focused Settings search; do not press Enter",
+      "approvalRequired": true,
+      "executed": false
+    },
+    "image-click": {
+      "command": "image.click",
+      "idempotencyKey": "fresh-settings-image-v1",
+      "requestDigest": "560b33684c5f60743a20ad9cea48cff1e40c19599bae5a742fd8e8528135d11b",
+      "target": {
+        "kind": "image",
+        "windowId": "52428807",
+        "observedRevision": 2582035745,
+        "targetDigest": "99e6bd2183aa1bdbaf13e9c479b2dc83f29f264ccf9239c40913f42b0baf5e42",
+        "templateHash": "238dae4e61c936f2bf52e8c2d9fd16392b185adab04450a944e3fdc4be565315",
+        "screenshotDigest": "b2598357f2c9f78f486dced2f00532dac4ec6cbbd8a5e6d48536736c8b5e30a2",
+        "visualRegion": [
+          700,
+          265,
+          200,
+          25
+        ],
+        "confidence": 0.99
+      },
+      "postcondition": {
+        "kind": "read-only",
+        "windowTitle": "Settings",
+        "focusedRegion": "search-field",
+        "effect": "Focus the visible Settings search field only; no text or setting change"
+      },
+      "intendedEffect": "Focus the visible Settings search field only; no text or setting change",
+      "approvalRequired": true,
+      "executed": false
+    }
+  }
+}

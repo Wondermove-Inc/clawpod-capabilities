@@ -1,0 +1,16 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "3.0.0",
+  "compatibility": {
+    "openclaw": ">=2026.4.11",
+    "platforms": [
+      "linux"
+    ]
+  },
+  "safety": {
+    "risk": "destructive",
+    "approvalRequired": true
+  },
+  "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services."
+}

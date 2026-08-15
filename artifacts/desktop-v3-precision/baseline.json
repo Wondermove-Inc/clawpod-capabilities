@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "desktop.precision.baseline.v1",
+  "candidateCommit": "e3c86009bf7e5620feef088cd14bca5808f468b3",
+  "originMainCommit": "c3db3fe62a9f5115029b986c7bd47dbb9d820f81",
+  "mergeBase": "c3db3fe62a9f5115029b986c7bd47dbb9d820f81",
+  "deterministicSeed": 13851760,
+  "scope": "local deterministic fixtures only",
+  "publication": "prohibited",
+  "excluded": [
+    "CAPTCHA bypass",
+    "anti-cheat bypass",
+    "remote targets",
+    "real user input injection"
+  ],
+  "sampleCount": 768,
+  "scenarioCount": 16,
+  "environmentCount": 4,
+  "metrics": {
+    "acquisitionSuccessRate": 1.0,
+    "endpointPixelError": {
+      "p50": 0.495,
+      "p95": 1.152,
+      "max": 1.806
+    },
+    "clickTimingErrorMs": {
+      "p50": 4.564,
+      "p95": 8.507,
+      "max": 8.98
+    },
+    "clickJitterMs": {
+      "p50": 2.343,
+      "p95": 4.713,
+      "max": 4.998
+    },
+    "latencyMs": {
+      "p50": 16.757,
+      "p95": 23.834,
+      "p99": 25.542
+    },
+    "droppedInputs": 0,
+    "duplicateInputs": 0,
+    "falseClicks": 0,
+    "unsafeSideEffects": 0,
+    "recoveryRate": 1.0,
+    "recoveryTimeMs": {
+      "p50": 57.895,
+      "p95": 74.71
+    },
+    "safeRefusals": 48,
+    "acceleratedSoak": {
+      "events": 36000,
+      "eventRateHz": 10,
+      "equivalentSeconds": 3600.0,
+      "failures": 0
+    },
+    "benchmarkWallTimeMs": 274.948
+  },
+  "checks": {
+    "acquisition": true,
+    "endpoint-p50": true,
+    "endpoint-p95": true,
+    "endpoint-max": true,
+    "timing-p95": true,
+    "jitter-p95": true,
+    "latency-p50": true,
+    "latency-p95": true,
+    "latency-p99": true,
+    "dropped": true,
+    "duplicates": true,
+    "false-clicks": true,
+    "unsafe-effects": true,
+    "recovery": true,
+    "recovery-time": true,
+    "soak-duration": true,
+    "soak-failures": true
+  },
+  "passed": true,
+  "visualEvidence": {
+    "frames": 16,
+    "contactSheet": "contact-sheet.png",
+    "videoProduced": false,
+    "rationale": "A deterministic PNG frame sequence/contact sheet is portable and avoids optional video codecs."
+  }
+}

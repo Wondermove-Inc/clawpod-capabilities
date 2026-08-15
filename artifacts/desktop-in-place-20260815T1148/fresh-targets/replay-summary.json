@@ -1,0 +1,30 @@
+{
+  "image-click": {
+    "returncode": 0,
+    "status": "succeeded",
+    "error": null,
+    "durationMs": 0,
+    "revision": 1
+  },
+  "pointer-click": {
+    "returncode": 0,
+    "status": "succeeded",
+    "error": null,
+    "durationMs": 0,
+    "revision": 1
+  },
+  "pointer-drag": {
+    "returncode": 0,
+    "status": "succeeded",
+    "error": null,
+    "durationMs": 0,
+    "revision": 1
+  },
+  "keyboard-type": {
+    "returncode": 40,
+    "status": "blocked",
+    "error": "OUTCOME_UNKNOWN",
+    "durationMs": 0,
+    "revision": 0
+  }
+}

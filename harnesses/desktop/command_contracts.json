@@ -1,0 +1,475 @@
+{
+  "schemaVersion": "desktop.v3",
+  "version": "3.0.0",
+  "commands": {
+    "capabilities": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "environment.preflight": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "session.list": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "session.get": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "session.open": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "session.recover": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "app.list": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "app.get": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "window.list": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "window.get": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "screen.list": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "screen.capture": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.observe": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.find": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.read": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.table": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.wait": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "ui.verify": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "image.locate": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "dialog.inspect": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "clipboard.inspect": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "download.inspect": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "task.get": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "task.events": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "task.artifacts": {
+      "safetyClass": "S0",
+      "timeoutMs": 30000,
+      "idempotencyRequired": false,
+      "dryRun": false,
+      "evidence": true
+    },
+    "app.launch": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "app.focus": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.activate": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.move": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.resize": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.minimize": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.maximize": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.restore": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.move": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.scroll": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "keyboard.key": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "keyboard.shortcut": {
+      "safetyClass": "S1",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "session.close": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "app.close": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.click": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.double-click": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.right-click": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "pointer.drag-drop": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "keyboard.type": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "keyboard.select": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "clipboard.read": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "clipboard.write": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "clipboard.clear": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "dialog.respond": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "file-dialog.open": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "file-dialog.save": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "file-dialog.choose-directory": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "file-dialog.cancel": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "download.wait": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "download.move": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "download.quarantine": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "image.click": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.plan": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.preview": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.run": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.pause": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.resume": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.cancel": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "task.cleanup": {
+      "safetyClass": "S2",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "window.close": {
+      "safetyClass": "S4",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "process.terminate": {
+      "safetyClass": "S4",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    },
+    "process.kill": {
+      "safetyClass": "S4",
+      "timeoutMs": 30000,
+      "idempotencyRequired": true,
+      "dryRun": true,
+      "evidence": true
+    }
+  }
+}

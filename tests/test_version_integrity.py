@@ -80,8 +80,8 @@ class CandidateFinalVersionIntegrityTests(unittest.TestCase):
         self.entries = {(item["type"], item["id"]): item for item in self.registry["capabilities"]}
         self.ids = sorted(path.name for path in (ROOT / "skills").iterdir() if path.is_dir())
 
-    def test_all_18_connected_release_units_have_exact_metadata_and_registry_versions(self) -> None:
-        self.assertEqual(len(self.ids), 18)
+    def test_all_19_connected_release_units_have_exact_metadata_and_registry_versions(self) -> None:
+        self.assertEqual(len(self.ids), 19)
         self.assertEqual(self.ids, sorted(path.name for path in (ROOT / "harnesses").iterdir() if path.is_dir()))
         for capability_id in self.ids:
             skill = load(ROOT / "skills" / capability_id / "capability.json")

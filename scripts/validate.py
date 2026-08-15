@@ -84,8 +84,8 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         fail(f"{label}.type must be skill or harness")
     if not isinstance(version, str) or not SEMVER.fullmatch(version):
         fail(f"{label}.version must be semantic version text")
-    if not isinstance(description, str) or not 10 <= len(description) <= 240:
-        fail(f"{label}.description must contain 10-240 characters")
+    if not isinstance(description, str) or not 10 <= len(description) <= 500:
+        fail(f"{label}.description must contain 10-500 characters")
 
     expected_path = f"{'skills' if capability_type == 'skill' else 'harnesses'}/{capability_id}"
     if package_path != expected_path:

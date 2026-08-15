@@ -26,7 +26,7 @@ class RegistrySyncTests(unittest.TestCase):
 
     def copy_repository(self, directory: str) -> Path:
         copy = Path(directory) / "repo"
-        shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+        shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "artifacts", ".pytest_cache"))
         return copy
 
     def test_repository_registry_is_synchronized(self) -> None:
@@ -52,7 +52,7 @@ class RegistrySyncTests(unittest.TestCase):
     def test_registry_skill_descriptions_exactly_match_frontmatter(self) -> None:
         registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))
         skills = [entry for entry in registry["capabilities"] if entry["type"] == "skill"]
-        self.assertEqual(len(skills), 18)
+        self.assertEqual(len(skills), 19)
         for entry in skills:
             expected = skill_description(ROOT / entry["path"] / "SKILL.md")
             self.assertEqual(entry["description"], expected, entry["id"])
