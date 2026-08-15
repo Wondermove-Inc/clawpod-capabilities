@@ -1,8 +1,10 @@
 import importlib.util, json, os, pathlib, subprocess, tempfile
 from PIL import Image
 CLI=pathlib.Path(__file__).parents[1]/'desktop.py'
+METRICS=pathlib.Path(__file__).parent/'fixtures'/'xdpyinfo-static.sh'
 def run(*args,env=None):
- p=subprocess.run([str(CLI),*args],capture_output=True,text=True,env={**os.environ,**(env or {})}); return p,json.loads(p.stdout)
+ base={'DISPLAY':':disposable-test','DESKTOP_METRICS_CLI':str(METRICS)}
+ p=subprocess.run([str(CLI),*args],capture_output=True,text=True,env={**os.environ,**base,**(env or {})}); return p,json.loads(p.stdout)
 def test_invalid_input():
  p,o=run('ui.observe','--input','[]'); assert p.returncode==10 and o['error']['code']=='INVALID_INPUT'
 def test_backend_unavailable():
@@ -73,3 +75,51 @@ def test_keyboard_type_requires_a_fresh_target_outside_dry_run():
   receipt=pathlib.Path(d)/'approval.json'; receipt.write_text(json.dumps({'requestDigest':preview['result']['requestDigest'],'expiresAt':'2999-01-01T00:00:00+00:00'}))
   p,o=run('keyboard.type','--input',body,'--idempotency-key','typed-target','--approval-file',str(receipt),env={'DESKTOP_SYSTEM_CLI':str(backend)})
   assert p.returncode==31 and o['error']['code']=='PRECISION_TARGET_REQUIRED'
+
+def test_display_mutations_and_session_replacement_are_rejected_before_dispatch():
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'; log=pathlib.Path(d)/'called'
+  backend.write_text(f'#!/bin/sh\ntouch {log}\n'); backend.chmod(0o755)
+  attempts=[
+   {'args':['xrandr','--dpi','144']}, {'args':['xfconf-query','-p','/Xft/DPI','-s','144']},
+   {'args':['xrdb','-merge','Xft.dpi: 144']}, {'args':['gsettings','set','org.gnome.desktop.interface','text-scaling-factor','1.5']},
+   {'args':['Xvfb',':77','-screen','0','1280x720x24']}, {'resolution':'1280x720','dpi':96},
+  ]
+  for i,body in enumerate(attempts):
+   p,o=run('app.launch','--input',json.dumps(body),'--idempotency-key',f'forbidden-{i}',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+   assert p.returncode==31 and o['error']['code'] in {'DISPLAY_MUTATION_FORBIDDEN','DESKTOP_SESSION_MUTATION_FORBIDDEN'}
+  assert not log.exists()
+
+def test_display_metric_drift_fails_closed():
+ with tempfile.TemporaryDirectory() as d:
+  root=pathlib.Path(d); count=root/'count'; metrics=root/'metrics'; backend=root/'desktop'
+  metrics.write_text('#!/bin/sh\nn=0; [ -f "'+str(count)+'" ] && n=$(cat "'+str(count)+'"); n=$((n+1)); echo $n > "'+str(count)+'"\ndpi=96; [ "$n" -gt 1 ] && dpi=120\nprintf "  dimensions:    1920x1080 pixels (508x285 millimeters)\\n  resolution:    %sx%s dots per inch\\n" "$dpi" "$dpi"\n')
+  metrics.chmod(0o755); backend.write_text('#!/bin/sh\necho "{}"\n'); backend.chmod(0o755)
+  p,o=run('ui.observe',env={'DESKTOP_SYSTEM_CLI':str(backend),'DESKTOP_METRICS_CLI':str(metrics)})
+  assert p.returncode==25 and o['error']['code']=='DESKTOP_STATE_CHANGED'
+  assert o['error']['details']['before']['dpiX']==96 and o['error']['details']['after']['dpiX']==120
+
+def test_session_lifecycle_discoverability_is_preserved_but_fails_closed_before_dispatch():
+ contracts=json.loads((CLI.parent/'command_contracts.json').read_text())['commands']
+ lifecycle={'session.open','session.recover','session.close'}
+ assert lifecycle <= set(contracts) and len(contracts)==67
+ assert {name:contracts[name]['safetyClass'] for name in lifecycle}=={'session.open':'S0','session.recover':'S0','session.close':'S2'}
+ manifest=json.loads((CLI.parent/'harness.json').read_text())['commands']
+ assert manifest['session.open']['safetyClasses']==manifest['session.recover']['safetyClasses']==['readOnly']
+ assert manifest['session.close']['safetyClasses']==['writeSafe','humanAccountAction']
+ with tempfile.TemporaryDirectory() as d:
+  backend=pathlib.Path(d)/'desktop'; log=pathlib.Path(d)/'called'
+  backend.write_text(f'#!/bin/sh\ntouch {log}\n'); backend.chmod(0o755)
+  for command in lifecycle:
+   p,o=run(command,'--input','{}',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+   assert p.returncode==31 and o['error']['code']=='SESSION_LIFECYCLE_FORBIDDEN'
+   assert o['error']['details']=={'contract':'existing-session-only','command':command}
+  assert not log.exists()
+
+def test_session_display_mutation_collision_prefers_the_stronger_display_rule():
+ p,o=run('session.open','--input','{"args":["xrandr","--dpi","144"]}')
+ assert p.returncode==31 and o['error']['code']=='DISPLAY_MUTATION_FORBIDDEN'
+
+def test_session_guard_does_not_collide_with_safe_app_close_contract():
+ p,o=run('app.close','--input','{}','--idempotency-key','safe-app-close','--dry-run')
+ assert p.returncode==0 and o['result']['wouldExecute'] is True

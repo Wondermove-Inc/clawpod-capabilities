@@ -348,7 +348,7 @@
     {
       "id": "desktop",
       "type": "skill",
-      "version": "3.0.0",
+      "version": "3.0.1",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "skills/desktop",
       "compatibility": {
@@ -364,20 +364,20 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "76655e87f9c2a52e04f6d73ff84f10665335b46939711c35567e81683136d2e2"
+          "sha256": "514d16756f00940bdb66992f6c398541fa4f3086f29a3c0f2ac3d12f066430ba"
         },
         {
           "path": "references/operations.md",
-          "sha256": "48144b74452647b5d9baeecf430745fa0452e7d14d914188412d009cd3c17e4c"
+          "sha256": "cb6b67480930dd496f2f0315a433fcfed3bf47e1c458a707735c67ae7b72f4e1"
         },
         {
           "path": "references/safety.md",
-          "sha256": "6e66f7adbe765eb8f76a7e52da2524914e3477b4389f81a7a79ad22c4e81f0d5"
+          "sha256": "30fa0b0649bb9d23297cdbd779fb2479d42eae236a7c28f5294da8193b9e4543"
         }
       ],
       "linkedHarness": {
         "id": "desktop",
-        "version": "3.0.0"
+        "version": "3.0.1"
       }
     },
     {
@@ -1130,7 +1130,7 @@
     {
       "id": "desktop",
       "type": "harness",
-      "version": "3.0.0",
+      "version": "3.0.1",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "harnesses/desktop",
       "compatibility": {
@@ -1149,24 +1149,32 @@
           "sha256": "58f4806da2450c0275c490224e70b997fbfaba7ce58120075471b6c198114660"
         },
         {
+          "path": "CHANGES-v3.0.1.md",
+          "sha256": "446fdd79beb69907f3522a8c0acf5dfb42ac7958e0baae7e9319c27a0b59a8fd"
+        },
+        {
           "path": "EVIDENCE-v3.0.0.md",
           "sha256": "5bdf437a18e03df27c0dcdddaa674ae3c2641a175c87ca725fa527f7f34e1034"
         },
         {
+          "path": "EVIDENCE-v3.0.1.md",
+          "sha256": "d0672985c5f865e41d8af75a7f5d3e34ebbad5455725a168d142602bc7d750b0"
+        },
+        {
           "path": "command_contracts.json",
-          "sha256": "16aebf8225ee854571844431836c959a609f4ff8f3984c88a644e5835e885983"
+          "sha256": "3e339e5b23eaf9ada9ef7239f68d1de858e6ff993cd3b67f1d82619bbe563e48"
         },
         {
           "path": "desktop.py",
-          "sha256": "c65676c23cd3fc6e05b89016ae68913e0909f680f00ebe4dd58dc3dc80c42c26"
+          "sha256": "6e83afb9a930e013b63161e72df8baddb039526a9f5b7361f87feab6c78e5317"
         },
         {
           "path": "harness.json",
-          "sha256": "e42554f012cdf902688f081596f44f66015624eeb63114b41ae08482d74d761a"
+          "sha256": "8a51c56a49480fbfdf94c71cd64e0b75a38bc2627f9675fbfff9c8cff3a1d605"
         },
         {
           "path": "precision_lab/README.md",
-          "sha256": "570ed1c3f2fa9b7d515ded670c647af753b177e589ab9e0bf5f038c2ac168ed6"
+          "sha256": "32a90dee10bda7c464816f292ffef7483087ef247d482c1d7285b3faa281c5be"
         },
         {
           "path": "precision_lab/environment-matrix.json",
@@ -1174,7 +1182,7 @@
         },
         {
           "path": "precision_lab/precision_benchmark.py",
-          "sha256": "3e582a0355e6cd7cc5b0633234178c05ab1feee3c7f42dab51d7c09734c72b82"
+          "sha256": "321167c50ba1b4a4ec31e9ad25838fd2b24eb126caa653977ad2a569c7db3b04"
         },
         {
           "path": "precision_lab/thresholds.json",

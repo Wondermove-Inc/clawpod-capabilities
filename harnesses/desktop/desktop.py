@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, time, uuid, zlib
-VERSION='3.0.0'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
+VERSION='3.0.1'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
 OBS=set('capabilities environment.preflight session.list session.get app.list app.get window.list window.get screen.list screen.capture ui.observe ui.find ui.read ui.table ui.wait ui.verify image.locate dialog.inspect clipboard.inspect download.inspect task.get task.events task.artifacts'.split())
 S1=set('app.launch app.focus window.activate window.move window.resize window.minimize window.maximize window.restore pointer.move pointer.scroll keyboard.key keyboard.shortcut'.split())
 S4={'window.close','process.terminate','process.kill'}
@@ -9,6 +9,9 @@ MAP={'app.list':['apps','--json'],'screen.capture':['screenshot'],'ui.observe':[
 PRECISION_CLICKS={'pointer.click','pointer.double-click','pointer.right-click','image.click'}
 PRECISION_ACTIONS=PRECISION_CLICKS|{'pointer.drag-drop','keyboard.type'}
 PORTAL_ACTIONS={'dialog.respond','file-dialog.open','file-dialog.save','file-dialog.choose-directory','file-dialog.cancel'}
+DISPLAY_MUTATION=re.compile(r'\b(?:xrandr|xfconf-query|xrdb|gsettings)\b|(?:xft[./_-]?dpi|text-scaling-factor|scaling-factor|scale-monitor-framebuffer|--(?:mode|dpi|scale|fb|output|newmode|addmode|delmode|off|rotate|transform))|"(?:resolution|dpi)"\s*:',re.I)
+SESSION_MUTATION=re.compile(r'\b(?:Xvfb|Xorg|startx|xinit|startxfce4|xfce4-session|openbox-session|gnome-session)\b',re.I)
+SESSION_LIFECYCLE={'session.open','session.recover','session.close'}
 def now(): return dt.datetime.now(dt.timezone.utc).isoformat()
 def redact(v):
  if isinstance(v,dict): return {k:('[REDACTED]' if re.search(r'pass|secret|token|otp|authorization|clipboard',k,re.I) else redact(x)) for k,x in v.items()}
@@ -48,12 +51,32 @@ def valid_approval(path,request_digest):
  p=pathlib.Path(path)
  if p.is_symlink(): raise ValueError('approval symlink refused')
  x=json.loads(p.read_text()); return x if x.get('requestDigest')==request_digest and x.get('expiresAt','')>now() else None
+def forbidden_request(inp):
+ raw=json.dumps(inp,ensure_ascii=False,separators=(',',':'))
+ if DISPLAY_MUTATION.search(raw):
+  return error('DISPLAY_MUTATION_FORBIDDEN','Display resolution, DPI, scale, X resources, and X settings are immutable.','policy',False,{'contract':'immutable-display-metrics'},'Remove the display-setting command or argument; Desktop never changes display metrics.')
+ if SESSION_MUTATION.search(raw):
+  return error('DESKTOP_SESSION_MUTATION_FORBIDDEN','Starting or replacing desktop/X sessions is outside Desktop capability behavior.','policy',False,{'contract':'existing-session-only'},'Use an independently provisioned disposable display outside this capability for environment tests.')
+ return None
+def display_metrics():
+ tool=os.environ.get('DESKTOP_METRICS_CLI') if os.environ.get('DESKTOP_DISPOSABLE_DISPLAY')=='1' else None
+ tool=tool or shutil.which('xdpyinfo')
+ if not tool or not os.environ.get('DISPLAY'): return None
+ try:p=subprocess.run([tool],capture_output=True,text=True,timeout=5,env=os.environ)
+ except (OSError,subprocess.TimeoutExpired):return None
+ if p.returncode:return None
+ dimensions=re.search(r'dimensions:\s*(\d+)x(\d+)',p.stdout,re.I); resolution=re.search(r'resolution:\s*(\d+)x(\d+)\s+dots per inch',p.stdout,re.I)
+ if not dimensions or not resolution:return None
+ return {'display':os.environ.get('DISPLAY'),'width':int(dimensions.group(1)),'height':int(dimensions.group(2)),'dpiX':int(resolution.group(1)),'dpiY':int(resolution.group(2))}
 def backend_call(argv,timeout_ms):
- try:
-  p=subprocess.run(argv,capture_output=True,text=True,timeout=max(1,min(timeout_ms,120000))/1000,env={**os.environ,'DESKTOP_FAST_INPUT':'1'})
-  return p, None
- except subprocess.TimeoutExpired:
-  return None, 'timeout'
+ before=display_metrics()
+ if before is None:return None, 'display_state_unavailable'
+ try:p=subprocess.run(argv,capture_output=True,text=True,timeout=max(1,min(timeout_ms,120000))/1000,env={**os.environ,'DESKTOP_FAST_INPUT':'1'})
+ except subprocess.TimeoutExpired:return None, 'timeout'
+ after=display_metrics()
+ if after is None:return None, 'display_state_unavailable'
+ if before!=after:return None, {'code':'desktop_state_changed','before':before,'after':after}
+ return p, None
 def backend_result(p,argv):
  return {'exitCode':p.returncode,'stdout':p.stdout[-8000:],'stderr':p.stderr[-4000:],'backendArgv':[pathlib.Path(argv[0]).name]+argv[1:]}
 def safe_pointer_argv(target,cmd,args=(),trajectory=None):
@@ -204,6 +227,9 @@ def main():
  except Exception: emit(cmd,rid,'failed',err=error('INVALID_INPUT','--input must be a JSON object.')); return 10
  secrets=sensitive_values(inp)
  request={'command':cmd,'input':redact(inp),'idempotencyKey':a.idempotency_key,'expectedRevision':a.expected_revision}; request_digest=digest(request)
+ policy_error=forbidden_request(inp)
+ if policy_error:
+  emit(cmd,rid,'blocked',err=policy_error,started=started); return 31
  if STOP.search(json.dumps(inp)):
   emit(cmd,rid,'blocked',err=error('HUMAN_VERIFICATION','Automation stopped before protected interaction.','policy',False,{},'Complete verification manually, then resume after re-observation.'),started=started); return 32
  contracts=json.loads((pathlib.Path(__file__).parent/'command_contracts.json').read_text())['commands']
@@ -211,6 +237,8 @@ def main():
  if cmd=='environment.preflight':
   checks={'backend':pathlib.Path(backend()).is_file(),'display':bool(os.environ.get('DISPLAY')),'dbus':bool(os.environ.get('DBUS_SESSION_BUS_ADDRESS')),'atspi':bool(shutil.which('pgrep') and subprocess.run(['pgrep','-f','at-spi'],capture_output=True).returncode==0)}; warnings=[] if checks['dbus'] else ['D-Bus session address absent; portal actions unavailable. Start within a desktop session or export its bus address.']; ok=checks['backend'] and checks['atspi']; emit(cmd,rid,'succeeded' if ok else 'blocked',checks,None if ok else error('AT_SPI_UNAVAILABLE','AT-SPI registry or backend unavailable.','backend',True,checks,'Start at-spi2-registryd in the target desktop session; do not use coordinate fallback.'),warnings,started=started); return 0 if ok else 24
  if cmd not in contracts: emit(cmd,rid,'failed',err=error('INVALID_INPUT','Unknown command.')); return 10
+ if cmd in SESSION_LIFECYCLE:
+  emit(cmd,rid,'blocked',err=error('SESSION_LIFECYCLE_FORBIDDEN','Desktop attaches to an existing session but never creates, replaces, recovers, or closes the desktop/X session.','policy',False,{'contract':'existing-session-only','command':cmd},'Use session.list/session.get and environment.preflight for observation; provision or recover disposable sessions outside Desktop.'),started=started); return 31
  mutation=cmd not in OBS
  if mutation and not a.idempotency_key: emit(cmd,rid,'failed',err=error('INVALID_INPUT','Mutation requires --idempotency-key.')); return 10
  if cmd in PORTAL_ACTIONS and not os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
@@ -241,6 +269,8 @@ def main():
    target=inp['target']; observation={}; precision_screenshot=run/'precision-observe.png'; observe_argv=[backend()]+MAP['ui.observe']+['--screenshot',str(precision_screenshot)]
    for observation_attempt in range(2):
     observed,timeout=backend_call(observe_argv,a.timeout_ms)
+    if timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted before dispatch.','backend',False),revision=st['revision'],started=started); return 25
+    if isinstance(timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during the operation.','conflict',False,timeout),revision=st['revision'],started=started); return 25
     if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Re-observation deadline exceeded before any input.','backend',True,{'phase':'observe','attempt':observation_attempt+1}),revision=st['revision'],started=started,attempt=observation_attempt+1,max_attempts=2); return 21
     if observed.returncode:
      result=backend_result(observed,observe_argv); code='AT_SPI_UNAVAILABLE' if observed.returncode==4 else 'TARGET_NOT_FOUND'; emit(cmd,rid,'failed',scrub(redact(result),secrets),error(code,'Accessibility observation failed before action.','backend',code=='AT_SPI_UNAVAILABLE',{'phase':'observe'}),revision=st['revision'],started=started); return 24 if observed.returncode==4 else 20
@@ -254,9 +284,13 @@ def main():
    if not identity or not identity.get('focused',False):
     focus_argv=[backend()]+MAP['app.focus']+[str(target['windowId'])]
     focused,timeout=backend_call(focus_argv,a.timeout_ms)
+    if timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted before dispatch.','backend',False),revision=st['revision'],started=started); return 25
+    if isinstance(timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during the operation.','conflict',False,timeout),revision=st['revision'],started=started); return 25
     if timeout or focused.returncode: emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Target window could not be focused before action.','backend',False),revision=st['revision'],started=started); return 20
     verified,timeout=backend_call(observe_argv,a.timeout_ms); verified_observation=parsed_stdout(verified) if verified else {}
     verified_identity=target_identity(verified_observation,target)
+    if timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted before dispatch.','backend',False),revision=st['revision'],started=started); return 25
+    if isinstance(timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during the operation.','conflict',False,timeout),revision=st['revision'],started=started); return 25
     if timeout or verified.returncode or not observation_matches(verified_observation,target) or not verified_identity or not verified_identity.get('focused',False):
      emit(cmd,rid,'failed',err=error('FOCUS_NOT_VERIFIED','Focus or target identity changed before action.','conflict',False),revision=st['revision'],started=started); return 20
    before_geometry=xwindow_geometry(target['windowId'])
@@ -268,16 +302,23 @@ def main():
    st['idempotency'][a.idempotency_key]={'digest':request_digest,'status':'outcome_unknown','result':{'checkpointToken':'cp_'+request_digest[:24]}}
    state.write_text(json.dumps(st,indent=2))
    p,timeout=backend_call(argv,a.timeout_ms)
+   if timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted before dispatch.','backend',False),revision=st['revision'],started=started); return 25
+   if isinstance(timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during the operation.','conflict',False,timeout),revision=st['revision'],started=started); return 25
    if timeout:
     emit(cmd,rid,'partial',st['idempotency'][a.idempotency_key]['result'],error('OUTCOME_UNKNOWN','Action deadline expired after dispatch; it will not be replayed.','backend',False,{'phase':'action'}),revision=st['revision'],started=started); return 40
    result=backend_result(p,argv)
    if not p.returncode:
     if target['kind']=='accessibility':
-     verify_argv=[backend()]+MAP['ui.verify']+[json.dumps(inp['postcondition'],separators=(',',':'))]; verified,verify_timeout=backend_call(verify_argv,a.timeout_ms); confirmed=not verify_timeout and not verified.returncode; verification={'backendVerify':confirmed}
+     verify_argv=[backend()]+MAP['ui.verify']+[json.dumps(inp['postcondition'],separators=(',',':'))]; verified,verify_timeout=backend_call(verify_argv,a.timeout_ms)
+     if verify_timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted during verification.','backend',False),revision=st['revision'],started=started); return 25
+     if isinstance(verify_timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during verification.','conflict',False,verify_timeout),revision=st['revision'],started=started); return 25
+     confirmed=not verify_timeout and not verified.returncode; verification={'backendVerify':confirmed}
     else:
      before_visual=after_visual=None
      if inp['postcondition'].get('searchFieldText') and target.get('visualRegion'):
       post_screenshot=run/'precision-postcondition.png'; captured,capture_timeout=backend_call([backend()]+MAP['screen.capture']+[str(post_screenshot)],a.timeout_ms)
+      if capture_timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted during visual QA.','backend',False),revision=st['revision'],started=started); return 25
+      if isinstance(capture_timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during visual QA.','conflict',False,capture_timeout),revision=st['revision'],started=started); return 25
       if not capture_timeout and captured.returncode==0:
        try:
         before_visual=png_region_digest(precision_screenshot,target['visualRegion']); after_visual=png_region_digest(post_screenshot,target['visualRegion'])
@@ -295,6 +336,8 @@ def main():
    if cmd=='window.move' and len(args)==3:argv=[shutil.which('xdotool') or 'xdotool','windowmove',args[0],args[1],args[2]]
    else:argv=[backend()]+MAP.get(cmd,[cmd.replace('.','-')])+args
    p,timeout=backend_call(argv,a.timeout_ms)
+   if timeout=='display_state_unavailable': emit(cmd,rid,'blocked',err=error('DISPLAY_STATE_UNAVAILABLE','Display geometry and DPI could not be snapshotted before dispatch.','backend',False),started=started); return 25
+   if isinstance(timeout,dict): emit(cmd,rid,'blocked',err=error('DESKTOP_STATE_CHANGED','Display geometry or DPI changed during the operation.','conflict',False,timeout),started=started); return 25
    if timeout: emit(cmd,rid,'failed',err=error('TIMEOUT','Backend deadline exceeded before a confirmed side effect.','backend',not mutation,{'phase':'observation' if not mutation else 'mutation'}),started=started); return 21
    result=backend_result(p,argv)
    if cmd=='ui.observe' and not p.returncode:

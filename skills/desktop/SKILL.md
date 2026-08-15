@@ -7,6 +7,10 @@ description: "Use for native apps or OS dialogs when no typed API or DOM fits. O
 
 Prefer Browser/Playwright for DOM work, node screen for an attached remote screen, and typed APIs for service operations. Compose Desktop only at native GUI handoffs.
 
+## Immutable display-metrics contract
+
+Desktop operates only inside an already-provisioned session. Display resolution, geometry, DPI, scaling, X resources, and X settings are immutable: never invoke or type `xrandr`, `xfconf-query` `/Xft/DPI`, `xrdb` `Xft.dpi`, `gsettings` scaling keys, equivalents, or desktop/X session start or replacement commands. The Harness rejects these requests before dispatch, snapshots geometry and DPI around backend operations, and fails closed with `DESKTOP_STATE_CHANGED` on drift. Environment-matrix tests are synthetic and must never target the active `DISPLAY`; any display-backed test requires a separately provisioned disposable display.
+
 ## Workflow
 
 1. Run `desktop environment.preflight --input '{}'` and stop on unavailable AT-SPI, D-Bus session, or backend state.
