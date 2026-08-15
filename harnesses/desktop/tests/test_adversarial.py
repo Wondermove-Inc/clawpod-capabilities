@@ -1,7 +1,7 @@
 import json, os, pathlib, stat, subprocess, tempfile, time
 
 CLI = pathlib.Path(__file__).parents[1] / "desktop.py"
-RUNS = pathlib.Path("/workspace/desktop-runs")
+RUNS = pathlib.Path("/tmp/desktop-runs")
 
 
 def backend(tmp_path, body):
@@ -67,6 +67,7 @@ def test_captcha_refusal_precedes_backend_and_artifact_creation(tmp_path):
 
 
 def test_revision_conflict_and_idempotency_conflict_are_side_effect_free(tmp_path):
+    RUNS.mkdir(exist_ok=True)
     run_root = RUNS / ("adversarial-" + next(tempfile._get_candidate_names()))
     try:
         base = ("--run-root", str(run_root), "--idempotency-key", "same", "--dry-run")

@@ -1146,11 +1146,11 @@
       "files": [
         {
           "path": "CHANGES-v3.0.0.md",
-          "sha256": "34818e3028e5cd648c899f13f4942ba7261ce15cc86465cdf32d0a5514332b90"
+          "sha256": "58f4806da2450c0275c490224e70b997fbfaba7ce58120075471b6c198114660"
         },
         {
           "path": "EVIDENCE-v3.0.0.md",
-          "sha256": "8e69ac34faf7c964962b9fb4014465cb1916f5934d45b867c2d561014c6e1142"
+          "sha256": "5bdf437a18e03df27c0dcdddaa674ae3c2641a175c87ca725fa527f7f34e1034"
         },
         {
           "path": "command_contracts.json",
@@ -1158,11 +1158,27 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "ac28941bbd86f5e4b03a29ef4b127eeb93e78563fa975997a79e985c7afeca3c"
+          "sha256": "ed3103d3bc8e77f396efe269543c10ae958a6a88d1988b82b815dbf213f8bd39"
         },
         {
           "path": "harness.json",
           "sha256": "bf89f109634d39a3f8b4794b6f8a26e367b8ab323299fa0c39ccfac89a32d359"
+        },
+        {
+          "path": "precision_lab/README.md",
+          "sha256": "8c585b65ef2c9a239b17eede8f56ffc9e06347dca5762f442db76e51ed4cf32f"
+        },
+        {
+          "path": "precision_lab/environment-matrix.json",
+          "sha256": "dccbac91d687df950707996436b5bf0b96effa4092b1b64378724f544c76653c"
+        },
+        {
+          "path": "precision_lab/precision_benchmark.py",
+          "sha256": "3ad30ba7ae67996e6b27c580707c114f2d833cad342b02f1d421ddc7494f6fea"
+        },
+        {
+          "path": "precision_lab/thresholds.json",
+          "sha256": "79ece9400f08064f42c959f9c55c2504fc555fc53db1f7be9dc2824392d6635e"
         }
       ]
     },

@@ -12,11 +12,13 @@ def test_risky_preview_and_approval_required():
  p,o=run('process.kill','--idempotency-key','k','--dry-run'); assert p.returncode==0 and o['approval']['safetyClass']=='S4'
  p,o=run('process.kill','--idempotency-key','k'); assert p.returncode==30 and o['error']['code']=='APPROVAL_REQUIRED'
 def test_idempotency_revision_recovery_cleanup():
- with tempfile.TemporaryDirectory(dir='/workspace/desktop-runs') as d:
+ pathlib.Path('/tmp/desktop-runs').mkdir(exist_ok=True)
+ with tempfile.TemporaryDirectory(dir='/tmp/desktop-runs') as d:
   p,o=run('task.plan','--idempotency-key','same','--dry-run','--run-root',d); assert p.returncode==0
   p,o=run('task.cleanup','--idempotency-key','cleanup','--dry-run','--run-root',d); assert p.returncode==0 and o['result']['wouldExecute']
 def test_safe_path_symlink_denied():
- with tempfile.TemporaryDirectory(dir='/workspace/desktop-runs') as d:
+ pathlib.Path('/tmp/desktop-runs').mkdir(exist_ok=True)
+ with tempfile.TemporaryDirectory(dir='/tmp/desktop-runs') as d:
   link=pathlib.Path(d)/'link'; link.symlink_to('/tmp',target_is_directory=True)
   p=subprocess.run([str(CLI),'task.get','--run-root',str(link)],capture_output=True,text=True); assert p.returncode!=0
 def test_atspi_unavailable_diagnostic():

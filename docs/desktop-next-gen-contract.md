@@ -320,3 +320,19 @@ This design does not authorize live installation, publication, or a Skill Worksh
 3. run routing, collision, action-surface, safety, schema, offline, and full matrix tests;
 4. revise the description downward if any practical surface is not verified;
 5. only then prepare a guarded update/install review.
+
+## 15. Precision-control runtime policy
+
+The v3 runtime closes the gap between deterministic precision fixtures and input dispatch with a deliberately conservative policy for click, image-click, and drag/drop commands:
+
+- every precision action carries a session-scoped target identity (`windowId`, observed revision, and target digest) plus an explicit read-only postcondition;
+- the runtime observes through AT-SPI first and permits at most one bounded re-observation; a changed identity fails as `STALE_TARGET` without input;
+- image fallback requires an explicit backend-support assertion, template hash, and confidence, and is refused if the accessibility observation finds a semantic match;
+- raw coordinates are last resort and require screenshot digest, monitor, scale, and point identity in the request, so the existing approval digest binds the complete coordinate context;
+- focus is checked before dispatch; a focus correction is followed by another identity/focus observation, and failure stops without the requested input;
+- a click is dispatched at most once. Its idempotency record is durably changed to `outcome_unknown` before dispatch, and a timeout or failed postcondition is never automatically replayed;
+- drag/drop accepts only a generated linear path of 2–64 steps and 100–2000 ms, with fixed endpoints included in the result;
+- portal-backed dialog actions fail before backend/artifact work when the desktop D-Bus session is missing, with session-specific remediation;
+- CAPTCHA/human-verification detection remains the first policy check, before contracts, run roots, artifacts, observations, or backend calls.
+
+These controls intentionally prefer a safe refusal over approximate interaction. The command inventory remains exactly 67 commands.

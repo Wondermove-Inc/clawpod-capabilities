@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "desktop.precision.thresholds.v1",
+  "thresholds": {
+    "acquisitionSuccessRateMin": 0.99,
+    "endpointPixelErrorP50Max": 1.0,
+    "endpointPixelErrorP95Max": 2.0,
+    "endpointPixelErrorMax": 3.0,
+    "clickTimingErrorP95MsMax": 12.0,
+    "clickJitterP95MsMax": 8.0,
+    "latencyP50MsMax": 20.0,
+    "latencyP95MsMax": 35.0,
+    "latencyP99MsMax": 45.0,
+    "droppedInputsMax": 0,
+    "duplicateInputsMax": 0,
+    "falseClicksMax": 0,
+    "unsafeSideEffectsMax": 0,
+    "recoveryRateMin": 1.0,
+    "recoveryTimeP95MsMax": 100.0,
+    "soakEquivalentSecondsMin": 3600,
+    "soakFailuresMax": 0
+  }
+}
