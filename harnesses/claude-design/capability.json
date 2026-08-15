@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.6",
-  "description": "Browser-first Claude Design guardrails, exact approvals, artifact verification, and optional MCP diagnostics.",
+  "version": "0.3.7",
+  "description": "Use when creating, editing, QAing, or exporting in Claude Design. Can manage projects and native exports; use Image Studio for standalone images.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [
