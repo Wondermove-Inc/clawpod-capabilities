@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import pathlib
+import shutil
 
 LAB = pathlib.Path(__file__).parents[1] / "precision_lab"
 SPEC = importlib.util.spec_from_file_location("precision_benchmark", LAB / "precision_benchmark.py")
@@ -41,3 +42,21 @@ def test_full_soak_passes_all_thresholds(tmp_path):
     assert result["metrics"]["acceleratedSoak"]["equivalentSeconds"] == 3600
     assert result["publication"] == "prohibited"
     assert "CAPTCHA bypass" in result["excluded"]
+
+
+def test_installed_path_uses_explicit_source_provenance(tmp_path):
+    installed = tmp_path / "installed" / "precision_lab"
+    shutil.copytree(LAB, installed)
+    spec = importlib.util.spec_from_file_location("installed_precision_benchmark", installed / "precision_benchmark.py")
+    benchmark = importlib.util.module_from_spec(spec); spec.loader.exec_module(benchmark)
+    source_repo = pathlib.Path(__file__).parents[3]
+    out = tmp_path / "installed-result"
+    assert benchmark.run(out, samples=2, soak_events=36000, source_repo=source_repo) == 0
+    result = json.loads((out / "baseline.json").read_text())
+    assert result["provenance"]["mode"] == "explicit-source-repo"
+    assert pathlib.Path(result["provenance"]["sourceRepo"]) == source_repo.resolve()
+    assert result["candidateCommit"] == result["provenance"]["candidateCommit"]
+    source_out = tmp_path / "source-result"
+    assert BENCH.run(source_out, samples=2, soak_events=36000) == 0
+    source_result = json.loads((source_out / "baseline.json").read_text())
+    assert result["gateDigest"] == source_result["gateDigest"]

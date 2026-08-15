@@ -116,8 +116,31 @@ def contact_sheet(path, frames):
     png(path, cell_w*cols, cell_h*rows, px)
 
 
-def commit(ref):
-    return subprocess.run(["git", "rev-parse", ref], cwd=ROOT, text=True, capture_output=True, check=True).stdout.strip()
+def git_value(repo, *args):
+    return subprocess.run(["git", *args], cwd=repo, text=True, capture_output=True, check=True).stdout.strip()
+
+
+def provenance(source_repo=None, candidate_commit=None):
+    """Resolve source identity independently from the benchmark's install path."""
+    repo = pathlib.Path(source_repo or ROOT).expanduser().resolve()
+    try:
+        repo_root = pathlib.Path(git_value(repo, "rev-parse", "--show-toplevel")).resolve()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ValueError(
+            f"source repo is not a Git worktree: {repo}; pass --source-repo explicitly when running an installed benchmark"
+        ) from exc
+    head = git_value(repo_root, "rev-parse", "HEAD")
+    candidate = git_value(repo_root, "rev-parse", candidate_commit) if candidate_commit else head
+    if candidate != head:
+        raise ValueError(f"candidate commit {candidate} does not match source repo HEAD {head}")
+    origin_main = git_value(repo_root, "rev-parse", "origin/main")
+    return {
+        "mode": "explicit-source-repo" if source_repo else "benchmark-tree-default",
+        "sourceRepo": str(repo_root),
+        "candidateCommit": candidate,
+        "originMainCommit": origin_main,
+        "mergeBase": git_value(repo_root, "merge-base", candidate, origin_main),
+    }
 
 
 def summarize(rows, soak, runtime_ms):
@@ -158,7 +181,7 @@ def gate(metrics, thresholds):
     return checks
 
 
-def run(out, samples=12, soak_events=36000):
+def run(out, samples=12, soak_events=36000, source_repo=None, candidate_commit=None):
     started = time.perf_counter(); out.mkdir(parents=True, exist_ok=True); (out/"frames").mkdir(exist_ok=True)
     envs = load(HERE/"environment-matrix.json")["environments"]
     rows = []
@@ -176,11 +199,16 @@ def run(out, samples=12, soak_events=36000):
     for i, case in enumerate(SCENARIOS):
         path=out/"frames"/(f"{i:02d}-{case}.png"); w,h,pixels=render(path,case,envs[i%len(envs)],i); frames.append((path,w,h,pixels))
     contact_sheet(out/"contact-sheet.png", frames)
-    report={"schemaVersion":"desktop.precision.baseline.v1", "candidateCommit":commit("HEAD"), "originMainCommit":commit("origin/main"),
-            "mergeBase":commit("$(git merge-base HEAD origin/main)") if False else subprocess.run(["git","merge-base","HEAD","origin/main"],cwd=ROOT,text=True,capture_output=True,check=True).stdout.strip(),
+    source = provenance(source_repo, candidate_commit)
+    report={"schemaVersion":"desktop.precision.baseline.v1", "candidateCommit":source["candidateCommit"], "originMainCommit":source["originMainCommit"],
+            "mergeBase":source["mergeBase"], "provenance":source,
             "deterministicSeed":SEED, "scope":"local deterministic fixtures only", "publication":"prohibited", "excluded":["CAPTCHA bypass","anti-cheat bypass","remote targets","real user input injection"],
             "sampleCount":len(rows), "scenarioCount":len(SCENARIOS), "environmentCount":len(envs), "metrics":metrics, "checks":checks, "passed":all(checks.values()),
             "visualEvidence":{"frames":len(frames),"contactSheet":"contact-sheet.png","videoProduced":False,"rationale":"A deterministic PNG frame sequence/contact sheet is portable and avoids optional video codecs."}}
+    digest_payload = {"candidateCommit": source["candidateCommit"], "originMainCommit": source["originMainCommit"],
+                      "mergeBase": source["mergeBase"], "metrics": {k: v for k, v in metrics.items() if k != "benchmarkWallTimeMs"},
+                      "checks": checks, "passed": report["passed"]}
+    report["gateDigest"] = hashlib.sha256(json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     (out/"baseline.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,sort_keys=True))
     return 0 if report["passed"] else 1
@@ -188,7 +216,9 @@ def run(out, samples=12, soak_events=36000):
 
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument("--out",type=pathlib.Path,default=DEFAULT_OUT); parser.add_argument("--samples",type=int,default=12); parser.add_argument("--soak-events",type=int,default=36000)
-    args=parser.parse_args(); return run(args.out,args.samples,args.soak_events)
+    parser.add_argument("--source-repo", type=pathlib.Path, help="Git worktree that produced the installed benchmark")
+    parser.add_argument("--candidate-commit", help="Expected source HEAD (full or abbreviated Git revision)")
+    args=parser.parse_args(); return run(args.out,args.samples,args.soak_events,args.source_repo,args.candidate_commit)
 
 
 if __name__ == "__main__": raise SystemExit(main())
