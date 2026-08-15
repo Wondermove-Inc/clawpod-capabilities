@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import pathlib
 import statistics
 import struct
@@ -182,6 +183,8 @@ def gate(metrics, thresholds):
 
 
 def run(out, samples=12, soak_events=36000, source_repo=None, candidate_commit=None):
+    if os.environ.get('DISPLAY') and os.environ.get('DESKTOP_DISPOSABLE_DISPLAY') != '1':
+        raise RuntimeError('precision benchmark refuses the active DISPLAY; use an isolated disposable display marker')
     started = time.perf_counter(); out.mkdir(parents=True, exist_ok=True); (out/"frames").mkdir(exist_ok=True)
     envs = load(HERE/"environment-matrix.json")["environments"]
     rows = []

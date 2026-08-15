@@ -2,6 +2,8 @@
 
 This local-only benchmark exercises synthetic fixtures; it never injects input into a real desktop. Publication is prohibited. CAPTCHA and anti-cheat bypass are explicitly out of scope.
 
+The matrix is simulated metadata only; it does not configure a display. The benchmark refuses a populated active `DISPLAY` unless the caller explicitly marks an independently provisioned disposable display with `DESKTOP_DISPOSABLE_DISPLAY=1`. It never starts or replaces a desktop session.
+
 Run from the repository root:
 
 ```sh

@@ -60,3 +60,11 @@ def test_installed_path_uses_explicit_source_provenance(tmp_path):
     assert BENCH.run(source_out, samples=2, soak_events=36000) == 0
     source_result = json.loads((source_out / "baseline.json").read_text())
     assert result["gateDigest"] == source_result["gateDigest"]
+
+
+def test_benchmark_refuses_an_unmarked_active_display(tmp_path, monkeypatch):
+    monkeypatch.setenv("DISPLAY", ":active-do-not-touch")
+    monkeypatch.delenv("DESKTOP_DISPOSABLE_DISPLAY", raising=False)
+    import pytest
+    with pytest.raises(RuntimeError, match="refuses the active DISPLAY"):
+        BENCH.run(tmp_path/"refused", samples=1, soak_events=1)
