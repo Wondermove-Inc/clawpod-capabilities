@@ -52,16 +52,15 @@ class RoutingContractTests(unittest.TestCase):
         description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")
         for phrase in (
             "native apps or OS dialogs",
-            "observation, operation, or recovery",
             "typed API or DOM",
+            "Observe and operate",
             "pointer/keyboard",
             "windows/dialogs",
             "drag/drop",
-            "visually QA, verify, and recover",
-            "Browser handles DOM web",
-            "nodes remote device screens",
-            "provider APIs service data",
-            "Compose Desktop only for native handoffs",
+            "QA, verify, recover",
+            "Prefer Browser for DOM",
+            "nodes for remote screens",
+            "provider APIs for services",
         ):
             self.assertIn(phrase, description)
 

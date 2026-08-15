@@ -349,7 +349,7 @@
       "id": "desktop",
       "type": "skill",
       "version": "3.0.0",
-      "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
+      "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "skills/desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -364,7 +364,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f5d90661c6db718fbf87ff1c38abceeb1f380b595f2637c513cc64332fa0fb10"
+          "sha256": "76655e87f9c2a52e04f6d73ff84f10665335b46939711c35567e81683136d2e2"
         },
         {
           "path": "references/operations.md",
@@ -1131,7 +1131,7 @@
       "id": "desktop",
       "type": "harness",
       "version": "3.0.0",
-      "description": "Use for native apps or OS dialogs that need observation, operation, or recovery when no typed API or DOM fits. Precisely target; use pointer/keyboard, windows/dialogs, drag/drop; visually QA, verify, and recover. Browser handles DOM web, nodes remote device screens, and provider APIs service data. Compose Desktop only for native handoffs.",
+      "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "harnesses/desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1162,7 +1162,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "24feccefac509fba139a6fda33e6bfedf1267194a04f3bf6b794ad6b3a08f545"
+          "sha256": "e42554f012cdf902688f081596f44f66015624eeb63114b41ae08482d74d761a"
         },
         {
           "path": "precision_lab/README.md",
