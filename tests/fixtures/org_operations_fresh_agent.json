@@ -1,0 +1,25 @@
+[
+  {
+    "name": "engineering organization with Linear designation",
+    "workflow": "Shared work system of record: Linear.",
+    "request": "Ask the platform team to review a risky database migration and reply by Friday.",
+    "expected_service": "Linear",
+    "expected_family": "Review or approval request",
+    "expected_pack": "Engineering"
+  },
+  {
+    "name": "SOC organization with Jira Service Management designation",
+    "workflow": "The designated shared task service is Jira Service Management.",
+    "request": "Escalate a high-severity credential exposure with evidence preservation and backup contacts.",
+    "expected_service": "Jira Service Management",
+    "expected_family": "Blocker or escalation",
+    "expected_pack": "SOC/CSIRT"
+  },
+  {
+    "name": "organization without designation",
+    "workflow": "Coordinate requests through approved organizational channels.",
+    "request": "Delegate this customer-impacting reliability task.",
+    "expected_service": null,
+    "expected_result": "stop_and_ask"
+  }
+]

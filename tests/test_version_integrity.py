@@ -80,17 +80,22 @@ class CandidateFinalVersionIntegrityTests(unittest.TestCase):
         self.entries = {(item["type"], item["id"]): item for item in self.registry["capabilities"]}
         self.ids = sorted(path.name for path in (ROOT / "skills").iterdir() if path.is_dir())
 
-    def test_all_20_connected_release_units_have_exact_metadata_and_registry_versions(self) -> None:
-        self.assertEqual(len(self.ids), 20)
-        self.assertEqual(self.ids, sorted(path.name for path in (ROOT / "harnesses").iterdir() if path.is_dir()))
+    def test_all_release_units_have_exact_metadata_and_registry_versions(self) -> None:
+        self.assertTrue(self.ids)
+        harness_ids = sorted(path.name for path in (ROOT / "harnesses").iterdir() if path.is_dir())
+        self.assertTrue(set(harness_ids).issubset(self.ids))
         for capability_id in self.ids:
             skill = load(ROOT / "skills" / capability_id / "capability.json")
+            self.assertEqual(self.entries[("skill", capability_id)]["version"], skill["version"], capability_id)
+            if capability_id not in harness_ids:
+                self.assertNotIn("linkedHarness", skill, capability_id)
+                self.assertNotIn("linkedHarness", self.entries[("skill", capability_id)], capability_id)
+                continue
             harness = load(ROOT / "harnesses" / capability_id / "capability.json")
             manifest = load(ROOT / "harnesses" / capability_id / "harness.json")
             linked = skill.get("linkedHarness")
             self.assertEqual(linked, {"id": capability_id, "version": harness["version"]}, capability_id)
             self.assertEqual(manifest["version"], harness["version"], capability_id)
-            self.assertEqual(self.entries[("skill", capability_id)]["version"], skill["version"], capability_id)
             self.assertEqual(self.entries[("skill", capability_id)]["linkedHarness"], linked, capability_id)
             self.assertEqual(self.entries[("harness", capability_id)]["version"], harness["version"], capability_id)
 
@@ -118,6 +123,8 @@ class CandidateFinalVersionIntegrityTests(unittest.TestCase):
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
         for capability_id in self.ids:
             package = ROOT / "harnesses" / capability_id
+            if not package.is_dir():
+                continue
             expected = load(package / "harness.json")["version"]
             readme = package / "README.md"
             if readme.exists():
