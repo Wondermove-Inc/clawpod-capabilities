@@ -1,11 +1,18 @@
 # Test contract
 
-Run `python3 -m pytest harnesses/openclaw-node-host/tests`. Tests are fixture/recording-only, include installed-command subprocess coverage, and perform no network, Tailscale, service, pairing, npm, or OpenClaw mutation.
+Run `python3 -m pytest harnesses/openclaw-node-host/tests`. The default suite uses fixtures, command recording, and temporary fake provider executables. It performs no network, Tailscale, real service, pairing, npm, or OpenClaw mutation.
 
-Explicit disposable-host integration is excluded from the default suite and requires `OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION=1` plus separate operator approval.
+Real disposable-host integration remains excluded and requires `OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION=1` plus separate operator approval. The fake-provider tests exercise the same bounded timeout/retry path without touching a host service.
 
-## Verified results
+## Adversarial coverage
 
-- `python3 scripts/validate.py`: 40 capability entries validated.
-- Relevant Harness, registry, version, routing, and Gateway-manifest tests: 38 passed with 40 subtests.
-- The repository-wide pytest collection is currently blocked by the pre-existing installed `clawpod-cloud-webhooks` package shadowing source imports in three unrelated test modules. No `openclaw-node-host` test failed.
+- macOS and Windows 11 provider selection, explicit Linux rejection
+- Tailscale absent, signed out, wrong/unproven tailnet, stale evidence, and unreachable Gateway, with zero Tailscale mutation commands
+- Node.js below 22.14, exact OpenClaw pinning, install resolution drift, installed-version drift, and service PATH/version mismatch
+- plan/confirmation binding and expiry, invalid input, interrupted-state resume, idempotent install/rollback, stale pairing, nested redaction
+- provider failure timeout and bounded retry, supported restart mapping, system/browser probe command selection
+- three positive routing examples, at least two negative examples, and collisions with node-connect, routine connected-node operations, Tailscale installation, Gateway installation, and desktop
+
+## Environment limitations and completion plan
+
+The CI-safe suite does not assert real launchd or Windows Task Scheduler side effects. Those are intentionally deferred to separately approved disposable macOS and Windows 11 hosts. Completion there is: run the exact same plan/apply/validate/rollback flow, capture provider-native status before and after, interrupt once between provider install and state commit, then verify resume and cleanup. Production hosts and real Tailscale state are never test targets.

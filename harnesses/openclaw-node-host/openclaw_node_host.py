@@ -165,6 +165,11 @@ class Harness:
             return self.fail("UNSUPPORTED_OS", "only macOS and Windows 11 are supported", "failed", "precondition")
         if self.a.tls_fingerprint and not re.fullmatch(r"[a-f0-9]{64}", self.a.tls_fingerprint):
             return self.fail("INVALID_INPUT", "TLS fingerprint must be lowercase SHA-256", "failed", "invalid")
+        node_version = self.fixture.get("node", {}).get("version")
+        if node_version is not None:
+            match = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", str(node_version))
+            if not match or tuple(map(int, match.groups())) < (22, 14, 0):
+                return self.fail("NODE_VERSION_UNSUPPORTED", "Node.js 22.14.0 or newer is required", "failed", "precondition")
         return None
 
     def tailscale_gate(self, reachability: bool = True) -> tuple[dict[str, Any], int] | None:
@@ -303,9 +308,19 @@ class Harness:
         argv = self.conceptual_commands(self.command)[-1] if self.command in {"install.apply", "repair.apply", "uninstall.apply", "rollback.apply"} else ["openclaw", "node", "restart" if self.command in {"service.start", "service.restart"} else "stop"]
         if any("<" in part for part in argv): return self.fail("SERVICE_MUTATION_FAILED", "live endpoint option construction is unavailable pending pinned provider fixture review", "failed", "failed")
         self.record(argv)
-        completed = subprocess.run(argv, text=True, capture_output=True, timeout=60, check=False)
-        if completed.returncode: return self.fail("SERVICE_MUTATION_FAILED", sanitize(completed.stderr), "failed", "failed")
-        return self.simulate(state, plan)
+        timeout = float(os.environ.get("OPENCLAW_NODE_HOST_COMMAND_TIMEOUT", "60"))
+        attempts = max(1, min(int(os.environ.get("OPENCLAW_NODE_HOST_RETRY_ATTEMPTS", "2")), 3))
+        completed = None
+        for attempt in range(attempts):
+            try:
+                completed = subprocess.run(argv, text=True, capture_output=True, timeout=timeout, check=False)
+            except subprocess.TimeoutExpired:
+                if attempt + 1 == attempts:
+                    return self.fail("SERVICE_MUTATION_TIMEOUT", f"provider command timed out after {attempts} attempts", "failed", "failed")
+                continue
+            if completed.returncode == 0:
+                return self.simulate(state, plan)
+        return self.fail("SERVICE_MUTATION_FAILED", sanitize(completed.stderr if completed else "provider command failed"), "failed", "failed")
 
     def readonly(self) -> tuple[dict[str, Any], int]:
         out = self.base()
@@ -329,6 +344,13 @@ class Harness:
                 plan = {"schemaVersion": 1, "id": plan_id, "action": "pairing.approve", "requestId": request, "createdAt": iso(created), "expiresAt": iso(expires), "targetFingerprint": self.target_hash, "desiredStateHash": sha(self.desired()), "preconditionsHash": sha(safety), "commands": [["openclaw", "devices", "approve", "<exact-current-request-id>"]], "confirmationChallenge": challenge}
                 state = self.new_state("waiting_pairing"); state["plan"] = plan; state["pairing"]["requestIdHash"] = sha(requests[0].get("requestId")); atomic_write(self.state_path, state)
                 out["plan"] = {"id": plan_id, "expiresAt": iso(expires)}; out["pairingRequest"] = {"requestIdHash": sha(requests[0].get("requestId")), "nodeFingerprint": self.target_hash}; out["confirmationChallenge"] = challenge
+        if self.command == "service.status":
+            service = self.fixture.get("service", {})
+            command_path = self.fixture.get("openclaw", {}).get("path")
+            service_path = service.get("openclawPath")
+            service_version = service.get("commandVersion")
+            if (service_path and command_path and service_path != command_path) or (service_version and service_version != REQUIRED_VERSION):
+                return self.fail("SERVICE_RUNTIME_MISMATCH", "service OpenClaw path or version differs from the inspected command", "failed", "precondition", "Create and confirm a repair plan to rebind the user-scoped service to the exact required command.")
         if self.command == "service.status" and self.a.lifecycle_action:
             gate = self.tailscale_gate(reachability=self.a.lifecycle_action != "stop")
             if gate: return gate

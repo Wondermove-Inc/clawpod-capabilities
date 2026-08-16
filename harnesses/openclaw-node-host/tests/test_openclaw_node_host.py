@@ -113,3 +113,86 @@ def test_no_tailscale_mutating_command_graph():
     serialized = json.dumps(manifest["commands"])
     for forbidden in ('"tailscale", "up"', '"tailscale", "login"', '"tailscale", "logout"', '"tailscale", "set"'):
         assert forbidden not in serialized
+
+def test_linux_is_explicitly_unsupported(tmp_path):
+    path = fixture(tmp_path); value = json.loads(path.read_text()); value["os"] = "linux"; path.write_text(json.dumps(value))
+    run, out = call(tmp_path, "system inspect", fixture=path)
+    assert run.returncode == 5 and out["errors"][0]["code"] == "UNSUPPORTED_OS"
+
+
+def test_node_below_minimum_fails_closed_without_mutation(tmp_path):
+    path = fixture(tmp_path); value = json.loads(path.read_text()); value["node"] = {"version": "22.13.9"}; path.write_text(json.dumps(value))
+    record = tmp_path / "record.jsonl"
+    run, out = call(tmp_path, "install plan", fixture=path, extra=BASE, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    assert run.returncode == 5 and out["errors"][0]["code"] == "NODE_VERSION_UNSUPPORTED"
+    assert not record.exists()
+
+
+def test_wrong_tailnet_and_stale_evidence_fail_closed(tmp_path):
+    wrong = fixture(tmp_path, sameTailnet=False, mismatch=True, gatewayIdentity="other-tailnet")
+    run, out = call(tmp_path, "tailscale verify", fixture=wrong)
+    assert run.returncode == 3 and out["errors"][0]["code"] == "TAILNET_MISMATCH"
+    stale = fixture(tmp_path, checkedAt="2026-08-16T14:54:59Z")
+    run, out = call(tmp_path, "tailscale verify", fixture=stale)
+    assert run.returncode == 5 and out["errors"][0]["code"] == "PLAN_STALE"
+
+
+def test_version_drift_and_service_path_mismatch_are_detected(tmp_path):
+    drift = fixture(tmp_path); value = json.loads(drift.read_text()); value["openclaw"]["version"] = "2026.4.10"; drift.write_text(json.dumps(value))
+    run, out = call(tmp_path, "version inspect", fixture=drift)
+    assert run.returncode == 5 and out["errors"][0]["code"] == "VERSION_MISMATCH"
+    mismatch = fixture(tmp_path); value = json.loads(mismatch.read_text()); value["service"].update(openclawPath="/old/openclaw", commandVersion="2026.4.10"); mismatch.write_text(json.dumps(value))
+    run, out = call(tmp_path, "service status", fixture=mismatch)
+    assert run.returncode == 5 and out["errors"][0]["code"] == "SERVICE_RUNTIME_MISMATCH"
+
+
+def test_interrupted_state_resumes_and_idempotent_apply_is_noop(tmp_path):
+    _, planned = call(tmp_path, "install plan", extra=BASE)
+    plan = planned["planDocument"]
+    state_path = tmp_path / "state.json"
+    state = json.loads(state_path.read_text()); state["phase"] = "applying"; state["steps"] = {"provider-install": {"status": "interrupted"}}; state_path.write_text(json.dumps(state))
+    options = (*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"])
+    run, out = call(tmp_path, "install apply", extra=options)
+    assert run.returncode == 0 and out["service"]["registered"]
+    ready = fixture(tmp_path); value = json.loads(ready.read_text()); value["service"].update(registered=True, running=True); ready.write_text(json.dumps(value))
+    _, planned = call(tmp_path, "install plan", fixture=ready, extra=BASE)
+    plan = planned["planDocument"]
+    run, out = call(tmp_path, "install apply", fixture=ready, extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]))
+    assert run.returncode == 0 and out["status"] == "noop" and not out["effects"]
+
+
+def test_stale_pairing_request_and_rollback_idempotency(tmp_path):
+    path = fixture(tmp_path); value = json.loads(path.read_text()); value["deviceRequests"] = [{"requestId": "req-1", "nodeFingerprint": "not-this-node"}]; path.write_text(json.dumps(value))
+    run, out = call(tmp_path, "pairing status", fixture=path, extra=BASE)
+    assert run.returncode == 0 and out["plan"]["id"] is None
+    _, planned = call(tmp_path, "rollback plan", extra=BASE)
+    plan = planned["planDocument"]
+    run, out = call(tmp_path, "rollback apply", extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]))
+    assert run.returncode == 0 and out["status"] == "noop"
+
+
+def test_invalid_inputs_and_expired_plan(tmp_path):
+    run = subprocess.run([sys.executable, str(CLI), "--json", "system", "bogus"], text=True, capture_output=True)
+    assert run.returncode == 2 and json.loads(run.stdout)["errors"][0]["code"] == "INVALID_INPUT"
+    run, out = call(tmp_path, "system inspect", extra=("--tls-fingerprint", "ABC"))
+    assert run.returncode == 2 and out["errors"][0]["code"] == "INVALID_INPUT"
+    _, planned = call(tmp_path, "install plan", extra=BASE)
+    plan = planned["planDocument"]
+    env = {"OPENCLAW_NODE_HOST_NOW": "2026-08-16T15:20:00Z"}
+    run, out = call(tmp_path, "install apply", extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env=env)
+    assert run.returncode == 5 and out["errors"][0]["code"] == "PLAN_STALE"
+
+
+def test_redacts_nested_identity_and_secret_values(tmp_path):
+    path = fixture(tmp_path); value = json.loads(path.read_text()); value["tailscale"]["localIdentity"] = "token=CANARY"; value["password"] = "CANARY"; path.write_text(json.dumps(value))
+    run, out = call(tmp_path, "system inspect", fixture=path)
+    serialized = json.dumps(out)
+    assert "CANARY" not in serialized and "node-fixture" not in serialized and "gateway-fixture" not in serialized
+
+
+def test_routing_contract_has_three_positive_two_negative_and_collisions():
+    contracts = json.loads((ROOT.parents[1] / "tests" / "fixtures" / "routing_contracts.json").read_text())
+    route = contracts["openclaw-node-host"]
+    assert len(route["positive"]) >= 3 and len(route["negative"]) >= 2
+    joined = " ".join(route["negative"]).lower()
+    assert "install tailscale" in joined and ("unauthorized" in joined or "connected node" in joined)

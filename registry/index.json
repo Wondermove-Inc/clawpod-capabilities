@@ -1545,7 +1545,7 @@
         },
         {
           "path": "TEST.md",
-          "sha256": "8276f45f73871b3beae541417306f43345f993ca1053f387602ba9d9d4e08808"
+          "sha256": "41dc06ab1398f4ecaa2d612a46d326209121c4af27694749682864616006ca83"
         },
         {
           "path": "fixtures/macos-ready.json",
@@ -1561,11 +1561,11 @@
         },
         {
           "path": "openclaw_node_host.py",
-          "sha256": "11f1cdf3409d40704612d349da7d18009295407274c6a3cb78ee3f69c4e51a48"
+          "sha256": "8fc384d7dff9768c14d8414fe48a83d4e7b6a9da91cd1df2b1d8cb57f5210b3c"
         },
         {
           "path": "schemas/error-exit-codes.json",
-          "sha256": "416707a4b863449cbc40c56b2dde517ba920ad4786583432d7a3ea23f29b8caa"
+          "sha256": "de9e15967f1d3a7987f546daa7bf4e2f805db533bec250017a3e3bb9cab56a23"
         },
         {
           "path": "schemas/plan.schema.json",
