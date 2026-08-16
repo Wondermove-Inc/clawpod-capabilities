@@ -88,6 +88,26 @@
       "desktop"
     ]
   },
+  "clawpod-org-operations": {
+    "positive": [
+      "Draft a delegation request with explicit acceptance criteria and acknowledgement",
+      "Prepare an Engineering review request with tests, risk, review focus, and rollback",
+      "Write a SOC escalation with evidence custody, affected assets, and backup contacts",
+      "Create an SRE incident handoff with customer impact, role transfer, and next update",
+      "Follow up on an unanswered approval request with a new deadline and escalation path",
+      "Use the shared task service designated by this organization's WORKFLOW.md",
+      "Resolve a different organization WORKFLOW.md without carrying over the prior task service"
+    ],
+    "negative": [
+      "Coordinate source-code leases across Codex and Claude processes",
+      "Install a capability from the registry",
+      "Use Workboard as the shared board for independent peer agents",
+      "Send this email through Resend"
+    ],
+    "adjacent": [
+      "codex-claude-project-development"
+    ]
+  },
   "clawpod-video-studio": {
     "positive": [
       "Create a product launch video",
@@ -129,7 +149,8 @@
     ],
     "adjacent": [
       "github",
-      "clawpod-capability-registry"
+      "clawpod-capability-registry",
+      "clawpod-org-operations"
     ]
   },
   "enterprise-newsletter": {

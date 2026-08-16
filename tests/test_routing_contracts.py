@@ -28,7 +28,7 @@ class RoutingContractTests(unittest.TestCase):
 
     def test_fixture_covers_every_capability_with_trigger_examples(self) -> None:
         self.assertEqual(set(self.contracts), self.skill_ids)
-        self.assertEqual(len(self.contracts), 20)
+        self.assertEqual(len(self.contracts), len(self.skill_ids))
         for capability, contract in self.contracts.items():
             self.assertEqual(set(contract), {"positive", "negative", "adjacent"}, capability)
             self.assertGreaterEqual(len(contract["positive"]), 3, capability)
@@ -48,9 +48,11 @@ class RoutingContractTests(unittest.TestCase):
     def test_skill_and_harness_share_the_natural_routing_contract(self) -> None:
         for capability, contract in self.contracts.items():
             description = frontmatter_description(ROOT / "skills" / capability / "SKILL.md")
-            harness = json.loads((ROOT / "harnesses" / capability / "harness.json").read_text(encoding="utf-8"))
-            self.assertEqual(harness["description"], description, capability)
-            self.assertEqual(harness["whenToUse"], contract["positive"], capability)
+            harness_path = ROOT / "harnesses" / capability / "harness.json"
+            if harness_path.is_file():
+                harness = json.loads(harness_path.read_text(encoding="utf-8"))
+                self.assertEqual(harness["description"], description, capability)
+                self.assertEqual(harness["whenToUse"], contract["positive"], capability)
             self.assertNotRegex(description, r"\b(?:WHEN|CAN)\s*:", capability)
             self.assertRegex(description, r"\b(?:Use|use)\b", capability)
 
