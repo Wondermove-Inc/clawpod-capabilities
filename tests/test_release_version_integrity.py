@@ -39,7 +39,7 @@ class ReleaseVersionIntegrityTests(unittest.TestCase):
         registry = load(ROOT / "registry/index.json")["capabilities"]
         entries = {(item["type"], item["id"]): item for item in registry}
         skill_ids = sorted(path.parent.name for path in (ROOT / "skills").glob("*/capability.json"))
-        self.assertEqual(19, len(skill_ids), "connected-capability inventory changed")
+        self.assertEqual(20, len(skill_ids), "connected-capability inventory changed")
 
         failures: list[str] = []
 

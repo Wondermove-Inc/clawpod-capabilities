@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "clawpod-node-host-plan-v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "id", "action", "requestId", "createdAt", "expiresAt", "targetFingerprint", "desiredStateHash", "preconditionsHash", "commands", "confirmationChallenge"],
+  "properties": {
+    "schemaVersion": {"const": 1}, "id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "action": {"enum": ["bootstrap.apply", "install.apply", "repair.apply", "uninstall.apply", "rollback.apply", "service.start", "service.stop", "service.restart", "pairing.approve"]},
+    "requestId": {"type": "string", "format": "uuid"}, "createdAt": {"type": "string", "format": "date-time"}, "expiresAt": {"type": "string", "format": "date-time"},
+    "targetFingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "desiredStateHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "preconditionsHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "commands": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+    "confirmationChallenge": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

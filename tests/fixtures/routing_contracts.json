@@ -192,6 +192,25 @@
       "verified-research"
     ]
   },
+  "clawpod-node-host": {
+    "positive": [
+      "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
+      "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
+      "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
+      "Check whether a local machine is ready to become a node"
+    ],
+    "negative": [
+      "Why is my already configured ClawPod node connection failing?",
+      "Why is my paired node unauthorized?",
+      "Diagnose why an already configured node fails to pair",
+      "Run uname on the connected node",
+      "Administer Tailscale ACL policy and Serve/Funnel",
+      "Install an OpenClaw Gateway"
+    ],
+    "adjacent": [
+      "desktop"
+    ]
+  },
   "notion": {
     "positive": [
       "Read a Notion page",
@@ -283,7 +302,8 @@
     ],
     "adjacent": [
       "clawpod-ocr",
-      "clawpod-image-studio"
+      "clawpod-image-studio",
+      "clawpod-node-host"
     ]
   }
 }

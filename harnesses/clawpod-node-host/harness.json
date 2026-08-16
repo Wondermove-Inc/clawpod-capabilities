@@ -1,0 +1,1930 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-node-host",
+  "title": "ClawPod Node Host",
+  "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+  "version": "0.1.0",
+  "entrypoint": "./clawpod_node_host.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 60000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
+    "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
+    "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
+    "Check whether a local machine is ready to become a node"
+  ],
+  "capabilities": [
+    "exact-version-gate",
+    "pre-node-bootstrap",
+    "strict-ssh-host-key-binding",
+    "protected-credential-references",
+    "tailscale-install-login-address",
+    "same-tailnet-verification",
+    "plan-bound-ssh-server-readiness",
+    "plan-bound-lifecycle",
+    "resumable-owner-state",
+    "exact-device-pairing",
+    "system-browser-validation"
+  ],
+  "authModel": {
+    "type": "protected-environment-or-existing-config",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "bootstrap.inspect": {
+      "description": "Inspect a selected pre-node bootstrap transport with strict host-key and protected-credential gates.",
+      "baseArgv": [
+        "--json",
+        "bootstrap",
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "transport": {
+            "type": "string"
+          },
+          "bootstrapHost": {
+            "type": "string"
+          },
+          "bootstrapAccount": {
+            "type": "string"
+          },
+          "bootstrapPort": {
+            "type": "integer"
+          },
+          "expectedHostKey": {
+            "type": "string"
+          },
+          "credentialRef": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "transport",
+          "type": "option",
+          "flag": "--transport",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapHost",
+          "type": "option",
+          "flag": "--bootstrap-host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapAccount",
+          "type": "option",
+          "flag": "--bootstrap-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapPort",
+          "type": "option",
+          "flag": "--bootstrap-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "expectedHostKey",
+          "type": "option",
+          "flag": "--expected-host-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialRef",
+          "type": "option",
+          "flag": "--credential-ref",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "bootstrap.generate": {
+      "description": "Generate a deterministic credential-free bootstrap script for the user to run locally.",
+      "baseArgv": [
+        "--json",
+        "bootstrap",
+        "generate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "platform"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "transport": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "transport",
+          "type": "option",
+          "flag": "--transport",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "bootstrap.plan": {
+      "description": "Create an exact target, account, host-key, transport, and script-bound bootstrap plan.",
+      "baseArgv": [
+        "--json",
+        "bootstrap",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "transport": {
+            "type": "string"
+          },
+          "bootstrapHost": {
+            "type": "string"
+          },
+          "bootstrapAccount": {
+            "type": "string"
+          },
+          "bootstrapPort": {
+            "type": "integer"
+          },
+          "expectedHostKey": {
+            "type": "string"
+          },
+          "credentialRef": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "openclawVersion": {
+            "type": "string"
+          },
+          "gatewayHost": {
+            "type": "string"
+          },
+          "gatewayPort": {
+            "type": "integer"
+          },
+          "tls": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "transport",
+          "type": "option",
+          "flag": "--transport",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapHost",
+          "type": "option",
+          "flag": "--bootstrap-host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapAccount",
+          "type": "option",
+          "flag": "--bootstrap-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapPort",
+          "type": "option",
+          "flag": "--bootstrap-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "expectedHostKey",
+          "type": "option",
+          "flag": "--expected-host-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialRef",
+          "type": "option",
+          "flag": "--credential-ref",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "openclawVersion",
+          "type": "option",
+          "flag": "--openclaw-version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "gatewayHost",
+          "type": "option",
+          "flag": "--gateway-host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "gatewayPort",
+          "type": "option",
+          "flag": "--gateway-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "tls",
+          "type": "booleanFlag",
+          "flag": "--tls",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "bootstrap.apply": {
+      "description": "Apply only an exact approved bootstrap plan and resume from its first incomplete idempotent stage.",
+      "baseArgv": [
+        "--json",
+        "bootstrap",
+        "apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "planId",
+          "confirm",
+          "openclawVersion"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "transport": {
+            "type": "string"
+          },
+          "bootstrapHost": {
+            "type": "string"
+          },
+          "bootstrapAccount": {
+            "type": "string"
+          },
+          "bootstrapPort": {
+            "type": "integer"
+          },
+          "expectedHostKey": {
+            "type": "string"
+          },
+          "credentialRef": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "openclawVersion": {
+            "type": "string"
+          },
+          "gatewayHost": {
+            "type": "string"
+          },
+          "gatewayPort": {
+            "type": "integer"
+          },
+          "tls": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "transport",
+          "type": "option",
+          "flag": "--transport",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapHost",
+          "type": "option",
+          "flag": "--bootstrap-host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapAccount",
+          "type": "option",
+          "flag": "--bootstrap-account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapPort",
+          "type": "option",
+          "flag": "--bootstrap-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "expectedHostKey",
+          "type": "option",
+          "flag": "--expected-host-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialRef",
+          "type": "option",
+          "flag": "--credential-ref",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "planId",
+          "type": "option",
+          "flag": "--plan-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "openclawVersion",
+          "type": "option",
+          "flag": "--openclaw-version",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "gatewayHost",
+          "type": "option",
+          "flag": "--gateway-host",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "gatewayPort",
+          "type": "option",
+          "flag": "--gateway-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "tls",
+          "type": "booleanFlag",
+          "flag": "--tls",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "system.inspect": {
+      "description": "system.inspect operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "system",
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "version.inspect": {
+      "description": "version.inspect operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "version",
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "tailscale.install-status": {
+      "description": "Inspect whether Tailscale is installed and ready on the selected PC.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "install-status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tailscale.install-plan": {
+      "description": "Create an exact platform-bound plan to install Tailscale.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "install-plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tailscale.install-apply": {
+      "description": "Install Tailscale only from an exact approved resumable plan.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "install-apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "planId",
+          "confirm"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "planId",
+          "type": "option",
+          "flag": "--plan-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "tailscale.status": {
+      "description": "Inspect Tailscale login state without changing account state.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tailscale.login-plan": {
+      "description": "Create an exact plan to initiate Tailscale account connection without entering credentials, MFA, or consent.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "login-plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tailscale.login-apply": {
+      "description": "Initiate approved Tailscale login, then pause for one human browser consent or MFA action.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "login-apply"
+      ],
+      "safetyClasses": [
+        "humanAccountAction",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "planId",
+          "confirm"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "planId",
+          "type": "option",
+          "flag": "--plan-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "tailscale.address": {
+      "description": "Read the authenticated PC Tailscale IP address.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "address"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "tailscale.same-tailnet": {
+      "description": "Verify the PC and agent runtime are authenticated to the same tailnet.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "same-tailnet"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "ssh-server.status": {
+      "description": "Inspect macOS Remote Login or Windows OpenSSH Server and Tailscale-only exposure readiness.",
+      "baseArgv": [
+        "--json",
+        "ssh-server",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "ssh-server.plan": {
+      "description": "Create an exact platform-bound plan for Remote Login or OpenSSH Server with Tailscale-only scope.",
+      "baseArgv": [
+        "--json",
+        "ssh-server",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "ssh-server.apply": {
+      "description": "Apply approved Remote Login or OpenSSH Server readiness with Tailscale-only network scope.",
+      "baseArgv": [
+        "--json",
+        "ssh-server",
+        "apply"
+      ],
+      "safetyClasses": [
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "planId",
+          "confirm"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "planId",
+          "type": "option",
+          "flag": "--plan-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "tailscale.verify": {
+      "description": "tailscale.verify operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "tailscale",
+        "verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "ssh-server.verify": {
+      "description": "Verify TCP port 22 specifically through the selected Tailscale IP before any SSH or node installation.",
+      "baseArgv": [
+        "--json",
+        "ssh-server",
+        "verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "bootstrapHost"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "bootstrapHost": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "bootstrapHost",
+          "type": "option",
+          "flag": "--bootstrap-host",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "service.status": {
+      "description": "service.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "service",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "onboarding.status": {
+      "description": "onboarding.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "onboarding",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "pairing.status": {
+      "description": "pairing.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "pairing",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "validate.plan": {
+      "description": "validate.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "validate",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "validate.run": {
+      "description": "validate.run operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "validate",
+        "run"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "install.plan": {
+      "description": "install.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "install",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "repair.plan": {
+      "description": "repair.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "repair",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "uninstall.plan": {
+      "description": "uninstall.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "uninstall",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "rollback.plan": {
+      "description": "rollback.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "rollback",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "install.apply": {
+      "description": "install.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "install",
+        "apply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "service.start": {
+      "description": "service.start operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "service",
+        "start"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "service.stop": {
+      "description": "service.stop operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "service",
+        "stop"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "service.restart": {
+      "description": "service.restart operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "service",
+        "restart"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "repair.apply": {
+      "description": "repair.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "repair",
+        "apply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "uninstall.apply": {
+      "description": "uninstall.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "uninstall",
+        "apply"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "rollback.apply": {
+      "description": "rollback.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "rollback",
+        "apply"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "pairing.approve": {
+      "description": "pairing.approve operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "--json",
+        "pairing",
+        "approve"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    }
+  }
+}

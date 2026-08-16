@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "clawpod-node-host-state-v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "flowId", "targetFingerprint", "desiredStateHash", "phase", "steps", "plan", "pairing", "effects", "lastError", "updatedAt"],
+  "properties": {
+    "schemaVersion": {"const": 1}, "flowId": {"type": "string", "format": "uuid"}, "targetFingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "desiredStateHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "phase": {"enum": ["preflight", "waiting_tailscale", "planned", "installed", "waiting_pairing", "paired", "validated", "rollback_required", "complete"]},
+    "steps": {"type": "object"}, "plan": {"type": "object"}, "pairing": {"type": "object"}, "bootstrap": {"type": "object"}, "effects": {"type": "array"}, "lastError": {}, "updatedAt": {"type": "string", "format": "date-time"}
+  }
+}
