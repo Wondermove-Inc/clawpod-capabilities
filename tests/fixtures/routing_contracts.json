@@ -192,6 +192,22 @@
       "verified-research"
     ]
   },
+  "openclaw-node-host": {
+    "positive": [
+      "Set up a Mac or Windows PC as an OpenClaw node",
+      "Install, repair, resume, restart, roll back, or uninstall its node service",
+      "Check whether a local machine is ready to become a node"
+    ],
+    "negative": [
+      "Why is my paired node unauthorized?",
+      "Run uname on the connected node",
+      "Install Tailscale",
+      "Install an OpenClaw Gateway"
+    ],
+    "adjacent": [
+      "desktop"
+    ]
+  },
   "notion": {
     "positive": [
       "Read a Notion page",
@@ -283,7 +299,8 @@
     ],
     "adjacent": [
       "clawpod-ocr",
-      "clawpod-image-studio"
+      "clawpod-image-studio",
+      "openclaw-node-host"
     ]
   }
 }

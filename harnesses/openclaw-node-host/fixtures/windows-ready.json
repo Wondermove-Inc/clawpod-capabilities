@@ -1,0 +1,9 @@
+{
+  "os": "windows",
+  "openclaw": {"version": "2026.4.11", "path": "C:\\Safe\\openclaw.cmd"},
+  "npm": {"requestedVersion": "2026.4.11", "resolvedVersion": "2026.4.11"},
+  "tailscale": {"present": true, "authenticated": true, "localIdentity": "node-fixture", "sameTailnet": true, "gatewayIdentity": "gateway-fixture", "reachable": true, "checkedAt": "2026-08-16T15:00:00Z"},
+  "service": {"registered": false, "running": false, "scope": "current-user", "provider": "schtasks"},
+  "pairing": {"known": false, "paired": false, "connected": false},
+  "capabilities": {"system": "passed", "browser": "passed", "macApp": "not_applicable"}
+}

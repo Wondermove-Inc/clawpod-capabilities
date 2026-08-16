@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "openclaw-node-host",
+  "title": "OpenClaw Node Host",
+  "description": "Use for onboarding, installing, starting, stopping, repairing, uninstalling, rolling back, or resuming an OpenClaw node host on macOS or Windows 11. Can verify readiness, exact OpenClaw 2026.4.11, preinstalled same-tailnet Tailscale connectivity, apply guarded service plans, hand off pairing, and validate capabilities. Use node-connect for post-provisioning connection diagnosis and nodes/exec host=node for routine connected-node operations; never installs or changes Tailscale.",
+  "version": "0.1.0",
+  "entrypoint": "./openclaw_node_host.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 60000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Set up a Mac or Windows PC as an OpenClaw node",
+    "Install, repair, resume, restart, roll back, or uninstall its node service",
+    "Check whether a local machine is ready to become a node"
+  ],
+  "capabilities": [
+    "exact-version-gate",
+    "tailscale-verification-only",
+    "plan-bound-lifecycle",
+    "resumable-owner-state",
+    "exact-device-pairing",
+    "system-browser-validation"
+  ],
+  "authModel": {
+    "type": "protected-environment-or-existing-config",
+    "storesSecrets": false,
+    "requiresHumanAccount": true
+  },
+  "commands": {
+    "system.inspect": {
+      "description": "system.inspect operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "system",
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "version.inspect": {
+      "description": "version.inspect operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "version",
+        "inspect"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "tailscale.verify": {
+      "description": "tailscale.verify operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "tailscale",
+        "verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "service.status": {
+      "description": "service.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "service",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "onboarding.status": {
+      "description": "onboarding.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "onboarding",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "pairing.status": {
+      "description": "pairing.status operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "pairing",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "validate.plan": {
+      "description": "validate.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "validate",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "validate.run": {
+      "description": "validate.run operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "validate",
+        "run"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "install.plan": {
+      "description": "install.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "install",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "repair.plan": {
+      "description": "repair.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "repair",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "uninstall.plan": {
+      "description": "uninstall.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "uninstall",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "rollback.plan": {
+      "description": "rollback.plan operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "rollback",
+        "plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "install.apply": {
+      "description": "install.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "install",
+        "apply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "service.start": {
+      "description": "service.start operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "service",
+        "start"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "service.stop": {
+      "description": "service.stop operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "service",
+        "stop"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "service.restart": {
+      "description": "service.restart operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "service",
+        "restart"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "repair.apply": {
+      "description": "repair.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "repair",
+        "apply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "uninstall.apply": {
+      "description": "uninstall.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "uninstall",
+        "apply"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "rollback.apply": {
+      "description": "rollback.apply operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "rollback",
+        "apply"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    },
+    "pairing.approve": {
+      "description": "pairing.approve operation for the exact-version guarded node-host lifecycle.",
+      "baseArgv": [
+        "pairing",
+        "approve"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "./schemas/result.schema.json"
+      },
+      "argMap": []
+    }
+  }
+}
+

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openclaw-node-host-result-v1",
+  "type": "object",
+  "required": ["ok", "command", "safetyClass", "status", "errors", "redactions"],
+  "properties": {
+    "ok": {"type": "boolean"},
+    "command": {"type": "string"},
+    "safetyClass": {"enum": ["S0", "S1", "S2", "S3", "S4"]},
+    "status": {"enum": ["success", "noop", "waiting_user", "confirmation_required", "failed", "partial", "rollback_required"]},
+    "target": {"type": "object"}, "version": {"type": "object"}, "tailscale": {"type": "object"},
+    "service": {"type": "object"}, "pairing": {"type": "object"}, "capabilities": {"type": "object"},
+    "plan": {"type": "object"}, "effects": {"type": "array"}, "nextAction": {"type": "object"},
+    "errors": {"type": "array"}, "redactions": {"type": "array"}
+  },
+  "additionalProperties": true
+}

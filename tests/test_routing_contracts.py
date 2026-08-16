@@ -22,7 +22,7 @@ class RoutingContractTests(unittest.TestCase):
 
     def test_fixture_covers_every_capability_with_trigger_examples(self) -> None:
         self.assertEqual(set(self.contracts), self.skill_ids)
-        self.assertEqual(len(self.contracts), 19)
+        self.assertEqual(len(self.contracts), 20)
         for capability, contract in self.contracts.items():
             self.assertEqual(set(contract), {"positive", "negative", "adjacent"}, capability)
             self.assertGreaterEqual(len(contract["positive"]), 3, capability)

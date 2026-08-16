@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "descriptionSource": "skill-frontmatter",
+  "description": "Guarded OpenClaw node-host onboarding and lifecycle.",
+  "compatibility": {"openclaw": "2026.4.11", "platforms": ["macos", "windows"]},
+  "safety": {"risk": "destructive", "approvalRequired": true},
+  "linkedHarness": {"id": "openclaw-node-host", "version": "0.1.0"}
+}
