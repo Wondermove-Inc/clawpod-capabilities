@@ -34,6 +34,7 @@
     "system.inspect": {
       "description": "system.inspect operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "system",
         "inspect"
       ],
@@ -45,13 +46,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "version.inspect": {
       "description": "version.inspect operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "version",
         "inspect"
       ],
@@ -63,13 +91,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "tailscale.verify": {
       "description": "tailscale.verify operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "tailscale",
         "verify"
       ],
@@ -81,13 +136,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "service.status": {
       "description": "service.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "service",
         "status"
       ],
@@ -99,13 +181,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "onboarding.status": {
       "description": "onboarding.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "onboarding",
         "status"
       ],
@@ -117,13 +226,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "pairing.status": {
       "description": "pairing.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "pairing",
         "status"
       ],
@@ -135,13 +271,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "validate.plan": {
       "description": "validate.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "validate",
         "plan"
       ],
@@ -153,13 +316,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "validate.run": {
       "description": "validate.run operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "validate",
         "run"
       ],
@@ -171,13 +361,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "install.plan": {
       "description": "install.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "install",
         "plan"
       ],
@@ -189,13 +406,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "repair.plan": {
       "description": "repair.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "repair",
         "plan"
       ],
@@ -207,13 +451,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "uninstall.plan": {
       "description": "uninstall.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "uninstall",
         "plan"
       ],
@@ -225,13 +496,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "rollback.plan": {
       "description": "rollback.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "rollback",
         "plan"
       ],
@@ -243,13 +541,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "install.apply": {
       "description": "install.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "install",
         "apply"
       ],
@@ -262,13 +587,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "service.start": {
       "description": "service.start operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "service",
         "start"
       ],
@@ -281,13 +633,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "service.stop": {
       "description": "service.stop operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "service",
         "stop"
       ],
@@ -300,13 +679,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "service.restart": {
       "description": "service.restart operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "service",
         "restart"
       ],
@@ -319,13 +725,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "repair.apply": {
       "description": "repair.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "repair",
         "apply"
       ],
@@ -338,13 +771,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "uninstall.apply": {
       "description": "uninstall.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "uninstall",
         "apply"
       ],
@@ -357,13 +817,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "rollback.apply": {
       "description": "rollback.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "rollback",
         "apply"
       ],
@@ -376,13 +863,40 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     },
     "pairing.approve": {
       "description": "pairing.approve operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
+        "--json",
         "pairing",
         "approve"
       ],
@@ -395,10 +909,35 @@
         "additionalProperties": false
       },
       "outputSchema": {
-        "$ref": "./schemas/result.schema.json"
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
       },
       "argMap": []
     }
   }
 }
-
