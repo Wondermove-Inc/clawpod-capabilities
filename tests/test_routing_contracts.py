@@ -48,6 +48,27 @@ class RoutingContractTests(unittest.TestCase):
             self.assertNotRegex(description, r"\b(?:WHEN|CAN)\s*:", capability)
             self.assertRegex(description, r"\b(?:Use|use)\b", capability)
 
+    def test_openclaw_node_host_description_is_identical_across_sources(self) -> None:
+        capability = "openclaw-node-host"
+        description = frontmatter_description(ROOT / "skills" / capability / "SKILL.md")
+        harness = json.loads((ROOT / "harnesses" / capability / "harness.json").read_text(encoding="utf-8"))
+        skill_metadata = json.loads(
+            (ROOT / "skills" / capability / "capability.json").read_text(encoding="utf-8")
+        )
+        harness_metadata = json.loads(
+            (ROOT / "harnesses" / capability / "capability.json").read_text(encoding="utf-8")
+        )
+        registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))["capabilities"]
+        registry_descriptions = {
+            entry["type"]: entry["description"]
+            for entry in registry
+            if entry["id"] == capability
+        }
+        self.assertEqual(harness["description"], description)
+        self.assertEqual(skill_metadata["description"], description)
+        self.assertEqual(harness_metadata["description"], description)
+        self.assertEqual(registry_descriptions, {"skill": description, "harness": description})
+
     def test_desktop_routes_only_native_handoffs_and_names_composition_boundaries(self) -> None:
         description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")
         for phrase in (
