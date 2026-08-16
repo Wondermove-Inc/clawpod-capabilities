@@ -1561,7 +1561,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "78304be5e0208e9c424c714663824cf6f4d8a604add2e8c3be9ad6738e56bee3"
+          "sha256": "b2ef65088454dca5e4b2408b8d7b75775e954a995e33aad8a24276d4b6f218f6"
         },
         {
           "path": "openclaw_node_host.py",

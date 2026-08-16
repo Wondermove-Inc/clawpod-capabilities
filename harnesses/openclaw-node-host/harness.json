@@ -15,6 +15,7 @@
   "whenToUse": [
     "ClawPod 노드 연결을 도와줘",
     "Set up a Mac or Windows PC as an OpenClaw node",
+    "Install Tailscale on this PC as part of ClawPod node onboarding",
     "Install, repair, resume, restart, roll back, or uninstall its node service",
     "Check whether a local machine is ready to become a node"
   ],
