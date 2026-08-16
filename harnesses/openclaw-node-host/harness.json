@@ -3,7 +3,7 @@
   "kind": "openclaw.harness.v1",
   "name": "openclaw-node-host",
   "title": "OpenClaw Node Host",
-  "description": "Use for onboarding, installing, starting, stopping, repairing, uninstalling, rolling back, or resuming an OpenClaw node host on macOS or Windows 11. Can verify readiness, exact OpenClaw 2026.4.11, preinstalled same-tailnet Tailscale connectivity, apply guarded service plans, hand off pairing, and validate capabilities. Use node-connect for post-provisioning connection diagnosis and nodes/exec host=node for routine connected-node operations; never installs or changes Tailscale.",
+  "description": "Connect or manage a ClawPod node on Mac/Windows by inspecting readiness, applying approved plans, and pairing. Use node-connect for diagnostics.",
   "version": "0.1.0",
   "entrypoint": "./openclaw_node_host.py",
   "packageRoot": ".",
@@ -13,6 +13,7 @@
     "requiresJson": true
   },
   "whenToUse": [
+    "ClawPod 노드 연결을 도와줘",
     "Set up a Mac or Windows PC as an OpenClaw node",
     "Install, repair, resume, restart, roll back, or uninstall its node service",
     "Check whether a local machine is ready to become a node"

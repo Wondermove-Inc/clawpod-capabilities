@@ -1,11 +1,22 @@
 ---
-name: openclaw-node-host
-description: "Use for onboarding, installing, starting, stopping, repairing, uninstalling, rolling back, or resuming an OpenClaw node host on macOS or Windows 11. Can verify readiness, exact OpenClaw 2026.4.11, preinstalled same-tailnet Tailscale connectivity, apply guarded service plans, hand off pairing, and validate capabilities. Use node-connect for post-provisioning connection diagnosis and nodes/exec host=node for routine connected-node operations; never installs or changes Tailscale."
+name: "openclaw-node-host"
+description: "Connect or manage a ClawPod node on Mac/Windows by inspecting readiness, applying approved plans, and pairing. Use node-connect for diagnostics."
 ---
 
 # OpenClaw Node Host
 
 Use the linked `openclaw-node-host` Harness. Always request JSON output. The only accepted package version is literal `2026.4.11`; never use `latest`, a range, alias, URL, or inferred version.
+
+## User interaction
+
+- Start in the user's language with one short product-level question. In Korean, use: `ClawPod 노드 연결을 도와드릴게요. 연결할 컴퓨터는 Mac인가요, Windows 11인가요?`
+- Do not expose implementation prerequisites at startup. Inspect safe prerequisites automatically after the platform is known. Keep OpenClaw and Node.js versions, network names and ports, TLS details, request IDs, fingerprints, and Tailscale policy internal unless a blocker, ambiguity, or safety decision makes one detail necessary.
+- Progressively disclose only the next needed decision. When blocked, ask exactly one concise user action, then re-inspect instead of listing future steps.
+- Before any mutation, summarize only the exact ClawPod-visible effect and ask one simple approval bound to the fresh plan. Do not show internal confirmation tokens unless the runtime requires the user to enter one.
+- Treat pairing as a separate approval. Ask simply whether to approve the detected ClawPod node; retain the exact request ID and fingerprint as internal verification evidence unless ambiguity or safety requires showing them.
+- Report completion and recoverable failures in ClawPod language. Keep diagnostic internals in redacted evidence, not the default user message.
+
+Follow the explicit resumable dialogue state machine in [onboarding](references/onboarding.md). Do not skip its bootstrap-transport gate for a remote computer that is not already a connected node.
 
 ## Procedure
 

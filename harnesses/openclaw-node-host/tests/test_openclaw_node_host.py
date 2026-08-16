@@ -108,6 +108,26 @@ def test_shared_description_is_byte_identical():
     frontmatter = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "SKILL.md").read_text().splitlines()[2]
     assert json.loads(frontmatter.split(":", 1)[1].strip()) == manifest["description"]
 
+def test_skill_enforces_concise_progressive_clawpod_onboarding():
+    source = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "SKILL.md").read_text()
+    prompt = "ClawPod 노드 연결을 도와드릴게요. 연결할 컴퓨터는 Mac인가요, Windows 11인가요?"
+    assert prompt in source
+    assert "ask exactly one concise user action" in source
+    assert "Before any mutation" in source and "fresh plan" in source
+    assert "request ID and fingerprint as internal verification evidence" in source
+    assert "never use `latest`" in source and "Never install, update, reinstall" in source
+
+def test_onboarding_state_machine_covers_remote_bootstrap_and_resume():
+    source = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "references" / "onboarding.md").read_text()
+    for state in ("platform", "transport", "credentials", "inspect", "plan", "apply", "pair", "verify", "complete"):
+        assert f"`{state}`" in source
+    for method in ("macOS Remote Login/OpenSSH", "Windows OpenSSH Server", "Tailscale SSH", "local command"):
+        assert method in source
+    assert "Never request or accept a password or private key in chat" in source
+    assert "one question or action per turn" in source
+    assert "first unmet" in source and "does not change the node-to-Gateway transport" in source
+    assert "Never enable Remote Login, OpenSSH Server, or Tailscale SSH automatically" in source
+
 def test_no_tailscale_mutating_command_graph():
     manifest = json.loads((ROOT / "harness.json").read_text())
     serialized = json.dumps(manifest["commands"])

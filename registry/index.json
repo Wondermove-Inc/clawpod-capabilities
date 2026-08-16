@@ -575,7 +575,7 @@
       "id": "openclaw-node-host",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use for onboarding, installing, starting, stopping, repairing, uninstalling, rolling back, or resuming an OpenClaw node host on macOS or Windows 11. Can verify readiness, exact OpenClaw 2026.4.11, preinstalled same-tailnet Tailscale connectivity, apply guarded service plans, hand off pairing, and validate capabilities. Use node-connect for post-provisioning connection diagnosis and nodes/exec host=node for routine connected-node operations; never installs or changes Tailscale.",
+      "description": "Connect or manage a ClawPod node on Mac/Windows by inspecting readiness, applying approved plans, and pairing. Use node-connect for diagnostics.",
       "path": "skills/openclaw-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -591,7 +591,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7e6704bbc59f718beaf433b11a2ca980a947ae5ab571a2244524e412e97dd7ab"
+          "sha256": "746054f40c5a34d08a6cd34fb75e7afb3add54bd9f04bc2d7593281502a0494e"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "d55376e555200569ef1d6ed456002121bb59d9419daf91a91022c776c92f4803"
         },
         {
           "path": "references/operations.md",
@@ -1525,7 +1529,7 @@
       "id": "openclaw-node-host",
       "type": "harness",
       "version": "0.1.0",
-      "description": "Guarded, resumable macOS and Windows 11 lifecycle for an exact OpenClaw 2026.4.11 node host with verification-only Tailscale gates.",
+      "description": "Guarded ClawPod node onboarding and lifecycle for macOS and Windows 11.",
       "path": "harnesses/openclaw-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -1557,7 +1561,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "ae64d696465206ec53bc45c7afe842439d8f77c04cbf8fbbbbf9f5dc9fed048f"
+          "sha256": "18a70b4616d89b8bab4ec987588910bcc08e8db8c54357cc0438e224a3e5b4ea"
         },
         {
           "path": "openclaw_node_host.py",

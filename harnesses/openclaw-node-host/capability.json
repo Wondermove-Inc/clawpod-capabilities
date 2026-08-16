@@ -2,7 +2,7 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.1.0",
-  "description": "Guarded, resumable macOS and Windows 11 lifecycle for an exact OpenClaw 2026.4.11 node host with verification-only Tailscale gates.",
+  "description": "Guarded ClawPod node onboarding and lifecycle for macOS and Windows 11.",
   "compatibility": {"openclaw": "2026.4.11", "platforms": ["macos", "windows"]},
   "safety": {"risk": "destructive", "approvalRequired": true}
 }
