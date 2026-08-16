@@ -7,7 +7,9 @@ command recording; real mutations require the explicit disposable-host gate.
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
+import ipaddress
 import json
 import os
 import platform
@@ -25,16 +27,18 @@ REQUIRED_VERSION = "2026.4.11"
 SCHEMA_VERSION = 1
 PLAN_TTL_SECONDS = 900
 TAILSCALE_TTL_SECONDS = 300
+BOOTSTRAP_TIMEOUT_SECONDS = 20
+BOOTSTRAP_TRANSPORTS = {"openssh", "tailscale-ssh", "local"}
 MUTATIONS = {
     "install.apply": "S2", "service.start": "S1", "service.stop": "S3",
     "service.restart": "S1", "repair.apply": "S2", "uninstall.apply": "S3",
-    "rollback.apply": "S3", "pairing.approve": "S4",
+    "rollback.apply": "S3", "pairing.approve": "S4", "bootstrap.apply": "S2",
 }
 PLANNERS = {"install.plan", "repair.plan", "uninstall.plan", "rollback.plan"}
 COMMANDS = {
     "system.inspect", "version.inspect", "tailscale.verify", "service.status",
     "onboarding.status", "pairing.status", "validate.plan", "validate.run",
-    *PLANNERS, *MUTATIONS,
+    "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate", *PLANNERS, *MUTATIONS,
 }
 EXIT = {"success": 0, "noop": 0, "invalid": 2, "waiting_user": 3,
         "confirmation_required": 4, "precondition": 5, "failed": 6,
@@ -110,7 +114,8 @@ class Harness:
         self.state_path = Path(args.state).expanduser() if args.state else default_state_path()
         self.fixture_path = os.environ.get("OPENCLAW_NODE_HOST_FIXTURE")
         self.fixture = load_json(Path(self.fixture_path)) if self.fixture_path else {}
-        self.observed_os = self.fixture.get("os", "macos" if sys.platform == "darwin" else "windows" if os.name == "nt" else "unsupported")
+        local_os = "macos" if sys.platform == "darwin" else "windows" if os.name == "nt" else "unsupported"
+        self.observed_os = self.fixture.get("os", args.platform_name if args.group == "bootstrap" and args.platform_name else local_os)
         endpoint = {"host": args.gateway_host, "port": args.gateway_port, "tls": args.tls, "tlsFingerprint": args.tls_fingerprint}
         self.target_hash = sha({"os": self.observed_os, "provider": self.provider, "endpoint": endpoint})
 
@@ -136,6 +141,7 @@ class Harness:
             "capabilities": {"system": self.fixture.get("capabilities", {}).get("system", "unknown"),
                              "browser": self.fixture.get("capabilities", {}).get("browser", "unknown"),
                              "macApp": self.fixture.get("capabilities", {}).get("macApp", "not_applicable")},
+            "bootstrap": {"transport": self.a.transport, "stage": None, "hostKey": {"verified": False}, "credential": {"kind": None}},
             "plan": {"id": None, "expiresAt": None}, "effects": [],
             "nextAction": {"kind": "none", "message": "", "resumeCommand": None},
             "errors": [], "redactions": ["credential", "account-identity", "peer-inventory"],
@@ -165,12 +171,300 @@ class Harness:
             return self.fail("UNSUPPORTED_OS", "only macOS and Windows 11 are supported", "failed", "precondition")
         if self.a.tls_fingerprint and not re.fullmatch(r"[a-f0-9]{64}", self.a.tls_fingerprint):
             return self.fail("INVALID_INPUT", "TLS fingerprint must be lowercase SHA-256", "failed", "invalid")
+        if self.a.gateway_host and not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?", self.a.gateway_host):
+            return self.fail("INVALID_INPUT", "Gateway host contains unsupported characters", "failed", "invalid")
         node_version = self.fixture.get("node", {}).get("version")
         if node_version is not None:
             match = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", str(node_version))
             if not match or tuple(map(int, match.groups())) < (22, 14, 0):
                 return self.fail("NODE_VERSION_UNSUPPORTED", "Node.js 22.14.0 or newer is required", "failed", "precondition")
         return None
+
+    def bootstrap_inputs(self) -> tuple[dict[str, Any], int] | None:
+        """Validate routing data and opaque runtime references, never credential values."""
+        if self.a.platform_name and self.a.platform_name != self.observed_os:
+            return self.fail("PLATFORM_MISMATCH", "selected platform differs from the target", "failed", "precondition")
+        if self.a.transport not in BOOTSTRAP_TRANSPORTS:
+            return self.fail("TRANSPORT_UNAVAILABLE", "select OpenSSH, Tailscale SSH, or local", "waiting_user", "waiting_user")
+        if self.a.transport == "local": return None
+        try:
+            address = ipaddress.ip_address(self.a.bootstrap_host or "")
+            if not (address in ipaddress.ip_network("100.64.0.0/10") or address in ipaddress.ip_network("fd7a:115c:a1e0::/48")):
+                raise ValueError
+        except ValueError:
+            return self.fail("INVALID_HOST", "bootstrap host must be a Tailscale IPv4 or IPv6 address", "failed", "invalid")
+        if not self.a.bootstrap_account or len(self.a.bootstrap_account) > 64 or not re.fullmatch(r"[A-Za-z0-9_.@-]+", self.a.bootstrap_account):
+            return self.fail("INVALID_ACCOUNT", "bootstrap account contains unsupported characters", "failed", "invalid")
+        if not self.a.bootstrap_port or not 1 <= self.a.bootstrap_port <= 65535:
+            return self.fail("INVALID_PORT", "bootstrap port must be between 1 and 65535", "failed", "invalid")
+        if self.a.credential_ref and not re.fullmatch(r"(?:agent|tailscale|(?:password|key|protected)-env:[A-Z][A-Z0-9_]{0,63})", self.a.credential_ref):
+            return self.fail("CREDENTIAL_REFERENCE_INVALID", "credential must be agent, tailscale, or a protected runtime environment reference", "failed", "invalid")
+        if not self.a.credential_ref:
+            return self.fail("CREDENTIAL_REFERENCE_REQUIRED", "select password, key, SSH agent, or Tailscale SSH authentication", "waiting_user", "waiting_user", "Provide the credential through the protected runtime channel and retry.")
+        return None
+
+    def credential_kind(self) -> str:
+        ref = self.a.credential_ref or ""
+        return ref.split("-env:", 1)[0] if "-env:" in ref else ref
+
+    def record_transport(self, argv: list[str], stdin: str = "") -> None:
+        redacted = []
+        redact_next = False
+        for part in argv:
+            if redact_next:
+                redacted.append("<protected-identity>"); redact_next = False; continue
+            redacted.append("<ephemeral-known-hosts>" if "known_hosts" in part else
+                            "<account>@<tailscale-ip>" if "@" in part else
+                            "<tailscale-ip>" if part == self.a.bootstrap_host else part)
+            redact_next = part == "-i"
+        path = os.environ.get("OPENCLAW_NODE_HOST_RECORD")
+        if path:
+            with open(path, "a", encoding="utf-8") as handle:
+                handle.write(canonical({"argv": redacted, "stdinSha256": sha(stdin.encode()), "stdinBytes": len(stdin.encode())}) + "\n")
+
+    def run_bounded(self, argv: list[str], stdin: str = "", env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+        self.record_transport(argv, stdin)
+        return subprocess.run(argv, input=stdin, text=True, capture_output=True, timeout=BOOTSTRAP_TIMEOUT_SECONDS,
+                              check=False, env=env or os.environ.copy())
+
+    def fixture_failure(self) -> tuple[dict[str, Any], int] | None:
+        data = self.fixture.get("bootstrap", {})
+        if not data.get("available", {}).get(self.a.transport, True):
+            return self.fail("SSH_NOT_FOUND", "selected SSH transport is unavailable", "waiting_user", "waiting_user", "Complete the local OS readiness stage and retry.")
+        mapping = {"denied": ("AUTH_FAILED", "protected SSH authentication failed", "precondition"),
+                   "timeout": ("BOOTSTRAP_TIMEOUT", "bounded SSH operation timed out", "failed"),
+                   "permission": ("PERMISSION_DENIED", "remote permission was denied", "precondition"),
+                   "network": ("SSH_UNREACHABLE", "SSH was unreachable over the Tailscale IP", "precondition"),
+                   "script": ("REMOTE_SCRIPT_FAILED", "remote readiness script failed", "failed")}
+        failure = data.get("failure")
+        if data.get("auth") == "denied": failure = "denied"
+        if data.get("preflight") == "timeout": failure = "timeout"
+        if data.get("permission") == "denied": failure = "permission"
+        if failure in mapping:
+            code, message, kind = mapping[failure]
+            return self.fail(code, message, "waiting_user" if kind == "precondition" else "failed", kind)
+        return None
+
+    def acquire_host_key(self) -> tuple[str, str] | tuple[dict[str, Any], int]:
+        data = self.fixture.get("bootstrap", {})
+        if self.fixture_path:
+            key = data.get("hostKey", {})
+            line = key.get("line", f"{self.a.bootstrap_host} ssh-ed25519 {base64.b64encode(b'fixture-host-key').decode()}")
+            self.record_transport(["ssh-keyscan", "-T", str(BOOTSTRAP_TIMEOUT_SECONDS), "-p", str(self.a.bootstrap_port), self.a.bootstrap_host])
+            return line + "\n", key.get("fingerprint", "")
+        try:
+            scan = self.run_bounded(["ssh-keyscan", "-T", str(BOOTSTRAP_TIMEOUT_SECONDS), "-p", str(self.a.bootstrap_port), self.a.bootstrap_host])
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return self.fail("SSH_NOT_FOUND", "host-key acquisition tool was unavailable or timed out", "failed", "precondition")
+        lines = [line for line in scan.stdout.splitlines() if line and not line.startswith("#")]
+        if scan.returncode or len(lines) != 1:
+            return self.fail("HOST_KEY_ACQUISITION_FAILED", "exactly one SSH host key could not be acquired", "failed", "precondition")
+        try:
+            raw = base64.b64decode(lines[0].split()[2], validate=True)
+        except (IndexError, ValueError):
+            return self.fail("HOST_KEY_ACQUISITION_FAILED", "acquired SSH host key was malformed", "failed", "precondition")
+        fingerprint = "SHA256:" + base64.b64encode(hashlib.sha256(raw).digest()).decode().rstrip("=")
+        return lines[0] + "\n", fingerprint
+
+    def bootstrap_evidence(self) -> tuple[dict[str, Any], int] | None:
+        invalid = self.bootstrap_inputs()
+        if invalid or self.a.transport == "local": return invalid
+        if not self.a.expected_host_key:
+            return self.fail("HOST_KEY_VERIFICATION_REQUIRED", "provide the fingerprint shown locally on the PC", "waiting_user", "waiting_user")
+        if not re.fullmatch(r"SHA256:[A-Za-z0-9+/]{43}", self.a.expected_host_key):
+            return self.fail("INVALID_HOST_KEY", "host-key fingerprint must use OpenSSH SHA256 form", "failed", "invalid")
+        acquired = self.acquire_host_key()
+        if isinstance(acquired[0], dict): return acquired  # type: ignore[return-value]
+        _line, fingerprint = acquired
+        fixture_key = self.fixture.get("bootstrap", {}).get("hostKey", {})
+        if fingerprint != self.a.expected_host_key or (self.fixture_path and
+                (fixture_key.get("account", self.a.bootstrap_account) != self.a.bootstrap_account or fixture_key.get("host", self.a.bootstrap_host) != self.a.bootstrap_host)):
+            return self.fail("HOST_KEY_MISMATCH", "acquired host key does not match the independently verified fingerprint", "failed", "precondition")
+        return self.fixture_failure() if self.fixture_path else None
+
+    def readiness_script(self) -> str:
+        """Local, human-assisted OS readiness. It intentionally pauses at login/approval gates."""
+        if self.observed_os == "macos":
+            return """#!/bin/sh
+set -eu
+umask 077
+if [ "${OPENCLAW_BOOTSTRAP_REVOKE:-0}" = 1 ]; then sudo systemsetup -setremotelogin off; exit 0; fi
+command -v tailscale >/dev/null || { echo 'ACTION: install Tailscale for macOS, then rerun'; exit 20; }
+tailscale status >/dev/null 2>&1 || { echo 'ACTION: open Tailscale and complete login, then rerun'; exit 21; }
+TS_IP=$(tailscale ip -4 | head -n 1); test -n "$TS_IP"
+sudo systemsetup -getremotelogin | grep -qi 'On' || { echo 'ACTION: enable System Settings > General > Sharing > Remote Login, then rerun'; exit 22; }
+sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+printf 'TAILSCALE_IP=%s\nREADY=remote-login\n' "$TS_IP"
+"""
+        return r"""$ErrorActionPreference = 'Stop'
+if ($env:OPENCLAW_BOOTSTRAP_REVOKE -eq '1') { Disable-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -ErrorAction SilentlyContinue; Stop-Service sshd -ErrorAction SilentlyContinue; exit 0 }
+$ts = Get-Command tailscale.exe -ErrorAction SilentlyContinue
+if (-not $ts) { Write-Output 'ACTION: install Tailscale for Windows, then rerun'; exit 20 }
+tailscale status | Out-Null
+$ip = (tailscale ip -4 | Select-Object -First 1)
+$cap = Get-WindowsCapability -Online | Where-Object Name -Like 'OpenSSH.Server*'
+if ($cap.State -ne 'Installed') { Add-WindowsCapability -Online -Name $cap.Name | Out-Null }
+Set-Service sshd -StartupType Automatic; Start-Service sshd
+$rule = Get-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -ErrorAction SilentlyContinue
+if (-not $rule) { $rule = New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 }
+$rule | Get-NetFirewallAddressFilter | Set-NetFirewallAddressFilter -RemoteAddress 100.64.0.0/10
+ssh-keygen -lf "$env:ProgramData\ssh\ssh_host_ed25519_key.pub"
+Write-Output "TAILSCALE_IP=$ip"; Write-Output 'READY=openssh'
+"""
+
+    def bootstrap_script(self) -> str:
+        endpoint = self.a.gateway_host or "gateway.tailnet.ts.net"
+        port = self.a.gateway_port or 18789
+        if self.observed_os == "macos":
+            return f"""#!/bin/sh
+set -eu
+umask 077
+if [ "${{OPENCLAW_NODE_ROLLBACK:-0}}" = 1 ]; then openclaw node stop || true; openclaw node uninstall || true; npm uninstall --global openclaw; exit 0; fi
+command -v tailscale >/dev/null; tailscale status >/dev/null; tailscale ip -4 | grep -Eq '^100\\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.'
+sudo systemsetup -getremotelogin | grep -qi 'On'; npm view openclaw@{REQUIRED_VERSION} version | grep -qx '{REQUIRED_VERSION}'
+npm install --global openclaw@{REQUIRED_VERSION}
+test "$(openclaw --version)" = '{REQUIRED_VERSION}'
+openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
+openclaw node restart
+openclaw node status
+"""
+        return f"""$ErrorActionPreference = 'Stop'
+if ($env:OPENCLAW_NODE_ROLLBACK -eq '1') {{ openclaw node stop; openclaw node uninstall; npm uninstall --global openclaw; exit 0 }}
+tailscale status | Out-Null
+if (-not (Get-Service sshd -ErrorAction SilentlyContinue)) {{ throw 'sshd unavailable' }}
+if ((npm view openclaw@{REQUIRED_VERSION} version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'version resolution mismatch' }}
+npm install --global openclaw@{REQUIRED_VERSION}
+if ((openclaw --version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'installed version mismatch' }}
+openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
+openclaw node restart
+openclaw node status
+"""
+
+    def bootstrap_readonly(self) -> tuple[dict[str, Any], int]:
+        gate = self.bootstrap_evidence()
+        if gate: return gate
+        out = self.base()
+        data = self.fixture.get("bootstrap", {})
+        out["bootstrap"] = {"transport": self.a.transport, "stage": "preflight", "hostKey": {"verified": self.a.transport != "local"},
+                            "credential": {"kind": "tailscale" if self.a.transport == "tailscale-ssh" else "agent" if self.a.credential_ref == "agent" else "protected-reference" if self.a.credential_ref else "none"},
+                            "preflight": {"noninteractive": True, "timeoutSeconds": BOOTSTRAP_TIMEOUT_SECONDS, "result": data.get("preflight", "ready")}}
+        if self.command == "bootstrap.generate":
+            script = self.readiness_script(); out["bootstrapScript"] = {"sha256": sha(script.encode()), "content": script, "containsCredentials": False}
+        elif self.a.transport != "local":
+            result = self.ssh_script("printf OPENCLAW_SSH_READY", fixture_stage="preflight")
+            if isinstance(result, tuple): return result
+        return out, 0
+
+    def ssh_script(self, script: str, fixture_stage: str) -> subprocess.CompletedProcess[str] | tuple[dict[str, Any], int]:
+        acquired = self.acquire_host_key()
+        if isinstance(acquired[0], dict): return acquired  # type: ignore[return-value]
+        known_line, fingerprint = acquired
+        if fingerprint != self.a.expected_host_key:
+            return self.fail("HOST_KEY_MISMATCH", "SSH host key changed before execution", "failed", "precondition")
+        fd, known_path = tempfile.mkstemp(prefix="openclaw-known_hosts-")
+        try:
+            os.fchmod(fd, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle: handle.write(known_line)
+            target = f"{self.a.bootstrap_account}@{self.a.bootstrap_host}"
+            options = ["-o", "StrictHostKeyChecking=yes", "-o", f"UserKnownHostsFile={known_path}", "-o", "GlobalKnownHostsFile=/dev/null",
+                       "-o", "ConnectTimeout=10", "-o", "ConnectionAttempts=1", "-p", str(self.a.bootstrap_port)]
+            kind = self.credential_kind(); env = os.environ.copy()
+            if self.a.transport == "tailscale-ssh" or kind == "tailscale":
+                argv = ["tailscale", "ssh", target]
+            else:
+                options += ["-o", "BatchMode=no" if kind in {"password", "protected"} else "BatchMode=yes"]
+                argv = ["ssh", *options]
+                if kind == "key":
+                    name = self.a.credential_ref.split(":", 1)[1]
+                    identity = env.get(name)
+                    if not identity: return self.fail("CREDENTIAL_UNAVAILABLE", "protected key reference is unavailable", "waiting_user", "precondition")
+                    argv += ["-i", identity, "-o", "IdentitiesOnly=yes"]
+                argv += [target]
+                if kind in {"password", "protected"}:
+                    name = self.a.credential_ref.split(":", 1)[1]
+                    password = env.pop(name, None)
+                    if password is None: return self.fail("CREDENTIAL_UNAVAILABLE", "protected password is unavailable", "waiting_user", "precondition")
+                    env["SSHPASS"] = password; argv = ["sshpass", "-e", *argv]
+            argv += ["sh", "-s"] if self.observed_os == "macos" else ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "-"]
+            if self.fixture_path:
+                self.record_transport(argv, script)
+                failure = self.fixture.get("bootstrap", {}).get("stages", {}).get(fixture_stage)
+                if failure in {"failed", "partial"}:
+                    return self.fail("PARTIAL_EFFECT", f"remote stage {fixture_stage} had a partial effect", "rollback_required", "partial")
+                return subprocess.CompletedProcess(argv, 0, "OPENCLAW_SSH_READY", "")
+            try:
+                completed = self.run_bounded(argv, script, env)
+            except FileNotFoundError:
+                return self.fail("SSH_NOT_FOUND", "required SSH or protected password helper was not found", "failed", "precondition")
+            except subprocess.TimeoutExpired:
+                return self.fail("BOOTSTRAP_TIMEOUT", "bounded SSH operation timed out", "failed", "failed")
+            finally:
+                env.pop("SSHPASS", None)
+            if completed.returncode:
+                stderr = completed.stderr.lower()
+                if "permission denied" in stderr: code = "AUTH_FAILED"
+                elif "host key" in stderr: code = "HOST_KEY_MISMATCH"
+                elif "timed out" in stderr or "no route" in stderr or "refused" in stderr: code = "SSH_UNREACHABLE"
+                else: code = "REMOTE_SCRIPT_FAILED"
+                return self.fail(code, "noninteractive SSH stage failed", "failed", "precondition" if code != "REMOTE_SCRIPT_FAILED" else "failed")
+            return completed
+        finally:
+            try: os.unlink(known_path)
+            except FileNotFoundError: pass
+
+    def bootstrap_plan(self) -> tuple[dict[str, Any], int]:
+        gate = self.bootstrap_evidence()
+        if gate: return gate
+        created = now(); expires = created + timedelta(seconds=PLAN_TTL_SECONDS)
+        script_hash = sha(self.bootstrap_script().encode())
+        binding = {"target": self.target_hash, "transport": self.a.transport, "hostHash": sha(self.a.bootstrap_host),
+                   "accountHash": sha(self.a.bootstrap_account), "port": self.a.bootstrap_port, "hostKey": self.a.expected_host_key,
+                   "scriptHash": script_hash, "platform": self.observed_os}
+        plan_id = sha(binding); request = self.a.request_id or str(uuid.uuid4())
+        challenge = sha({"action": "bootstrap.apply", "plan": plan_id, "target": self.target_hash, "requestId": request, "expiresAt": iso(expires)})
+        plan = {"schemaVersion": 1, "id": plan_id, "action": "bootstrap.apply", "requestId": request, "createdAt": iso(created), "expiresAt": iso(expires),
+                "targetFingerprint": self.target_hash, "desiredStateHash": script_hash, "preconditionsHash": sha(binding),
+                "commands": [["ssh", "<strict-host-key-and-noninteractive-options>", "<user-bound-target>", "<deterministic-script>"]] if self.a.transport != "local" else [["user-run-local", "<deterministic-script>"]],
+                "confirmationChallenge": challenge}
+        state = self.new_state("planned"); state["plan"] = plan; state["bootstrap"] = {"binding": binding, "stage": "planned", "scriptHash": script_hash}; atomic_write(self.state_path, state)
+        out = self.base(); out["plan"] = {"id": plan_id, "expiresAt": iso(expires)}; out["planDocument"] = plan
+        out["nextAction"] = {"kind": "confirm", "message": "Approve this exact target-bound bootstrap plan.", "resumeCommand": None}
+        return out, 0
+
+    def bootstrap_apply(self) -> tuple[dict[str, Any], int]:
+        gate = self.bootstrap_evidence()
+        if gate: return gate
+        try: state = load_json(self.state_path)
+        except (OSError, ValueError, json.JSONDecodeError): return self.fail("PLAN_REQUIRED", "a fresh bootstrap plan is required", "confirmation_required", "confirmation_required")
+        plan = state.get("plan", {})
+        expected = sha({"action": "bootstrap.apply", "plan": plan.get("id"), "target": self.target_hash, "requestId": plan.get("requestId"), "expiresAt": plan.get("expiresAt")})
+        if plan.get("action") != "bootstrap.apply" or self.a.plan_id != plan.get("id") or self.a.confirm != expected:
+            return self.fail("CONFIRMATION_MISMATCH", "approval does not bind the exact bootstrap plan", "confirmation_required", "confirmation_required")
+        try: expired = datetime.fromisoformat(plan["expiresAt"].replace("Z", "+00:00")) <= now()
+        except (KeyError, TypeError, ValueError): expired = True
+        binding = state.get("bootstrap", {}).get("binding", {})
+        current = {"target": self.target_hash, "transport": self.a.transport, "hostHash": sha(self.a.bootstrap_host), "accountHash": sha(self.a.bootstrap_account),
+                   "port": self.a.bootstrap_port, "hostKey": self.a.expected_host_key, "scriptHash": sha(self.bootstrap_script().encode()), "platform": self.observed_os}
+        if expired or binding != current: return self.fail("PLAN_STALE", "bootstrap target or evidence changed", "confirmation_required", "confirmation_required")
+        stages = state.setdefault("steps", {})
+        ordered = ["preflight", "install-start", "pairing-ready", "verify"]
+        fixture_stages = self.fixture.get("bootstrap", {}).get("stages", {})
+        for stage in ordered:
+            if stages.get(stage, {}).get("status") == "complete": continue
+            if self.a.transport != "local":
+                scripts = {"preflight": "command -v tailscale >/dev/null 2>&1 || Get-Command tailscale.exe | Out-Null",
+                           "install-start": self.bootstrap_script(),
+                           "pairing-ready": "openclaw node status",
+                           "verify": "openclaw --version && openclaw node status"}
+                result = self.ssh_script(scripts[stage], fixture_stage=stage)
+                if isinstance(result, tuple):
+                    stages[stage] = {"status": fixture_stages.get(stage, "failed")}; state["phase"] = "rollback_required"; state["lastError"] = {"code": result[0]["errors"][0]["code"], "stage": stage}; atomic_write(self.state_path, state)
+                    result[0]["nextAction"] = {"kind": "user", "message": "Retry this idempotent stage, or run rollback and revoke SSH access.", "resumeCommand": self.resume_command()}
+                    return result
+            stages[stage] = {"status": "complete"}; state["bootstrap"]["stage"] = stage; atomic_write(self.state_path, state)
+        state["phase"] = "preflight"; state["lastError"] = None; atomic_write(self.state_path, state)
+        out = self.base(); out["effects"] = [{"type": "bootstrap-complete", "observed": True}]; out["bootstrap"] = {"transport": self.a.transport, "stage": "verify", "hostKey": {"verified": self.a.transport != "local"}, "credential": {"kind": "protected-reference"}}
+        return out, 0
 
     def tailscale_gate(self, reachability: bool = True) -> tuple[dict[str, Any], int] | None:
         ts = self.fixture.get("tailscale", {})
@@ -378,6 +672,9 @@ class Harness:
     def run(self) -> tuple[dict[str, Any], int]:
         invalid = self.validate_inputs()
         if invalid: return invalid
+        if self.command in {"bootstrap.inspect", "bootstrap.generate"}: return self.bootstrap_readonly()
+        if self.command == "bootstrap.plan": return self.bootstrap_plan()
+        if self.command == "bootstrap.apply": return self.bootstrap_apply()
         if self.command in PLANNERS: return self.make_plan()
         if self.command in MUTATIONS: return self.apply()
         return self.readonly()
@@ -390,6 +687,9 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--tls", action="store_true"); p.add_argument("--tls-fingerprint"); p.add_argument("--request-id"); p.add_argument("--plan-id"); p.add_argument("--confirm")
     p.add_argument("--display-name"); p.add_argument("--node-id"); p.add_argument("--browser-proxy", choices=("enabled", "disabled"), default="disabled"); p.add_argument("--allow-profile", action="append")
     p.add_argument("--pairing-request-id"); p.add_argument("--lifecycle-action", choices=("start", "stop", "restart")); p.add_argument("--validation-level", choices=("preflight", "service", "connection", "system", "browser"), default="preflight"); p.add_argument("--shell-probe", action="store_true")
+    p.add_argument("--platform", dest="platform_name", choices=("macos", "windows")); p.add_argument("--transport", choices=sorted(BOOTSTRAP_TRANSPORTS))
+    p.add_argument("--bootstrap-host"); p.add_argument("--bootstrap-account"); p.add_argument("--bootstrap-port", type=int)
+    p.add_argument("--expected-host-key"); p.add_argument("--credential-ref")
     p.add_argument("group", choices=sorted({c.split(".")[0] for c in COMMANDS})); p.add_argument("action")
     return p
 

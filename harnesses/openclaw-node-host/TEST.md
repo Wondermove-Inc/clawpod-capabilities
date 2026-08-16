@@ -7,10 +7,11 @@ Real disposable-host integration remains excluded and requires `OPENCLAW_NODE_HO
 ## Adversarial coverage
 
 - macOS and Windows 11 provider selection, explicit Linux rejection
-- Tailscale absent, signed out, wrong/unproven tailnet, stale evidence, and unreachable Gateway, with zero Tailscale mutation commands
+- Tailscale human-assisted install/login, same-tailnet and Tailscale-IP gates, stale evidence, and unreachable Gateway
 - Node.js below 22.14, exact OpenClaw pinning, install resolution drift, installed-version drift, and service PATH/version mismatch
 - plan/confirmation binding and expiry, invalid input, interrupted-state resume, idempotent install/rollback, stale pairing, nested redaction
 - provider failure timeout and bounded retry, supported restart mapping, system/browser probe command selection
+- bootstrap success, missing SSH, authentication failure, strict host-key mismatch, bounded timeout, partial stage resume, permission denial, protected-reference redaction, deterministic local generation, retry/idempotency
 - three positive routing examples, at least two negative examples, and collisions with node-connect, routine connected-node operations, Tailscale installation, Gateway installation, and desktop
 
 ## Environment limitations and completion plan

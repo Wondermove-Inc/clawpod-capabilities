@@ -591,11 +591,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "746054f40c5a34d08a6cd34fb75e7afb3add54bd9f04bc2d7593281502a0494e"
+          "sha256": "21e2c0036e0dbd436072f001fc7cc433ae52bb08da19e8512864e42311cf6f65"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "d55376e555200569ef1d6ed456002121bb59d9419daf91a91022c776c92f4803"
+          "sha256": "4fc87b3b7ed597366b6a3d003d55477eb1ee2e6ac23ef87d750a31895ac5a403"
         },
         {
           "path": "references/operations.md",
@@ -1545,43 +1545,43 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "105d9b7c1a78c700f4d7465aae23afdb93cb6383d7823b07523480201524f14e"
+          "sha256": "835395bb7c205d9d089b6e9beaf9f35e89be9ea1985139cb102b1cf9cd04364b"
         },
         {
           "path": "TEST.md",
-          "sha256": "41dc06ab1398f4ecaa2d612a46d326209121c4af27694749682864616006ca83"
+          "sha256": "3a7a7217bfca7cd8d1b2207c2fdaab363b590cc50fb640196b7f44efd73c6e4a"
         },
         {
           "path": "fixtures/macos-ready.json",
-          "sha256": "8dcbdd467e2536c1f8016327de4fa4982f5821c57276708f2a31b841b6f123b0"
+          "sha256": "c82a888bcd5816f5d1b9cb2ba2db73e5fbba12c39c6061f753163e504fb18cb5"
         },
         {
           "path": "fixtures/windows-ready.json",
-          "sha256": "7304db479bab71fa7221c80a2a577414baf83124f855982fa75d6d31af9b7bc8"
+          "sha256": "78c4353eddc3323faba72f94a0d0546478f45974ba5fa8df7d735fe4541854d2"
         },
         {
           "path": "harness.json",
-          "sha256": "18a70b4616d89b8bab4ec987588910bcc08e8db8c54357cc0438e224a3e5b4ea"
+          "sha256": "528438cf0a75068bbdd62bfdeb4efcea48abd2ccccd464bf8658c1d8eb2977ab"
         },
         {
           "path": "openclaw_node_host.py",
-          "sha256": "8fc384d7dff9768c14d8414fe48a83d4e7b6a9da91cd1df2b1d8cb57f5210b3c"
+          "sha256": "5be59d7983aac02f57a99e24f4dfb8ed5d7721e63a5d3f32cb91e1c072586ba2"
         },
         {
           "path": "schemas/error-exit-codes.json",
-          "sha256": "de9e15967f1d3a7987f546daa7bf4e2f805db533bec250017a3e3bb9cab56a23"
+          "sha256": "d2bc34b4415034f49644886a07ad9d6e66e5a910d70055e161a820d6d4ea62eb"
         },
         {
           "path": "schemas/plan.schema.json",
-          "sha256": "20658b52b7ae0209ea28cc6e0cdd65cd513096eb5970b5f2a8eef843960cc4c0"
+          "sha256": "5bd1707ee3db733377bf3c39ccc0f6be9e304a11a1cae2afd5747eb6417fb006"
         },
         {
           "path": "schemas/result.schema.json",
-          "sha256": "83b3a53e63d7033ad41e7341ababffc68921679d4d5550437deeb89728226d97"
+          "sha256": "2756248c90ae1f88b417d6abc0cac2a4889c4e324bdf0821749882f372d84e0f"
         },
         {
           "path": "schemas/state.schema.json",
-          "sha256": "d83a29e06b39dde1f5375e1e6014a9a2f87ad79364a814e8299ee7c615cd91b7"
+          "sha256": "cd7e487af6270cea93dc17fa70cc79c0ecb93c86470407a5eb09248b0a57d29c"
         },
         {
           "path": "scripts/install.py",

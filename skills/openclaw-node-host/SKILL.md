@@ -20,12 +20,13 @@ Follow the explicit resumable dialogue state machine in [onboarding](references/
 
 ## Procedure
 
-1. Inspect system, version, Tailscale, service, and onboarding status. Treat Tailscale only as a verification gate. Never install, update, reinstall, log in, log out, reset, configure, or otherwise mutate it.
-2. Require a MagicDNS name or tailnet IP, port, and TLS intent. Credentials enter only through protected environment or existing protected config channels—never argv, state, plans, logs, service definitions, or responses.
-3. Generate the matching fresh plan. Review its redacted effects and preconditions, then obtain the plan-bound confirmation required by its safety class. Never reuse a token for another action, target, request, or plan.
-4. Apply the exact plan and verify observed postconditions. Resume interrupted work from the first unmet postcondition. Preserve `node.json`, pairing records, exec approvals, and browser policy during uninstall/rollback.
-5. Handle pairing as a separate exact-target approval: re-list current `devices` requests, match one request to the node fingerprint, confirm it separately, and approve using `devices approve <exact-requestId>`. Never use `nodes approve`.
-6. Validate service, connection, requested system/browser capabilities. Use `nodes invoke` only for safe calls such as `system.which`; use `exec host=node` for an optional harmless shell probe. Hand connection diagnosis after correct provisioning to `node-connect`.
+1. Start with the target OS. Generate the matching local readiness script so a human can install and log in to Tailscale, confirm the agent runtime is on the same tailnet, obtain the Tailscale IP, and approve macOS Remote Login or Windows OpenSSH Server plus its Tailscale-scoped firewall rule. Then verify SSH only over that Tailscale IP.
+2. Password, key, SSH agent, and Tailscale SSH are equal supported choices. A user may provide a password naturally, but immediately place it in protected runtime injection and discard the captured plaintext. Pass only `password-env:NAME`, `key-env:NAME`, `agent`, or `tailscale` references—never secret values in argv, files, state, scripts, plans, logs, or responses.
+3. Run bounded noninteractive preflight, then generate `bootstrap.plan`. Obtain exact plan-bound approval before `bootstrap.apply`; resume its idempotent preflight/upload/execute/verify stages from the first incomplete stage. On partial effects, provide one retry or revoke/rollback action.
+4. The approved remote script installs exactly `openclaw@2026.4.11`, verifies that exact version, installs and starts the node, and checks pairing readiness. Continue through pair and verify; resume at the first incomplete idempotent stage.
+5. Generate the matching lifecycle plan, obtain its separate exact approval, apply it, and verify observed postconditions. Preserve `node.json`, pairing records, exec approvals, and browser policy during uninstall/rollback.
+6. Handle pairing as a separate exact-target approval: re-list current `devices` requests, require one fingerprint match, and approve with `devices approve <exact-requestId>`. Permission denial and multiple matches are blockers; never guess and never use `nodes approve`.
+7. Validate service, connection, and requested system/browser capabilities. Use `nodes invoke` only for safe calls such as `system.which`; use `exec host=node` for an optional harmless shell probe. Hand connection diagnosis after correct provisioning to `node-connect`.
 
 Default tests and evaluation use fixtures and command recording. Real OS integration requires an explicitly disposable macOS or Windows host gate. Read [operations](references/operations.md) for command and recovery details.
 
