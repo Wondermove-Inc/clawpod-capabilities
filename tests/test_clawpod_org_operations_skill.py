@@ -22,7 +22,6 @@ def test_package_is_prose_only_skill_surface() -> None:
     files = {path.relative_to(SKILL).as_posix() for path in SKILL.rglob("*") if path.is_file()}
     assert files == {
         "SKILL.md",
-        "agents/openai.yaml",
         "capability.json",
         "references/common-templates.md",
         "references/engineering.md",

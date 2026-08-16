@@ -282,10 +282,6 @@
           "sha256": "7a8ee86e67c3910622ef111f66c62685843d084e497e69345d0b7fac50173039"
         },
         {
-          "path": "agents/openai.yaml",
-          "sha256": "23203ad2a8a3921cd4f3521151ca51d6dd1f4e9f23993d9aa8cd6af06ca85d15"
-        },
-        {
           "path": "references/common-templates.md",
           "sha256": "cc8728eb3b3f26bad14b519a71bed41e5f36623b6924d9c6a2e9872d5bc7d9c7"
         },

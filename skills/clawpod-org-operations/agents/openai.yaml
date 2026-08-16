@@ -1,4 +1,0 @@
-interface:
-  display_name: "ClawPod Org Operations"
-  short_description: "Coordinate evidence-backed organizational work"
-  default_prompt: "Use $clawpod-org-operations to select the right organizational template and resolve shared task routing from the applicable WORKFLOW.md."
