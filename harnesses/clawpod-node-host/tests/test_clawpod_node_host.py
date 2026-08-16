@@ -2,14 +2,14 @@ import hashlib, json, os, shutil, stat, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
-CLI = ROOT / "openclaw_node_host.py"
+CLI = ROOT / "clawpod_node_host.py"
 FIXTURE = ROOT / "fixtures" / "macos-ready.json"
 NOW = "2026-08-16T15:04:00Z"
 
 def call(tmp_path, command, *, fixture=FIXTURE, extra=(), env=None):
     state = tmp_path / "state.json"
     argv = [sys.executable, str(CLI), "--json", "--state", str(state), *extra, *command.split(" ")]
-    e = {**os.environ, "OPENCLAW_NODE_HOST_FIXTURE": str(fixture), "OPENCLAW_NODE_HOST_NOW": NOW, **(env or {})}
+    e = {**os.environ, "CLAWPOD_NODE_HOST_FIXTURE": str(fixture), "CLAWPOD_NODE_HOST_NOW": NOW, **(env or {})}
     run = subprocess.run(argv, text=True, capture_output=True, env=e)
     assert run.stdout.count("\n") == 1
     return run, json.loads(run.stdout)
@@ -39,16 +39,16 @@ def test_tailscale_fail_closed_actions_and_no_mutation(tmp_path):
         ({"reachable": False}, "GATEWAY_UNREACHABLE", "Restore Tailscale reachability to gateway.tailnet.ts.net:18789, then rerun this command."),
     ]
     for changes, code, action in cases:
-        run, out = call(tmp_path, "install plan", fixture=fixture(tmp_path, **changes), extra=BASE, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+        run, out = call(tmp_path, "install plan", fixture=fixture(tmp_path, **changes), extra=BASE, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
         assert out["errors"][0]["code"] == code and out["nextAction"]["message"] == action
     assert not record.exists()
 
 def test_plan_confirmation_and_provider_start_recording(tmp_path):
     record = tmp_path / "record.jsonl"
-    planned, plan_out = call(tmp_path, "install plan", extra=BASE, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    planned, plan_out = call(tmp_path, "install plan", extra=BASE, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     plan = plan_out["planDocument"]
     apply_options = (*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"])
-    applied, out = call(tmp_path, "install apply", extra=apply_options, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    applied, out = call(tmp_path, "install apply", extra=apply_options, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert applied.returncode == 0 and out["service"]["registered"]
     lines = [json.loads(x)["argv"] for x in record.read_text().splitlines()]
     assert ["openclaw", "node", "install"] in lines
@@ -58,7 +58,7 @@ def test_lifecycle_plan_uses_supported_restart_for_start(tmp_path):
     record = tmp_path / "record.jsonl"
     _, planned = call(tmp_path, "service status", extra=(*BASE, "--lifecycle-action", "start"))
     plan = planned["planDocument"]
-    run, out = call(tmp_path, "service start", extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    run, out = call(tmp_path, "service start", extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert run.returncode == 0 and out["service"]["providerOperation"] == "restart"
     assert json.loads(record.read_text().splitlines()[0])["argv"] == ["openclaw", "node", "restart"]
 
@@ -76,7 +76,7 @@ def test_secret_canary_never_appears(tmp_path):
 
 def test_system_probe_uses_nodes_invoke_and_shell_uses_exec_host_node(tmp_path):
     record = tmp_path / "record.jsonl"
-    run, out = call(tmp_path, "validate run", extra=("--validation-level", "system", "--shell-probe"), env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    run, out = call(tmp_path, "validate run", extra=("--validation-level", "system", "--shell-probe"), env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert run.returncode == 0
     lines = [json.loads(x)["argv"] for x in record.read_text().splitlines()]
     assert ["openclaw", "nodes", "invoke", "--method", "system.which"] in lines
@@ -94,7 +94,7 @@ def test_offline_installer_exposes_command_and_subprocess_runs_it(tmp_path):
     bindir = tmp_path / "bin"
     install = subprocess.run([sys.executable, str(ROOT / "scripts" / "install.py"), "--bin-dir", str(bindir)], text=True, capture_output=True, check=True)
     installed = Path(install.stdout.strip())
-    env = {**os.environ, "OPENCLAW_NODE_HOST_FIXTURE": str(FIXTURE), "OPENCLAW_NODE_HOST_NOW": NOW}
+    env = {**os.environ, "CLAWPOD_NODE_HOST_FIXTURE": str(FIXTURE), "CLAWPOD_NODE_HOST_NOW": NOW}
     run = subprocess.run([str(installed), "--json", "system", "inspect"], text=True, capture_output=True, env=env)
     assert run.returncode == 0 and json.loads(run.stdout)["command"] == "system.inspect"
 
@@ -106,11 +106,11 @@ def test_schemas_and_error_table_are_machine_readable():
 
 def test_shared_description_is_byte_identical():
     manifest = json.loads((ROOT / "harness.json").read_text())
-    frontmatter = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "SKILL.md").read_text().splitlines()[2]
+    frontmatter = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "SKILL.md").read_text().splitlines()[2]
     assert json.loads(frontmatter.split(":", 1)[1].strip()) == manifest["description"]
 
 def test_skill_enforces_concise_progressive_clawpod_onboarding():
-    source = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "SKILL.md").read_text()
+    source = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "SKILL.md").read_text()
     prompt = "ClawPod 노드 연결을 도와드릴게요. 연결할 컴퓨터는 Mac인가요, Windows 11인가요?"
     assert prompt in source
     assert "ask exactly one concise user action" in source
@@ -119,7 +119,7 @@ def test_skill_enforces_concise_progressive_clawpod_onboarding():
     assert "never use `latest`" in source and "openclaw@2026.4.11" in source
 
 def test_onboarding_state_machine_covers_remote_bootstrap_and_resume():
-    source = (ROOT.parents[1] / "skills" / "openclaw-node-host" / "references" / "onboarding.md").read_text()
+    source = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "references" / "onboarding.md").read_text()
     for state in ("platform", "transport", "credentials", "inspect", "plan", "apply", "pair", "verify", "complete"):
         assert f"`{state}`" in source
     for method in ("macOS Remote Login/OpenSSH", "Windows OpenSSH Server", "Tailscale SSH", "local command"):
@@ -159,7 +159,7 @@ def test_tailscale_install_login_address_same_tailnet_and_ssh_server_flow(tmp_pa
     assert run.returncode == 0 and address["tailscale"]["address"] == "100.64.0.10"
     assert call(tmp_path, "tailscale same-tailnet", extra=("--platform", "macos"))[0].returncode == 0
     record = tmp_path / "tcp22.jsonl"
-    run, verified = call(tmp_path, "ssh-server verify", extra=("--platform", "macos", "--bootstrap-host", "100.64.0.10"), env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    run, verified = call(tmp_path, "ssh-server verify", extra=("--platform", "macos", "--bootstrap-host", "100.64.0.10"), env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert run.returncode == 0 and verified["sshServer"]["port"] == 22
     assert json.loads(record.read_text())["argv"] == ["tcp-connect", "<tailscale-ip>", "22"]
     run, out = call(tmp_path, "ssh-server verify", extra=("--platform", "macos", "--bootstrap-host", "192.168.1.10"))
@@ -178,7 +178,7 @@ def test_onboarding_mutations_reject_missing_wrong_or_stale_approval(tmp_path):
         if confirm: extra += ["--confirm", confirm]
         run, out = call(tmp_path, "tailscale install-apply", extra=extra)
         assert run.returncode == 4 and out["errors"][0]["code"] == "CONFIRMATION_MISMATCH"
-    run, out = call(tmp_path, "tailscale install-apply", extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"OPENCLAW_NODE_HOST_NOW": "2026-08-16T15:20:00Z"})
+    run, out = call(tmp_path, "tailscale install-apply", extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"CLAWPOD_NODE_HOST_NOW": "2026-08-16T15:20:00Z"})
     assert run.returncode == 4 and out["errors"][0]["code"] == "PLAN_STALE"
 
 def test_linux_is_explicitly_unsupported(tmp_path):
@@ -193,7 +193,7 @@ def test_bootstrap_success_records_only_strict_noninteractive_fixture_commands(t
     assert run.returncode == 0 and inspected["bootstrap"]["hostKey"]["verified"]
     _, planned = call(tmp_path, "bootstrap plan", extra=(*BASE, *SSH))
     plan = planned["planDocument"]
-    run, out = call(tmp_path, "bootstrap apply", extra=(*BASE, *SSH, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    run, out = call(tmp_path, "bootstrap apply", extra=(*BASE, *SSH, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert run.returncode == 0 and out["bootstrap"]["stage"] == "verify"
     commands = [json.loads(line)["argv"] for line in record.read_text().splitlines()]
     assert len(commands) >= 8
@@ -219,7 +219,7 @@ def test_bootstrap_missing_ssh_auth_mismatch_timeout_and_permission_fail_closed(
     ]
     for changes, code, exit_code in cases:
         record = tmp_path / f"{code}.jsonl"
-        run, out = call(tmp_path, "bootstrap inspect", fixture=bootstrap_fixture(tmp_path, **changes), extra=SSH, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+        run, out = call(tmp_path, "bootstrap inspect", fixture=bootstrap_fixture(tmp_path, **changes), extra=SSH, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
         assert run.returncode == exit_code and out["errors"][0]["code"] == code
         if record.exists():
             assert all("stdinSha256" in json.loads(line) for line in record.read_text().splitlines())
@@ -253,7 +253,7 @@ def test_all_auth_modes_are_equal_and_password_is_runtime_only(tmp_path):
     for ref in ("agent", "tailscale", "password-env:TEST_PASSWORD", "key-env:TEST_KEY_PATH"):
         record = tmp_path / (ref.split(":")[0] + ".jsonl")
         options = (*SSH[:-2], "--credential-ref", ref)
-        env = {"OPENCLAW_NODE_HOST_RECORD": str(record), "TEST_PASSWORD": "CANARY-PASSWORD", "TEST_KEY_PATH": "/protected/id_ed25519"}
+        env = {"CLAWPOD_NODE_HOST_RECORD": str(record), "TEST_PASSWORD": "CANARY-PASSWORD", "TEST_KEY_PATH": "/protected/id_ed25519"}
         run, out = call(tmp_path, "bootstrap inspect", extra=options, env=env)
         assert run.returncode == 0, out
         captured = record.read_text()
@@ -294,7 +294,7 @@ def test_pairing_ambiguity_and_permission_denial_are_distinct(tmp_path):
 def test_node_below_minimum_fails_closed_without_mutation(tmp_path):
     path = fixture(tmp_path); value = json.loads(path.read_text()); value["node"] = {"version": "22.13.9"}; path.write_text(json.dumps(value))
     record = tmp_path / "record.jsonl"
-    run, out = call(tmp_path, "install plan", fixture=path, extra=BASE, env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    run, out = call(tmp_path, "install plan", fixture=path, extra=BASE, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
     assert run.returncode == 5 and out["errors"][0]["code"] == "NODE_VERSION_UNSUPPORTED"
     assert not record.exists()
 
@@ -349,7 +349,7 @@ def test_invalid_inputs_and_expired_plan(tmp_path):
     assert run.returncode == 2 and out["errors"][0]["code"] == "INVALID_INPUT"
     _, planned = call(tmp_path, "install plan", extra=BASE)
     plan = planned["planDocument"]
-    env = {"OPENCLAW_NODE_HOST_NOW": "2026-08-16T15:20:00Z"}
+    env = {"CLAWPOD_NODE_HOST_NOW": "2026-08-16T15:20:00Z"}
     run, out = call(tmp_path, "install apply", extra=(*BASE, "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env=env)
     assert run.returncode == 5 and out["errors"][0]["code"] == "PLAN_STALE"
 
@@ -363,7 +363,7 @@ def test_redacts_nested_identity_and_secret_values(tmp_path):
 
 def test_routing_contract_has_three_positive_two_negative_and_collisions():
     contracts = json.loads((ROOT.parents[1] / "tests" / "fixtures" / "routing_contracts.json").read_text())
-    route = contracts["openclaw-node-host"]
+    route = contracts["clawpod-node-host"]
     assert len(route["positive"]) >= 3 and len(route["negative"]) >= 2
     joined = " ".join(route["negative"]).lower()
     assert "gateway" in joined and ("unauthorized" in joined or "connected node" in joined)

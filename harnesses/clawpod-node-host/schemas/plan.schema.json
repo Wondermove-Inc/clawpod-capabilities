@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "openclaw-node-host-plan-v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "clawpod-node-host-plan-v1",
   "type": "object", "additionalProperties": false,
   "required": ["schemaVersion", "id", "action", "requestId", "createdAt", "expiresAt", "targetFingerprint", "desiredStateHash", "preconditionsHash", "commands", "confirmationChallenge"],
   "properties": {

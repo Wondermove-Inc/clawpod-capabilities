@@ -192,7 +192,7 @@
       "verified-research"
     ]
   },
-  "openclaw-node-host": {
+  "clawpod-node-host": {
     "positive": [
       "ClawPod 노드 연결을 도와줘",
       "Set up a Mac or Windows PC as an OpenClaw node",
@@ -302,7 +302,7 @@
     "adjacent": [
       "clawpod-ocr",
       "clawpod-image-studio",
-      "openclaw-node-host"
+      "clawpod-node-host"
     ]
   }
 }

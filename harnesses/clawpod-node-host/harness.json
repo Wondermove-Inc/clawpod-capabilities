@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "kind": "openclaw.harness.v1",
-  "name": "openclaw-node-host",
-  "title": "OpenClaw Node Host",
+  "name": "clawpod-node-host",
+  "title": "ClawPod Node Host",
   "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
   "version": "0.1.0",
-  "entrypoint": "./openclaw_node_host.py",
+  "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {
     "cwd": ".",

@@ -55,7 +55,7 @@ SECRET_PATTERN = re.compile(
 
 
 def now() -> datetime:
-    override = os.environ.get("OPENCLAW_NODE_HOST_NOW")
+    override = os.environ.get("CLAWPOD_NODE_HOST_NOW")
     return datetime.fromisoformat(override.replace("Z", "+00:00")) if override else datetime.now(timezone.utc)
 
 
@@ -87,7 +87,7 @@ def default_state_path() -> Path:
         root = Path(os.environ.get("LOCALAPPDATA", tempfile.gettempdir()))
     else:
         root = Path.home() / "Library" / "Application Support" if sys.platform == "darwin" else Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
-    return root / "openclaw-node-host" / "state.json"
+    return root / "clawpod-node-host" / "state.json"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -116,7 +116,7 @@ class Harness:
         self.a = args
         self.command = f"{args.group}.{args.action}"
         self.state_path = Path(args.state).expanduser() if args.state else default_state_path()
-        self.fixture_path = os.environ.get("OPENCLAW_NODE_HOST_FIXTURE")
+        self.fixture_path = os.environ.get("CLAWPOD_NODE_HOST_FIXTURE")
         self.fixture = load_json(Path(self.fixture_path)) if self.fixture_path else {}
         local_os = "macos" if sys.platform == "darwin" else "windows" if os.name == "nt" else "unsupported"
         self.observed_os = self.fixture.get("os", args.platform_name if args.group == "bootstrap" and args.platform_name else local_os)
@@ -159,7 +159,7 @@ class Harness:
         return out, EXIT[exit_kind]
 
     def resume_command(self) -> str:
-        return f"openclaw-node-host --json --state <state-path> {self.command.replace('.', ' ')}"
+        return f"clawpod-node-host --json --state <state-path> {self.command.replace('.', ' ')}"
 
     def validate_inputs(self) -> tuple[dict[str, Any], int] | None:
         if not self.a.json:
@@ -227,10 +227,10 @@ class Harness:
             return self.fail("PLAN_STALE", "onboarding preconditions changed", "confirmation_required", "confirmation_required")
         commands = self.onboarding_commands(self.command)
         for argv in commands: self.record(argv)
-        if not self.fixture_path or os.environ.get("OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
+        if not self.fixture_path or os.environ.get("CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
             out = self.base(); out["effects"] = [{"type": self.command, "observed": True}]
             if self.command == "tailscale.login-apply":
-                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Complete the Tailscale browser login, consent, and any MFA, then rerun tailscale status.", "resumeCommand": "openclaw-node-host --json tailscale status"}
+                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Complete the Tailscale browser login, consent, and any MFA, then rerun tailscale status.", "resumeCommand": "clawpod-node-host --json tailscale status"}
             state["phase"] = "waiting_tailscale" if self.command == "tailscale.login-apply" else "preflight"; state["effects"] = out["effects"]; atomic_write(self.state_path, state)
             return out, 0
         return self.fail("PARTIAL_EFFECT", "live onboarding execution is restricted to the reviewed platform adapter", "rollback_required", "partial")
@@ -272,7 +272,7 @@ class Harness:
                             "<account>@<tailscale-ip>" if "@" in part else
                             "<tailscale-ip>" if part == self.a.bootstrap_host else part)
             redact_next = part == "-i"
-        path = os.environ.get("OPENCLAW_NODE_HOST_RECORD")
+        path = os.environ.get("CLAWPOD_NODE_HOST_RECORD")
         if path:
             with open(path, "a", encoding="utf-8") as handle:
                 handle.write(canonical({"argv": redacted, "stdinSha256": sha(stdin.encode()), "stdinBytes": len(stdin.encode())}) + "\n")
@@ -605,12 +605,12 @@ openclaw node status
             return self.fail("CONFIRMATION_REQUIRED", "exact plan-bound confirmation is required", "confirmation_required", "confirmation_required")
         if self.a.confirm != expected or (self.a.request_id and self.a.request_id != plan["requestId"]):
             return self.fail("CONFIRMATION_MISMATCH", "confirmation does not bind this action, target, plan, and request", "confirmation_required", "confirmation_required")
-        if not self.fixture_path or os.environ.get("OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
+        if not self.fixture_path or os.environ.get("CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
             return self.simulate(state, plan)
         return self.live_mutation(state, plan)
 
     def record(self, argv: list[str]) -> None:
-        path = os.environ.get("OPENCLAW_NODE_HOST_RECORD")
+        path = os.environ.get("CLAWPOD_NODE_HOST_RECORD")
         if path:
             with open(path, "a", encoding="utf-8") as handle: handle.write(canonical({"argv": argv}) + "\n")
 
@@ -657,8 +657,8 @@ openclaw node status
         argv = self.conceptual_commands(self.command)[-1] if self.command in {"install.apply", "repair.apply", "uninstall.apply", "rollback.apply"} else ["openclaw", "node", "restart" if self.command in {"service.start", "service.restart"} else "stop"]
         if any("<" in part for part in argv): return self.fail("SERVICE_MUTATION_FAILED", "live endpoint option construction is unavailable pending pinned provider fixture review", "failed", "failed")
         self.record(argv)
-        timeout = float(os.environ.get("OPENCLAW_NODE_HOST_COMMAND_TIMEOUT", "60"))
-        attempts = max(1, min(int(os.environ.get("OPENCLAW_NODE_HOST_RETRY_ATTEMPTS", "2")), 3))
+        timeout = float(os.environ.get("CLAWPOD_NODE_HOST_COMMAND_TIMEOUT", "60"))
+        attempts = max(1, min(int(os.environ.get("CLAWPOD_NODE_HOST_RETRY_ATTEMPTS", "2")), 3))
         completed = None
         for attempt in range(attempts):
             try:
@@ -771,7 +771,7 @@ openclaw node status
 
 
 def parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="openclaw-node-host")
+    p = argparse.ArgumentParser(prog="clawpod-node-host")
     p.add_argument("--json", action="store_true"); p.add_argument("--state"); p.add_argument("--target", default="local")
     p.add_argument("--openclaw-version"); p.add_argument("--gateway-host"); p.add_argument("--gateway-port", type=int, choices=range(1, 65536))
     p.add_argument("--tls", action="store_true"); p.add_argument("--tls-fingerprint"); p.add_argument("--request-id"); p.add_argument("--plan-id"); p.add_argument("--confirm")

@@ -16,7 +16,7 @@
     "approvalRequired": true
   },
   "linkedHarness": {
-    "id": "openclaw-node-host",
+    "id": "clawpod-node-host",
     "version": "0.1.0"
   }
 }

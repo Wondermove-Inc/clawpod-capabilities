@@ -3,7 +3,7 @@
 Invoke global options before the two-word command, for example:
 
 ```text
-openclaw-node-host --json --state <owner-state> --openclaw-version 2026.4.11 --gateway-host <magicdns> --gateway-port 18789 --tls install plan
+clawpod-node-host --json --state <owner-state> --openclaw-version 2026.4.11 --gateway-host <magicdns> --gateway-port 18789 --tls install plan
 ```
 
 Apply with the returned plan ID, request ID, and exact confirmation challenge. Plans expire after 15 minutes; Tailscale evidence expires after five minutes. A target, provider, endpoint, version, or identity change requires replanning.

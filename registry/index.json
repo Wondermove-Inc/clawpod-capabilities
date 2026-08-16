@@ -180,6 +180,42 @@
       }
     },
     {
+      "id": "clawpod-node-host",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
+      "path": "skills/clawpod-node-host",
+      "compatibility": {
+        "openclaw": "2026.4.11",
+        "platforms": [
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "destructive",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "a494e6233cd2a19e95a907cdcdb52e2699c8f38e62d7ccc8b7d1e8cd743c2eaf"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "0092700694134e7c1f1d67352d663d2c522e9fe15e829f435b21516660eafbac"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "77f31864ec928f0472d20b8b7d79fe40478df2a5fd7a25b6c4cca7db4d37eec1"
+        }
+      ],
+      "linkedHarness": {
+        "id": "clawpod-node-host",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "clawpod-ocr",
       "type": "skill",
       "version": "0.3.4",
@@ -572,42 +608,6 @@
       }
     },
     {
-      "id": "openclaw-node-host",
-      "type": "skill",
-      "version": "0.1.0",
-      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
-      "path": "skills/openclaw-node-host",
-      "compatibility": {
-        "openclaw": "2026.4.11",
-        "platforms": [
-          "macos",
-          "windows"
-        ]
-      },
-      "safety": {
-        "risk": "destructive",
-        "approvalRequired": true
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "8f92c47435fad8bd360931c5040d5f949360a525f62fbb2ebb9d9807683d0b18"
-        },
-        {
-          "path": "references/onboarding.md",
-          "sha256": "0092700694134e7c1f1d67352d663d2c522e9fe15e829f435b21516660eafbac"
-        },
-        {
-          "path": "references/operations.md",
-          "sha256": "9613edcaddac23a37b740ea713087a804b51ab30642ccebfa1e7f225fa09a901"
-        }
-      ],
-      "linkedHarness": {
-        "id": "openclaw-node-host",
-        "version": "0.1.0"
-      }
-    },
-    {
       "id": "resend-email",
       "type": "skill",
       "version": "0.1.7",
@@ -994,6 +994,70 @@
         {
           "path": "test_detached_jobs.py",
           "sha256": "883366c69d4a8ff4e25bab2e1841eac1c6b2948e656363b0b648d7347ebec640"
+        }
+      ]
+    },
+    {
+      "id": "clawpod-node-host",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
+      "path": "harnesses/clawpod-node-host",
+      "compatibility": {
+        "openclaw": "2026.4.11",
+        "platforms": [
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "destructive",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "34df741053c603b3e8d13fe7de74a41586fcd4c1cd29250f568af60d1c14ed29"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "149ff7902ceb873d63dbc65c2a4727ad5e69064873b129747138eba74a62e24d"
+        },
+        {
+          "path": "clawpod_node_host.py",
+          "sha256": "8679c7f962b192d063f5f1337388bcd16ca63538e54970744e746de65668820c"
+        },
+        {
+          "path": "fixtures/macos-ready.json",
+          "sha256": "c0928486122035a6fe173defc447841391434a85514a48131f9db1a0e54a626d"
+        },
+        {
+          "path": "fixtures/windows-ready.json",
+          "sha256": "ed6564a1d637c18e97ae82a899cb6106eda9489c2c6963966fb77123719c422b"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "4d695b5180e1570b83c3295beb500352e4b9bea8750825cc7a5712e339523ffa"
+        },
+        {
+          "path": "schemas/error-exit-codes.json",
+          "sha256": "d2bc34b4415034f49644886a07ad9d6e66e5a910d70055e161a820d6d4ea62eb"
+        },
+        {
+          "path": "schemas/plan.schema.json",
+          "sha256": "49b182fbd8c77813e36deb81139a077ccbcb9a335f32c712117e0d9c2189b3b0"
+        },
+        {
+          "path": "schemas/result.schema.json",
+          "sha256": "2077b63ee22c08ea8914d358cea60636cefde645fdbe9c9ea56d4fab8691a0e1"
+        },
+        {
+          "path": "schemas/state.schema.json",
+          "sha256": "8124bae1d4a66359b707b33f93ad150630844cad87076712d5a384134f0c2370"
+        },
+        {
+          "path": "scripts/install.py",
+          "sha256": "ccd64200cbf8a6adc90aa0dc659fb1c00a81568cc562f4dbe7b709d282505e7a"
         }
       ]
     },
@@ -1522,70 +1586,6 @@
         {
           "path": "onboarding.py",
           "sha256": "819b0622d59e3e9106d7e2d1dd2847f3993d789c76331dc5088a43b2123c1e6b"
-        }
-      ]
-    },
-    {
-      "id": "openclaw-node-host",
-      "type": "harness",
-      "version": "0.1.0",
-      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
-      "path": "harnesses/openclaw-node-host",
-      "compatibility": {
-        "openclaw": "2026.4.11",
-        "platforms": [
-          "macos",
-          "windows"
-        ]
-      },
-      "safety": {
-        "risk": "destructive",
-        "approvalRequired": true
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "835395bb7c205d9d089b6e9beaf9f35e89be9ea1985139cb102b1cf9cd04364b"
-        },
-        {
-          "path": "TEST.md",
-          "sha256": "3a7a7217bfca7cd8d1b2207c2fdaab363b590cc50fb640196b7f44efd73c6e4a"
-        },
-        {
-          "path": "fixtures/macos-ready.json",
-          "sha256": "c0928486122035a6fe173defc447841391434a85514a48131f9db1a0e54a626d"
-        },
-        {
-          "path": "fixtures/windows-ready.json",
-          "sha256": "ed6564a1d637c18e97ae82a899cb6106eda9489c2c6963966fb77123719c422b"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "b2ef65088454dca5e4b2408b8d7b75775e954a995e33aad8a24276d4b6f218f6"
-        },
-        {
-          "path": "openclaw_node_host.py",
-          "sha256": "a0e5ec20c7db5806e8402ca79e799911c77410ac6592eb1ab6281b320b2cbe12"
-        },
-        {
-          "path": "schemas/error-exit-codes.json",
-          "sha256": "d2bc34b4415034f49644886a07ad9d6e66e5a910d70055e161a820d6d4ea62eb"
-        },
-        {
-          "path": "schemas/plan.schema.json",
-          "sha256": "5bd1707ee3db733377bf3c39ccc0f6be9e304a11a1cae2afd5747eb6417fb006"
-        },
-        {
-          "path": "schemas/result.schema.json",
-          "sha256": "2756248c90ae1f88b417d6abc0cac2a4889c4e324bdf0821749882f372d84e0f"
-        },
-        {
-          "path": "schemas/state.schema.json",
-          "sha256": "cd7e487af6270cea93dc17fa70cc79c0ecb93c86470407a5eb09248b0a57d29c"
-        },
-        {
-          "path": "scripts/install.py",
-          "sha256": "f02500521784dddfbe19b2ef794b86f6ca0e9f518754eb6163b9c2d8f8fd4c23"
         }
       ]
     },

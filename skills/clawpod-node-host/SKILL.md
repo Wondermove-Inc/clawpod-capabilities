@@ -1,11 +1,11 @@
 ---
-name: "openclaw-node-host"
+name: "clawpod-node-host"
 description: "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics."
 ---
 
-# OpenClaw Node Host
+# ClawPod Node Host
 
-Use the linked `openclaw-node-host` Harness. Always request JSON output. The only accepted package version is literal `2026.4.11`; never use `latest`, a range, alias, URL, or inferred version.
+Use the linked `clawpod-node-host` Harness. Always request JSON output. The only accepted package version is literal `2026.4.11`; never use `latest`, a range, alias, URL, or inferred version.
 
 ## User interaction
 

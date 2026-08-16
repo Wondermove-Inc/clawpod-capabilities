@@ -48,8 +48,8 @@ class RoutingContractTests(unittest.TestCase):
             self.assertNotRegex(description, r"\b(?:WHEN|CAN)\s*:", capability)
             self.assertRegex(description, r"\b(?:Use|use)\b", capability)
 
-    def test_openclaw_node_host_description_is_identical_across_sources(self) -> None:
-        capability = "openclaw-node-host"
+    def test_clawpod_node_host_description_is_identical_across_sources(self) -> None:
+        capability = "clawpod-node-host"
         description = frontmatter_description(ROOT / "skills" / capability / "SKILL.md")
         harness = json.loads((ROOT / "harnesses" / capability / "harness.json").read_text(encoding="utf-8"))
         skill_metadata = json.loads(

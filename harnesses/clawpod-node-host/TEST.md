@@ -1,8 +1,8 @@
 # Test contract
 
-Run `python3 -m pytest harnesses/openclaw-node-host/tests`. The default suite uses fixtures, command recording, and temporary fake provider executables. It performs no network, Tailscale, real service, pairing, npm, or OpenClaw mutation.
+Run `python3 -m pytest harnesses/clawpod-node-host/tests`. The default suite uses fixtures, command recording, and temporary fake provider executables. It performs no network, Tailscale, real service, pairing, npm, or OpenClaw mutation.
 
-Real disposable-host integration remains excluded and requires `OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION=1` plus separate operator approval. The fake-provider tests exercise the same bounded timeout/retry path without touching a host service.
+Real disposable-host integration remains excluded and requires `CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION=1` plus separate operator approval. The fake-provider tests exercise the same bounded timeout/retry path without touching a host service.
 
 ## Adversarial coverage
 
