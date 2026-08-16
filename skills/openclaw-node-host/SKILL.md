@@ -1,6 +1,6 @@
 ---
 name: "openclaw-node-host"
-description: "Connect or manage a ClawPod node on Mac/Windows by inspecting readiness, applying approved plans, and pairing. Use node-connect for diagnostics."
+description: "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics."
 ---
 
 # OpenClaw Node Host
@@ -20,7 +20,7 @@ Follow the explicit resumable dialogue state machine in [onboarding](references/
 
 ## Procedure
 
-1. Start with the target OS. Generate the matching local readiness script so a human can install and log in to Tailscale, confirm the agent runtime is on the same tailnet, obtain the Tailscale IP, and approve macOS Remote Login or Windows OpenSSH Server plus its Tailscale-scoped firewall rule. Then verify SSH only over that Tailscale IP.
+1. Start with the target OS. Use the typed Tailscale install-status → install-plan/apply → login-plan/apply → status → address → same-tailnet commands. Each apply requires a fresh exact plan and approval. Login initiation pauses for one human browser action; never enter credentials, MFA, or consent. Then use ssh-server status → plan/apply for macOS Remote Login or Windows OpenSSH Server with Tailscale-only scope. SSH only to the returned Tailscale IP.
 2. Password, key, SSH agent, and Tailscale SSH are equal supported choices. A user may provide a password naturally, but immediately place it in protected runtime injection and discard the captured plaintext. Pass only `password-env:NAME`, `key-env:NAME`, `agent`, or `tailscale` references—never secret values in argv, files, state, scripts, plans, logs, or responses.
 3. Run bounded noninteractive preflight, then generate `bootstrap.plan`. Obtain exact plan-bound approval before `bootstrap.apply`; resume its idempotent preflight/upload/execute/verify stages from the first incomplete stage. On partial effects, provide one retry or revoke/rollback action.
 4. The approved remote script installs exactly `openclaw@2026.4.11`, verifies that exact version, installs and starts the node, and checks pairing readiness. Continue through pair and verify; resume at the first incomplete idempotent stage.
@@ -35,5 +35,5 @@ Default tests and evaluation use fixtures and command recording. Real OS integra
 - For a routine command on an already connected node, use first-class `nodes` or `exec host=node`.
 - For QR/bootstrap/pairing/network diagnosis without provisioning, use `node-connect`.
 - Compose with `desktop` for general GUI work and macOS permission prompts; consent is always user-driven.
-- Reject Tailscale lifecycle, Serve/Funnel, ACL/account/tailnet mutation, and Gateway lifecycle requests.
+- This capability supports only onboarding-scoped Tailscale install and login initiation. Route Serve/Funnel, ACL policy, tailnet administration, logout/removal, and Gateway lifecycle elsewhere.
 - Runtime is Node, never Bun. On 2026.4.11, start uses provider-supported `node restart` and reports that operation.

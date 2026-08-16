@@ -10,6 +10,6 @@ Apply with the returned plan ID, request ID, and exact confirmation challenge. P
 
 For service lifecycle actions, request an action-bound plan with `service status --lifecycle-action start|stop|restart`; this remains observational until separately confirmed and applied.
 
-Status reports CLI, service registration/process, transport, pairing/connection, and capabilities separately. If Tailscale is absent, logged out, or in the wrong tailnet, perform the single user action returned and rerun. The Harness never performs that action.
+Status reports CLI, service registration/process, transport, pairing/connection, and capabilities separately. If Tailscale is absent, create and approve `tailscale install-plan`, then run `tailscale install-apply`. If logged out, approve `tailscale login-plan`/`login-apply`; the apply initiates login and pauses for the user's browser consent or MFA. Rerun `tailscale status`, `address`, and `same-tailnet` afterward. Never automate credential, MFA, or consent entry.
 
 Uninstall removes only the provider-backed user service and preserves the CLI, `node.json`, pairing information, exec approvals, and browser policy. Rollback uses only a same-target authenticated Harness backup. If provisioning is correct but connection fails, pass the redacted evidence bundle to `node-connect`.

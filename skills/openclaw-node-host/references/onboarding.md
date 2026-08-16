@@ -7,7 +7,7 @@ Supported paths are macOS Remote Login/OpenSSH, Windows OpenSSH Server, Tailscal
 | State | Automatic work | User-facing gate |
 |---|---|---|
 | `platform` | None | Ask only whether the computer is Mac or Windows 11. |
-| `transport` | Generate OS-specific readiness: human-assisted Tailscale install/login, same-tailnet agent runtime, Tailscale IP discovery, then macOS Remote Login or Windows OpenSSH Server and a Tailscale-only firewall rule. | Ask the user to complete only the displayed OS approval stage and rerun it. |
+| `transport` | Run typed Tailscale install readiness, approved install, approved login initiation, login status, address, and same-tailnet verification; then approved macOS Remote Login or Windows OpenSSH Server readiness with Tailscale-only scope. | Pause once at the actual browser login/consent/MFA gate, then resume inspection. |
 | `credentials` | Accept password, key, SSH agent, or Tailscale SSH without product-level preference. Move captured passwords immediately into protected runtime injection and discard plaintext after capture. | Ask for any supported method; do not persist or echo secret material. |
 | `inspect` | Require a Tailscale IP, acquire the OpenSSH host key, compare its fingerprint to the locally displayed value, create an ephemeral mode-0600 known_hosts file, and run bounded noninteractive SSH. | Surface one classified blocker. Host-key mismatch always fails closed. |
 | `plan` | Build a fresh target-bound plan with redacted effects and rollback. | Ask one simple approval describing the exact ClawPod-visible mutation. Bind it to the plan; changed target, transport, endpoint, version, or evidence requires replanning. |

@@ -3,8 +3,20 @@
   "schemaVersion": 1,
   "version": "0.1.0",
   "descriptionSource": "skill-frontmatter",
-  "description": "Guarded ClawPod node onboarding and lifecycle for macOS and Windows 11.",
-  "compatibility": {"openclaw": "2026.4.11", "platforms": ["macos", "windows"]},
-  "safety": {"risk": "destructive", "approvalRequired": true},
-  "linkedHarness": {"id": "openclaw-node-host", "version": "0.1.0"}
+  "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
+  "compatibility": {
+    "openclaw": "2026.4.11",
+    "platforms": [
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "destructive",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "openclaw-node-host",
+    "version": "0.1.0"
+  }
 }

@@ -127,13 +127,59 @@ def test_onboarding_state_machine_covers_remote_bootstrap_and_resume():
     assert "Password, key, SSH agent, and Tailscale SSH" in source
     assert "one question or action per turn" in source
     assert "first unmet" in source and "does not change the node-to-Gateway transport" in source
-    assert "Tailscale-only firewall rule" in source
+    assert "Tailscale-only scope" in source
 
-def test_no_tailscale_mutating_command_graph():
+def test_tailscale_mutations_are_typed_plan_bound_and_human_gated():
     manifest = json.loads((ROOT / "harness.json").read_text())
-    serialized = json.dumps(manifest["commands"])
-    for forbidden in ('"tailscale", "up"', '"tailscale", "login"', '"tailscale", "logout"', '"tailscale", "set"'):
+    commands = manifest["commands"]
+    assert commands["tailscale.install-apply"]["safetyClasses"] == ["externalSideEffect"]
+    assert commands["tailscale.login-apply"]["safetyClasses"] == ["humanAccountAction", "externalSideEffect"]
+    assert commands["tailscale.status"]["safetyClasses"] == ["readOnly"]
+    assert commands["tailscale.address"]["safetyClasses"] == ["readOnly"]
+    serialized = json.dumps(commands)
+    for forbidden in ('"tailscale", "logout"', '"tailscale", "set"'):
         assert forbidden not in serialized
+
+
+def test_tailscale_install_login_address_same_tailnet_and_ssh_server_flow(tmp_path):
+    absent = fixture(tmp_path, present=False, authenticated=False, localIdentity=None)
+    _, planned = call(tmp_path, "tailscale install-plan", fixture=absent, extra=("--platform", "macos", "--request-id", "install"))
+    plan = planned["planDocument"]
+    run, applied = call(tmp_path, "tailscale install-apply", fixture=absent, extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]))
+    assert run.returncode == 0 and applied["effects"][0]["type"] == "tailscale.install-apply"
+
+    logged_out = fixture(tmp_path, authenticated=False, localIdentity=None)
+    _, planned = call(tmp_path, "tailscale login-plan", fixture=logged_out, extra=("--platform", "macos", "--request-id", "login"))
+    plan = planned["planDocument"]
+    run, applied = call(tmp_path, "tailscale login-apply", fixture=logged_out, extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]))
+    assert run.returncode == 0 and applied["status"] == "waiting_user"
+    assert "MFA" in applied["nextAction"]["message"] and "browser" in applied["nextAction"]["message"]
+
+    run, address = call(tmp_path, "tailscale address", extra=("--platform", "macos"))
+    assert run.returncode == 0 and address["tailscale"]["address"] == "100.64.0.10"
+    assert call(tmp_path, "tailscale same-tailnet", extra=("--platform", "macos"))[0].returncode == 0
+    record = tmp_path / "tcp22.jsonl"
+    run, verified = call(tmp_path, "ssh-server verify", extra=("--platform", "macos", "--bootstrap-host", "100.64.0.10"), env={"OPENCLAW_NODE_HOST_RECORD": str(record)})
+    assert run.returncode == 0 and verified["sshServer"]["port"] == 22
+    assert json.loads(record.read_text())["argv"] == ["tcp-connect", "<tailscale-ip>", "22"]
+    run, out = call(tmp_path, "ssh-server verify", extra=("--platform", "macos", "--bootstrap-host", "192.168.1.10"))
+    assert run.returncode == 2 and out["errors"][0]["code"] == "INVALID_HOST"
+    _, planned = call(tmp_path, "ssh-server plan", extra=("--platform", "macos", "--request-id", "ssh"))
+    plan = planned["planDocument"]
+    run, applied = call(tmp_path, "ssh-server apply", extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]))
+    assert run.returncode == 0 and applied["effects"][0]["type"] == "ssh-server.apply"
+
+
+def test_onboarding_mutations_reject_missing_wrong_or_stale_approval(tmp_path):
+    _, planned = call(tmp_path, "tailscale install-plan", extra=("--platform", "macos", "--request-id", "bound"))
+    plan = planned["planDocument"]
+    for confirm in (None, "0" * 64):
+        extra = ["--platform", "macos", "--plan-id", plan["id"]]
+        if confirm: extra += ["--confirm", confirm]
+        run, out = call(tmp_path, "tailscale install-apply", extra=extra)
+        assert run.returncode == 4 and out["errors"][0]["code"] == "CONFIRMATION_MISMATCH"
+    run, out = call(tmp_path, "tailscale install-apply", extra=("--platform", "macos", "--plan-id", plan["id"], "--confirm", plan["confirmationChallenge"]), env={"OPENCLAW_NODE_HOST_NOW": "2026-08-16T15:20:00Z"})
+    assert run.returncode == 4 and out["errors"][0]["code"] == "PLAN_STALE"
 
 def test_linux_is_explicitly_unsupported(tmp_path):
     path = fixture(tmp_path); value = json.loads(path.read_text()); value["os"] = "linux"; path.write_text(json.dumps(value))
@@ -320,4 +366,4 @@ def test_routing_contract_has_three_positive_two_negative_and_collisions():
     route = contracts["openclaw-node-host"]
     assert len(route["positive"]) >= 3 and len(route["negative"]) >= 2
     joined = " ".join(route["negative"]).lower()
-    assert "install tailscale" in joined and ("unauthorized" in joined or "connected node" in joined)
+    assert "gateway" in joined and ("unauthorized" in joined or "connected node" in joined)

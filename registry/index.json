@@ -575,7 +575,7 @@
       "id": "openclaw-node-host",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Connect or manage a ClawPod node on Mac/Windows by inspecting readiness, applying approved plans, and pairing. Use node-connect for diagnostics.",
+      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
       "path": "skills/openclaw-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -591,15 +591,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "21e2c0036e0dbd436072f001fc7cc433ae52bb08da19e8512864e42311cf6f65"
+          "sha256": "8f92c47435fad8bd360931c5040d5f949360a525f62fbb2ebb9d9807683d0b18"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "4fc87b3b7ed597366b6a3d003d55477eb1ee2e6ac23ef87d750a31895ac5a403"
+          "sha256": "0092700694134e7c1f1d67352d663d2c522e9fe15e829f435b21516660eafbac"
         },
         {
           "path": "references/operations.md",
-          "sha256": "550c9d1e143ed336c8b5e9d25348f04df1c76810e0b9396b70c2a70482581ef5"
+          "sha256": "9613edcaddac23a37b740ea713087a804b51ab30642ccebfa1e7f225fa09a901"
         }
       ],
       "linkedHarness": {
@@ -1529,7 +1529,7 @@
       "id": "openclaw-node-host",
       "type": "harness",
       "version": "0.1.0",
-      "description": "Guarded ClawPod node onboarding and lifecycle for macOS and Windows 11.",
+      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
       "path": "harnesses/openclaw-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -1553,19 +1553,19 @@
         },
         {
           "path": "fixtures/macos-ready.json",
-          "sha256": "c82a888bcd5816f5d1b9cb2ba2db73e5fbba12c39c6061f753163e504fb18cb5"
+          "sha256": "c0928486122035a6fe173defc447841391434a85514a48131f9db1a0e54a626d"
         },
         {
           "path": "fixtures/windows-ready.json",
-          "sha256": "78c4353eddc3323faba72f94a0d0546478f45974ba5fa8df7d735fe4541854d2"
+          "sha256": "ed6564a1d637c18e97ae82a899cb6106eda9489c2c6963966fb77123719c422b"
         },
         {
           "path": "harness.json",
-          "sha256": "528438cf0a75068bbdd62bfdeb4efcea48abd2ccccd464bf8658c1d8eb2977ab"
+          "sha256": "78304be5e0208e9c424c714663824cf6f4d8a604add2e8c3be9ad6738e56bee3"
         },
         {
           "path": "openclaw_node_host.py",
-          "sha256": "5be59d7983aac02f57a99e24f4dfb8ed5d7721e63a5d3f32cb91e1c072586ba2"
+          "sha256": "a0e5ec20c7db5806e8402ca79e799911c77410ac6592eb1ab6281b320b2cbe12"
         },
         {
           "path": "schemas/error-exit-codes.json",

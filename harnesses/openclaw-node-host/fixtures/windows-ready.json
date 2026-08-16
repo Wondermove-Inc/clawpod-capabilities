@@ -1,10 +1,59 @@
 {
   "os": "windows",
-  "openclaw": {"version": "2026.4.11", "path": "C:\\Safe\\openclaw.cmd"},
-  "npm": {"requestedVersion": "2026.4.11", "resolvedVersion": "2026.4.11"},
-  "tailscale": {"present": true, "authenticated": true, "localIdentity": "node-fixture", "sameTailnet": true, "gatewayIdentity": "gateway-fixture", "reachable": true, "checkedAt": "2026-08-16T15:00:00Z"},
-  "service": {"registered": false, "running": false, "scope": "current-user", "provider": "schtasks"},
-  "bootstrap": {"available": {"openssh": true, "tailscale-ssh": true}, "hostKey": {"host": "100.64.0.11", "account": "nodeuser", "algorithm": "ssh-ed25519", "fingerprint": "SHA256:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"}, "auth": "ok", "preflight": "ready", "permission": "ok", "stages": {}},
-  "pairing": {"known": false, "paired": false, "connected": false},
-  "capabilities": {"system": "passed", "browser": "passed", "macApp": "not_applicable"}
+  "openclaw": {
+    "version": "2026.4.11",
+    "path": "C:\\Safe\\openclaw.cmd"
+  },
+  "npm": {
+    "requestedVersion": "2026.4.11",
+    "resolvedVersion": "2026.4.11"
+  },
+  "tailscale": {
+    "present": true,
+    "authenticated": true,
+    "localIdentity": "node-fixture",
+    "sameTailnet": true,
+    "gatewayIdentity": "gateway-fixture",
+    "reachable": true,
+    "checkedAt": "2026-08-16T15:00:00Z",
+    "address": "100.64.0.11"
+  },
+  "service": {
+    "registered": false,
+    "running": false,
+    "scope": "current-user",
+    "provider": "schtasks"
+  },
+  "bootstrap": {
+    "available": {
+      "openssh": true,
+      "tailscale-ssh": true
+    },
+    "hostKey": {
+      "host": "100.64.0.11",
+      "account": "nodeuser",
+      "algorithm": "ssh-ed25519",
+      "fingerprint": "SHA256:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    },
+    "auth": "ok",
+    "preflight": "ready",
+    "permission": "ok",
+    "stages": {}
+  },
+  "pairing": {
+    "known": false,
+    "paired": false,
+    "connected": false
+  },
+  "capabilities": {
+    "system": "passed",
+    "browser": "passed",
+    "macApp": "not_applicable"
+  },
+  "sshServer": {
+    "installed": true,
+    "enabled": true,
+    "tailscaleOnly": true,
+    "port22Reachable": true
+  }
 }

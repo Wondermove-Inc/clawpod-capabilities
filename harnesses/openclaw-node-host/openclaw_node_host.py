@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Guarded OpenClaw 2026.4.11 node-host lifecycle harness.
 
-Default execution is observation-only. Tests and evaluations use a JSON fixture and
-command recording; real mutations require the explicit disposable-host gate.
+Tests and evaluations use a JSON fixture and command recording. Every mutation is
+plan-bound; live execution additionally requires the explicit disposable-host gate.
 """
 from __future__ import annotations
 
@@ -33,12 +33,16 @@ MUTATIONS = {
     "install.apply": "S2", "service.start": "S1", "service.stop": "S3",
     "service.restart": "S1", "repair.apply": "S2", "uninstall.apply": "S3",
     "rollback.apply": "S3", "pairing.approve": "S4", "bootstrap.apply": "S2",
+    "tailscale.install-apply": "S2", "tailscale.login-apply": "S4",
+    "ssh-server.apply": "S2",
 }
 PLANNERS = {"install.plan", "repair.plan", "uninstall.plan", "rollback.plan"}
+ONBOARDING_PLANNERS = {"tailscale.install-plan", "tailscale.login-plan", "ssh-server.plan"}
 COMMANDS = {
-    "system.inspect", "version.inspect", "tailscale.verify", "service.status",
+    "system.inspect", "version.inspect", "tailscale.install-status", "tailscale.status",
+    "tailscale.address", "tailscale.same-tailnet", "tailscale.verify", "ssh-server.status", "ssh-server.verify", "service.status",
     "onboarding.status", "pairing.status", "validate.plan", "validate.run",
-    "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate", *PLANNERS, *MUTATIONS,
+    "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate", *PLANNERS, *ONBOARDING_PLANNERS, *MUTATIONS,
 }
 EXIT = {"success": 0, "noop": 0, "invalid": 2, "waiting_user": 3,
         "confirmation_required": 4, "precondition": 5, "failed": 6,
@@ -162,7 +166,7 @@ class Harness:
             return self.fail("INVALID_INPUT", "--json is required", "failed", "invalid")
         if self.a.target != "local":
             return self.fail("INVALID_INPUT", "--target must be local", "failed", "invalid")
-        needs_version = self.command in MUTATIONS or self.command in PLANNERS
+        needs_version = self.command in (set(MUTATIONS) - {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply"}) or self.command in PLANNERS
         if needs_version and self.a.openclaw_version != REQUIRED_VERSION:
             return self.fail("VERSION_SPEC_REJECTED", f"only literal {REQUIRED_VERSION} is accepted", "failed", "invalid")
         if self.a.openclaw_version is not None and self.a.openclaw_version != REQUIRED_VERSION:
@@ -179,6 +183,57 @@ class Harness:
             if not match or tuple(map(int, match.groups())) < (22, 14, 0):
                 return self.fail("NODE_VERSION_UNSUPPORTED", "Node.js 22.14.0 or newer is required", "failed", "precondition")
         return None
+
+    def onboarding_binding(self, action: str) -> dict[str, Any]:
+        ts = self.fixture.get("tailscale", {})
+        ssh = self.fixture.get("sshServer", {})
+        return {"target": self.target_hash, "action": action, "platform": self.observed_os,
+                "tailscalePresent": bool(ts.get("present")), "tailscaleConnected": bool(ts.get("authenticated")),
+                "sshInstalled": bool(ssh.get("installed")), "sshEnabled": bool(ssh.get("enabled"))}
+
+    def onboarding_commands(self, action: str) -> list[list[str]]:
+        if action == "tailscale.install-apply":
+            return [["brew", "install", "--cask", "tailscale"]] if self.observed_os == "macos" else [["winget", "install", "--id", "Tailscale.Tailscale", "--exact", "--silent"]]
+        if action == "tailscale.login-apply": return [["tailscale", "login"]]
+        if action == "ssh-server.apply":
+            return [["systemsetup", "-setremotelogin", "on"]] if self.observed_os == "macos" else [["Add-WindowsCapability", "OpenSSH.Server~~~~0.0.1.0"], ["Set-Service", "sshd", "Automatic"], ["Start-Service", "sshd"], ["Set-FirewallScope", "100.64.0.0/10", "fd7a:115c:a1e0::/48"]]
+        return []
+
+    def onboarding_plan(self) -> tuple[dict[str, Any], int]:
+        action = self.command.replace("-plan", "-apply") if self.command.startswith("tailscale.") else "ssh-server.apply"
+        if action == "tailscale.login-apply" and not self.fixture.get("tailscale", {}).get("present"):
+            return self.fail("TAILSCALE_NOT_INSTALLED", "Tailscale must be installed before login", "waiting_user", "precondition")
+        created = now(); expires = created + timedelta(seconds=PLAN_TTL_SECONDS); request = self.a.request_id or str(uuid.uuid4())
+        binding = self.onboarding_binding(action); plan_id = sha(binding)
+        challenge = sha({"action": action, "plan": plan_id, "target": self.target_hash, "requestId": request, "expiresAt": iso(expires)})
+        plan = {"schemaVersion": 1, "id": plan_id, "action": action, "requestId": request, "createdAt": iso(created), "expiresAt": iso(expires),
+                "targetFingerprint": self.target_hash, "desiredStateHash": sha({"action": action}), "preconditionsHash": sha(binding),
+                "commands": self.onboarding_commands(action), "confirmationChallenge": challenge}
+        state = self.new_state("planned"); state["plan"] = plan; state["onboardingBinding"] = binding; atomic_write(self.state_path, state)
+        out = self.base(); out["plan"] = {"id": plan_id, "expiresAt": iso(expires)}; out["planDocument"] = plan
+        out["nextAction"] = {"kind": "confirm", "message": "Review and approve this exact onboarding change.", "resumeCommand": None}
+        return out, 0
+
+    def onboarding_apply(self) -> tuple[dict[str, Any], int]:
+        try: state = load_json(self.state_path)
+        except (OSError, ValueError, json.JSONDecodeError): return self.fail("PLAN_REQUIRED", "a fresh onboarding plan is required", "confirmation_required", "confirmation_required")
+        plan = state.get("plan", {}); binding = self.onboarding_binding(self.command)
+        expected = sha({"action": self.command, "plan": plan.get("id"), "target": self.target_hash, "requestId": plan.get("requestId"), "expiresAt": plan.get("expiresAt")})
+        try: expired = datetime.fromisoformat(plan["expiresAt"].replace("Z", "+00:00")) <= now()
+        except (KeyError, TypeError, ValueError): expired = True
+        if plan.get("action") != self.command or self.a.plan_id != plan.get("id") or self.a.confirm != expected:
+            return self.fail("CONFIRMATION_MISMATCH", "approval does not bind the exact onboarding plan", "confirmation_required", "confirmation_required")
+        if expired or state.get("onboardingBinding") != binding:
+            return self.fail("PLAN_STALE", "onboarding preconditions changed", "confirmation_required", "confirmation_required")
+        commands = self.onboarding_commands(self.command)
+        for argv in commands: self.record(argv)
+        if not self.fixture_path or os.environ.get("OPENCLAW_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
+            out = self.base(); out["effects"] = [{"type": self.command, "observed": True}]
+            if self.command == "tailscale.login-apply":
+                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Complete the Tailscale browser login, consent, and any MFA, then rerun tailscale status.", "resumeCommand": "openclaw-node-host --json tailscale status"}
+            state["phase"] = "waiting_tailscale" if self.command == "tailscale.login-apply" else "preflight"; state["effects"] = out["effects"]; atomic_write(self.state_path, state)
+            return out, 0
+        return self.fail("PARTIAL_EFFECT", "live onboarding execution is restricted to the reviewed platform adapter", "rollback_required", "partial")
 
     def bootstrap_inputs(self) -> tuple[dict[str, Any], int] | None:
         """Validate routing data and opaque runtime references, never credential values."""
@@ -618,6 +673,39 @@ openclaw node status
 
     def readonly(self) -> tuple[dict[str, Any], int]:
         out = self.base()
+        ts = self.fixture.get("tailscale", {})
+        if self.command == "tailscale.install-status":
+            out["tailscale"]["installReady"] = bool(ts.get("present")); return out, 0
+        if self.command == "tailscale.status":
+            if not ts.get("present"): return self.fail("TAILSCALE_NOT_INSTALLED", "Tailscale CLI was not found", "waiting_user", "precondition")
+            out["tailscale"]["loginState"] = "authenticated" if ts.get("authenticated") else "login_required"; return out, 0
+        if self.command == "tailscale.address":
+            address = ts.get("address")
+            if not ts.get("authenticated"): return self.fail("TAILSCALE_NOT_AUTHENTICATED", "Tailscale login is required before address discovery", "waiting_user", "precondition")
+            if not address:
+                address = self.fixture.get("bootstrap", {}).get("hostKey", {}).get("host")
+            try:
+                parsed = ipaddress.ip_address(address or "")
+                if not (parsed in ipaddress.ip_network("100.64.0.0/10") or parsed in ipaddress.ip_network("fd7a:115c:a1e0::/48")): raise ValueError
+            except ValueError: return self.fail("INVALID_HOST", "no valid Tailscale address was observed", "failed", "precondition")
+            out["tailscale"]["address"] = address; return out, 0
+        if self.command == "tailscale.same-tailnet":
+            gate = self.tailscale_gate(reachability=False); return gate or (out, 0)
+        if self.command == "ssh-server.status":
+            ssh = self.fixture.get("sshServer", {})
+            out["sshServer"] = {"installed": bool(ssh.get("installed", self.observed_os == "macos")), "enabled": bool(ssh.get("enabled")), "tailscaleOnly": bool(ssh.get("tailscaleOnly"))}
+            return out, 0
+        if self.command == "ssh-server.verify":
+            ssh = self.fixture.get("sshServer", {})
+            address = self.a.bootstrap_host or self.fixture.get("tailscale", {}).get("address")
+            try:
+                parsed = ipaddress.ip_address(address or "")
+                if not (parsed in ipaddress.ip_network("100.64.0.0/10") or parsed in ipaddress.ip_network("fd7a:115c:a1e0::/48")): raise ValueError
+            except ValueError: return self.fail("INVALID_HOST", "TCP 22 verification requires a Tailscale IP", "failed", "invalid")
+            self.record(["tcp-connect", "<tailscale-ip>", "22"])
+            if not ssh.get("port22Reachable", ssh.get("enabled")):
+                return self.fail("SSH_UNREACHABLE", "TCP port 22 is not reachable through the selected Tailscale IP", "waiting_user", "precondition")
+            out["sshServer"] = {"port": 22, "tailscaleAddressHash": sha(address), "reachable": True}; return out, 0
         if self.command == "tailscale.verify":
             gate = self.tailscale_gate()
             return gate or (out, 0)
@@ -675,6 +763,8 @@ openclaw node status
         if self.command in {"bootstrap.inspect", "bootstrap.generate"}: return self.bootstrap_readonly()
         if self.command == "bootstrap.plan": return self.bootstrap_plan()
         if self.command == "bootstrap.apply": return self.bootstrap_apply()
+        if self.command in ONBOARDING_PLANNERS: return self.onboarding_plan()
+        if self.command in {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply"}: return self.onboarding_apply()
         if self.command in PLANNERS: return self.make_plan()
         if self.command in MUTATIONS: return self.apply()
         return self.readonly()
