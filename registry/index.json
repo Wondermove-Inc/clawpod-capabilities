@@ -183,7 +183,7 @@
       "id": "clawpod-node-host",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
+      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -199,7 +199,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a494e6233cd2a19e95a907cdcdb52e2699c8f38e62d7ccc8b7d1e8cd743c2eaf"
+          "sha256": "d28fd1dcd673281151c4fe0f34785291cec1d167bbae1290f440748d26750084"
         },
         {
           "path": "references/onboarding.md",
@@ -1001,7 +1001,7 @@
       "id": "clawpod-node-host",
       "type": "harness",
       "version": "0.1.0",
-      "description": "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics.",
+      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -1037,7 +1037,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "4d695b5180e1570b83c3295beb500352e4b9bea8750825cc7a5712e339523ffa"
+          "sha256": "11cf53e4b9ab4bc95434d7c027651539fda5ca0532fe3fbf7cbe1e65c05f5766"
         },
         {
           "path": "schemas/error-exit-codes.json",

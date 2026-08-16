@@ -7,6 +7,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "routing_contracts.json"
+CLAWPOD_NODE_HOST_DESCRIPTION = (
+    "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring "
+    "networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate "
+    "Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect "
+    "instead when an already configured node fails to connect or pair."
+)
 
 
 def frontmatter_description(skill: Path) -> str:
@@ -64,10 +70,21 @@ class RoutingContractTests(unittest.TestCase):
             for entry in registry
             if entry["id"] == capability
         }
+        self.assertEqual(description, CLAWPOD_NODE_HOST_DESCRIPTION)
         self.assertEqual(harness["description"], description)
         self.assertEqual(skill_metadata["description"], description)
         self.assertEqual(harness_metadata["description"], description)
         self.assertEqual(registry_descriptions, {"skill": description, "harness": description})
+
+    def test_clawpod_node_host_routes_onboarding_and_excludes_node_connect_diagnostics(self) -> None:
+        contract = self.contracts["clawpod-node-host"]
+        positives = " ".join(contract["positive"])
+        negatives = " ".join(contract["negative"])
+        for phrase in ("Mac", "Windows 11", "Tailscale", "networking", "SSH", "sign-in", "approval", "recovery", "removal"):
+            self.assertIn(phrase, positives)
+        for phrase in ("already configured ClawPod node connection failing", "paired node unauthorized", "already configured node fails to pair"):
+            self.assertIn(phrase, negatives)
+        self.assertIn("Use node-connect instead", CLAWPOD_NODE_HOST_DESCRIPTION)
 
     def test_desktop_routes_only_native_handoffs_and_names_composition_boundaries(self) -> None:
         description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")

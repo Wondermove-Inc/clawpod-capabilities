@@ -1,6 +1,6 @@
 ---
 name: "clawpod-node-host"
-description: "Onboard a ClawPod node on Mac/Windows through approved Tailscale and SSH-server plans, then install, pair, and verify. Use node-connect for diagnostics."
+description: "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair."
 ---
 
 # ClawPod Node Host
