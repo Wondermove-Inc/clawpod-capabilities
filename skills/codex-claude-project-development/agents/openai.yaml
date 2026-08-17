@@ -1,4 +1,0 @@
-interface:
-  display_name: "Codex & Claude Project Development"
-  short_description: "Resume local ACP sessions without fallback"
-  default_prompt: "Use $codex-claude-project-development to safely develop this software project with Codex and/or Claude across separate processes."

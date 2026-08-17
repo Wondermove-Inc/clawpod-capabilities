@@ -1,4 +1,0 @@
-interface:
-  display_name: "Enterprise Newsletter"
-  short_description: "Compose and approve evidence-backed newsletters"
-  default_prompt: "Use $enterprise-newsletter to compose and review an evidence-backed enterprise newsletter."
