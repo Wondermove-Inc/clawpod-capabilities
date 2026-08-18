@@ -405,10 +405,6 @@
           "sha256": "7591eb548888a28119b7ca3ded662d1f833201a7e2e914850f25eea23b32ac0a"
         },
         {
-          "path": "agents/openai.yaml",
-          "sha256": "daf5d82edb7c194d7d8e89dda95c26950ffe4e681c330447234baadd506964e2"
-        },
-        {
           "path": "references/onboarding.md",
           "sha256": "ba61c0ec21c70bcab676e037a971b716407c9ad486a97822c7271654eb463a24"
         },
@@ -482,10 +478,6 @@
         {
           "path": "SKILL.md",
           "sha256": "a0df60d50d8a612a007d2ebb6f64534efc494a86f88ef289e2e52184f02abb5d"
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "7cbdcb900715ca387be238036a98edc754a42a95ef334c85e3dfe67ded21238d"
         },
         {
           "path": "assets/enterprise-dark-v1.html",

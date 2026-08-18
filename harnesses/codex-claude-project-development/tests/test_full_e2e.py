@@ -22,7 +22,7 @@ class InstalledPackageE2ETests(unittest.TestCase):
         self.assertFalse((ROOT / "harnesses" / old_name).exists())
         skill = entries[("skill", "codex-claude-project-development")]
         harness = entries[("harness", "codex-claude-project-development")]
-        self.assertEqual(skill["linkedHarness"], {"id": "codex-claude-project-development", "version": "0.2.1"})
+        self.assertEqual(skill["linkedHarness"], {"id": "codex-claude-project-development", "version": "0.2.4"})
         self.assertEqual(skill["id"], harness["id"])
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
@@ -52,7 +52,6 @@ class InstalledPackageE2ETests(unittest.TestCase):
             self.assertIn("resume Codex & Claude Project Development onboarding", onboarding_text)
             self.assertIn("/workspace/shared/<org-id>/common/acp-projects/<project-id>/", shared_text)
             self.assertIn("Never place Git repositories", shared_text)
-            self.assertTrue((installed_skill / "agents" / "openai.yaml").is_file())
             executable = installed_harness / "codex_claude_project_development.py"
             status = subprocess.run([str(executable), "status"], text=True, capture_output=True, check=False)
             self.assertEqual(status.returncode, 0, status.stderr)
