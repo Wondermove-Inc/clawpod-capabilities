@@ -1,0 +1,121 @@
+---
+name: soc-event-correlation
+description: "Correlate multiple security alerts or logs into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring."
+---
+
+# SOC Event Correlation
+
+Turn scattered security signals into one defensible incident narrative plus a
+response recommendation. This skill is a **method**, not a SIEM connector: it
+tells the analyst agent *how* to correlate and *how* to recommend, independent of
+which SIEM or security devices a site runs. It works the same at every deployment.
+
+## When to use / not use
+
+Use it when you hold at least one alert or a case and need to know whether it is
+part of a larger attack, what the attacker did, and what to do next.
+
+Do not use it as a log browser, a detection-rule editor, or a threat-intel
+lookup — those are **inputs** to this method. If you only need to read one alert
+verbatim or run a single query, use the SIEM query interface directly.
+
+## Data input seam (read this first)
+
+This skill does not assume a specific SIEM. It consumes security events from
+whichever **query interface the environment provides** (a SIEM adapter/harness,
+a platform search tool, or evidence already attached to the case). Treat that
+interface as a black box with two needs:
+
+1. **Fetch by pivot** — given an entity (IP, host, user, hash, domain) and a time
+   window, return matching events across all connected sources.
+2. **Fetch by locator** — given a stable alert/event locator, return that record.
+
+Never paste credentials or run device-native queries by hand; go through the
+environment's query interface. If no such interface is bound, stop and report
+that the correlation cannot proceed without a data seam — do not fabricate events.
+
+## The correlation pipeline (five stages)
+
+Run these in order. Full detail: `references/correlation-pipeline.md`.
+
+1. **Normalize** — map every event to a common shape: time, source device, actor,
+   target, action, entities, raw locator. Never discard the locator.
+2. **Aggregate / de-duplicate** — collapse near-identical and repeated alerts into
+   representative events so hundreds of rows become a handful of facts.
+3. **Correlate (graph)** — build a graph: nodes are events, edges are shared
+   entities (spatial), closeness in time (temporal), and prerequisite→consequence
+   links (causal). Clusters are candidate incidents.
+4. **Reconstruct the scenario** — order each cluster into an attack story: which
+   step enabled the next, across the kill chain.
+5. **Recommend** — produce prioritized, evidence-anchored response actions.
+
+## Choose the right correlation technique
+
+Detail: `references/correlation-methods.md`.
+
+- **Similarity-based** (shared attributes / time proximity) — cheap grouping of
+  duplicates and fan-out. Cannot, by itself, prove a multi-step attack.
+- **Sequence / causal** (prerequisite → consequence) — the core technique for
+  multi-step and previously unseen attacks. Use it to link stages.
+- **Case-based** (compare to prior resolved incidents) — classify and predict from
+  history; anchors your confidence and your recommendation.
+
+Apply all three; do not stop at similarity.
+
+## Three analytical lenses (apply every time)
+
+Detail: `references/attack-frameworks.md`.
+
+- **MITRE ATT&CK** — map each correlated step to a technique/sub-technique. The set
+  of mapped techniques is your coverage statement: what you can prove, and the
+  gaps you cannot yet see.
+- **Cyber Kill Chain** — locate the intrusion's furthest-reached phase
+  (recon → delivery → exploitation → C2 → actions on objectives). This drives
+  urgency.
+- **Diamond Model** — for each hypothesis, fill adversary / capability /
+  infrastructure / victim. Use it to generate and *test* hypotheses, not to
+  decorate a conclusion.
+
+## Guardrails for an AI analyst (non-negotiable)
+
+Research on AI-driven SOCs flags hallucination, over-confidence, and poor
+cross-environment generalization as the dominant failure modes. Defend against
+them:
+
+- **Evidence anchoring** — every claim cites at least one raw event locator. No
+  locator, no claim. Never invent an IOC, a timestamp, or a log line.
+- **Competing hypotheses (ACH)** — state at least two explanations (e.g. real
+  intrusion vs. benign admin activity vs. false positive) and actively look for
+  evidence that *refutes* the leading one before you commit.
+- **Confidence, explicitly** — label each finding `high` / `medium` / `low` with
+  the reason. Distinguish "confirmed", "suspected", and "insufficient evidence".
+- **Escalate on uncertainty** — if evidence is missing or hypotheses stay tied,
+  recommend the specific data to collect and hand off to a human. Do not force a
+  verdict.
+- **No unauthorized action** — this skill recommends; it does not execute
+  containment. Blocking, isolating, or disabling accounts is a separate,
+  approval-gated action.
+
+## Output
+
+Emit one structured incident report (schema: `references/output-schema.md`):
+incident hypothesis and confidence, entity graph, kill-chain position, ATT&CK
+technique list, an evidence-anchored timeline, competing hypotheses considered,
+and prioritized response recommendations. Keep the human-readable summary and the
+machine-readable object consistent.
+
+## Response recommendations
+
+Detail: `references/response-playbooks.md`. Frame recommendations as NIST /
+SANS PICERL phases — **containment, eradication, recovery** — each action tied to
+the evidence that justifies it and prioritized by asset value and confidence.
+Separate "do now" (high-confidence containment) from "verify first"
+(needs more evidence).
+
+## References
+
+- `references/correlation-pipeline.md` — the five stages in depth
+- `references/correlation-methods.md` — similarity / sequence / case techniques
+- `references/attack-frameworks.md` — ATT&CK, Kill Chain, Diamond Model
+- `references/response-playbooks.md` — containment / eradication / recovery
+- `references/output-schema.md` — the incident report schema

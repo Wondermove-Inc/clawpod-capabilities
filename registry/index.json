@@ -673,6 +673,51 @@
       }
     },
     {
+      "id": "soc-event-correlation",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Correlate multiple security alerts or logs into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
+      "path": "skills/soc-event-correlation",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "darwin",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "read-only",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "245f3404c4439c91df3e03017e933485af35d5ec7c13e7788d4422db08281f35"
+        },
+        {
+          "path": "references/attack-frameworks.md",
+          "sha256": "b4380e72eff077758170c93cbef4f4f34d7bd45cb279144841882a684932f6ba"
+        },
+        {
+          "path": "references/correlation-methods.md",
+          "sha256": "cb69bc83bed68b0ed380c47cfdc4227d2344d684732c1eaf0560181466e0826b"
+        },
+        {
+          "path": "references/correlation-pipeline.md",
+          "sha256": "c86380928624a83bcc5a156381e27cb7f3607fbaa44da13a301f6ba402e69040"
+        },
+        {
+          "path": "references/output-schema.md",
+          "sha256": "a8dc7315fcb70d9d661d75103fbc6d7f4c703301ec183f72062b41e5866fb719"
+        },
+        {
+          "path": "references/response-playbooks.md",
+          "sha256": "23f6a637d6d3633da9e377f6c917f9de2650ccfc6638dfc349f19e0b5670964f"
+        }
+      ]
+    },
+    {
       "id": "synology-smb-storage",
       "type": "skill",
       "version": "0.1.5",
