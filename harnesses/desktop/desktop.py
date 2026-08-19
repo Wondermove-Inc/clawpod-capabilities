@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, time, uuid, zlib
-VERSION='3.0.1'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
+import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, sys, time, uuid, zlib
+VERSION='3.0.2'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
 OBS=set('capabilities environment.preflight session.list session.get app.list app.get window.list window.get screen.list screen.capture ui.observe ui.find ui.read ui.table ui.wait ui.verify image.locate dialog.inspect clipboard.inspect download.inspect task.get task.events task.artifacts'.split())
 S1=set('app.launch app.focus window.activate window.move window.resize window.minimize window.maximize window.restore pointer.move pointer.scroll keyboard.key keyboard.shortcut'.split())
 S4={'window.close','process.terminate','process.kill'}
@@ -45,7 +45,13 @@ def error(code,msg,category='validation',retryable=False,details=None,remediatio
  return {'code':code,'message':msg,'category':category,'retryable':retryable,'details':details or {},'remediation':remediation}
 def emit(cmd,rid,status,result=None,err=None,warnings=None,approval=None,revision=0,started=None,attempt=1,max_attempts=1):
  end=time.time(); o={'schemaVersion':SCHEMA,'requestId':rid,'command':cmd,'status':status,'revision':revision,'result':result or {},'error':err,'warnings':warnings or [],'artifacts':[],'approval':approval,'timing':{'startedAt':dt.datetime.fromtimestamp(started or end,dt.timezone.utc).isoformat(),'endedAt':now(),'durationMs':int((end-(started or end))*1000)},'retry':{'attempt':attempt,'maxAttempts':max_attempts,'retryable':bool(err and err.get('retryable'))}}; print(json.dumps(o,ensure_ascii=False,separators=(',',':')))
-def backend(): return os.environ.get('DESKTOP_SYSTEM_CLI') or shutil.which('desktop') or '/workspace/skills/desktop/desktop'
+def bundled_backend():
+ # The backend engine ships inside this harness package (engine/desktop), so the
+ # unit is self-contained: no dependency on an image-vendored system CLI. An
+ # explicit DESKTOP_SYSTEM_CLI override still wins (tests stub the backend this way).
+ p=pathlib.Path(__file__).resolve().parent/'engine'/'desktop'
+ return str(p) if p.is_file() else None
+def backend(): return os.environ.get('DESKTOP_SYSTEM_CLI') or bundled_backend() or shutil.which('desktop') or '/workspace/skills/desktop/desktop'
 def valid_approval(path,request_digest):
  if not path:return None
  p=pathlib.Path(path)
@@ -71,8 +77,16 @@ def display_metrics():
 def backend_call(argv,timeout_ms):
  before=display_metrics()
  if before is None:return None, 'display_state_unavailable'
+ # The bundled engine may install without its executable bit (the registry
+ # installer only chmods the harness entrypoint); run it via the interpreter so
+ # exec-bit loss never breaks it. shebang is python3, so this is equivalent.
+ if argv and argv[0]==bundled_backend() and not os.access(argv[0],os.X_OK):argv=[sys.executable]+list(argv)
  try:p=subprocess.run(argv,capture_output=True,text=True,timeout=max(1,min(timeout_ms,120000))/1000,env={**os.environ,'DESKTOP_FAST_INPUT':'1'})
  except subprocess.TimeoutExpired:return None, 'timeout'
+ # A non-bundled backend path (DESKTOP_SYSTEM_CLI / PATH / legacy) that is not
+ # executable would otherwise raise an uncaught PermissionError; surface it as a
+ # normal unavailable-backend result instead of a traceback.
+ except (PermissionError,OSError) as e:return None, {'code':'backend_unavailable','detail':str(e)}
  after=display_metrics()
  if after is None:return None, 'display_state_unavailable'
  if before!=after:return None, {'code':'desktop_state_changed','before':before,'after':after}
