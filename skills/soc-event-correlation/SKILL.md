@@ -130,11 +130,21 @@ them:
 
 ## Output
 
-Emit one structured incident report (schema: `references/output-schema.md`):
-incident hypothesis and confidence, entity graph, kill-chain position, ATT&CK
-technique list, an evidence-anchored timeline, competing hypotheses considered,
-and prioritized response recommendations. Keep the human-readable summary and the
-machine-readable object consistent.
+Produce **two consistent halves** (schema and full guidance:
+`references/output-schema.md`):
+
+1. **A clear, logical report a person reads** — this is the primary deliverable.
+   Write it so a non-expert (on-call responder, manager) understands it without
+   opening the JSON or the raw logs: **conclusion first** (bottom line), then the
+   attack story in plain chronological prose, the evidence (a table for the
+   timeline), prioritized actions, and open questions. Plain language — expand
+   every acronym and technique on first use. One logical thread, no fragments.
+2. **A machine-readable object** — hypothesis, confidence, entity graph,
+   kill-chain position, ATT&CK techniques, evidence-anchored timeline, competing
+   hypotheses, recommendations.
+
+The prose must stand alone and stay consistent with the object. Do not ship the
+JSON (or a wall of fragments) as if it were the report.
 
 ## Response recommendations
 

@@ -75,9 +75,40 @@ object cannot back with a locator.
 - The `graph` must reference the same events cited in `timeline`; the report is
   one consistent object, not parallel narratives.
 
-## Minimal human summary (accompanies the object)
+## Writing the report (human-readable — this is the primary deliverable)
 
-> **[severity] title** — hypothesis (confidence). Reached *kill-chain phase*;
-> techniques: T…, T…. Do now: 1–3 highest-priority actions. Gaps: what's missing.
+The JSON object is supporting data. **The report a person reads is the main
+output**, and it must be understandable by a non-expert — an on-call responder or
+a manager — **without opening the JSON or the raw logs**. Write it logically, in
+plain language, conclusion first.
+
+Structure, in this order:
+
+1. **Bottom line (one short paragraph).** What happened, how serious, how
+   confident, and the single most important action. A busy reader can stop here
+   and act correctly.
+2. **What happened.** The attack story as plain chronological prose — full
+   sentences, not fragments: "At 09:12 the attacker ran a script on WKS-2231,
+   which let them reach the database server SRV-DB1 nine minutes later." Say the
+   business impact (which systems, which data), not only technique codes.
+3. **How we know.** The key evidence in plain terms. Put the step-by-step detail
+   in a **table** (time · what happened · source) so it scans at a glance.
+4. **What to do.** Recommendations in priority order — plain imperatives, split
+   into "do now" and "verify first", each with a one-line why.
+5. **What we're unsure about.** The gaps, and what would resolve each.
+
+Rules for the prose:
+
+- **Lead with the conclusion (BLUF).** Never make the reader assemble the verdict
+  from scattered facts.
+- **Plain language.** Expand every acronym and technique on first use — "lateral
+  movement (moving from one machine to another; MITRE T1021)". A reader who does
+  not know ATT&CK must still follow it.
+- **One logical thread.** Chronological or causal order; do not jump around.
+- **Narrative for the story, a table for the timeline.** Do not dump the JSON or
+  a wall of fragments as the report.
+- **It must stand alone.** Every claim still traces to evidence in the object, but
+  the reader should not need a locator to understand the logic.
+- Keep the prose and the JSON consistent — same facts, same order, no contradiction.
 
 Nothing in the summary may exceed what the object's locators support.

@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Correlate multiple security alerts or logs into one incident with a MITRE ATT&CK/Kill Chain attack story and a containment/eradication/recovery recommendation.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
