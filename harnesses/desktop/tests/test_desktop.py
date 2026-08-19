@@ -123,3 +123,37 @@ def test_session_display_mutation_collision_prefers_the_stronger_display_rule():
 def test_session_guard_does_not_collide_with_safe_app_close_contract():
  p,o=run('app.close','--input','{}','--idempotency-key','safe-app-close','--dry-run')
  assert p.returncode==0 and o['result']['wouldExecute'] is True
+
+def test_engine_implements_all_advertised_commands():
+ # Regression: every contract command that desktop.py delegates to the engine
+ # must have an engine dispatch branch (v3.0.3 advertised ~20 unimplemented ->
+ # "Unknown command"). Static parity check against the bundled engine source.
+ import re
+ engine_src=(CLI.parent/'engine'/'desktop').read_text()
+ tokens=set(re.findall(r"'([a-z0-9-]+)'",engine_src))
+ src=CLI.read_text()
+ contracts=json.loads((CLI.parent/'command_contracts.json').read_text())['commands']
+ OBS=set(re.search(r"OBS=set\('([^']+)'",src).group(1).split())
+ synth={'dialog.inspect','clipboard.inspect','download.inspect','window.list','window.get','app.get','screen.list'}
+ special={'window.move'}  # desktop.py routes to xdotool directly
+ MAP=dict(re.findall(r"'([^']+)':\['([^']+)'",re.search(r"MAP=\{(.*?)\}",src,re.S).group(1)))
+ missing=[]
+ for cmd in contracts:
+  if cmd in OBS or cmd in synth or cmd in special or cmd.startswith(('task.','session.')): continue
+  eng=MAP.get(cmd,cmd.replace('.','-'))
+  if eng not in tokens: missing.append((cmd,eng))
+ assert not missing, f"engine missing dispatch for: {missing}"
+
+def test_portal_action_blocked_without_dbus():
+ p,o=run('file-dialog.open','--idempotency-key','fd',env={'DBUS_SESSION_BUS_ADDRESS':''})
+ assert p.returncode==22 and o['error']['code']=='DBUS_SESSION_UNAVAILABLE'
+
+def test_engine_new_commands_not_unknown():
+ # Direct engine dispatch: new commands must reach their handler, never the
+ # generic "Unknown command" fall-through. Args omitted on purpose -> handler
+ # emits its own usage/guard error.
+ ENGINE=CLI.parent/'engine'/'desktop'
+ for c in ('window-activate','window-resize','window-maximize','clipboard-clear',
+           'process-kill','pointer-move','download-move','dialog-respond'):
+  p=subprocess.run([str(ENGINE),c],capture_output=True,text=True,timeout=15)
+  assert 'Unknown command' not in (p.stdout+p.stderr), f"{c} not dispatched"
