@@ -290,7 +290,8 @@
       "youtube-evidence-analysis",
       "clawpod-ocr",
       "memory-graph",
-      "enterprise-newsletter"
+      "enterprise-newsletter",
+      "soc-event-correlation"
     ]
   },
   "youtube-evidence-analysis": {
@@ -325,6 +326,21 @@
       "clawpod-ocr",
       "clawpod-image-studio",
       "clawpod-node-host"
+    ]
+  },
+  "soc-event-correlation": {
+    "positive": [
+      "Correlate these security alerts into one incident",
+      "Is this alert part of a larger attack",
+      "Reconstruct the attack story and recommend response",
+      "Triage and correlate the EDR, firewall, and identity alerts"
+    ],
+    "negative": [
+      "Run a single SIEM search query",
+      "Write or tune a detection rule"
+    ],
+    "adjacent": [
+      "verified-research"
     ]
   }
 }
