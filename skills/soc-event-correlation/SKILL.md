@@ -1,6 +1,6 @@
 ---
 name: soc-event-correlation
-description: "Correlate multiple security alerts or logs into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring."
+description: "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring."
 ---
 
 # SOC Event Correlation
@@ -43,6 +43,28 @@ Rules: read-only queries only, always bounded (time window + result cap); never
 change detection rules, connectors, or cases beyond what a separate approved
 action allows; never fabricate events. If you were not given connection info,
 request it and pause — do not guess an endpoint.
+
+## Investigation loop (start here)
+
+Given a case or triggering alert, drive the pipeline as a **bounded loop**:
+
+1. **Preflight** the SIEM connection — auth and scope (`references/data-access.md`).
+2. **Seed** — fetch the triggering alert; extract its entities (IPs, hosts, users,
+   hashes, domains) and its event time. Set an initial time window around that
+   time — start narrow (e.g. ±1h) and widen deliberately.
+3. **Pivot** — search by each seed entity within the window; normalize, aggregate,
+   and add results to the graph (pipeline stages 1–3).
+4. **Expand** — pivot on *new, high-value* entities the results reveal. Prefer
+   specific entities (a file hash, a user, a domain) over high-cardinality or
+   shared ones (a NAT/proxy IP) — those add noise, not signal.
+5. **Stop** when any holds: no new high-value entities appear, the window is
+   covered, a result/pivot budget is reached, or the picture is enough to decide.
+   Record what you did not expand and why.
+6. **Reconstruct and recommend** (pipeline stages 4–5); emit the report.
+
+Every search stays bounded (time window + result cap). If the graph explodes on
+one entity, that entity is infrastructure noise — down-weight it and stop pivoting
+on it. A worked end-to-end pass: `references/worked-example.md`.
 
 ## The correlation pipeline (five stages)
 
@@ -130,3 +152,4 @@ Separate "do now" (high-confidence containment) from "verify first"
 - `references/attack-frameworks.md` — ATT&CK, Kill Chain, Diamond Model
 - `references/response-playbooks.md` — containment / eradication / recovery
 - `references/output-schema.md` — the incident report schema
+- `references/worked-example.md` — one end-to-end pass
