@@ -425,7 +425,7 @@
     {
       "id": "desktop",
       "type": "skill",
-      "version": "3.0.2",
+      "version": "3.0.3",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "skills/desktop",
       "compatibility": {
@@ -454,7 +454,7 @@
       ],
       "linkedHarness": {
         "id": "desktop",
-        "version": "3.0.2"
+        "version": "3.0.3"
       }
     },
     {
@@ -1267,7 +1267,7 @@
     {
       "id": "desktop",
       "type": "harness",
-      "version": "3.0.2",
+      "version": "3.0.3",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "harnesses/desktop",
       "compatibility": {
@@ -1294,6 +1294,10 @@
           "sha256": "361b17fb11fd33f01228d75b923c1f91e780ffd24120b89828579571b0c5c0f2"
         },
         {
+          "path": "CHANGES-v3.0.3.md",
+          "sha256": "dd999d5d61f6ac787ba513570a472db2557d1fc345aaf3a00b3249cd432c6d46"
+        },
+        {
           "path": "EVIDENCE-v3.0.0.md",
           "sha256": "5bdf437a18e03df27c0dcdddaa674ae3c2641a175c87ca725fa527f7f34e1034"
         },
@@ -1306,12 +1310,16 @@
           "sha256": "ad07577d20b41bab4d695ec911805de342d4793fa84e6723dc15eae9311b590b"
         },
         {
+          "path": "EVIDENCE-v3.0.3.md",
+          "sha256": "ee19ed7af2747f2a1481b5e948d24d74b4efabcc71d92e6f8c5b81663c11e40d"
+        },
+        {
           "path": "command_contracts.json",
-          "sha256": "81e9fa93954b53712d6605ff3d612f79d0ef496def803cf01da6e03633130252"
+          "sha256": "beec082356bf1ba0a9dd5371d2d965d98f2e51b8fb04a29b3bbd480c56d7863d"
         },
         {
           "path": "desktop.py",
-          "sha256": "b135f51c87e8a76c337828b67ee03c25c6e070ec5efe94dfe1ca73522eed5083"
+          "sha256": "0fe09c75b40215838009e7007fc1de616fc696c6c742c649b8bb33ef591a162d"
         },
         {
           "path": "engine/desktop",
@@ -1407,7 +1415,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "3cec206cba9972725a493b7728d595831c35b896f12498f327db6366a65d0fbb"
+          "sha256": "d1b634cdc32757b99f4dfcf3414f711fd4d6fa5618512fb61fdbc3e8fda98aa1"
         },
         {
           "path": "precision_lab/README.md",
