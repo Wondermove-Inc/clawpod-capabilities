@@ -338,6 +338,83 @@ def main():
         else:
             print("Usage: desktop macro list|save|run"); sys.exit(1)
 
+    elif cmd in ('window-activate', 'window-close', 'window-minimize',
+                 'window-maximize', 'window-restore', 'window-resize', 'window-move'):
+        from lib import window_manager
+        wid = remaining[0] if remaining else None
+        if cmd == 'window-activate':
+            window_manager.activate(wid)
+        elif cmd == 'window-close':
+            window_manager.close(wid)
+        elif cmd == 'window-minimize':
+            window_manager.minimize(wid)
+        elif cmd == 'window-maximize':
+            window_manager.maximize(wid)
+        elif cmd == 'window-restore':
+            window_manager.restore(wid)
+        elif cmd == 'window-resize':
+            window_manager.resize(wid, remaining[1] if len(remaining) > 1 else None,
+                                  remaining[2] if len(remaining) > 2 else None)
+        else:  # window-move
+            window_manager.move(wid, remaining[1] if len(remaining) > 1 else None,
+                                remaining[2] if len(remaining) > 2 else None)
+
+    elif cmd == 'pointer-move':
+        from lib.xdotool_engine import move_pointer
+        if len(remaining) < 2:
+            print("Usage: desktop pointer-move <x> <y>"); sys.exit(1)
+        move_pointer(remaining[0], remaining[1])
+
+    elif cmd == 'pointer-drag-drop':
+        from lib.xdotool_engine import drag_drop
+        tj = None
+        if '--trajectory-json' in remaining:
+            i = remaining.index('--trajectory-json')
+            tj = remaining[i + 1] if i + 1 < len(remaining) else None
+        drag_drop(tj)
+
+    elif cmd in ('clipboard-read', 'clipboard-write', 'clipboard-clear'):
+        from lib import clipboard_ops
+        if cmd == 'clipboard-read':
+            clipboard_ops.read()
+        elif cmd == 'clipboard-write':
+            clipboard_ops.write(remaining[0] if remaining else None)
+        else:
+            clipboard_ops.clear()
+
+    elif cmd in ('process-kill', 'process-terminate'):
+        from lib import process_ops
+        pid = remaining[0] if remaining else None
+        if cmd == 'process-kill':
+            process_ops.kill(pid)
+        else:
+            process_ops.terminate(pid)
+
+    elif cmd in ('file-dialog-open', 'file-dialog-save',
+                 'file-dialog-choose-directory', 'file-dialog-cancel', 'dialog-respond'):
+        from lib import file_dialog
+        arg = remaining[0] if remaining else None
+        if cmd == 'file-dialog-open':
+            file_dialog.open(arg)
+        elif cmd == 'file-dialog-save':
+            file_dialog.save(arg)
+        elif cmd == 'file-dialog-choose-directory':
+            file_dialog.choose_directory(arg)
+        elif cmd == 'file-dialog-cancel':
+            file_dialog.cancel()
+        else:  # dialog-respond
+            file_dialog.respond(arg)
+
+    elif cmd in ('download-wait', 'download-move', 'download-quarantine'):
+        from lib import download_ops
+        if cmd == 'download-wait':
+            download_ops.wait(remaining[0] if remaining else None)
+        elif cmd == 'download-move':
+            download_ops.move(remaining[0] if remaining else None,
+                              remaining[1] if len(remaining) > 1 else None)
+        else:  # download-quarantine
+            download_ops.quarantine(remaining[0] if remaining else None)
+
     else:
         print(f"Unknown command: {cmd}")
         print_usage()

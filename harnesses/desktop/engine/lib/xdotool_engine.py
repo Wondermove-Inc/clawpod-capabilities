@@ -28,6 +28,39 @@ def _run_xdotool(*args):
         sys.exit(1)
 
 
+def move_pointer(x, y):
+    """Move the mouse pointer to absolute screen coordinates (pointer.move)."""
+    try:
+        px, py = int(x), int(y)
+    except (TypeError, ValueError):
+        print(f"ERROR: pointer-move requires integer <x> <y>, got {x!r} {y!r}", file=sys.stderr)
+        sys.exit(1)
+    _run_xdotool('mousemove', '--sync', str(px), str(py))
+    print(f"Pointer moved to ({px}, {py})")
+
+
+def drag_drop(trajectory_json):
+    """Press at the first trajectory point, move through the rest, release
+    (pointer.drag-drop, accessibility-target path). Mirrors the coordinate-path
+    argv in desktop.py. Intermediate moves omit --sync (a --sync move can block
+    when the pointer is already at the requested point)."""
+    import json as _json
+    try:
+        points = _json.loads(trajectory_json)['points']
+        if len(points) < 2:
+            raise ValueError("need >= 2 points")
+    except (ValueError, KeyError, TypeError):
+        print("ERROR: pointer-drag-drop requires --trajectory-json '{\"points\":[[x,y],...]}'",
+              file=sys.stderr)
+        sys.exit(1)
+    argv = ['mousemove', str(int(points[0][0])), str(int(points[0][1])), 'mousedown', '1']
+    for p in points[1:]:
+        argv += ['mousemove', str(int(p[0])), str(int(p[1]))]
+    argv += ['mouseup', '1']
+    _run_xdotool(*argv)
+    print(f"Dragged through {len(points)} points")
+
+
 def _focus_editable_node(node, name, allow_coordinate=False):
     """Focus an editable node by clicking its screen bbox center.
 
