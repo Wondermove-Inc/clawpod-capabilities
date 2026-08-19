@@ -20,7 +20,9 @@ import time
 os.environ.setdefault('DISPLAY', ':99')
 
 # AT-SPI role names that can host a file chooser / confirmation dialog.
-_DIALOG_ROLES = ('file chooser', 'dialog', 'alert', 'frame')
+# 'frame' is intentionally excluded: the root desktop is a frame, and matching it
+# would mistake the background for a dialog.
+_DIALOG_ROLES = ('file chooser', 'dialog', 'alert')
 # Accessible names (accelerator underscores stripped) treated as confirm/cancel.
 _CONFIRM_NAMES = ('open', 'save', 'select', 'choose', 'ok', 'yes', 'apply')
 _CANCEL_NAMES = ('cancel', 'close', 'no')
@@ -52,41 +54,49 @@ def _iter_children(node):
 
 
 def _find_active_dialog(timeout=5.0):
-    """Return the top-most active dialog/file-chooser node, or None.
+    """Return the most likely active dialog/file-chooser node, or None.
 
-    Prefers a MODAL/ACTIVE dialog; falls back to any showing file-chooser role.
+    A SHOWING dialog/file-chooser/alert qualifies even when AT-SPI does not mark
+    it MODAL/ACTIVE — Zenity's GtkFileChooserDialog, for example, exposes only
+    SHOWING+VISIBLE. MODAL/ACTIVE/FOCUSED and the file-chooser role only raise a
+    candidate's priority so the front-most dialog wins when several are open.
     Retries briefly because a just-opened dialog may still be mapping.
     """
     from .atspi_engine import get_desktop
     Atspi = _atspi()
     deadline = time.time() + timeout
-    best = None
-    while time.time() < deadline:
+    while True:
+        candidates = []
         desktop = get_desktop()
         for app in _iter_children(desktop):
             for win in _iter_children(app):
                 try:
                     role = win.get_role_name()
+                    states = win.get_state_set()
                 except Exception:
                     continue
                 if role not in _DIALOG_ROLES:
                     continue
-                try:
-                    states = win.get_state_set()
-                except Exception:
-                    continue
                 if not states.contains(Atspi.StateType.SHOWING):
                     continue
-                modal = states.contains(Atspi.StateType.MODAL)
-                active = states.contains(Atspi.StateType.ACTIVE)
-                if role == 'file chooser' or modal or active:
-                    if modal or active or role == 'file chooser':
-                        return win
-                    best = best or win
-        if best:
-            return best
+                pri = 0
+                if role == 'file chooser':
+                    pri += 4
+                if states.contains(Atspi.StateType.MODAL):
+                    pri += 2
+                if states.contains(Atspi.StateType.ACTIVE):
+                    pri += 1
+                if states.contains(Atspi.StateType.FOCUSED):
+                    pri += 1
+                candidates.append((pri, win))
+        if candidates:
+            # Highest priority wins; among ties, the last-enumerated (most
+            # recently mapped) window is the front-most in practice.
+            candidates.sort(key=lambda c: c[0])
+            return candidates[-1][1]
+        if time.time() >= deadline:
+            return None
         time.sleep(0.25)
-    return best
 
 
 def _descendant_buttons(node, out=None, depth=0):
@@ -151,29 +161,68 @@ def _require_dialog():
     return dialog
 
 
+def _set_clipboard(text):
+    """Put text on the CLIPBOARD selection so it can be pasted atomically."""
+    import gi
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk, Gdk
+    cb = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+    cb.set_text(text, -1)
+    cb.store()
+    n = 0
+    while Gtk.events_pending() and n < 50:
+        Gtk.main_iteration_do(False)
+        n += 1
+
+
 def _enter_path(path):
-    """Focus a dialog's location entry (Ctrl+L) and type the path."""
+    """Put `path` into a GTK file chooser's location entry.
+
+    Typing the path character by character races the location entry's
+    autocompletion and corrupts the tail (e.g. `/a/b.txt` -> `/a/b.txtt.txt`).
+    Instead: press `/` to open the GTK location popup, select-all, and paste the
+    path from the clipboard in one atomic step — no per-character autocomplete.
+    """
     if not path:
         print("ERROR: a path argument is required", file=sys.stderr)
         sys.exit(1)
-    from .xdotool_engine import press_key, type_text
-    press_key('ctrl+l')
-    time.sleep(0.2)
-    type_text(path)
-    time.sleep(0.2)
+    from .xdotool_engine import press_key
+    _set_clipboard(path)
+    press_key('slash')     # open the GTK location popup (its content becomes "/")
+    time.sleep(0.4)
+    press_key('ctrl+a')    # select the existing content
+    time.sleep(0.1)
+    press_key('ctrl+v')    # paste the full path atomically
+    time.sleep(0.3)
+
+
+def _dialog_gone(checks=3, gap=0.3):
+    """True only if no dialog is found across several consecutive polls — guards
+    against a transient AT-SPI miss being mistaken for a confirmed dialog."""
+    for _ in range(checks):
+        if _find_active_dialog(timeout=0.2) is not None:
+            return False
+        time.sleep(gap)
+    return True
 
 
 def _open_like(path, names):
     _require_dialog()
     _enter_path(path)
-    dialog = _find_active_dialog(timeout=2.0) or _require_dialog()
-    if _confirm(dialog, names):
+    from .xdotool_engine import press_key
+    press_key('Return')    # commit the location entry (confirms for a file path)
+    time.sleep(0.5)
+    if _dialog_gone():
         print(f"Dialog confirmed with path: {path}")
         return
-    # Keyboard fallback: Return activates the GTK default (Open/Save) button.
-    from .xdotool_engine import press_key
-    press_key('Return')
-    print(f"Dialog confirmed via Return with path: {path}")
+    # Still open (e.g. a directory chooser that navigated into the path): click
+    # the accessible confirm button, then re-verify it actually closed.
+    dialog = _find_active_dialog(timeout=1.0)
+    if dialog is not None and _confirm(dialog, names) and _dialog_gone():
+        print(f"Dialog confirmed with path: {path}")
+        return
+    print(f"ERROR: set path {path} but the dialog did not confirm", file=sys.stderr)
+    sys.exit(1)
 
 
 def open(path):
@@ -196,6 +245,50 @@ def cancel():
     from .xdotool_engine import press_key
     press_key('Escape')
     print("Dialog cancelled via Escape")
+
+
+def inspect():
+    """Report the active dialog's title, buttons, and text entries as JSON
+    (dialog.inspect) — read-only, so an agent can decide how to respond."""
+    import json
+    dialog = _find_active_dialog()
+    if dialog is None:
+        print(json.dumps({'dialog': None}, separators=(',', ':')))
+        return
+    try:
+        title = dialog.get_name()
+        role = dialog.get_role_name()
+    except Exception:
+        title, role = '', 'dialog'
+    buttons = []
+    for btn in _descendant_buttons(dialog):
+        try:
+            name = btn.get_name()
+            if name:
+                buttons.append(name)
+        except Exception:
+            continue
+
+    def _text_fields(node, out, depth=0):
+        if depth > 6:
+            return
+        for child in _iter_children(node):
+            try:
+                r = child.get_role_name()
+            except Exception:
+                continue
+            if r in ('text', 'entry', 'password text'):
+                try:
+                    out.append({'role': r, 'name': child.get_name() or ''})
+                except Exception:
+                    pass
+            _text_fields(child, out, depth + 1)
+
+    fields = []
+    _text_fields(dialog, fields)
+    print(json.dumps(
+        {'dialog': {'title': title, 'role': role, 'buttons': buttons, 'fields': fields}},
+        separators=(',', ':')))
 
 
 def respond(button):

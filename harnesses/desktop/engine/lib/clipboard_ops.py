@@ -65,3 +65,27 @@ def clear():
     cb.store()
     _pump(Gtk)
     print("Clipboard cleared")
+
+
+def inspect():
+    """Report clipboard metadata as JSON (clipboard.inspect): whether text is
+    present, its length, and the available target atoms — without forcing the
+    caller to pull the full (possibly sensitive) content."""
+    import json
+    Gtk, cb = _clipboard()
+    text = cb.wait_for_text()
+    _pump(Gtk)
+    ok, targets = cb.wait_for_targets()
+    _pump(Gtk)
+    target_names = []
+    if ok and targets:
+        for atom in targets:
+            try:
+                target_names.append(atom.name())
+            except Exception:
+                continue
+    print(json.dumps({
+        'hasText': text is not None,
+        'length': len(text) if text is not None else 0,
+        'targets': sorted(set(target_names)),
+    }, separators=(',', ':')))

@@ -145,3 +145,86 @@ def move(wid, x, y):
         sys.exit(1)
     _run('xdotool', 'windowmove', '--sync', wid, str(int(x)), str(int(y)))
     print(f"Window {wid} moved to {int(x)},{int(y)}")
+
+
+# --- observation (read-only) -------------------------------------------------
+
+def _window_record(wid):
+    """Build a JSON-able record for one X window id, or None if it vanished."""
+    name = _run('xdotool', 'getwindowname', wid, check=False)
+    geo = _run('xdotool', 'getwindowgeometry', '--shell', wid, check=False)
+    if not geo:
+        return None
+    vals = {}
+    for line in geo.splitlines():
+        if '=' in line:
+            k, _, v = line.partition('=')
+            vals[k.strip()] = v.strip()
+    try:
+        rec = {
+            'id': str(wid),
+            'name': name,
+            'x': int(vals['X']), 'y': int(vals['Y']),
+            'width': int(vals['WIDTH']), 'height': int(vals['HEIGHT']),
+        }
+    except (KeyError, ValueError):
+        return None
+    pid = _run('xdotool', 'getwindowpid', wid, check=False)
+    if pid.isdigit():
+        rec['pid'] = int(pid)
+    return rec
+
+
+def list_windows():
+    """List visible top-level windows (id, name, geometry, pid) as JSON."""
+    ids = _run('xdotool', 'search', '--onlyvisible', '--name', '', check=False)
+    windows = []
+    seen = set()
+    for wid in ids.split():
+        if wid in seen:
+            continue
+        seen.add(wid)
+        rec = _window_record(wid)
+        # Skip unnamed zero-size scaffolding (root/desktop/panels have no useful name+size).
+        if rec and (rec['name'] or (rec['width'] > 1 and rec['height'] > 1)):
+            windows.append(rec)
+    print(json.dumps({'windows': windows}, separators=(',', ':')))
+
+
+def get_window(wid):
+    wid = _require_wid(wid)
+    rec = _window_record(wid)
+    if rec is None:
+        print(f"ERROR: no such window {wid}", file=sys.stderr)
+        sys.exit(1)
+    print(json.dumps(rec, separators=(',', ':')))
+
+
+def list_screens():
+    """List connected screens/monitors (name, geometry, primary) via xrandr."""
+    out = _run('xrandr', '--query', check=False)
+    screens = []
+    for line in out.splitlines():
+        if ' connected' not in line:
+            continue
+        parts = line.split()
+        name = parts[0]
+        primary = 'primary' in parts
+        geom = next((p for p in parts if 'x' in p and '+' in p), None)  # e.g. 1920x1080+0+0
+        rec = {'name': name, 'primary': primary}
+        if geom:
+            try:
+                res, x, y = geom.split('+')
+                w, h = res.split('x')
+                rec.update({'width': int(w), 'height': int(h), 'x': int(x), 'y': int(y)})
+            except ValueError:
+                pass
+        screens.append(rec)
+    if not screens:
+        geo = _run('xdotool', 'getdisplaygeometry', check=False)
+        try:
+            w, h = (int(n) for n in geo.split()[:2])
+            screens.append({'name': 'default', 'primary': True, 'width': w, 'height': h, 'x': 0, 'y': 0})
+        except (ValueError, IndexError):
+            pass
+    print(json.dumps({'screens': screens}, separators=(',', ':')))

@@ -4,7 +4,7 @@
   "name": "desktop",
   "title": "Desktop",
   "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "entrypoint": "./desktop.py",
   "packageRoot": ".",
   "whenToUse": [

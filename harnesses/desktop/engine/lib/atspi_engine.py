@@ -666,6 +666,40 @@ def list_apps(as_json=False):
         print(json.dumps(entries, indent=2, ensure_ascii=False))
 
 
+def app_get(name):
+    """Report one accessible application's details as JSON (app.get):
+    windows (name + role) and window/child count. Case-insensitive substring
+    match on the application name."""
+    import json
+    _check_atspi()
+    if not name:
+        print("ERROR: app-get requires an application name", file=sys.stderr)
+        sys.exit(EXIT_NOT_FOUND)
+    desktop = get_desktop()
+    needle = name.strip().lower()
+    for i in range(desktop.get_child_count()):
+        app = desktop.get_child_at_index(i)
+        if not app:
+            continue
+        app_name = app.get_name() or ""
+        if needle not in app_name.lower():
+            continue
+        windows = []
+        for j in range(app.get_child_count()):
+            win = app.get_child_at_index(j)
+            if not win:
+                continue
+            try:
+                windows.append({'name': win.get_name() or '', 'role': win.get_role_name()})
+            except Exception:
+                continue
+        print(json.dumps({'app': app_name, 'windowCount': len(windows), 'windows': windows},
+                         ensure_ascii=False, separators=(',', ':')))
+        return
+    print(f"ERROR: no accessible application matching '{name}'", file=sys.stderr)
+    sys.exit(EXIT_NOT_FOUND)
+
+
 def selftest():
     """Run self-diagnostic: AT-SPI, xdotool, DISPLAY, D-Bus."""
     results = []

@@ -66,6 +66,31 @@ def wait(timeout=None):
     sys.exit(2)
 
 
+def inspect():
+    """List the download directory as JSON (download.inspect): each file with
+    size, mtime, and whether it is still an in-progress partial download."""
+    import json
+    downloads = _downloads_dir()
+    if not downloads.is_dir():
+        print(json.dumps({'directory': str(downloads), 'files': []}, separators=(',', ':')))
+        return
+    files = []
+    for p in sorted(downloads.iterdir(), key=lambda q: q.name):
+        if not p.is_file():
+            continue
+        try:
+            st = p.stat()
+        except OSError:
+            continue
+        files.append({
+            'name': p.name,
+            'size': st.st_size,
+            'mtime': int(st.st_mtime),
+            'partial': p.name.endswith(_PARTIAL_SUFFIXES),
+        })
+    print(json.dumps({'directory': str(downloads), 'files': files}, separators=(',', ':')))
+
+
 def _validated_src(src):
     if not src:
         print("ERROR: source path required", file=sys.stderr)
