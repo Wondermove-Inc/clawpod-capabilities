@@ -675,7 +675,7 @@
     {
       "id": "soc-event-correlation",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
       "path": "skills/soc-event-correlation",
       "compatibility": {
