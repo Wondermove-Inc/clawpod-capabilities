@@ -693,7 +693,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "245f3404c4439c91df3e03017e933485af35d5ec7c13e7788d4422db08281f35"
+          "sha256": "6ac8be908efeefc243d784e0ea0bd938497f2d04775d3d701caf61f5ce33caab"
         },
         {
           "path": "references/attack-frameworks.md",
@@ -706,6 +706,10 @@
         {
           "path": "references/correlation-pipeline.md",
           "sha256": "c86380928624a83bcc5a156381e27cb7f3607fbaa44da13a301f6ba402e69040"
+        },
+        {
+          "path": "references/data-access.md",
+          "sha256": "8a5088462230f2a49f0d56e17e34d44287042313220a5c2055fb81661fbc535c"
         },
         {
           "path": "references/output-schema.md",

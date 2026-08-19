@@ -19,20 +19,30 @@ Do not use it as a log browser, a detection-rule editor, or a threat-intel
 lookup — those are **inputs** to this method. If you only need to read one alert
 verbatim or run a single query, use the SIEM query interface directly.
 
-## Data input seam (read this first)
+## Getting the data (SIEM-agnostic — read this first)
 
-This skill does not assume a specific SIEM. It consumes security events from
-whichever **query interface the environment provides** (a SIEM adapter/harness,
-a platform search tool, or evidence already attached to the case). Treat that
-interface as a black box with two needs:
+This skill assumes **no specific SIEM**. The SIEM differs per site (Splunk,
+Elastic, QRadar, Sentinel, Chronicle, OpenSearch, Wazuh, …). Each deployment gives
+the analyst agent the site's **SIEM connection info** (endpoint, space/index,
+auth). Your job is to use that connection to pull the data the correlation
+pipeline needs — whatever the product.
 
-1. **Fetch by pivot** — given an entity (IP, host, user, hash, domain) and a time
-   window, return matching events across all connected sources.
-2. **Fetch by locator** — given a stable alert/event locator, return that record.
+Procedure (full detail: `references/data-access.md`):
 
-Never paste credentials or run device-native queries by hand; go through the
-environment's query interface. If no such interface is bound, stop and report
-that the correlation cannot proceed without a data seam — do not fabricate events.
+1. **Learn the connected SIEM first.** From the provided connection info and its
+   own documentation, determine how to run a bounded, read-only search and how to
+   fetch one record. Do not assume a query language.
+2. Run the two primitives the pipeline needs, mapped to that SIEM:
+   - **Search by pivot** — given an entity (IP, host, user, hash, domain) and a
+     time window, return matching events across all connected sources.
+   - **Fetch by locator** — given a stable alert/event id, return that record.
+3. Normalize what comes back into the common event shape
+   (`references/correlation-pipeline.md`).
+
+Rules: read-only queries only, always bounded (time window + result cap); never
+change detection rules, connectors, or cases beyond what a separate approved
+action allows; never fabricate events. If you were not given connection info,
+request it and pause — do not guess an endpoint.
 
 ## The correlation pipeline (five stages)
 
@@ -114,6 +124,7 @@ Separate "do now" (high-confidence containment) from "verify first"
 
 ## References
 
+- `references/data-access.md` — SIEM-agnostic query primitives and normalized fields
 - `references/correlation-pipeline.md` — the five stages in depth
 - `references/correlation-methods.md` — similarity / sequence / case techniques
 - `references/attack-frameworks.md` — ATT&CK, Kill Chain, Diamond Model
