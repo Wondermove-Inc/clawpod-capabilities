@@ -338,6 +338,22 @@ def main():
         else:
             print("Usage: desktop macro list|save|run"); sys.exit(1)
 
+    elif cmd == 'window-list':
+        from lib import window_manager
+        window_manager.list_windows()
+
+    elif cmd == 'window-get':
+        from lib import window_manager
+        window_manager.get_window(remaining[0] if remaining else None)
+
+    elif cmd == 'screen-list':
+        from lib import window_manager
+        window_manager.list_screens()
+
+    elif cmd == 'app-get':
+        from lib.atspi_engine import app_get
+        app_get(remaining[0] if remaining else None)
+
     elif cmd in ('window-activate', 'window-close', 'window-minimize',
                  'window-maximize', 'window-restore', 'window-resize', 'window-move'):
         from lib import window_manager
@@ -373,12 +389,14 @@ def main():
             tj = remaining[i + 1] if i + 1 < len(remaining) else None
         drag_drop(tj)
 
-    elif cmd in ('clipboard-read', 'clipboard-write', 'clipboard-clear'):
+    elif cmd in ('clipboard-read', 'clipboard-write', 'clipboard-clear', 'clipboard-inspect'):
         from lib import clipboard_ops
         if cmd == 'clipboard-read':
             clipboard_ops.read()
         elif cmd == 'clipboard-write':
             clipboard_ops.write(remaining[0] if remaining else None)
+        elif cmd == 'clipboard-inspect':
+            clipboard_ops.inspect()
         else:
             clipboard_ops.clear()
 
@@ -390,8 +408,8 @@ def main():
         else:
             process_ops.terminate(pid)
 
-    elif cmd in ('file-dialog-open', 'file-dialog-save',
-                 'file-dialog-choose-directory', 'file-dialog-cancel', 'dialog-respond'):
+    elif cmd in ('file-dialog-open', 'file-dialog-save', 'file-dialog-choose-directory',
+                 'file-dialog-cancel', 'dialog-respond', 'dialog-inspect'):
         from lib import file_dialog
         arg = remaining[0] if remaining else None
         if cmd == 'file-dialog-open':
@@ -402,16 +420,20 @@ def main():
             file_dialog.choose_directory(arg)
         elif cmd == 'file-dialog-cancel':
             file_dialog.cancel()
+        elif cmd == 'dialog-inspect':
+            file_dialog.inspect()
         else:  # dialog-respond
             file_dialog.respond(arg)
 
-    elif cmd in ('download-wait', 'download-move', 'download-quarantine'):
+    elif cmd in ('download-wait', 'download-move', 'download-quarantine', 'download-inspect'):
         from lib import download_ops
         if cmd == 'download-wait':
             download_ops.wait(remaining[0] if remaining else None)
         elif cmd == 'download-move':
             download_ops.move(remaining[0] if remaining else None,
                               remaining[1] if len(remaining) > 1 else None)
+        elif cmd == 'download-inspect':
+            download_ops.inspect()
         else:  # download-quarantine
             download_ops.quarantine(remaining[0] if remaining else None)
 

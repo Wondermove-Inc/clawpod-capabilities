@@ -134,7 +134,9 @@ def test_engine_implements_all_advertised_commands():
  src=CLI.read_text()
  contracts=json.loads((CLI.parent/'command_contracts.json').read_text())['commands']
  OBS=set(re.search(r"OBS=set\('([^']+)'",src).group(1).split())
- synth={'dialog.inspect','clipboard.inspect','download.inspect','window.list','window.get','app.get','screen.list'}
+ # Only task.*/session.* are synthetic in desktop.py now; the former inspect/list
+ # stubs (window.list, clipboard.inspect, ...) route to the engine as of 3.0.5.
+ synth=set()
  special={'window.move'}  # desktop.py routes to xdotool directly
  MAP=dict(re.findall(r"'([^']+)':\['([^']+)'",re.search(r"MAP=\{(.*?)\}",src,re.S).group(1)))
  missing=[]
@@ -154,6 +156,8 @@ def test_engine_new_commands_not_unknown():
  # emits its own usage/guard error.
  ENGINE=CLI.parent/'engine'/'desktop'
  for c in ('window-activate','window-resize','window-maximize','clipboard-clear',
-           'process-kill','pointer-move','download-move','dialog-respond'):
+           'process-kill','pointer-move','download-move','dialog-respond',
+           'window-list','window-get','screen-list','app-get',
+           'dialog-inspect','clipboard-inspect','download-inspect'):
   p=subprocess.run([str(ENGINE),c],capture_output=True,text=True,timeout=15)
   assert 'Unknown command' not in (p.stdout+p.stderr), f"{c} not dispatched"

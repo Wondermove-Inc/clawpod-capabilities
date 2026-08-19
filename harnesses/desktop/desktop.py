@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, sys, time, uuid, zlib
-VERSION='3.0.4'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
+VERSION='3.0.5'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
 OBS=set('capabilities environment.preflight session.list session.get app.list app.get window.list window.get screen.list screen.capture ui.observe ui.find ui.read ui.table ui.wait ui.verify image.locate dialog.inspect clipboard.inspect download.inspect task.get task.events task.artifacts'.split())
 S1=set('app.launch app.focus window.activate window.move window.resize window.minimize window.maximize window.restore pointer.move pointer.scroll keyboard.key keyboard.shortcut'.split())
 S4={'window.close','process.terminate','process.kill'}
@@ -270,7 +270,7 @@ def main():
    emit(cmd,rid,'blocked',old.get('result') or {},error('OUTCOME_UNKNOWN','The prior action may have executed; automatic replay is forbidden.','conflict',False,{},'Inspect the current UI and resolve the checkpoint with a new idempotency key only after confirming the outcome.'),revision=st['revision'],started=started); return 40
   emit(cmd,rid,'succeeded',old['result'],revision=st['revision'],started=started); return 0
  if a.dry_run: emit(cmd,rid,'succeeded',{'preview':request,'requestDigest':request_digest,'wouldExecute':True},approval={'required':needs_approval,'safetyClass':'S4' if cmd in S4 else 'S2'},revision=st['revision'],started=started); return 0
- if cmd.startswith(('task.','session.')) or cmd in {'dialog.inspect','clipboard.inspect','download.inspect','window.list','window.get','app.get','screen.list'}: result={'state':'prepared' if cmd=='task.plan' else 'completed','checkpointToken':'cp_'+request_digest[:24],'input':redact(inp)}
+ if cmd.startswith(('task.','session.')): result={'state':'prepared' if cmd=='task.plan' else 'completed','checkpointToken':'cp_'+request_digest[:24],'input':redact(inp)}
  else:
   if not pathlib.Path(backend()).is_file(): emit(cmd,rid,'blocked',err=error('BACKEND_UNAVAILABLE','Installed system desktop CLI unavailable.','backend',True),started=started); return 22
   if cmd in PRECISION_ACTIONS:
