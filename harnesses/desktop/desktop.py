@@ -83,6 +83,10 @@ def backend_call(argv,timeout_ms):
  if argv and argv[0]==bundled_backend() and not os.access(argv[0],os.X_OK):argv=[sys.executable]+list(argv)
  try:p=subprocess.run(argv,capture_output=True,text=True,timeout=max(1,min(timeout_ms,120000))/1000,env={**os.environ,'DESKTOP_FAST_INPUT':'1'})
  except subprocess.TimeoutExpired:return None, 'timeout'
+ # A non-bundled backend path (DESKTOP_SYSTEM_CLI / PATH / legacy) that is not
+ # executable would otherwise raise an uncaught PermissionError; surface it as a
+ # normal unavailable-backend result instead of a traceback.
+ except (PermissionError,OSError) as e:return None, {'code':'backend_unavailable','detail':str(e)}
  after=display_metrics()
  if after is None:return None, 'display_state_unavailable'
  if before!=after:return None, {'code':'desktop_state_changed','before':before,'after':after}

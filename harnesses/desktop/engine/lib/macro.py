@@ -6,7 +6,7 @@ import sys
 
 from .exit_codes import ALLOWED_COMMANDS
 
-MACRO_DIR = os.environ.get('DESKTOP_MACRO_DIR', '/workspace/skills/desktop/macros')
+MACRO_DIR = os.environ.get('DESKTOP_MACRO_DIR', '/workspace/.desktop-macros')
 
 
 def _validate_commands(commands):

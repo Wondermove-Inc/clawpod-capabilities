@@ -1311,7 +1311,7 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "53f6e7bf1e5f571acaaed8d7d6f1738ea6ed85523c66f7d952da21b5a342457d"
+          "sha256": "b135f51c87e8a76c337828b67ee03c25c6e070ec5efe94dfe1ca73522eed5083"
         },
         {
           "path": "engine/desktop",
@@ -1355,7 +1355,7 @@
         },
         {
           "path": "engine/lib/macro.py",
-          "sha256": "968d939b07da76f9f6b4bfaa3097e1a39b31cf0b06f5de5770a14d7ef23cdc29"
+          "sha256": "2b9e75bda7356c39bc02a3bc5fa2bb9b5b300fd960a79ce46e30685f89f2d0d4"
         },
         {
           "path": "engine/lib/observation.py",
