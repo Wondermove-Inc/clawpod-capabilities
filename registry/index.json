@@ -693,7 +693,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b807b45b942ee462f3fb1e3fb5a0b33f1274703038e1a1859f6c21e08aa70704"
+          "sha256": "faaa69ad11d0e8b6a48478fe0b81143bf6714a10e2a0b12217d0e550be5d98c8"
         },
         {
           "path": "references/attack-frameworks.md",
@@ -713,7 +713,7 @@
         },
         {
           "path": "references/output-schema.md",
-          "sha256": "a8dc7315fcb70d9d661d75103fbc6d7f4c703301ec183f72062b41e5866fb719"
+          "sha256": "d530fc6c2862e21f81f2c9924bd90300177edf6bdf41aae83717c7dc7466034c"
         },
         {
           "path": "references/response-playbooks.md",
@@ -721,7 +721,7 @@
         },
         {
           "path": "references/worked-example.md",
-          "sha256": "ff24646cd5e8c8f81bf40071d13296f1f4739e4eb0089f4c346158e0f7b7df9d"
+          "sha256": "6a82a46b2b062448ba6675dc60e6f21c30a870149ce22ae822f043f5b3e0fcea"
         }
       ]
     },

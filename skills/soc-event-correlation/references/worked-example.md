@@ -54,13 +54,34 @@ Seed entities: host `WKS-2231`, user `j.kim`, process lineage. Initial window
 - **H3 (rejected):** false positive — rejected; multiple independent sources
   corroborate.
 
-## Report (abbreviated)
+## Report (abbreviated — note the plain, conclusion-first style)
 
-- **[high] Suspected intrusion: WKS-2231 → SRV-DB1 lateral movement** — confidence
-  medium-high (multi-source causal chain + TI hit; Initial Access gap).
-- Do now: isolate `WKS-2231`; suspend `j.kim` sessions/tokens; block
-  `cdn-update[.]example` at proxy (all evidence-anchored).
-- Verify first: check the two fan-out hosts (`proxy:81bd/83c1`); hunt Initial
-  Access before T0.
-- Gaps: initial access vector unknown → collect email/web logs for `j.kim` before
-  `T0−12m`.
+**Bottom line.** We have a likely active intrusion (confidence medium-high). An
+attacker on workstation WKS-2231, using the account `j.kim`, ran a suspicious
+script, contacted a known malicious server, and then reached the database server
+SRV-DB1 — a crown-jewel system `j.kim` had never accessed before. **Isolate
+WKS-2231 and suspend the `j.kim` account now.**
+
+**What happened.** At T0 the account `j.kim` was already logged in to WKS-2231.
+At T0 the endpoint tool saw PowerShell launch another program in a way malware
+commonly uses. Three minutes later the machine contacted `cdn-update[.]example`,
+a domain threat intelligence lists as attacker command-and-control. Nine minutes
+after that, `j.kim` authenticated to the database server SRV-DB1 for the first
+time ever — consistent with the attacker moving deeper into the network (lateral
+movement; MITRE T1021). We did not find how the attacker first got in.
+
+**How we know** (each row is backed by a log record):
+
+| Time | What happened | Source |
+|---|---|---|
+| T0−12m | `j.kim` logs in to WKS-2231 | identity |
+| T0 | PowerShell spawns rundll32 (malware-like) | EDR |
+| T0+3m | WKS-2231 → `cdn-update[.]example` (known C2) | proxy + threat intel |
+| T0+11m | `j.kim` first-ever logon to SRV-DB1 | identity + auth |
+
+**What to do.** Do now: isolate WKS-2231; suspend `j.kim`'s sessions and tokens;
+block `cdn-update[.]example` at the proxy. Verify first: check the two other hosts
+that reached the same domain; hunt for how the attacker first got in.
+
+**Open questions.** Initial entry point is unknown — pull email and web logs for
+`j.kim` before T0−12m to find it.
