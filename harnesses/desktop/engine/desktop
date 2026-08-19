@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+"""desktop — AI agent GUI automation via AT-SPI + xdotool.
+
+Exit codes: 0=success, 1=not found, 2=timeout, 3=app fail, 4=AT-SPI fail
+"""
+
+import os
+import sys
+
+os.environ.setdefault('DISPLAY', ':99')
+
+SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SKILL_DIR)
+
+
+def _parse_common_opts(args):
+    """Parse common options: --nth, --app, --json, --role."""
+    opts = {'nth': 1, 'app': None, 'json': False, 'role': None, 'depth': 2,
+            'gone': False, 'timeout': 30, 'continue_on_error': False,
+            'screenshot': None, 'allow_coordinate': False, 'force': False,
+            'approve_sensitive': False, 'record': None, 'policy': None,
+            'clear': False, 'verify_input': False, 'template': None,
+            'threshold': 0.96, 'stride': 1, 'label': None}
+    remaining = []
+    i = 0
+    while i < len(args):
+        if args[i] == '--nth' and i + 1 < len(args):
+            opts['nth'] = int(args[i + 1]); i += 2
+        elif args[i] == '--app' and i + 1 < len(args):
+            opts['app'] = args[i + 1]; i += 2
+        elif args[i] == '--json':
+            opts['json'] = True; i += 1
+        elif args[i] == '--role' and i + 1 < len(args):
+            opts['role'] = args[i + 1]; i += 2
+        elif args[i] == '--depth' and i + 1 < len(args):
+            opts['depth'] = int(args[i + 1]); i += 2
+        elif args[i] == '--gone':
+            opts['gone'] = True; i += 1
+        elif args[i] == '--timeout' and i + 1 < len(args):
+            opts['timeout'] = int(args[i + 1]); i += 2
+        elif args[i] == '--continue-on-error':
+            opts['continue_on_error'] = True; i += 1
+        elif args[i] == '--screenshot' and i + 1 < len(args):
+            opts['screenshot'] = args[i + 1]; i += 2
+        elif args[i] == '--allow-coordinate':
+            opts['allow_coordinate'] = True; i += 1
+        elif args[i] == '--force':
+            opts['force'] = True; i += 1
+        elif args[i] == '--approve-sensitive':
+            opts['approve_sensitive'] = True; i += 1
+        elif args[i] == '--record' and i + 1 < len(args):
+            opts['record'] = args[i + 1]; i += 2
+        elif args[i] == '--policy' and i + 1 < len(args):
+            opts['policy'] = args[i + 1]; i += 2
+        elif args[i] == '--clear':
+            opts['clear'] = True; i += 1
+        elif args[i] == '--verify-input':
+            opts['verify_input'] = True; i += 1
+        elif args[i] == '--template' and i + 1 < len(args):
+            opts['template'] = args[i + 1]; i += 2
+        elif args[i] == '--threshold' and i + 1 < len(args):
+            opts['threshold'] = float(args[i + 1]); i += 2
+        elif args[i] == '--stride' and i + 1 < len(args):
+            opts['stride'] = int(args[i + 1]); i += 2
+        elif args[i] == '--label' and i + 1 < len(args):
+            opts['label'] = args[i + 1]; i += 2
+        else:
+            remaining.append(args[i]); i += 1
+    return opts, remaining
+
+
+def print_usage():
+    print("""desktop — GUI automation tool (AT-SPI + xdotool)
+
+Exit codes: 0=success, 1=not found, 2=timeout, 3=app fail, 4=AT-SPI fail
+
+Explore:
+  desktop apps [--json]                     List open applications
+  desktop tree [--app NAME] [--depth N]     UI tree (default depth 2, 0=unlimited)
+  desktop find "query" [--role R] [--app N] Find elements by name
+  desktop active                            Active window info
+  desktop screenshot [path]                 Capture screen
+  desktop locate-image --screenshot S --template T [--json]
+                                            Deterministic local template localization
+  desktop click-image --screenshot S --template T --allow-coordinate
+                                            Click visual match center (coordinate-gated)
+  desktop snapshot [path] [--json]          Screenshot + tree/observation
+  desktop observe [--json] [--screenshot P] Structured screenshot + AT-SPI observation
+  desktop selftest                          Check AT-SPI/xdotool/DISPLAY/D-Bus
+  desktop verify --text TEXT [--timeout N]  Verify text/active/file predicates
+  desktop verify --human-check              Stop if CAPTCHA/human-verification is visible
+
+Interact:
+  desktop click "element" [--nth N] [--app NAME] [--role R] [--allow-coordinate]
+  desktop dblclick "element" [--app NAME] [--role R] [--allow-coordinate]
+  desktop rclick "element" [--app NAME] [--role R] [--allow-coordinate]
+  desktop type "text" [--into "field"] [--clear] [--verify-input]
+                                            Type with human-paced timing (logged masked)
+  desktop key ctrl+s                        Press key combination
+  desktop select "File > Save"              Navigate menu path
+  desktop focus "window"                    Focus + confirm title
+  desktop scroll up|down [N]
+  desktop read "element" [--app NAME]       Read element text
+  desktop table "element" [--json]          Read table data
+
+Apps:
+  desktop open browser URL                  (auto: --force-renderer-accessibility)
+  desktop open vscode /path                 (auto: accessibility.support=on)
+  desktop open terminal [cmd]
+  desktop open file /path
+  desktop close [--app NAME] [--force]      Close windows; force kills process only with --force
+
+Power:
+  desktop chain "cmd1" "cmd2" [--continue-on-error]
+  desktop wait "element" [--timeout N] [--gone]
+  desktop run-task spec.json [--record DIR] Execute recorded observe/action/verify spec
+
+Macros:
+  desktop macro list|save|run <name> [commands...]""")
+
+
+def main():
+    if len(sys.argv) < 2:
+        print_usage()
+        sys.exit(0)
+
+    cmd = sys.argv[1].lower()
+    args = sys.argv[2:]
+    opts, remaining = _parse_common_opts(args)
+
+    if cmd == 'tree':
+        from lib.atspi_engine import tree
+        tree(app_name=opts['app'], max_depth=opts['depth'], as_json=opts['json'])
+
+    elif cmd == 'find':
+        from lib.atspi_engine import find
+        if not remaining:
+            print("Usage: desktop find <query> [--role ROLE] [--app NAME] [--json]")
+            sys.exit(1)
+        find(remaining[0], role_filter=opts['role'], app_name=opts['app'], as_json=opts['json'])
+
+    elif cmd == 'active':
+        from lib.atspi_engine import active_window
+        active_window()
+
+    elif cmd == 'apps':
+        from lib.atspi_engine import list_apps
+        list_apps(as_json=opts['json'])
+
+    elif cmd == 'screenshot':
+        from lib.xdotool_engine import screenshot
+        screenshot(remaining[0] if remaining else None)
+
+    elif cmd == 'locate-image':
+        from lib.image_target import print_locate
+        screenshot_path = opts['screenshot'] or (remaining[0] if remaining else None)
+        template_path = opts['template'] or (remaining[1] if len(remaining) > 1 else None)
+        if not screenshot_path or not template_path:
+            print("Usage: desktop locate-image --screenshot S --template T [--threshold N] [--stride N] [--json]"); sys.exit(1)
+        print_locate(screenshot_path, template_path, threshold=opts['threshold'], stride=opts['stride'], as_json=opts['json'], label=opts['label'])
+
+    elif cmd == 'click-image':
+        from lib.actions import execute_action
+        screenshot_path = opts['screenshot'] or (remaining[0] if remaining else None)
+        template_path = opts['template'] or (remaining[1] if len(remaining) > 1 else None)
+        if not screenshot_path or not template_path:
+            print("Usage: desktop click-image --screenshot S --template T --allow-coordinate [--threshold N]"); sys.exit(1)
+        execute_action({'kind': 'click_image', 'screenshot': screenshot_path, 'template': template_path, 'threshold': opts['threshold'], 'stride': opts['stride'], 'label': opts['label']}, allow_coordinate=opts['allow_coordinate'])
+
+    elif cmd == 'snapshot':
+        from lib.xdotool_engine import screenshot
+        from lib.atspi_engine import tree
+        path = remaining[0] if remaining else '/tmp/desktop_snapshot.png'
+        if opts['json']:
+            from lib.observation import write_observation
+            json_path = os.path.splitext(path)[0] + '.json'
+            write_observation(json_path, app_name=opts['app'], max_depth=opts['depth'], screenshot_path=path)
+            print(f"Snapshot saved: {path}")
+            print(f"Observation saved: {json_path}")
+        else:
+            screenshot(path)
+            print("--- UI Tree ---")
+            tree(app_name=opts['app'], max_depth=opts['depth'])
+
+    elif cmd == 'observe':
+        from lib.observation import print_observation
+        path = opts['screenshot'] or (remaining[0] if remaining else None)
+        print_observation(app_name=opts['app'], max_depth=opts['depth'], screenshot_path=path)
+
+    elif cmd == 'selftest':
+        from lib.atspi_engine import selftest
+        selftest()
+
+    elif cmd == 'verify':
+        from lib.verify import verify_text, verify_active, verify_file
+        if '--human-check' in args:
+            from lib.observation import build_observation
+            from lib.human_verification import assert_no_human_verification
+            human_depth = 0 if opts['depth'] == 2 else opts['depth']
+            obs = build_observation(app_name=opts['app'], max_depth=human_depth, screenshot_path=opts['screenshot'])
+            assert_no_human_verification(obs, as_json=opts['json'], app_name=opts['app'])
+        elif '--active' in args:
+            title = None
+            if '--active' in remaining:
+                idx = remaining.index('--active')
+                if idx + 1 < len(remaining):
+                    title = remaining[idx + 1]
+            elif remaining:
+                title = remaining[0]
+            verify_active(title, as_json=opts['json'])
+        elif '--file' in args:
+            path = None
+            if '--file' in remaining:
+                idx = remaining.index('--file')
+                if idx + 1 < len(remaining):
+                    path = remaining[idx + 1]
+            elif remaining:
+                path = remaining[0]
+            if not path:
+                print("Usage: desktop verify --file PATH [--json]"); sys.exit(1)
+            verify_file(path, nonempty='--nonempty' in args, as_json=opts['json'])
+        else:
+            text = None
+            if '--text' in remaining:
+                idx = remaining.index('--text')
+                if idx + 1 < len(remaining):
+                    text = remaining[idx + 1]
+            elif remaining:
+                text = remaining[0]
+            if not text:
+                print("Usage: desktop verify --text TEXT [--timeout N] [--gone] [--app NAME] [--json]"); sys.exit(1)
+            verify_text(text, app_name=opts['app'], timeout=opts['timeout'], gone=opts['gone'], as_json=opts['json'])
+
+    elif cmd == 'click':
+        from lib.atspi_engine import click
+        if not remaining:
+            print("Usage: desktop click <element> [--nth N] [--app NAME]"); sys.exit(1)
+        click(remaining[0], nth=opts['nth'], app_name=opts['app'], role_filter=opts['role'], allow_coordinate=opts['allow_coordinate'])
+
+    elif cmd == 'dblclick':
+        from lib.atspi_engine import dblclick
+        if not remaining:
+            print("Usage: desktop dblclick <element> [--app NAME]"); sys.exit(1)
+        dblclick(remaining[0], nth=opts['nth'], app_name=opts['app'], role_filter=opts['role'], allow_coordinate=opts['allow_coordinate'])
+
+    elif cmd == 'rclick':
+        from lib.atspi_engine import rclick
+        if not remaining:
+            print("Usage: desktop rclick <element> [--app NAME]"); sys.exit(1)
+        rclick(remaining[0], nth=opts['nth'], app_name=opts['app'], role_filter=opts['role'], allow_coordinate=opts['allow_coordinate'])
+
+    elif cmd == 'type':
+        from lib.xdotool_engine import type_text
+        if not remaining:
+            print("Usage: desktop type [--into FIELD] <text>"); sys.exit(1)
+        if remaining[0] == '--into' and len(remaining) >= 3:
+            type_text(remaining[2], into_element=remaining[1], allow_coordinate=opts['allow_coordinate'], clear=opts['clear'], verify=opts['verify_input'])
+        else:
+            type_text(remaining[0], allow_coordinate=opts['allow_coordinate'], clear=opts['clear'], verify=opts['verify_input'])
+
+    elif cmd == 'key':
+        from lib.xdotool_engine import press_key
+        if not remaining:
+            print("Usage: desktop key <combo>"); sys.exit(1)
+        press_key(remaining[0])
+
+    elif cmd == 'select':
+        from lib.atspi_engine import select_menu
+        if not remaining:
+            print('Usage: desktop select "File > Save"'); sys.exit(1)
+        select_menu(' '.join(remaining))
+
+    elif cmd == 'focus':
+        from lib.atspi_engine import focus_window
+        if not remaining:
+            print("Usage: desktop focus <window>"); sys.exit(1)
+        focus_window(' '.join(remaining))
+
+    elif cmd == 'scroll':
+        from lib.xdotool_engine import scroll
+        if not remaining:
+            print("Usage: desktop scroll up|down [N]"); sys.exit(1)
+        scroll(remaining[0].lower(), int(remaining[1]) if len(remaining) > 1 else 3)
+
+    elif cmd == 'open':
+        from lib.app_manager import open_app
+        if not remaining:
+            print("Usage: desktop open <app> [args...]"); sys.exit(1)
+        open_app(remaining[0], *remaining[1:])
+
+    elif cmd == 'close':
+        from lib.app_manager import close_app
+        close_app(opts['app'], force=opts['force'])
+        os._exit(0)  # Avoid AT-SPI/D-Bus cleanup hang
+
+    elif cmd == 'chain':
+        from lib.power_commands import chain
+        chain(remaining, lambda parts: main_dispatch(parts),
+              continue_on_error=opts['continue_on_error'])
+
+    elif cmd == 'run-task':
+        from lib.loop import run_task
+        if not remaining:
+            print("Usage: desktop run-task spec.json [--record DIR] [--allow-coordinate] [--approve-sensitive] [--force]"); sys.exit(1)
+        run_task(remaining[0], record_dir=opts['record'], allow_coordinate=opts['allow_coordinate'], approve_sensitive=opts['approve_sensitive'], force=opts['force'], policy_path=opts['policy'])
+
+    elif cmd == 'wait':
+        from lib.power_commands import wait_for
+        if not remaining:
+            print("Usage: desktop wait [--gone] <element> [--timeout N]"); sys.exit(1)
+        wait_for(remaining[0], timeout=opts['timeout'], gone=opts['gone'])
+
+    elif cmd == 'read':
+        from lib.atspi_engine import read_element
+        if not remaining:
+            print("Usage: desktop read <element> [--app NAME]"); sys.exit(1)
+        read_element(remaining[0], app_name=opts['app'])
+
+    elif cmd == 'table':
+        from lib.atspi_engine import read_table
+        if not remaining:
+            print("Usage: desktop table <element> [--json]"); sys.exit(1)
+        read_table(remaining[0], app_name=opts['app'], as_json=opts['json'])
+
+    elif cmd == 'macro':
+        if not remaining:
+            print("Usage: desktop macro list|save|run <name> [commands...]"); sys.exit(1)
+        sub = remaining[0].lower()
+        if sub == 'list':
+            from lib.macro import list_macros
+            list_macros()
+        elif sub == 'save' and len(remaining) >= 3:
+            from lib.macro import save_macro
+            save_macro(remaining[1], remaining[2:])
+        elif sub == 'run' and len(remaining) >= 2:
+            from lib.macro import run_macro
+            run_macro(remaining[1], lambda parts: main_dispatch(parts))
+        else:
+            print("Usage: desktop macro list|save|run"); sys.exit(1)
+
+    else:
+        print(f"Unknown command: {cmd}")
+        print_usage()
+        sys.exit(1)
+
+
+def main_dispatch(parts):
+    """Dispatch a command from chain/macro (re-entry)."""
+    old_argv = sys.argv
+    sys.argv = ['desktop'] + (parts if isinstance(parts, list) else parts.split())
+    try:
+        main()
+    finally:
+        sys.argv = old_argv
+
+
+if __name__ == '__main__':
+    main()
