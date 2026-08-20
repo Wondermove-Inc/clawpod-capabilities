@@ -199,11 +199,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "12d7c9fa898a9c4f6160c856cb1553624bd23500f5ab875297d58d2db0df810a"
+          "sha256": "5fc4ddfb4a92e278b8e447ed56768a0859cf900f91db70f0bec24656dc603f6e"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "75183ca254fbd9e4b233a9fb4a8d89d69cd2e607a0f8f3467b3a6c621ffb65a5"
+          "sha256": "9c3deee44f3d1e663d30cf7b4927b51fb8a1815abf99a74dd58ff3bf3927f8fb"
         },
         {
           "path": "references/operations.md",
@@ -1119,7 +1119,7 @@
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "eaca6aa85dddc0f289dd14c20a279ae49060a890834e05eec1e4d7c86976f239"
+          "sha256": "da20743f6751f6c4b60505ad119edc4f01cc0809703fa524a1c163560d8c747e"
         },
         {
           "path": "fixtures/macos-ready.json",

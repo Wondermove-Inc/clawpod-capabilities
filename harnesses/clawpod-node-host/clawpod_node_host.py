@@ -194,7 +194,10 @@ class Harness:
     def onboarding_commands(self, action: str) -> list[list[str]]:
         if action == "tailscale.install-apply":
             return [["brew", "install", "--cask", "tailscale"]] if self.observed_os == "macos" else [["winget", "install", "--id", "Tailscale.Tailscale", "--exact", "--silent"]]
-        if action == "tailscale.login-apply": return [["tailscale", "login"]]
+        # Use `tailscale login` (never `tailscale up`) and force `--accept-dns=false`
+        # so joining the node authenticates without letting MagicDNS overwrite the
+        # node's DNS resolver, which can break its networking.
+        if action == "tailscale.login-apply": return [["tailscale", "login", "--accept-dns=false"]]
         if action == "ssh-server.apply":
             return [["systemsetup", "-setremotelogin", "on"]] if self.observed_os == "macos" else [["Add-WindowsCapability", "OpenSSH.Server~~~~0.0.1.0"], ["Set-Service", "sshd", "Automatic"], ["Start-Service", "sshd"], ["Set-FirewallScope", "100.64.0.0/10", "fd7a:115c:a1e0::/48"]]
         return []
