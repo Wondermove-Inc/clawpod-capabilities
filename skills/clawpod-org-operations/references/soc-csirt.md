@@ -1,5 +1,7 @@
 # SOC/CSIRT extension pack
 
+This pack **coordinates and reports** security work (handoffs, escalations, incident updates, closure). For the underlying analysis — correlating alerts into an incident, the attack story, ATT&CK/kill-chain mapping, and the response recommendation — use `soc-event-correlation`, then carry its result into these templates.
+
 Separate confirmed facts, analyst assessment, and unverified hypotheses. Apply evidence-access and disclosure rules from the organization.
 
 1. **Delegation/task:** case/classification, severity, affected assets/users, evidence source and handling, access restrictions.

@@ -102,10 +102,12 @@
       "Coordinate source-code leases across Codex and Claude processes",
       "Install a capability from the registry",
       "Use Workboard as the shared board for independent peer agents",
-      "Send this email through Resend"
+      "Send this email through Resend",
+      "Correlate raw security alerts into one incident and recommend response"
     ],
     "adjacent": [
-      "codex-claude-project-development"
+      "codex-claude-project-development",
+      "soc-event-correlation"
     ]
   },
   "clawpod-video-studio": {
@@ -337,10 +339,12 @@
     ],
     "negative": [
       "Run a single SIEM search query",
-      "Write or tune a detection rule"
+      "Write or tune a detection rule",
+      "Draft the incident status report and stakeholder escalation"
     ],
     "adjacent": [
-      "verified-research"
+      "verified-research",
+      "clawpod-org-operations"
     ]
   }
 }

@@ -261,7 +261,7 @@
     {
       "id": "clawpod-org-operations",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use project-development for coding-session leases and the capability registry for package lifecycle.",
       "path": "skills/clawpod-org-operations",
       "compatibility": {
@@ -279,7 +279,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7a8ee86e67c3910622ef111f66c62685843d084e497e69345d0b7fac50173039"
+          "sha256": "db01dcdbb242354b6d5ef539f9b084c680558998a945e8044425e0c1ca788e28"
         },
         {
           "path": "references/common-templates.md",
@@ -294,8 +294,12 @@
           "sha256": "9d8969b6e50f0e48c0ba93e0402c6f7f90517dd6c496fbdf4dbe9ff4b2b95824"
         },
         {
+          "path": "references/responding.md",
+          "sha256": "600c3b95c8915fc0517dd2c92bcb311c453e78bda51b4fa9fa36f96a0a39baa5"
+        },
+        {
           "path": "references/soc-csirt.md",
-          "sha256": "b703f6baf192d73d0f8c407a07d1c61d696c0bf164d496804020c79029ef8183"
+          "sha256": "c85a98df9542e5d28a14524f41608e213869a1def1abbafe7959690284b8e87d"
         },
         {
           "path": "references/sre-incident.md",
