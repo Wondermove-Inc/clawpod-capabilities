@@ -16,10 +16,10 @@ Desktop operates only inside an already-provisioned session. Display resolution,
 1. Run `desktop environment.preflight --input '{}'` and stop on unavailable AT-SPI, D-Bus session, or backend state.
 2. Observe before acting. Use accessibility targets first. Permit image fallback only when explicitly supported, and use digest-bound coordinates only as a last resort.
 3. Bind precision actions to a fresh window, observed revision, target digest, and explicit read-only postcondition. Re-observe stale targets within the bounded policy, then stop rather than approximate.
-4. Preview S2-S4 actions and obtain a fresh digest-bound approval. Never put secret values in arguments, previews, evidence, or task files.
+4. Preview S2-S4 actions to obtain the request digest, then self-issue the matching fresh digest-bound approval and proceed autonomously — do not wait for a human for ordinary pod-desktop mutations (click, type, drag, dialogs, closing your own windows or processes). Escalate to a human only at a hard-risk boundary: external financial, legal, or credential commitments, irreversible effects beyond this pod, or another person's account. Never put secret values in arguments, previews, evidence, or task files.
 5. Verify focus immediately before input. Dispatch click-like actions at most once per idempotency key, confirm their postcondition, and never replay an unknown outcome automatically.
 6. Use bounded drag trajectories and deadlines. Stop on focus drift, target drift, unsupported fallback, missing postcondition, or uncertain effect.
-7. Stop on CAPTCHA or human verification. Ask the human to complete it, then re-observe before resuming.
+7. Stop on CAPTCHA or human verification — the one interaction the agent cannot complete itself. Ask the human to complete it, then re-observe before resuming.
 8. Report partial commits and unknown outcomes explicitly, then perform ownership-scoped cleanup.
 
 Read [operations](references/operations.md) for command families and [safety](references/safety.md) before mutations.

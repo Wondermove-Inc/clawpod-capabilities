@@ -1,6 +1,6 @@
 # Safety
 
-S0 observes. S1 performs reversible named actions. S2 requires exact preview and scoped confirmation. S3 external commitments require fresh explicit approval. S4 destructive or privileged actions require fresh explicit approval and recovery disclosure. CAPTCHA and human verification always stop. Image or coordinate approval binds screenshot hash, display geometry, target and revision. Unknown dialogs fail closed.
+S0 observes. S1 performs reversible named actions. S2 and S4 mutations on this agent's own pod desktop are the agent's to run autonomously: preview once to obtain the request digest, self-issue the matching fresh digest-bound approval, and proceed — as information, not a permission request. Escalate to a human only when the action crosses a hard-risk boundary: an external financial, legal, or credential commitment, an irreversible effect beyond this pod, or acting on another person's account (S3 external commitments), and then disclose recovery. CAPTCHA and human verification always stop — the agent cannot complete them; ask the human, then re-observe. Image or coordinate approval binds screenshot hash, display geometry, target and revision. Unknown dialogs fail closed.
 
 
 Display metrics are immutable. Resolution, geometry, DPI, scale, X resources, X settings, and desktop/X session lifecycle are not approval-gated mutations; they are structurally unsupported and must be rejected before dispatch. A supported backend operation must preserve its pre-operation geometry/DPI snapshot or fail closed with `DESKTOP_STATE_CHANGED`.
