@@ -230,7 +230,7 @@ class Harness:
         if not self.fixture_path or os.environ.get("CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
             out = self.base(); out["effects"] = [{"type": self.command, "observed": True}]
             if self.command == "tailscale.login-apply":
-                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Complete the Tailscale browser login, consent, and any MFA, then rerun tailscale status.", "resumeCommand": "clawpod-node-host --json tailscale status"}
+                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Open the Tailscale login link and complete the browser login, consent, and any MFA — sign in with the same account/tailnet as the Gateway — then rerun tailscale status.", "resumeCommand": "clawpod-node-host --json tailscale status"}
             state["phase"] = "waiting_tailscale" if self.command == "tailscale.login-apply" else "preflight"; state["effects"] = out["effects"]; atomic_write(self.state_path, state)
             return out, 0
         return self.fail("PARTIAL_EFFECT", "live onboarding execution is restricted to the reviewed platform adapter", "rollback_required", "partial")
