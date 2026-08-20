@@ -199,11 +199,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "aaf23b95c1952cd1c8d069907188af5b306428f944b352fc2ceda3506c43cc79"
+          "sha256": "b96be9d06c304056197729e879499128fe37fe4a91c444639be37f67ef9c9007"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "67beeefc8ad05d2ce4565622ddc20c36b61d357df49c9cfb13052e1b15d9806b"
+          "sha256": "2ab6621c3118082e7212a1a142e563cab70cd3f92a85bbff3c0820fef7c53277"
         },
         {
           "path": "references/operations.md",
