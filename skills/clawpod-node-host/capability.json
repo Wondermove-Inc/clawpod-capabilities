@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "descriptionSource": "skill-frontmatter",
   "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
   "compatibility": {
@@ -17,6 +17,6 @@
   },
   "linkedHarness": {
     "id": "clawpod-node-host",
-    "version": "0.1.0"
+    "version": "0.1.1"
   }
 }

@@ -194,7 +194,10 @@ class Harness:
     def onboarding_commands(self, action: str) -> list[list[str]]:
         if action == "tailscale.install-apply":
             return [["brew", "install", "--cask", "tailscale"]] if self.observed_os == "macos" else [["winget", "install", "--id", "Tailscale.Tailscale", "--exact", "--silent"]]
-        if action == "tailscale.login-apply": return [["tailscale", "login"]]
+        # Use `tailscale login` (never `tailscale up`) and force `--accept-dns=false`
+        # so joining the node authenticates without letting MagicDNS overwrite the
+        # node's DNS resolver, which can break its networking.
+        if action == "tailscale.login-apply": return [["tailscale", "login", "--accept-dns=false"]]
         if action == "ssh-server.apply":
             return [["systemsetup", "-setremotelogin", "on"]] if self.observed_os == "macos" else [["Add-WindowsCapability", "OpenSSH.Server~~~~0.0.1.0"], ["Set-Service", "sshd", "Automatic"], ["Start-Service", "sshd"], ["Set-FirewallScope", "100.64.0.0/10", "fd7a:115c:a1e0::/48"]]
         return []
@@ -230,7 +233,7 @@ class Harness:
         if not self.fixture_path or os.environ.get("CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION") != "1":
             out = self.base(); out["effects"] = [{"type": self.command, "observed": True}]
             if self.command == "tailscale.login-apply":
-                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Complete the Tailscale browser login, consent, and any MFA, then rerun tailscale status.", "resumeCommand": "clawpod-node-host --json tailscale status"}
+                out["status"] = "waiting_user"; out["nextAction"] = {"kind": "user", "message": "Open the Tailscale login link and complete the browser login, consent, and any MFA — sign in with the same account/tailnet as the Gateway — then rerun tailscale status.", "resumeCommand": "clawpod-node-host --json tailscale status"}
             state["phase"] = "waiting_tailscale" if self.command == "tailscale.login-apply" else "preflight"; state["effects"] = out["effects"]; atomic_write(self.state_path, state)
             return out, 0
         return self.fail("PARTIAL_EFFECT", "live onboarding execution is restricted to the reviewed platform adapter", "rollback_required", "partial")
