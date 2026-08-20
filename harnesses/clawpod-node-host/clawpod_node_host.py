@@ -384,6 +384,7 @@ TS=$(command -v tailscale 2>/dev/null || true); [ -n "$TS" ] || for c in /Applic
 sudo systemsetup -getremotelogin | grep -qi 'On'; npm view openclaw@{REQUIRED_VERSION} version | grep -qx '{REQUIRED_VERSION}'
 npm install --global openclaw@{REQUIRED_VERSION}
 test "$(openclaw --version)" = '{REQUIRED_VERSION}'
+export OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1
 openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
 openclaw node restart
 openclaw node status
@@ -395,6 +396,7 @@ if (-not (Get-Service sshd -ErrorAction SilentlyContinue)) {{ throw 'sshd unavai
 if ((npm view openclaw@{REQUIRED_VERSION} version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'version resolution mismatch' }}
 npm install --global openclaw@{REQUIRED_VERSION}
 if ((openclaw --version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'installed version mismatch' }}
+$env:OPENCLAW_ALLOW_INSECURE_PRIVATE_WS = '1'
 openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
 openclaw node restart
 openclaw node status
