@@ -429,7 +429,7 @@
     {
       "id": "desktop",
       "type": "skill",
-      "version": "3.0.5",
+      "version": "3.0.6",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "skills/desktop",
       "compatibility": {
@@ -445,7 +445,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "514d16756f00940bdb66992f6c398541fa4f3086f29a3c0f2ac3d12f066430ba"
+          "sha256": "af31885a4d30167cccffa24d1d3b724e2afba0455852ee87cf532fdcdafc1466"
         },
         {
           "path": "references/operations.md",
@@ -453,7 +453,7 @@
         },
         {
           "path": "references/safety.md",
-          "sha256": "30fa0b0649bb9d23297cdbd779fb2479d42eae236a7c28f5294da8193b9e4543"
+          "sha256": "20b8db794bd3e3b2ab7bc7a5a67f953c6170e168e188d8284c37f5c6688506cf"
         }
       ],
       "linkedHarness": {
