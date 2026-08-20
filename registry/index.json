@@ -182,7 +182,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -199,11 +199,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5fc4ddfb4a92e278b8e447ed56768a0859cf900f91db70f0bec24656dc603f6e"
+          "sha256": "5fe098ed236990d0f11e0c28c77a48e3065238212dfdff929c3ead52a7e5e581"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "9c3deee44f3d1e663d30cf7b4927b51fb8a1815abf99a74dd58ff3bf3927f8fb"
+          "sha256": "b9a6a507fc7d312da4dcf8bc2dd73e9a8b367b9f93e38261e5ce2ccf1713a9a7"
         },
         {
           "path": "references/operations.md",
@@ -212,7 +212,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -1094,7 +1094,7 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
@@ -1119,7 +1119,7 @@
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "da20743f6751f6c4b60505ad119edc4f01cc0809703fa524a1c163560d8c747e"
+          "sha256": "c6604e12c39625a92e20af2e2d4b597f56d7cf708e651440f2a93071be01177d"
         },
         {
           "path": "fixtures/macos-ready.json",
@@ -1131,7 +1131,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f6e8a9e6d1f789f33ed22532f7df020abd280617a15490df0997ca6a5d2d5cf8"
+          "sha256": "0d9e0a83fd7f13061ad30f25d67a36154b7012efea8c6be438a501d060895cfe"
         },
         {
           "path": "schemas/error-exit-codes.json",

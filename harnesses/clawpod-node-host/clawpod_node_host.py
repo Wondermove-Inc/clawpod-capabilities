@@ -347,9 +347,11 @@ class Harness:
 set -eu
 umask 077
 if [ "${OPENCLAW_BOOTSTRAP_REVOKE:-0}" = 1 ]; then sudo systemsetup -setremotelogin off; exit 0; fi
-command -v tailscale >/dev/null || { echo 'ACTION: install Tailscale for macOS, then rerun'; exit 20; }
-tailscale status >/dev/null 2>&1 || { echo 'ACTION: open Tailscale and complete login, then rerun'; exit 21; }
-TS_IP=$(tailscale ip -4 | head -n 1); test -n "$TS_IP"
+TS=$(command -v tailscale 2>/dev/null || true)
+[ -n "$TS" ] || for c in /Applications/Tailscale.app/Contents/MacOS/Tailscale "$HOME/Applications/Tailscale.app/Contents/MacOS/Tailscale"; do [ -x "$c" ] && TS="$c" && break; done
+[ -n "$TS" ] || { echo 'ACTION: install Tailscale for macOS, then rerun'; exit 20; }
+"$TS" status >/dev/null 2>&1 || { echo 'ACTION: open Tailscale and complete login, then rerun'; exit 21; }
+TS_IP=$("$TS" ip -4 | head -n 1); test -n "$TS_IP"
 sudo systemsetup -getremotelogin | grep -qi 'On' || { echo 'ACTION: enable System Settings > General > Sharing > Remote Login, then rerun'; exit 22; }
 sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
 printf 'TAILSCALE_IP=%s\nREADY=remote-login\n' "$TS_IP"
@@ -378,10 +380,11 @@ Write-Output "TAILSCALE_IP=$ip"; Write-Output 'READY=openssh'
 set -eu
 umask 077
 if [ "${{OPENCLAW_NODE_ROLLBACK:-0}}" = 1 ]; then openclaw node stop || true; openclaw node uninstall || true; npm uninstall --global openclaw; exit 0; fi
-command -v tailscale >/dev/null; tailscale status >/dev/null; tailscale ip -4 | grep -Eq '^100\\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.'
+TS=$(command -v tailscale 2>/dev/null || true); [ -n "$TS" ] || for c in /Applications/Tailscale.app/Contents/MacOS/Tailscale "$HOME/Applications/Tailscale.app/Contents/MacOS/Tailscale"; do [ -x "$c" ] && TS="$c" && break; done; [ -n "$TS" ]; "$TS" status >/dev/null; "$TS" ip -4 | grep -Eq '^100\\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.'
 sudo systemsetup -getremotelogin | grep -qi 'On'; npm view openclaw@{REQUIRED_VERSION} version | grep -qx '{REQUIRED_VERSION}'
 npm install --global openclaw@{REQUIRED_VERSION}
 test "$(openclaw --version)" = '{REQUIRED_VERSION}'
+export OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1
 openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
 openclaw node restart
 openclaw node status
@@ -393,6 +396,7 @@ if (-not (Get-Service sshd -ErrorAction SilentlyContinue)) {{ throw 'sshd unavai
 if ((npm view openclaw@{REQUIRED_VERSION} version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'version resolution mismatch' }}
 npm install --global openclaw@{REQUIRED_VERSION}
 if ((openclaw --version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'installed version mismatch' }}
+$env:OPENCLAW_ALLOW_INSECURE_PRIVATE_WS = '1'
 openclaw node install --host '{endpoint}' --port {port}{' --tls' if self.a.tls else ''}
 openclaw node restart
 openclaw node status
