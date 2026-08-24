@@ -486,7 +486,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "b9075f78937288781a8147c91a978606bbd849ef5ac51e2577b97adb7647d0ef"
+          "sha256": "e86fae78b66886ee026daa199db449b84c50faac2e683b4932f18a62250308c6"
         },
         {
           "path": "assets/example-architecture-dark.html",
@@ -1089,6 +1089,10 @@
           "sha256": "24ce83341aee976680cb69d43b2afab40efcfa97edcd394e5b17183eb58fc94a"
         },
         {
+          "path": "references/checklist.md",
+          "sha256": "2f2fc9e6a59d6267f98f430da9f3c4e0f135ab0586a463e39de54c0d231b5c6f"
+        },
+        {
           "path": "references/doctor.md",
           "sha256": "bd2331eb5eaf751f254f94332abf8c78b32f22849effb180883fbc7c1e9ab471"
         },
@@ -1131,6 +1135,10 @@
         {
           "path": "references/profiles.md",
           "sha256": "51f6d24e40eca1a13dc562b4b33aa76b56172c5c30fc94897e5bb369a34f9886"
+        },
+        {
+          "path": "references/rendering-rules.md",
+          "sha256": "d37fc4b9720b51b1f1308c93d3a63d7cff913410f05258e6c6a1144cbe11287f"
         },
         {
           "path": "references/semantic-patterns.md",
