@@ -26,7 +26,8 @@
     ],
     "adjacent": [
       "clawpod-image-studio",
-      "clawpod-video-studio"
+      "clawpod-video-studio",
+      "diagram-design"
     ]
   },
   "clawpod-capability-registry": {
@@ -70,7 +71,8 @@
     "adjacent": [
       "claude-design",
       "clawpod-video-studio",
-      "desktop"
+      "desktop",
+      "diagram-design"
     ]
   },
   "clawpod-ocr": {
@@ -345,6 +347,21 @@
     "adjacent": [
       "verified-research",
       "clawpod-org-operations"
+    ]
+  },
+  "diagram-design": {
+    "positive": [
+      "Draw an architecture diagram of this system",
+      "Turn this Mermaid flowchart into a polished SVG",
+      "Create a sequence diagram for the login flow"
+    ],
+    "negative": [
+      "Generate a standalone product photo",
+      "Refine this presentation deck in Claude Design"
+    ],
+    "adjacent": [
+      "claude-design",
+      "clawpod-image-studio"
     ]
   }
 }
