@@ -85,7 +85,7 @@ def run_claude(args,timeout=5):
  # setup-token is a contract, never silently remapped to another auth variable.
  try:
   p=subprocess.run([exe,*args],capture_output=True,text=True,timeout=timeout,env=env)
-  text=lambda s: re.sub(r"(?i)(token|secret|password|authorization|cookie)\s*[:=]\s*\S+",r"\1=[REDACTED]",s)[:12000]
+  text=lambda s: re.sub(r"(?i)(token|secret|password|authorization|cookie)\s*[:=]\s*\S+","[REDACTED]",s)[:12000]
   return {"available":True,"exit_code":p.returncode,"stdout":text(p.stdout.strip()),"stderr":text(p.stderr.strip())}
  except subprocess.TimeoutExpired:return {"available":True,"exit_code":None,"stdout":"","stderr":"bounded command timed out","timed_out":True}
  except OSError as e:return {"available":True,"exit_code":None,"stdout":"","stderr":str(e)[:500]}
@@ -128,7 +128,7 @@ def page_set(value,expected):
 
 def safe_text(value):
  if value is None: return None
- return re.sub(r"(?i)(token|secret|password|authorization|cookie)\s*[:=]\s*\S+",r"\1=[REDACTED]",value)[:2000]
+ return re.sub(r"(?i)(token|secret|password|authorization|cookie)\s*[:=]\s*\S+","[REDACTED]",value)[:2000]
 
 def route_identity(project_id,project_url,file_url,ui_filename,thumbnail_id):
  return {"project_id":project_id,"project_url":project_url,"file_url":file_url,"ui_filename":ui_filename,"thumbnail_id":thumbnail_id}

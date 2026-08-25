@@ -1780,7 +1780,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "24dcd4fee2d8476ff27077e3fd5d1fb966b018ad6921b13d7bca40775174b4d1"
+          "sha256": "7fcfd175c0bfccca1ed7b6418fea5bb469b6e769e7415ac534cd4425f1b6542e"
         },
         {
           "path": "command_contracts.json",
