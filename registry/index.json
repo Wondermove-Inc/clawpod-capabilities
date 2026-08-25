@@ -46,8 +46,8 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.3.7",
-      "description": "Use when creating, editing, QAing, or exporting in Claude Design. Can manage projects and native exports; use Image Studio for standalone images.",
+      "version": "0.3.8",
+      "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -63,7 +63,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6fc6be88fa04fac23da18f8ee91fcc30418340a8d553a32460aa1dbd681286b1"
+          "sha256": "62e51ed0cec796593c7b8db07508cf31e2c21736c0a0a908c8fa67df4ca2bce0"
         },
         {
           "path": "references/operations.md",
@@ -72,7 +72,7 @@
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.3.7"
+        "version": "0.3.8"
       }
     },
     {
@@ -1755,8 +1755,8 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.3.7",
-      "description": "Use when creating, editing, QAing, or exporting in Claude Design. Can manage projects and native exports; use Image Studio for standalone images.",
+      "version": "0.3.8",
+      "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1780,7 +1780,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "691380b8f4d413e3ce3d228209d755463a782e2f9eea8695f1ca83968cd81ab7"
+          "sha256": "63228122c07267ed5af35f39605e3f7a9cdc27cae932f1c0d17923bf4897e3d2"
         },
         {
           "path": "command_contracts.json",
@@ -1788,7 +1788,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "bc51560adcecadef41ec6494bd12be43fa2a5630700c89d0605ead8dbc08e651"
+          "sha256": "e09025cd2b03171aab3409a72f267d82bf7932f54a935290bfb4e139a9e5d99a"
         }
       ]
     },

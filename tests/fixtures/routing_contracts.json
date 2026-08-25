@@ -21,7 +21,10 @@
       "Export and verify the design system"
     ],
     "negative": [
-      "Generate a standalone product photo",
+      "Edit ordinary Claude Design web controls with Desktop instead of Browser",
+      "Use Desktop instead of the Claude Design Harness for export planning and file verification",
+      "Use Desktop instead of nodes to inspect an already paired remote screen",
+      "Generate a standalone product photo instead of using Image Studio",
       "Render a localized video"
     ],
     "adjacent": [

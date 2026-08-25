@@ -5,7 +5,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "claude-design" / "SKILL.md"
-DESCRIPTION = "Use when creating, editing, QAing, or exporting in Claude Design. Can manage projects and native exports; use Image Studio for standalone images."
+DESCRIPTION = "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs."
+DESKTOP_COMPOSITION_POSITIVE = (
+    "Use the native GTK Save File dialog to save this Claude Design PDF to an exact path",
+    "Complete Claude Design export after Chrome print preview opens an OS save dialog",
+    "Open the exported deck in a native viewer only because Browser and file checks cannot complete visual QA",
+)
+DESKTOP_COMPOSITION_NEGATIVE = {
+    "browser": "Edit ordinary Claude Design web controls through the Browser DOM",
+    "claude-design-harness": "Plan and verify the export with the paired Claude Design Harness",
+    "nodes": "Inspect an already paired remote Claude Design screen with nodes",
+    "clawpod-image-studio": "Generate a standalone product photo with Image Studio",
+}
 
 
 def test_claude_design_routing_examples_and_adjacent_collisions() -> None:
@@ -18,12 +29,35 @@ def test_claude_design_routing_examples_and_adjacent_collisions() -> None:
     assert "localized video" in " ".join(contract["negative"]).lower()
 
 
+def test_desktop_composition_is_selective() -> None:
+    positives = " ".join(DESKTOP_COMPOSITION_POSITIVE).lower()
+    negatives = DESKTOP_COMPOSITION_NEGATIVE
+    assert len(DESKTOP_COMPOSITION_POSITIVE) >= 3
+    assert "gtk save file" in positives
+    assert "os save dialog" in positives
+    assert "native viewer" in positives
+    assert set(negatives) == {"browser", "claude-design-harness", "nodes", "clawpod-image-studio"}
+    assert "browser dom" in negatives["browser"].lower()
+    assert "paired claude design harness" in negatives["claude-design-harness"].lower()
+    assert "paired remote" in negatives["nodes"].lower()
+    assert "standalone product photo" in negatives["clawpod-image-studio"].lower()
+
+
 def test_claude_design_description_is_exact_on_linked_surfaces() -> None:
     skill_text = SKILL.read_text()
     assert f'description: "{DESCRIPTION}"' in skill_text
     assert json.loads((ROOT / "skills" / "claude-design" / "capability.json").read_text())["description"] == DESCRIPTION
     assert json.loads((ROOT / "harnesses" / "claude-design" / "capability.json").read_text())["description"] == DESCRIPTION
     assert json.loads((ROOT / "harnesses" / "claude-design" / "harness.json").read_text())["description"] == DESCRIPTION
+
+
+def test_desktop_handoff_returns_to_typed_verification() -> None:
+    text = SKILL.read_text()
+    assert "never use Desktop instead of Browser for ordinary Claude Design DOM work" in text
+    assert "native GTK Save File dialog" in text
+    assert "then return to Harness/file verification" in text
+    assert "Do not use Desktop to click ordinary Claude Design web controls" in text
+    assert "compose with Desktop only when visual QA requires rendering in a native viewer" in text
 
 
 def test_stale_version_and_export_recovery_procedure_is_bounded() -> None:

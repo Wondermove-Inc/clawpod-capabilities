@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "claude-design",
   "title": "Claude Design",
-  "description": "Use when creating, editing, QAing, or exporting in Claude Design. Can manage projects and native exports; use Image Studio for standalone images.",
-  "version": "0.3.7",
+  "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+  "version": "0.3.8",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
