@@ -4,7 +4,7 @@
   "name": "claude-design",
   "title": "Claude Design",
   "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -2291,6 +2291,647 @@
         }
       ]
     },
+    "projects.reenter.plan": {
+      "description": "projects reenter plan",
+      "baseArgv": [
+        "projects.reenter.plan"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "projectUrl": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "thumbnailId": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "attempt": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectUrl",
+          "type": "option",
+          "flag": "--project-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "thumbnailId",
+          "type": "option",
+          "flag": "--thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt",
+          "type": "option",
+          "flag": "--attempt",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.reenter.verify": {
+      "description": "projects reenter verify",
+      "baseArgv": [
+        "projects.reenter.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "projectUrl": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "thumbnailId": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "attempt": {
+            "type": "string"
+          },
+          "observedProjectId": {
+            "type": "string"
+          },
+          "observedThumbnailId": {
+            "type": "string"
+          },
+          "activeUrl": {
+            "type": "string"
+          },
+          "observedUiFilename": {
+            "type": "string"
+          },
+          "observedSlides": {
+            "type": "string"
+          },
+          "canvasServed": {
+            "type": "string"
+          },
+          "browserHealthy": {
+            "type": "string"
+          },
+          "freshListRead": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectUrl",
+          "type": "option",
+          "flag": "--project-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "thumbnailId",
+          "type": "option",
+          "flag": "--thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt",
+          "type": "option",
+          "flag": "--attempt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedProjectId",
+          "type": "option",
+          "flag": "--observed-project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedThumbnailId",
+          "type": "option",
+          "flag": "--observed-thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "activeUrl",
+          "type": "option",
+          "flag": "--active-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedUiFilename",
+          "type": "option",
+          "flag": "--observed-ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedSlides",
+          "type": "option",
+          "flag": "--observed-slides",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "canvasServed",
+          "type": "option",
+          "flag": "--canvas-served",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "browserHealthy",
+          "type": "option",
+          "flag": "--browser-healthy",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "freshListRead",
+          "type": "option",
+          "flag": "--fresh-list-read",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.file_route.diagnose": {
+      "description": "projects file_route diagnose",
+      "baseArgv": [
+        "projects.file_route.diagnose"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "projectUrl": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "thumbnailId": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "attempt": {
+            "type": "string"
+          },
+          "observedProjectId": {
+            "type": "string"
+          },
+          "observedThumbnailId": {
+            "type": "string"
+          },
+          "activeUrl": {
+            "type": "string"
+          },
+          "observedUiFilename": {
+            "type": "string"
+          },
+          "observedSlides": {
+            "type": "string"
+          },
+          "canvasServed": {
+            "type": "string"
+          },
+          "browserHealthy": {
+            "type": "string"
+          },
+          "freshListRead": {
+            "type": "string"
+          },
+          "attempt1FreshList": {
+            "type": "string"
+          },
+          "attempt2FreshList": {
+            "type": "string"
+          },
+          "attempt1BrowserHealthy": {
+            "type": "string"
+          },
+          "attempt2BrowserHealthy": {
+            "type": "string"
+          },
+          "attempt1ThumbnailId": {
+            "type": "string"
+          },
+          "attempt2ThumbnailId": {
+            "type": "string"
+          },
+          "attempt1Error": {
+            "type": "string"
+          },
+          "attempt2Error": {
+            "type": "string"
+          },
+          "exportInitiated": {
+            "type": "string"
+          },
+          "artifactValid": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectUrl",
+          "type": "option",
+          "flag": "--project-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "thumbnailId",
+          "type": "option",
+          "flag": "--thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt",
+          "type": "option",
+          "flag": "--attempt",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedProjectId",
+          "type": "option",
+          "flag": "--observed-project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedThumbnailId",
+          "type": "option",
+          "flag": "--observed-thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "activeUrl",
+          "type": "option",
+          "flag": "--active-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedUiFilename",
+          "type": "option",
+          "flag": "--observed-ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedSlides",
+          "type": "option",
+          "flag": "--observed-slides",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "canvasServed",
+          "type": "option",
+          "flag": "--canvas-served",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "browserHealthy",
+          "type": "option",
+          "flag": "--browser-healthy",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "freshListRead",
+          "type": "option",
+          "flag": "--fresh-list-read",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt1FreshList",
+          "type": "option",
+          "flag": "--attempt1-fresh-list",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt2FreshList",
+          "type": "option",
+          "flag": "--attempt2-fresh-list",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt1BrowserHealthy",
+          "type": "option",
+          "flag": "--attempt1-browser-healthy",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt2BrowserHealthy",
+          "type": "option",
+          "flag": "--attempt2-browser-healthy",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt1ThumbnailId",
+          "type": "option",
+          "flag": "--attempt1-thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt2ThumbnailId",
+          "type": "option",
+          "flag": "--attempt2-thumbnail-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt1Error",
+          "type": "option",
+          "flag": "--attempt1-error",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "attempt2Error",
+          "type": "option",
+          "flag": "--attempt2-error",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "exportInitiated",
+          "type": "option",
+          "flag": "--export-initiated",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "artifactValid",
+          "type": "option",
+          "flag": "--artifact-valid",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
     "projects.export": {
       "description": "projects export",
       "baseArgv": [
@@ -2632,6 +3273,18 @@
           },
           "qaPages": {
             "type": "string"
+          },
+          "reviewPass1": {
+            "type": "string"
+          },
+          "reviewPass2": {
+            "type": "string"
+          },
+          "renderPages": {
+            "type": "string"
+          },
+          "reflowPages": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2716,6 +3369,34 @@
           "arg": "qaPages",
           "type": "option",
           "flag": "--qa-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "reviewPass1",
+          "type": "option",
+          "flag": "--review-pass-1",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "reviewPass2",
+          "type": "option",
+          "flag": "--review-pass-2",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "renderPages",
+          "type": "option",
+          "flag": "--render-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "reflowPages",
+          "type": "option",
+          "flag": "--reflow-pages",
           "valueType": "string",
           "optional": true
         }
