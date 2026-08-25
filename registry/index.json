@@ -46,7 +46,7 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.3.8",
+      "version": "0.3.9",
       "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
@@ -63,16 +63,16 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "62e51ed0cec796593c7b8db07508cf31e2c21736c0a0a908c8fa67df4ca2bce0"
+          "sha256": "05b365240ac43a4db0b857d3d7bf857471b8ad98156a9579782bd785db342f5f"
         },
         {
           "path": "references/operations.md",
-          "sha256": "f620d0a1ac203bd80c41d0a9ab00e51b3df795e1b22e7db4a87a9c2e92fbdd57"
+          "sha256": "77bd5c80c326cac6b3b7c4d3463842c10d44c58c3eb59276c1c719204768742e"
         }
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.3.8"
+        "version": "0.3.9"
       }
     },
     {
@@ -1755,7 +1755,7 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.3.8",
+      "version": "0.3.9",
       "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
@@ -1772,23 +1772,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "25b0f42c756a816e09f90dd0dd09529a0dec79fbca89b4b77a3fd728bace1b69"
+          "sha256": "9b41b28d5662e1d168f962f55e1e81a090d71856ea87045eca9c7c9bd3695be3"
         },
         {
           "path": "TEST.md",
-          "sha256": "fd1e10faabe74c3c3f8f757caa5bd235a1433c272f564b6d4255b9b93b970979"
+          "sha256": "346db93d46e2a60c57dec6e17125f946b2e082977fd7f72555979aefd73470fb"
         },
         {
           "path": "claude_design.py",
-          "sha256": "63228122c07267ed5af35f39605e3f7a9cdc27cae932f1c0d17923bf4897e3d2"
+          "sha256": "24dcd4fee2d8476ff27077e3fd5d1fb966b018ad6921b13d7bca40775174b4d1"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "a22e1950fc5e25f6df7e1277e47ac658542bade524cec5bbb25a40485cb80720"
+          "sha256": "f0486fdafa06f584c0c840bbeda6ab93b126cd719a5cd6f53aa0a305f6d90720"
         },
         {
           "path": "harness.json",
-          "sha256": "e09025cd2b03171aab3409a72f267d82bf7932f54a935290bfb4e139a9e5d99a"
+          "sha256": "52fce5670c785f4de0348d1f44cbfa0d4b9f89e261d890a29adf0d72ced16f99"
         }
       ]
     },

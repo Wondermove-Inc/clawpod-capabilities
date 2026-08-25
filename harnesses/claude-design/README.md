@@ -19,3 +19,7 @@ Externally visible and organization effects use `*.preview` then `*.apply` with 
 For prompt entry, use `browser.input.plan` with a fresh element ref and its observed tag/role/contenteditable state. Standard fields use `fill`; contenteditables use `type` through 600 characters and a single safe text-node `evaluate` insertion above that threshold. Run `browser.input.verify` on exact readback before submit. `browser.input.diagnose` distinguishes stale refs and action timeouts without treating a timeout as permission to restart the Gateway.
 
 See `command_contracts.json`, the Skill operations reference, and `TEST.md`.
+
+## File-route recovery
+
+`projects.reenter.plan`, `projects.reenter.verify`, and `projects.file_route.diagnose` are pure JSON planning/evidence commands. They do not click Browser or execute provider work. A provider failure is gated on two bounded fresh-list attempts against the exact same generated-result thumbnail; Browser/CDP failure remains distinct.

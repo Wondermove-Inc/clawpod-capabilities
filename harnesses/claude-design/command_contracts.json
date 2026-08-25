@@ -27,6 +27,9 @@
     "projects.present",
     "projects.share.preview",
     "projects.share.apply",
+    "projects.reenter.plan",
+    "projects.reenter.verify",
+    "projects.file_route.diagnose",
     "projects.export",
     "projects.export.plan",
     "projects.export.diagnose",
@@ -65,11 +68,12 @@
   "providerExecution": "Logged-in claude.ai/design browser; MCP optional only after a real authorized tool smoke",
   "errors": [
     "APPROVAL_REQUIRED",
+    "BACKEND_UNAVAILABLE",
+    "HUMAN_VERIFICATION",
     "INVALID_INPUT",
     "NOT_FOUND",
-    "HUMAN_VERIFICATION",
-    "BACKEND_UNAVAILABLE",
-    "UNSUPPORTED"
+    "UNSUPPORTED",
+    "VERIFICATION_FAILED"
   ],
   "browserReadiness": "Authenticated Design UI verified through desktop/browser",
   "mcpPolicy": {

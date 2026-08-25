@@ -43,3 +43,7 @@ A previously observed schema included project/file/comment/member operations, bu
 ## Limits
 
 Claude Design exposes no supported audit log. Browser selectors and provider UI can change, so verify source-of-truth state after every mutation. The Harness never inspects browser cookies or claims browser authentication on its own.
+
+## Stale file-route recovery
+
+Use `projects.reenter.plan` for attempt 1 and, only if needed, attempt 2. Browser performs the fresh project-list read and exact generated-result thumbnail selection; the Harness never clicks. Verify each observation with `projects.reenter.verify`, then classify the combined evidence with `projects.file_route.diagnose`. `provider_failure` requires two healthy, fresh-list, same-thumbnail attempts with independent file-serving 404 evidence. Browser/CDP failure is always `browser_failure`. Continue a recovered route from the last checkpoint through two full slide reviews and independent native PPTX/PDF verification and reflow comparison.

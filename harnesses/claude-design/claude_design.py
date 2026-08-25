@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Deterministic guardrail CLI for Claude Design's currently human-operated surfaces."""
 from __future__ import annotations
-import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
+import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid, zipfile
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-VERSION="0.3.8"
+VERSION="0.3.9"
 DESIGN_URL="https://claude.ai/design"
 LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
@@ -104,10 +104,65 @@ def file_evidence(path_s):
    info["page_count"]=len(PdfReader(str(p)).pages)
   except (ImportError,OSError,ValueError):
    info["page_count"]=len(re.findall(rb"/Type\s*/Page(?!s)\b",raw))
+ if mime==FORMATS["pptx"]:
+  try:
+   with zipfile.ZipFile(p) as archive:
+    info["page_count"]=len([name for name in archive.namelist() if re.fullmatch(r"ppt/slides/slide[0-9]+\.xml",name)])
+  except (OSError,zipfile.BadZipFile):
+   info["page_count"]=0
  return info
 
 def positive_integer(value):
  return int(value) if value and value.isdigit() and int(value)>0 else None
+
+def strict_bool(value):
+ if value == "true": return True
+ if value == "false": return False
+ return None
+
+def page_set(value,expected):
+ tokens=[x.strip() for x in (value or "").split(",") if x.strip()]
+ if not tokens or any(not x.isdigit() for x in tokens):return None
+ pages={int(x) for x in tokens}
+ return pages if pages==set(range(1,expected+1)) else None
+
+def safe_text(value):
+ if value is None: return None
+ return re.sub(r"(?i)(token|secret|password|authorization|cookie)\s*[:=]\s*\S+",r"\1=[REDACTED]",value)[:2000]
+
+def route_identity(project_id,project_url,file_url,ui_filename,thumbnail_id):
+ return {"project_id":project_id,"project_url":project_url,"file_url":file_url,"ui_filename":ui_filename,"thumbnail_id":thumbnail_id}
+
+def reenter_plan(project_id,project_url,file_url,ui_filename,thumbnail_id,expected_pages,attempt):
+ return {"execute":False,"providerExecution":False,"readOnly":True,"identity":route_identity(project_id,project_url,file_url,ui_filename,thumbnail_id),"expectedPages":expected_pages,"attempt":attempt,"maxAttempts":2,"steps":["read a fresh project list","locate the exact project ID and URL","select the exact generated-result thumbnail once","wait once for a bounded interval","observe active URL, exact UI filename, served canvas, and slide count"],"attemptRequirement":"Attempt 2 requires another fresh project-list read." if attempt==2 else "Attempt 1 starts from a fresh project-list read.","prohibited":["waiting on a stale URL","repeated refresh","prompt resubmission","duplicate prompt or project creation","Gateway restart"],"handoff":"Execute these Browser DOM steps externally, then pass observed evidence to projects.reenter.verify; this Harness does not click Browser or provider UI."}
+
+def verify_route(a):
+ healthy=strict_bool(a.browser_healthy); canvas=strict_bool(a.canvas_served); fresh=strict_bool(a.fresh_list_read)
+ observed=positive_integer(a.observed_slides)
+ evidence={"expected":route_identity(a.project_id,a.project_url,a.file_url,a.ui_filename,a.thumbnail_id),"observed":{"project_id":a.observed_project_id,"thumbnail_id":a.observed_thumbnail_id,"active_url":a.active_url,"ui_filename":a.observed_ui_filename,"slides":observed,"canvas_served":canvas,"browser_healthy":healthy,"fresh_list_read":fresh},"attempt":positive_integer(a.attempt)}
+ if healthy is False:return "browser_failure",False,"Browser or CDP is unhealthy; this is never provider_failure.","Diagnose Browser/CDP without restarting the Gateway.",evidence
+ required=[healthy,canvas,fresh,observed,a.observed_project_id,a.observed_thumbnail_id,a.active_url,a.observed_ui_filename]
+ if any(x is None or x=="" for x in required):return "ambiguous",False,"Required route evidence is missing or invalid.","Collect fresh non-conflicting Browser evidence.",evidence
+ exact=(a.observed_project_id==a.project_id and a.observed_thumbnail_id==a.thumbnail_id and a.active_url==a.file_url and a.observed_ui_filename==a.ui_filename)
+ if healthy and exact and canvas and observed==positive_integer(a.expected_pages):return "recovered",False,"Exact route and slide count verified.","Continue from the last verification checkpoint into post-recovery QA and independent exports.",evidence
+ if healthy and (not exact or not canvas):return "stale_route",True,"Healthy Browser is on the wrong or unserved file route.","Run the next bounded exact-thumbnail re-entry plan if available.",evidence
+ return "ambiguous",False,"Route evidence conflicts with the expected slide count.","Reobserve the exact active file and canvas.",evidence
+
+def diagnose_route(a):
+ state,retry,reason,next_action,evidence=verify_route(a)
+ if state=="browser_failure":return state,retry,reason,next_action,evidence
+ exp_init=strict_bool(a.export_initiated); artifact=strict_bool(a.artifact_valid)
+ if state=="recovered" and exp_init is True and artifact is False:return "export_failure",True,"Recovered route but the independently initiated export artifact is absent or invalid.","Diagnose the bounded native export from the same verified project state.",evidence
+ if state=="recovered":return state,False,reason,next_action,evidence
+ a1fresh=strict_bool(a.attempt1_fresh_list);a2fresh=strict_bool(a.attempt2_fresh_list)
+ a1healthy=strict_bool(a.attempt1_browser_healthy);a2healthy=strict_bool(a.attempt2_browser_healthy)
+ same=(a.attempt1_thumbnail_id and a.attempt1_thumbnail_id==a.thumbnail_id==a.attempt2_thumbnail_id)
+ def provider404(x): return bool(x and re.search(r"(?i)(OmeletteService/GetFile|thumbnail|claudeusercontent).*404|404.*(OmeletteService/GetFile|thumbnail|claudeusercontent)",x))
+ e1=provider404(a.attempt1_error);e2=provider404(a.attempt2_error)
+ evidence["attempts"]=[{"attempt":1,"fresh_list_read":a1fresh,"browser_healthy":a1healthy,"thumbnail_id":a.attempt1_thumbnail_id,"error":safe_text(a.attempt1_error)},{"attempt":2,"fresh_list_read":a2fresh,"browser_healthy":a2healthy,"thumbnail_id":a.attempt2_thumbnail_id,"error":safe_text(a.attempt2_error)}]
+ if False in (a1healthy,a2healthy):return "browser_failure",False,"Browser or CDP failed during bounded re-entry; this is never provider_failure.","Diagnose Browser/CDP health separately.",evidence
+ if all(x is True for x in (a1fresh,a2fresh,a1healthy,a2healthy)) and same and e1 and e2:return "provider_failure",False,"Two bounded exact generated-result thumbnail re-entry attempts independently failed with provider file-serving 404 evidence.","Stop retries and preserve the original project and artifacts.",evidence
+ return state if state=="stale_route" else "ambiguous",state=="stale_route","Provider failure is not proven until both bounded same-thumbnail attempts satisfy every gate.","Collect missing evidence or perform the remaining bounded exact-thumbnail attempt.",evidence
 
 def decoded_design_filename(file_url):
  try:
@@ -157,7 +212,7 @@ def handoff(command,values,action,source):
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error"]:p.add_argument("--"+name)
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error","project-url","thumbnail-id","attempt","observed-project-id","observed-thumbnail-id","active-url","observed-ui-filename","canvas-served","browser-healthy","fresh-list-read","attempt1-fresh-list","attempt2-fresh-list","attempt1-browser-healthy","attempt2-browser-healthy","attempt1-thumbnail-id","attempt2-thumbnail-id","attempt1-error","attempt2-error","export-initiated","artifact-valid","review-pass-1","review-pass-2","render-pages","reflow-pages"]:p.add_argument("--"+name)
  p.add_argument("--expected-pages");p.add_argument("--observed-slides");p.add_argument("--preview-pages");p.add_argument("--qa-pages")
  p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
@@ -201,6 +256,16 @@ def main(argv=None):
    if result is not None:return result
   argv=["claude","mcp",verb]+(([a.mcp_name] if a.mcp_name else []))
   return envelope(c,data={"argv":argv,"execute":False,"optional":True,"requires_separate_approval":True,"readiness_impact":"none","reconcile":"real tool smoke for install; list/get for removal"})
+ if c=="projects.reenter.plan":
+  expected=positive_integer(a.expected_pages);attempt=positive_integer(a.attempt)
+  if not all([a.project_id,a.project_url,a.file_url,a.ui_filename,a.thumbnail_id]) or expected is None or attempt not in {1,2}:return fail(c,"INVALID_INPUT","Exact project/file/thumbnail identity, positive --expected-pages, and --attempt 1 or 2 are required.",False)
+  return envelope(c,data=reenter_plan(a.project_id,a.project_url,a.file_url,a.ui_filename,a.thumbnail_id,expected,attempt))
+ if c in {"projects.reenter.verify","projects.file_route.diagnose"}:
+  expected=positive_integer(a.expected_pages);attempt=positive_integer(a.attempt)
+  if not all([a.project_id,a.project_url,a.file_url,a.ui_filename,a.thumbnail_id]) or expected is None or attempt not in {1,2}:return fail(c,"INVALID_INPUT","Exact expected identity, positive --expected-pages, and --attempt 1 or 2 are required.",False)
+  result=diagnose_route(a) if c.endswith("diagnose") else verify_route(a)
+  state,retry,reason,next_action,evidence=result
+  return envelope(c,data={"state":state,"retryAllowed":retry,"stopReason":reason,"nextAction":next_action,"evidence":evidence,"execute":False,"providerExecution":False},retry_safe=retry,evidence=[{"kind":"file-route-diagnosis","ref":hashlib.sha256(json.dumps(evidence,sort_keys=True).encode()).hexdigest(),"metadata":{"state":state,"attempt":attempt}}])
  if c in {"projects.export.plan","projects.export.diagnose"}:
   expected=positive_integer(a.expected_pages);observed=positive_integer(a.observed_slides);preview=positive_integer(a.preview_pages) if a.preview_pages is not None else None
   if not a.file_url or not a.ui_filename or expected is None or observed is None:return fail(c,"INVALID_INPUT","--file-url, --ui-filename, --expected-pages, and --observed-slides are required; page counts must be positive integers.")
@@ -221,11 +286,17 @@ def main(argv=None):
    expected=FORMATS[a.format]; info["expected_mime"]=expected; info["mime_matches"]=info["mime"]==expected
   if not a.project_id or not a.provenance:return fail(c,"INVALID_INPUT","Artifact metadata requires --project-id and --provenance (native-claude-design or fallback-rendering).")
   if a.provenance not in {"native-claude-design","fallback-rendering"}:return fail(c,"INVALID_INPUT","--provenance must be native-claude-design or fallback-rendering.")
-  if a.format=="pdf":
+  if a.format in {"pdf","pptx"}:
    expected_pages=positive_integer(a.expected_pages)
-   if expected_pages is None:return fail(c,"INVALID_INPUT","PDF verification requires --expected-pages as a positive integer before save/success.")
+   if expected_pages is None:return fail(c,"INVALID_INPUT","PPTX/PDF verification requires --expected-pages as a positive integer before success.")
    info["expected_pages"]=expected_pages; info["page_count_matches"]=info.get("page_count")==expected_pages
-   if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"PDF has {info.get('page_count',0)} pages; expected {expected_pages}.",False,info)
+   if not info["page_count_matches"]:return fail(c,"VERIFICATION_FAILED",f"Artifact has {info.get('page_count',0)} pages/slides; expected {expected_pages}.",False,info)
+   checks={"review_pass_1":a.review_pass_1,"review_pass_2":a.review_pass_2,"render_pages":a.render_pages,"reflow_pages":a.reflow_pages}
+   if any(value is not None for value in checks.values()):
+    incomplete=[name for name,value in checks.items() if page_set(value,expected_pages) is None]
+    if incomplete:return fail(c,"VERIFICATION_FAILED","Two full slide reviews, independent render pages, and page-by-page reflow comparison must each cover the complete deck.",False,{**info,"incomplete_post_recovery_checks":incomplete})
+    info["post_recovery_qa_complete"]=True;info.update({name:list(range(1,expected_pages+1)) for name in checks})
+  if a.format=="pdf":
    tokens=[x.strip() for x in (a.qa_pages or "").split(",") if x.strip()]
    if not tokens or any(not x.isdigit() for x in tokens):return fail(c,"INVALID_INPUT","--qa-pages must be a comma-separated list of positive page numbers.")
    reviewed={int(x) for x in tokens}
