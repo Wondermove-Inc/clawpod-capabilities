@@ -56,3 +56,5 @@ def test_manifest_commands_are_closed_read_only_scalar_contracts():
  for n in ['projects.reenter.plan','projects.reenter.verify','projects.file_route.diagnose']:
   c=m['commands'][n];assert c['safetyClasses']==['readOnly'] and c['inputSchema']['additionalProperties'] is False
   assert all(v=={'type':'string'} for v in c['inputSchema']['properties'].values())
+ flags={item['arg']:item['flag'] for item in m['commands']['projects.export.verify']['argMap']}
+ assert flags['reviewPass1']=='--review-pass-1' and flags['reviewPass2']=='--review-pass-2'

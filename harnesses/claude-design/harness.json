@@ -3375,14 +3375,14 @@
         {
           "arg": "reviewPass1",
           "type": "option",
-          "flag": "--review-pass1",
+          "flag": "--review-pass-1",
           "valueType": "string",
           "optional": true
         },
         {
           "arg": "reviewPass2",
           "type": "option",
-          "flag": "--review-pass2",
+          "flag": "--review-pass-2",
           "valueType": "string",
           "optional": true
         },
