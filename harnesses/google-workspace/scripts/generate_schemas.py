@@ -16,14 +16,12 @@ if 'auth.onboarding.decide' not in doc['commands']:
  doc['commands']['auth.onboarding.decide']=template
 ADDITIONS={
  'auth.bindings.list':('List pod-local credential aliases and sanitized metadata.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
- 'auth.bindings.status':('Validate binding registry, permissions, bundle shape, and identity.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
+ 'auth.bindings.status':('Validate binding registry, bundle shape, and identity.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
  'auth.bindings.resolve':('Resolve one alias to sanitized metadata without exposing a path.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
  'auth.bindings.import':('Copy or explicitly reference a validated legacy credential bundle.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.accounts.list'),
  'auth.bindings.rename':('Atomically rename a pod-local alias.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
  'auth.bindings.remove':('Remove a binding, with separate explicit credential deletion.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
  'auth.bindings.migrate':('Preview or apply bounded deterministic legacy discovery.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.accounts.list'),
- 'auth.bindings.permissions.check':('Report protected-root permission defects.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
- 'auth.bindings.permissions.repair':('Repair owned pod-local protected-root permissions.',('secretUse','authReuse','writeSafe'),'auth.accounts.list'),
  'gmail.read':('Perform bounded Gmail message or thread reads with normalized summaries.',('secretUse','authReuse','readOnly'),'gmail.messages.list'),
  'calendar.read':('Perform bounded upcoming or ranged Calendar reads with normalized summaries.',('secretUse','authReuse','readOnly'),'calendar.events.list'),
  'drive.read':('Perform bounded Drive search, recent, or metadata reads.',('secretUse','authReuse','readOnly'),'drive.files.list'),
@@ -154,7 +152,7 @@ for cmd,c in commands.items():
    props['body']=O({'mappings':A(mapping,maxItems=1)});s['required']=list(dict.fromkeys(s['required']+['inputPath']))
    exact_surface(c,s,('inputPath','body','preview','dryRun','confirm','requestId'))
   else: props['body']=O({})
-  if cmd in ('auth.bindings.list','auth.bindings.status','auth.bindings.permissions.check'):
+  if cmd in ('auth.bindings.list','auth.bindings.status'):
    exact_surface(c,s,('requestId',))
   elif cmd=='auth.bindings.resolve':
    exact_surface(c,s,('account','requestId'))
@@ -162,8 +160,6 @@ for cmd,c in commands.items():
    exact_surface(c,s,('account','body','preview','dryRun','confirm','requestId'))
   elif cmd=='auth.bindings.remove':
    exact_surface(c,s,('account','body','preview','dryRun','confirm','requestId'))
-  elif cmd=='auth.bindings.permissions.repair':
-   exact_surface(c,s,('preview','dryRun','confirm','requestId'))
   continue
  if cmd=='gmail.read':
   props['params']=O({'mode':S(enum=['messages','threads']),'userId':S(),'q':S(maxLength=20000),'labelIds':A(S(),maxItems=100),'includeSpamTrash':{'type':'boolean'},'includeBody':{'type':'boolean'},'maxResults':QUERY_TYPES['maxResults']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue

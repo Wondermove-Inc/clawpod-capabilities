@@ -17,7 +17,7 @@ def test_install_handoff_is_agent_complete_and_minimizes_owner_intervention():
 
 def test_runbook_preserves_harness_login_contract_and_workspace_max():
  runbook=Path('skills/google-workspace/references/onboarding.md').read_text()
- for phrase in ('existing `auth.login` flow unchanged','`workspace-max`','literal loopback CDP URL','mode-0600','Repeat authorization'):
+ for phrase in ('existing `auth.login` flow unchanged','`workspace-max`','literal loopback CDP URL','Repeat authorization'):
   assert phrase in runbook
 
 

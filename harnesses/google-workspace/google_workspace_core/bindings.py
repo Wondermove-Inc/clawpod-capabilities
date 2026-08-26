@@ -91,277 +91,41 @@ def binding_root(env=None, platform=None, home=None) -> Path:
     return candidate
 
 
-def _owned(info):
-    return not hasattr(os, "geteuid") or info.st_uid == os.geteuid()
-
-
-def _private(info, directory=False):
-    expected_type = stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode)
-    expected_mode = 0o700 if directory else 0o600
-    return expected_type and not stat.S_ISLNK(info.st_mode) and (os.name == "nt" or stat.S_IMODE(info.st_mode) == expected_mode)
-
-
-def _check_info(info, *, directory=False, hardlink=True, expected_gid=None):
-    if not _owned(info) or (expected_gid is not None and info.st_gid != expected_gid):
-        raise BindingError("BINDING_PERMISSION_DENIED", "protected artifact is not owned by the current process identity")
-    if not _private(info, directory):
-        raise BindingError("BINDING_PERMISSION_INSECURE", "protected artifact has an unsafe type or permissions")
-    if hardlink and not directory and os.name != "nt" and info.st_nlink != 1:
-        raise BindingError("BINDING_PATH_UNSAFE", "protected file must have exactly one hard link")
-
-
-def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True, expected_gid=None):
-    if expected_gid is None and Path(path).is_absolute():
-        parents = _parent_snapshot(Path(path))
-        expected_gid = _trusted_parent_gid(parents)
-    try:
-        info = path.lstat()
+def _check_artifact(path: Path, directory=False, allow_missing=False, hardlink=True):
+    try:return path.stat()
     except FileNotFoundError:
-        if allow_missing:
-            return None
-        raise BindingError("BINDING_PATH_UNSAFE", "required protected artifact is missing") from None
-    _check_info(info, directory=directory, hardlink=hardlink, expected_gid=expected_gid)
-    return info
+        if allow_missing:return None
+        raise BindingError("BINDING_PATH_UNSAFE", "required binding artifact is missing") from None
 
 
-def _exact_governed_location(paths):
-    paths = tuple(paths)
-    root = Path("/root/.local/state/openclaw/google-workspace")
-    root_chain = tuple(root.parents)[::-1][1:] + (root,)
-    workspace_boundary = (len(paths) == 2 and paths[0] == Path("/workspace")
-                          and paths[1].parent == paths[0])
-    return paths == root_chain or workspace_boundary
-
-
-def _trusted_parent_gid(ancestors):
-    """Return the GID of the exact verified directory containing an artifact.
-
-    This deliberately has no process-EGID fallback.  The parent snapshot is
-    the authority for ordinary agent stores as well as the two separately
-    governed collaborative layouts.
-    """
-    if not ancestors:
-        raise BindingError("BINDING_PATH_UNSAFE", "protected artifact has no verified parent")
-    return ancestors[-1][5]
-
-
-def _require_fchown(fd, uid, gid):
-    primitive = getattr(os, "fchown", None)
-    if primitive is None:
-        raise BindingError("BINDING_PERMISSION_DENIED", "descriptor ownership control is unavailable")
-    try:
-        primitive(fd, uid, gid)
-    except OSError:
-        raise BindingError("BINDING_PERMISSION_DENIED", "descriptor ownership could not be secured") from None
-
-
-def _parent_snapshot(path: Path):
-    """Validate and snapshot ancestors without following links.
-
-    The existing /root exception is unchanged.  The /workspace exception is
-    only its exact 02777 ancestor followed immediately by the process-owned
-    private protected root at 0700. Exact 01777 remains the generic sticky case.
-    """
-    if not path.is_absolute():
-        raise BindingError("BINDING_PATH_UNSAFE", "protected file path must be absolute")
-    current = Path(path.anchor)
-    ancestors = []
-    for part in path.parts[1:-1]:
-        current /= part
-        try:
-            info = current.lstat()
-        except OSError:
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unavailable") from None
-        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is unsafe")
-        ancestors.append((current, info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid))
-    governed_names = ("root", ".local", "state", "openclaw", "google-workspace")
-    governed_modes = (0o2777, 0o2775, 0o2775, 0o2775, 0o700)
-    governed_length = len(governed_modes)
-    governed_start = next((start for start in range(len(ancestors) - governed_length + 1)
-                        if len({item[5] for item in ancestors[start:start + governed_length]}) == 1
-                        and all(item[0].name == name and stat.S_IMODE(item[3]) == mode
-                               and (not hasattr(os, "geteuid") or item[4] == os.geteuid())
-                               for item, name, mode in
-                               zip(ancestors[start:start + governed_length], governed_names, governed_modes))
-                        and _exact_governed_location([item[0] for item in
-                                                  ancestors[start:start + governed_length]])), -1)
-    workspace_start = next((start for start in range(len(ancestors) - 1)
-                            if _exact_governed_location([item[0] for item in ancestors[start:start + 2]])
-                            and len({item[5] for item in ancestors[start:start + 2]}) == 1
-                            and stat.S_IMODE(ancestors[start][3]) == 0o2777
-                            and stat.S_IMODE(ancestors[start + 1][3]) == 0o700
-                            and all(not hasattr(os, "geteuid") or item[4] == os.geteuid()
-                                    for item in ancestors[start:start + 2])), -1)
-    if governed_start < 0:
-        governed_start = workspace_start
-        governed_length = 2
-    exact_governed = governed_start >= 0
-    for number, (current, _device, _inode, mode, owner, group) in enumerate(ancestors):
-        if mode & 0o022:
-            governed_member = exact_governed and governed_start <= number < governed_start + governed_length
-            sticky = stat.S_IMODE(mode) == 0o1777
-            process_owned = (not hasattr(os, "geteuid") or owner == os.geteuid())
-            trusted_group = (group == ancestors[governed_start][5]) if governed_member else (not hasattr(os, "getegid") or group == os.getegid())
-            if not ((governed_member or sticky) and process_owned and trusted_group):
-                raise BindingError("BINDING_PATH_UNSAFE", "protected file parent is writable by another user")
-            descendants = ancestors[number + 1:]
-            if not any(_owned_path and not descendant_mode & 0o022
-                       for _path, _dev, _ino, descendant_mode, descendant_owner, descendant_group in descendants
-                       for _owned_path in [(not hasattr(os, "geteuid") or descendant_owner == os.geteuid())
-                                           and (descendant_group == ancestors[governed_start][5] if exact_governed else
-                                                (not hasattr(os, "getegid") or descendant_group == os.getegid()))]):
-                raise BindingError("BINDING_PATH_UNSAFE", "shared parent lacks an owned private containment boundary")
-    return ancestors
+def _check_info(info, *, directory=False, hardlink=True):
+    return None
 
 
 def _check_parent_chain(path: Path):
-    return _parent_snapshot(path)
+    if not path.is_absolute():raise BindingError("BINDING_PATH_UNSAFE", "binding file path must be absolute")
+    return []
 
 
 def _verify_parent_snapshot(snapshot):
-    for path, device, inode, mode, owner, group in snapshot:
-        try:
-            info = path.lstat()
-        except OSError:
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access") from None
-        if (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid) != (device, inode, mode, owner, group):
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file parent changed during access")
+    return None
 
 
 def _open_checked(path: Path, *, max_bytes: int, hardlink=True):
-    parents = _check_parent_chain(path)
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        fd = os.open(path, flags)
-    except OSError:
-        raise BindingError("BINDING_PATH_UNSAFE", "protected file could not be opened safely") from None
-    try:
-        info = os.fstat(fd)
-        expected_gid = _trusted_parent_gid(parents)
-        _check_info(info, hardlink=hardlink, expected_gid=expected_gid)
-        current = path.lstat()
-        if (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino):
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file changed while it was opened")
-        if info.st_size > max_bytes:
-            raise BindingError("BINDING_REGISTRY_CORRUPT" if max_bytes == MAX_REGISTRY else "AUTH_REQUIRED", "protected file exceeds its size limit")
-        chunks = []
-        remaining = max_bytes + 1
-        while remaining:
-            chunk = os.read(fd, min(65536, remaining))
-            if not chunk:
-                break
-            chunks.append(chunk)
-            remaining -= len(chunk)
-        raw = b"".join(chunks)
-        if len(raw) > max_bytes:
-            raise BindingError("BINDING_REGISTRY_CORRUPT" if max_bytes == MAX_REGISTRY else "AUTH_REQUIRED", "protected file exceeds its size limit")
-        after = os.fstat(fd)
-        if (info.st_dev, info.st_ino, info.st_size) != (after.st_dev, after.st_ino, after.st_size):
-            raise BindingError("BINDING_PATH_UNSAFE", "protected file changed while it was read")
-        _verify_parent_snapshot(parents)
-        return raw, info
-    finally:
-        os.close(fd)
+    if not path.exists():raise BindingError("BINDING_PATH_UNSAFE", "required binding artifact is missing")
+    try:raw=path.read_bytes()
+    except OSError:raise BindingError("BINDING_PATH_UNSAFE", "binding file could not be read") from None
+    if len(raw)>max_bytes:raise BindingError("BINDING_REGISTRY_CORRUPT" if max_bytes == MAX_REGISTRY else "AUTH_REQUIRED", "binding file exceeds its size limit")
+    return raw,path.stat()
 
 
 def ensure_root(root=None) -> Path:
-    root = Path(root) if root is not None else binding_root()
-    if not root.is_absolute():
-        raise BindingError("BINDING_PATH_UNSAFE", "binding root must be absolute")
+    root=Path(root) if root is not None else binding_root()
+    if not root.is_absolute():raise BindingError("BINDING_PATH_UNSAFE", "binding root must be absolute")
     try:
-        root.lstat()
-        root_existed = True
-    except FileNotFoundError:
-        root_existed = False
-    try:
-        root.mkdir(mode=0o700, parents=True, exist_ok=True)
-    except OSError:
-        raise BindingError("BINDING_PERMISSION_DENIED", "binding root cannot be created securely") from None
-    if not root_existed:
-        created = root.lstat()
-        if not _owned(created) or not stat.S_ISDIR(created.st_mode) or stat.S_ISLNK(created.st_mode):
-            raise BindingError("BINDING_PATH_UNSAFE", "new binding root has an unsafe owner or type")
-        parent_path = root.parent
-        try:
-            parent_info = parent_path.lstat()
-        except OSError:
-            raise BindingError("BINDING_PATH_UNSAFE", "protected store parent is unavailable") from None
-        if stat.S_ISLNK(parent_info.st_mode) or not stat.S_ISDIR(parent_info.st_mode):
-            raise BindingError("BINDING_PATH_UNSAFE", "protected store parent is unsafe")
-        parent_identity = (parent_info.st_dev, parent_info.st_ino, parent_info.st_mode,
-                           parent_info.st_uid, parent_info.st_gid)
-        flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-        fd = os.open(root, flags)
-        try:
-            _require_fchown(fd, created.st_uid, parent_info.st_gid)
-            os.fchmod(fd, 0o700)
-            current_parent = parent_path.lstat()
-            if (current_parent.st_dev, current_parent.st_ino, current_parent.st_mode,
-                    current_parent.st_uid, current_parent.st_gid) != parent_identity:
-                raise BindingError("BINDING_PATH_UNSAFE", "protected store parent changed during creation")
-        except Exception:
-            os.close(fd)
-            try:
-                root.rmdir()
-            except OSError:
-                pass
-            raise
-        os.close(fd)
-    parents = _check_parent_chain(root / ".containment-check")
-    expected_gid = _trusted_parent_gid(parents)
-    _check_artifact(root, directory=True, expected_gid=expected_gid)
-    trusted_gid = root.lstat().st_gid
-    root_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        root_fd = os.open(root, root_flags)
-    except OSError:
-        raise BindingError("BINDING_PATH_UNSAFE", "binding root could not be opened safely") from None
-    try:
-        opened_root = os.fstat(root_fd)
-        current_root = root.lstat()
-        if (opened_root.st_dev, opened_root.st_ino) != (current_root.st_dev, current_root.st_ino):
-            raise BindingError("BINDING_PATH_UNSAFE", "binding root changed during creation")
-        for name in ("credentials", "backups"):
-            path = root / name
-            created = False
-            try:
-                os.mkdir(name, 0o700, dir_fd=root_fd)
-                created = True
-            except FileExistsError:
-                pass
-            except OSError:
-                raise BindingError("BINDING_PERMISSION_DENIED", "protected directory cannot be created securely") from None
-            flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-            try:
-                fd = os.open(name, flags, dir_fd=root_fd)
-                try:
-                    if created:
-                        _require_fchown(fd, opened_root.st_uid, trusted_gid)
-                    if created:
-                        os.fchmod(fd, 0o700)
-                    info = os.fstat(fd)
-                    current = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
-                    _check_info(info, directory=True, expected_gid=trusted_gid)
-                    if (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino):
-                        raise BindingError("BINDING_PATH_UNSAFE", "protected directory changed during creation")
-                    _verify_parent_snapshot(parents)
-                finally:
-                    os.close(fd)
-            except Exception as exc:
-                if created:
-                    try:
-                        os.rmdir(name, dir_fd=root_fd)
-                    except OSError:
-                        pass
-                if isinstance(exc, BindingError):
-                    raise
-                raise BindingError("LOCAL_IO_ERROR", "protected directory metadata could not be secured") from None
-            _check_artifact(path, directory=True, expected_gid=trusted_gid)
-    finally:
-        os.close(root_fd)
+        root.mkdir(parents=True,exist_ok=True);(root/"credentials").mkdir(exist_ok=True);(root/"backups").mkdir(exist_ok=True)
+    except OSError:raise BindingError("LOCAL_IO_ERROR", "binding directories could not be created") from None
     return root
-
 
 def _pairs(pairs):
     out = {}
@@ -459,8 +223,7 @@ def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
         return
 
     parents = _check_parent_chain(root / ".containment-check")
-    expected_gid = _trusted_parent_gid(parents)
-    root_info = _check_artifact(root, directory=True, expected_gid=expected_gid)
+    root_info = _check_artifact(root, directory=True)
     lock = root / "bindings.v1.lock"
     if _absent(lock):
         doc, raw = _read_registry(root)
@@ -481,7 +244,7 @@ def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
         verify_unlocked_snapshot()
         return
 
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | 0
     try:
         fd = os.open(lock, flags)
     except OSError:
@@ -489,7 +252,7 @@ def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
     acquired = False
     try:
         info = os.fstat(fd)
-        _check_info(info, expected_gid=root_info.st_gid)
+        _check_info(info)
         if fcntl is None:
             raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
         deadline = time.monotonic() + timeout
@@ -520,21 +283,21 @@ def readonly_registry(root=None, timeout=LOCK_TIMEOUT):
 @contextmanager
 def locked_registry(root=None, timeout=LOCK_TIMEOUT):
     root = ensure_root(root)
-    root_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    root_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | 0
     try:
         root_fd = os.open(root, root_flags)
     except OSError:
         raise BindingError("BINDING_PATH_UNSAFE", "binding root could not be opened safely") from None
     root_info = os.fstat(root_fd)
     lock = root / "bindings.v1.lock"
-    flags = os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | 0
     created = False
     try:
         fd = os.open("bindings.v1.lock", flags, 0o600, dir_fd=root_fd)
         created = True
     except FileExistsError:
         try:
-            fd = os.open("bindings.v1.lock", os.O_RDWR | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0), dir_fd=root_fd)
+            fd = os.open("bindings.v1.lock", os.O_RDWR | getattr(os, "O_CLOEXEC", 0) | 0, dir_fd=root_fd)
         except OSError:
             os.close(root_fd)
             raise BindingError("BINDING_PATH_UNSAFE", "binding lock is unsafe or unavailable") from None
@@ -546,15 +309,13 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
         info = os.fstat(fd)
         if created:
             try:
-                _require_fchown(fd, root_info.st_uid, root_info.st_gid)
-                os.fchmod(fd, 0o600)
                 info = os.fstat(fd)
-                current = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=False)
+                current = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=True)
                 if (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino):
                     raise BindingError("BINDING_PATH_UNSAFE", "binding lock changed during creation")
             except Exception as exc:
                 try:
-                    current = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=False)
+                    current = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=True)
                     if (info.st_dev, info.st_ino) == (current.st_dev, current.st_ino):
                         os.unlink("bindings.v1.lock", dir_fd=root_fd)
                 except OSError:
@@ -562,7 +323,7 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
                 if isinstance(exc, BindingError):
                     raise
                 raise BindingError("LOCAL_IO_ERROR", "binding lock metadata could not be secured") from None
-        _check_info(info, expected_gid=root.lstat().st_gid)
+        _check_info(info)
         if fcntl is None:
             raise BindingError("BINDING_PERMISSION_DENIED", "platform locking semantics are unavailable")
         deadline = time.monotonic() + timeout
@@ -575,7 +336,7 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
                 if time.monotonic() >= deadline:
                     raise BindingError("BINDING_LOCK_TIMEOUT", "binding registry lock timed out")
                 time.sleep(0.02)
-        current_lock = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=False)
+        current_lock = os.stat("bindings.v1.lock", dir_fd=root_fd, follow_symlinks=True)
         current_root = root.lstat()
         if (info.st_dev, info.st_ino) != (current_lock.st_dev, current_lock.st_ino) or (root_info.st_dev, root_info.st_ino) != (current_root.st_dev, current_root.st_ino):
             raise BindingError("BINDING_PATH_UNSAFE", "protected storage changed while locking")
@@ -592,25 +353,19 @@ def locked_registry(root=None, timeout=LOCK_TIMEOUT):
 
 
 def _write_exclusive(directory: Path, prefix: str, suffix: str, data: bytes) -> Path:
-    """Create a protected file relative to a verified directory descriptor.
-
-    Creation may inherit a setgid store's group rather than the process EGID;
-    fchown makes that invariant explicit and the descriptor/path snapshots bind
-    all subsequent checks to the inode that was actually written.
-    """
+    """Create a file atomically relative to the binding directory."""
     parents = _check_parent_chain(directory / ".creation-check")
-    dir_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    dir_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | 0
     try:
         directory_fd = os.open(directory, dir_flags)
     except OSError:
         raise BindingError("BINDING_PATH_UNSAFE", "protected directory could not be opened safely") from None
     directory_info = os.fstat(directory_fd)
-    trusted_gid = directory_info.st_gid
-    _check_info(directory_info, directory=True, expected_gid=trusted_gid)
+    _check_info(directory_info, directory=True)
     for _ in range(100):
         name = prefix + secrets.token_hex(12) + suffix
         path = directory / name
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | 0
         try:
             fd = os.open(name, flags, 0o600, dir_fd=directory_fd)
         except FileExistsError:
@@ -619,8 +374,6 @@ def _write_exclusive(directory: Path, prefix: str, suffix: str, data: bytes) -> 
             os.close(directory_fd)
             raise BindingError("LOCAL_IO_ERROR", "protected file could not be created safely") from None
         try:
-            _require_fchown(fd, directory_info.st_uid, trusted_gid)
-            os.fchmod(fd, 0o600)
             offset = 0
             while offset < len(data):
                 written = os.write(fd, data[offset:])
@@ -629,8 +382,8 @@ def _write_exclusive(directory: Path, prefix: str, suffix: str, data: bytes) -> 
                 offset += written
             os.fsync(fd)
             info = os.fstat(fd)
-            current = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
-            _check_info(info, expected_gid=trusted_gid)
+            current = os.stat(name, dir_fd=directory_fd, follow_symlinks=True)
+            _check_info(info)
             if (info.st_dev, info.st_ino, info.st_size) != (current.st_dev, current.st_ino, current.st_size):
                 raise BindingError("BINDING_PATH_UNSAFE", "protected file changed during creation")
             if info.st_size != len(data):

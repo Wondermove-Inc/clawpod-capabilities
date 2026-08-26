@@ -54,13 +54,13 @@ def test_missing_refresh_and_token_error(tmp_path):
  with pytest.raises(LoginError,match="reusable"):invoke(tmp_path,token_update={"refresh_token":""})
  with pytest.raises(LoginError,match="token endpoint"):invoke(tmp_path,token_error=True)
 
-def test_malformed_wrong_type_and_permissions(tmp_path):
+def test_malformed_wrong_type_and_mode_is_not_an_auth_gate(tmp_path):
  p=tmp_path/"client.json";p.write_text("{");p.chmod(0o600)
  with pytest.raises(LoginError,match="malformed"):_client(p)
  p.write_text(json.dumps({"web":{}}));p.chmod(0o600)
  with pytest.raises(LoginError,match="Desktop"):_client(p)
  p.chmod(0o644)
- with pytest.raises(LoginError,match="0600"):_private_file(str(tmp_path),"client.json")
+ assert _private_file(str(tmp_path),"client.json")==p
 
 def test_overwrite_refusal_alias_collision_and_repeat(tmp_path):
  invoke(tmp_path)
@@ -68,10 +68,10 @@ def test_overwrite_refusal_alias_collision_and_repeat(tmp_path):
  # A different alias safely merges only when overwrite is explicit.
  r,_,_=invoke(tmp_path,alias="personal",overwrite=True);assert set(json.loads((tmp_path/"creds.json").read_text())["accounts"])=={"work","personal"}
 
-def test_existing_output_permissions(tmp_path):
+def test_existing_output_mode_is_not_an_auth_gate(tmp_path):
  setup_files(tmp_path);p=tmp_path/"creds.json";p.write_text('{"accounts":{}}');p.chmod(0o644)
- with pytest.raises(LoginError,match="0600"):
-  invoke(tmp_path,alias="new",overwrite=True)
+ result,_,_=invoke(tmp_path,alias="new",overwrite=True)
+ assert result["alias"]=="new"
 
 def test_scope_and_identity_validation(tmp_path):
  with pytest.raises(LoginError,match="omitted requested"):invoke(tmp_path,token_update={"scope":"openid email"})
@@ -125,8 +125,8 @@ def test_timeout(tmp_path):
  with pytest.raises(LoginError,match="timed out"):
   desktop_login(transfer_root=str(tmp_path),client_path="client.json",output_path="x",alias="a",profiles=[],timeout=5,open_browser=lambda *a,**k:True)
 
-def test_path_traversal_and_symlink(tmp_path):
+def test_path_traversal_is_rejected_but_file_link_is_not_an_auth_gate(tmp_path):
  setup_files(tmp_path)
  with pytest.raises(LoginError,match="escapes"):_private_file(str(tmp_path),"../client.json")
  link=tmp_path/"link";link.symlink_to(tmp_path/"client.json")
- with pytest.raises(LoginError,match="symlink"):_private_file(str(tmp_path),"link")
+ assert _private_file(str(tmp_path),"link")==tmp_path/"client.json"

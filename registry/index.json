@@ -1401,7 +1401,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -1419,15 +1419,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6354d74fd911add3b1d214ca1a19151f374bcc838750cdce4896997de38ef896"
+          "sha256": "8352bc99be577a11f66b5771d0792783a22cbde40436d31aee8e881deaf7cdfd"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "f89a51fcc4eb46d3ff24d47702692967ff250ead6e08751e6d4b046469c167ce"
+          "sha256": "c17f466512c7e25ef421cec7a9995374d590830d664b5b52fb615938e6de106a"
         },
         {
           "path": "references/operations.md",
-          "sha256": "bfa9ed776c503d1ae08b245998420a11687d070a29d64ed924d48a313137ac00"
+          "sha256": "38e61ec03abf5b4fac2e85549a72307f1e08810e7c096580fef5b26e261849be"
         },
         {
           "path": "references/scopes.md",
@@ -1436,7 +1436,7 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.3.6"
+        "version": "0.3.7"
       }
     },
     {
@@ -2460,7 +2460,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -2477,28 +2477,12 @@
       },
       "files": [
         {
-          "path": "CHANGES-v0.3.5.md",
-          "sha256": "504379a21052413aae36c0edc7bdf6f6c66bcdd03f48a8df65890dc30b2f10c2"
-        },
-        {
-          "path": "CHANGES-v0.3.6.md",
-          "sha256": "0dc30c641bd5fc063d0bdadf5aa82bc0931304685f19fd6ff85269ab172b5e4d"
-        },
-        {
-          "path": "EVIDENCE-v0.3.0-regressions.md",
-          "sha256": "f24463baea591d15ade162bba63b222b6cd130461501bf82f13649a2a8c3119e"
-        },
-        {
-          "path": "EVIDENCE-v0.3.5-binding-gid.md",
-          "sha256": "204154318a2b58b40d96155ecf6e3f03c4c7fe401648fbabe1785a877642b93d"
-        },
-        {
-          "path": "EVIDENCE-v0.3.6-binding-gid-migration.md",
-          "sha256": "c4ee6783db75f5c60b0b67681e8489716b3b5a35c702b19c98686c9d129807d9"
+          "path": "CHANGES-v0.3.7.md",
+          "sha256": "4a877c3b9cd98226c2eb7e8c83676b5404e63b8b1b3ae5ecb3ecac56fb7a43fa"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "f77b881f2e9dad815ccdd6a0ad0e9770afa8fa7ab21a444e569a49bf140a3d1c"
+          "sha256": "de174c63d42aee6401e43e4ff08aa5e6ec78a3f75831ccbec2d82b5306b6c9c9"
         },
         {
           "path": "google_workspace.py",
@@ -2510,11 +2494,11 @@
         },
         {
           "path": "google_workspace_core/auth.py",
-          "sha256": "52a830930a831af637cc0f4d21ecb85fbd3d2cd0f6c5c64cf41f9a413e928a8c"
+          "sha256": "d401f8e59046e6930aba225ddb97838076f291d2ab7d0b11ab84e8cc83670f4c"
         },
         {
           "path": "google_workspace_core/bindings.py",
-          "sha256": "9dd766162ffbfc201538baf2a3c8838cc9165c94cd5bdc9b5d51aeafbd2ec0be"
+          "sha256": "91c044b197c5c7dabc5e8aba58c77c10da80d4679d9041e2bb8a12a8ab33d317"
         },
         {
           "path": "google_workspace_core/catalog.py",
@@ -2526,7 +2510,7 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "70865a70137061273c1c955887e41ad7712f155aa56ed3ec9ba2d8f9577395b5"
+          "sha256": "b70e71ed9a657165c03c44120f9ce18a494be467bc5cd785623ae7acc3542880"
         },
         {
           "path": "google_workspace_core/high_level_reads.py",
@@ -2542,11 +2526,7 @@
         },
         {
           "path": "google_workspace_core/oauth_desktop.py",
-          "sha256": "6744aad13702fd8121315178100831b8dc498a177e7fe3ff1d43fe52eaa62706"
-        },
-        {
-          "path": "google_workspace_core/permissions.py",
-          "sha256": "a654a6cae329831cce0fcebe9fee141eff491f45caa7f35edcca35d6cc69229f"
+          "sha256": "3e562a7b72fef9686a4e56cef795345e564a3a729f46c082fae6972a6af414d1"
         },
         {
           "path": "google_workspace_core/scopes.py",
@@ -2570,11 +2550,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "46d3fde31bc1eb90c35b8e780da58e4c7a5fdeb145358ec91be32aff3fc5366f"
+          "sha256": "129e4d59bc90a0aa7ffb899cb1b1415de339d44fc071423512376179e7685c49"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "0e530a8e754541e0a8d28db09280c113e865f6f047e2e19cd872ca4cf02794ee"
+          "sha256": "166654a87eb1a2e97667b368ff595d236626ce008da8bba912980040cd74215f"
         }
       ]
     },

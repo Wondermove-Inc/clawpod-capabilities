@@ -16,7 +16,7 @@ class ReleaseAuditV4(unittest.TestCase):
  def mock(self,responses):
   path=Path(self.tmp.name)/f'{time.time_ns()}.json';path.write_text(json.dumps(responses));os.environ['GOOGLE_WORKSPACE_MOCK_HTTP']=str(path)
  def test_inventory_schemas_scopes_and_recursive_closure(self):
-  commands=catalog();self.assertEqual(len(commands),164);self.assertEqual(sum(not k.startswith('auth.') for k in commands),147)
+  commands=catalog();self.assertEqual(len(commands),162);self.assertEqual(sum(not k.startswith('auth.') for k in commands),147)
   open_nodes=[]
   def scan(node,path):
    if isinstance(node,dict):
