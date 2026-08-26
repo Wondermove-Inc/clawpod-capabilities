@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -111,6 +111,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -404,6 +410,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -699,6 +711,12 @@
           },
           "batch": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -983,6 +1001,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -1271,6 +1295,12 @@
           },
           "batch": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -1556,6 +1586,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -1849,6 +1885,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -44264,6 +44306,12 @@
           },
           "credentialPath": {
             "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
           }
         },
         "additionalProperties": false
@@ -45748,11 +45796,500 @@
           "optional": true
         }
       ]
+    },
+    "auth.login.start": {
+      "description": "Start detached Google OAuth authorization and return an opaque handle.",
+      "baseArgv": [
+        "auth.login.start"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "externalSideEffect",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body",
+          "transferRoot",
+          "account"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "auth.login.status": {
+      "description": "Read sanitized detached OAuth authorization status.",
+      "baseArgv": [
+        "auth.login.status"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "handle"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "handle",
+          "type": "option",
+          "flag": "--handle",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "auth.login.finalize": {
+      "description": "Atomically bind a completed detached OAuth credential.",
+      "baseArgv": [
+        "auth.login.finalize"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "handle"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "handle",
+          "type": "option",
+          "flag": "--handle",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "auth.login.cancel": {
+      "description": "Cancel and clean up a detached OAuth authorization.",
+      "baseArgv": [
+        "auth.login.cancel"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe",
+        "humanAccountAction"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "handle"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "handle",
+          "type": "option",
+          "flag": "--handle",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "auth.login.recover": {
+      "description": "Reconcile bounded detached OAuth job state without provider calls.",
+      "baseArgv": [
+        "auth.login.recover"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "maxJobs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "handle",
+          "type": "option",
+          "flag": "--handle",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxJobs",
+          "type": "option",
+          "flag": "--max-jobs",
+          "valueType": "number",
+          "optional": true
+        }
+      ]
     }
   },
   "execution": {
     "cwd": ".",
-    "timeoutMs": 660000,
+    "timeoutMs": 10000,
     "requiresJson": true
   }
 }

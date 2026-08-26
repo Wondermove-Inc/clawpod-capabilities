@@ -7,6 +7,8 @@ from google_workspace_core.catalog import operation
 from google_workspace_core.scopes import required_scopes
 from google_workspace_core.contracts import body_schema,QUERY_TYPES,S,O,A
 p=ROOT/'harness.json';doc=json.loads(p.read_text())
+# Gateway uses synchronous process execution; every control-plane call must be short.
+doc.setdefault('execution',{})['timeoutMs']=10000
 # Seed locally evaluated onboarding policy from an existing lifecycle-compatible
 # auth command. Rich schemas below remain the semantic source of truth.
 if 'auth.onboarding.decide' not in doc['commands']:
@@ -15,6 +17,11 @@ if 'auth.onboarding.decide' not in doc['commands']:
  template['baseArgv']=['auth.onboarding.decide']
  doc['commands']['auth.onboarding.decide']=template
 ADDITIONS={
+ 'auth.login.start':('Start detached Google OAuth authorization and return an opaque handle.',('secretUse','authReuse','externalSideEffect','humanAccountAction'),'auth.login'),
+ 'auth.login.status':('Read sanitized detached OAuth authorization status.',('secretUse','authReuse','readOnly'),'auth.login'),
+ 'auth.login.finalize':('Atomically bind a completed detached OAuth credential.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.login'),
+ 'auth.login.cancel':('Cancel and clean up a detached OAuth authorization.',('secretUse','authReuse','writeSafe','humanAccountAction'),'auth.login'),
+ 'auth.login.recover':('Reconcile bounded detached OAuth job state without provider calls.',('secretUse','authReuse','writeSafe'),'auth.login'),
  'auth.bindings.list':('List pod-local credential aliases and sanitized metadata.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
  'auth.bindings.status':('Validate binding registry, bundle shape, and identity.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
  'auth.bindings.resolve':('Resolve one alias to sanitized metadata without exposing a path.',('secretUse','authReuse','readOnly'),'auth.accounts.list'),
@@ -119,6 +126,8 @@ for cmd,c in commands.items():
    c.setdefault('argMap',[]).insert(1,{'arg':'credentialPath','type':'option','flag':'--credential-path','valueType':'path','pathRole':'input','optional':True})
  if cmd.startswith('auth.'):
   props['params']={'type':'object','additionalProperties':False,'properties':{}}
+  props['handle']=S(pattern='^[A-Za-z0-9_-]{43}$',maxLength=43)
+  props['maxJobs']={'type':'integer','minimum':1,'maximum':100,'default':20}
   if cmd=='auth.onboarding.decide':
    props['body']=O({
     'projectInOrganization':{'type':'boolean'},
@@ -129,19 +138,26 @@ for cmd,c in commands.items():
    },required=['projectInOrganization','allIntendedUsersOrganizationMembers','externalPublishingStatus','usesNonBasicScopes','usesRestrictedGmailOrDriveScopes'])
    s['required']=list(dict.fromkeys(s['required']+['body']))
   elif cmd=='auth.scopes.check': props['body']=O({'profiles':A(S(),maxItems=32)})
-  elif cmd=='auth.login':
+  elif cmd in ('auth.login','auth.login.start'):
    props['body']=O({
     'clientPath':S(),
-    'profiles':A(S(),maxItems=32),
-   'managedBrowserDevtoolsUrl':S(),
-   'smokeTests':A(S(enum=['gmail','calendar','drive']),maxItems=3),
-    'bind':{'type':'boolean'},
+    'profiles':A(S(enum=['identity','workspace-max','gmail-read','gmail-compose','gmail-modify','gmail-settings','calendar-read','calendar-events','drive-file','drive-read','drive-manage']),minItems=1,maxItems=32),
+    'managedBrowserDevtoolsUrl':S(),
+    'smokeTests':A(S(enum=['gmail','calendar','drive']),uniqueItems=True,maxItems=3),
+    'bind':{'type':'boolean','const':True},
    },required=['clientPath','profiles'])
-   # Human consent is bounded at ten minutes. The process timeout below must
-   # outlive that receiver window and the final token/identity exchanges.
    props['timeoutMs']['minimum']=5000;props['timeoutMs']['maximum']=600000;props['timeoutMs']['default']=600000
    s['required']=[name for name in s['required'] if name!='outputPath']
    s['required']=list(dict.fromkeys(s['required']+['account','body','transferRoot']))
+   if cmd=='auth.login.start':exact_surface(c,s,('account','transferRoot','body','timeoutMs','overwrite','confirm','requestId'))
+  elif cmd in ('auth.login.status','auth.login.finalize','auth.login.cancel'):
+   props['body']=O({});s['required']=['handle']
+   c.setdefault('argMap',[]).append({'arg':'handle','type':'option','flag':'--handle','valueType':'string','optional':False})
+   exact_surface(c,s,('handle','requestId'))
+  elif cmd=='auth.login.recover':
+   props['body']=O({});s['required']=[]
+   c.setdefault('argMap',[]).extend([{'arg':'handle','type':'option','flag':'--handle','valueType':'string','optional':True},{'arg':'maxJobs','type':'option','flag':'--max-jobs','valueType':'number','optional':True}])
+   exact_surface(c,s,('handle','maxJobs','requestId'))
   elif cmd=='auth.bindings.import':
    props['body']=O({'mode':S(enum=['copy','reference']),'sourceAlias':S()});s['required']=list(dict.fromkeys(s['required']+['account','inputPath']))
    exact_surface(c,s,('account','inputPath','body','overwrite','preview','dryRun','confirm','requestId'))
@@ -216,6 +232,12 @@ def lifecycle_schema(node):
  return out
 
 for command in commands.values():
+ # Generation may rehydrate an already-generated manifest; keep argv entries deterministic.
+ seen=set();dedup=[]
+ for arg in command.get('argMap',[]):
+  key=arg.get('arg')
+  if key not in seen:seen.add(key);dedup.append(arg)
+ command['argMap']=dedup
  # Batch items are intentionally typed from the command's own accepted fields.
  schema=command['inputSchema'];item_props={k:v for k,v in schema.get('properties',{}).items() if k!='batch'}
  if 'batch' in schema.get('properties',{}):

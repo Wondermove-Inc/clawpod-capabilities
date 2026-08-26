@@ -207,6 +207,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -215,6 +227,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -482,6 +506,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -490,6 +526,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -642,8 +690,22 @@
               "items": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 4096
+                "maxLength": 4096,
+                "enum": [
+                  "identity",
+                  "workspace-max",
+                  "gmail-read",
+                  "gmail-compose",
+                  "gmail-modify",
+                  "gmail-settings",
+                  "calendar-read",
+                  "calendar-events",
+                  "drive-file",
+                  "drive-read",
+                  "drive-manage"
+                ]
               },
+              "minItems": 1,
               "maxItems": 32
             },
             "managedBrowserDevtoolsUrl": {
@@ -663,10 +725,12 @@
                   "drive"
                 ]
               },
+              "uniqueItems": true,
               "maxItems": 3
             },
             "bind": {
-              "type": "boolean"
+              "type": "boolean",
+              "const": true
             }
           },
           "required": [
@@ -787,8 +851,22 @@
                     "items": {
                       "type": "string",
                       "minLength": 1,
-                      "maxLength": 4096
+                      "maxLength": 4096,
+                      "enum": [
+                        "identity",
+                        "workspace-max",
+                        "gmail-read",
+                        "gmail-compose",
+                        "gmail-modify",
+                        "gmail-settings",
+                        "calendar-read",
+                        "calendar-events",
+                        "drive-file",
+                        "drive-read",
+                        "drive-manage"
+                      ]
                     },
+                    "minItems": 1,
                     "maxItems": 32
                   },
                   "managedBrowserDevtoolsUrl": {
@@ -808,10 +886,12 @@
                         "drive"
                       ]
                     },
+                    "uniqueItems": true,
                     "maxItems": 3
                   },
                   "bind": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "const": true
                   }
                 },
                 "required": [
@@ -840,9 +920,33 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -1110,6 +1214,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -1118,6 +1234,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -1380,9 +1508,33 @@
               "expectedSha256": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -1670,6 +1822,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -1678,6 +1842,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -1945,6 +2121,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -1953,6 +2141,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     },
@@ -57317,6 +57517,18 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 4096
+              },
+              "handle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 43,
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "maxJobs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20
               }
             }
           }
@@ -57325,6 +57537,18 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4096
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       },
       "additionalProperties": false
@@ -58513,5 +58737,468 @@
     "requiredScopes": [
       "https://www.googleapis.com/auth/drive.readonly"
     ]
+  },
+  "auth.login.start": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "transferRoot",
+        "account"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 5000,
+          "maximum": 600000,
+          "default": 600000
+        },
+        "confirm": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "clientPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "profiles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "enum": [
+                  "identity",
+                  "workspace-max",
+                  "gmail-read",
+                  "gmail-compose",
+                  "gmail-modify",
+                  "gmail-settings",
+                  "calendar-read",
+                  "calendar-events",
+                  "drive-file",
+                  "drive-read",
+                  "drive-manage"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 32
+            },
+            "managedBrowserDevtoolsUrl": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "smokeTests": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "enum": [
+                  "gmail",
+                  "calendar",
+                  "drive"
+                ]
+              },
+              "uniqueItems": true,
+              "maxItems": 3
+            },
+            "bind": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "clientPath",
+            "profiles"
+          ]
+        },
+        "transferRoot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "overwrite": {
+          "type": "boolean"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.login.status": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handle"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.login.finalize": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handle"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.login.cancel": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handle"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
+  },
+  "auth.login.recover": {
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[ -~]{1,128}$"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "maxJobs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "requestId",
+        "effects",
+        "provenance"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "command": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "account": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "array"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "requiredScopes": []
   }
 }
