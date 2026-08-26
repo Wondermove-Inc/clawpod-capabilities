@@ -74,3 +74,51 @@ def test_app_lifecycle_covers_status_update_rollback_repair_and_failures() -> No
         "display/D-Bus/AT-SPI", "IME", "font", "crash",
     ):
         assert phrase in app
+
+
+def test_hwp_skill_requires_exclusive_gui_lease_and_safe_replacement() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    for phrase in (
+        "HOP_GUI_BUSY", "logical lease", "owner/session 또는 Workboard card",
+        "cancel/reclaim", "attempt 중지를 확인", "expiry만으로 takeover",
+        "fresh revision", "PID/window identity", "CIFS mount", "source SHA-256",
+    ):
+        assert phrase in text
+
+
+def test_document_operations_define_clipboard_phase_state_machine() -> None:
+    docs = (SKILL.parent / "references" / "document-operations.md").read_text(encoding="utf-8")
+    for phrase in (
+        "HOP 단일 GUI 소유권과 인계", "CONTENT_PENDING_PASTE", "CONTENT_PASTED_VERIFIED",
+        "PATH_PENDING_DIALOG", "PATH_CONSUMED_VERIFIED", "CLIPBOARD_PHASE_VIOLATION",
+        "representative Korean anchor", "confirmed HTTP 415", "one-file ZIP",
+    ):
+        assert phrase in docs
+    assert docs.index("CONTENT_PENDING_PASTE") < docs.index("PATH_PENDING_DIALOG")
+
+
+def test_hwp_safeguard_fixture_covers_positive_failure_and_concurrency_traces() -> None:
+    fixture = json.loads((ROOT / "tests" / "fixtures" / "hwp_desktop_safeguards.json").read_text(encoding="utf-8"))
+    assert set(fixture) == {"positive", "failure", "concurrency"}
+    assert set(fixture["positive"]) == {
+        "isolated_content_then_save", "raw_hwp_415_zip_fallback", "stale_owner_replaced_safely",
+    }
+    assert set(fixture["failure"]) == {
+        "path_overwrites_unpasted_content", "paste_not_visibly_korean", "cifs_missing_or_wrong_source",
+        "source_hash_changed", "raw_hwp_415_without_zip_permission_or_packaging_success",
+    }
+    assert set(fixture["concurrency"]) == {
+        "second_worker_same_instance", "expired_lease_but_worker_running",
+        "stale_worker_closes_during_paste", "two_windows_one_process",
+    }
+    assert fixture["failure"]["path_overwrites_unpasted_content"]["error"] == "CLIPBOARD_PHASE_VIOLATION"
+    assert fixture["concurrency"]["second_worker_same_instance"]["worker_b_gui_process_actions"] == 0
+
+
+def test_hwp_refinement_does_not_add_duplicate_skill_or_harness() -> None:
+    assert [path.parent.name for path in (ROOT / "skills").glob("hwp-desktop/SKILL.md")] == ["hwp-desktop"]
+    assert not (ROOT / "harnesses" / "hwp-desktop").exists()
+    registry = json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))["capabilities"]
+    entries = [entry for entry in registry if entry["id"] == "hwp-desktop"]
+    assert len(entries) == 1
+    assert entries[0]["type"] == "skill"
