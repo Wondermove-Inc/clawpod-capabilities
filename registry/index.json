@@ -1458,7 +1458,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "789b9c3684dbcabca8c70d18c1aa40b7cf25259ca739131cf9500391adb35e39"
+          "sha256": "cedd61fecd10443e30624d6c45109d39634af40edd2f3b8994851980d0ad2e93"
+        },
+        {
+          "path": "references/app-lifecycle.md",
+          "sha256": "683564219fa251bee1e0a558c37441ecdf76b04a0056800c5a72247e037c972f"
+        },
+        {
+          "path": "references/document-operations.md",
+          "sha256": "b98a0e01fe7a2f907f464927ba10fa41a610ae1e022aa55acf2dbc958f447216"
+        },
+        {
+          "path": "references/feature-inventory.md",
+          "sha256": "d4b80aad6dede6282f0c56717350459da1c83520201bd61b9b0484e7c3bd3691"
         }
       ]
     },
