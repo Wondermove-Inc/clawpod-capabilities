@@ -1,12 +1,12 @@
 from __future__ import annotations
-import json, os, stat, time, urllib.error, urllib.parse, urllib.request
+import json, os, time, urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 
 class AuthError(Exception):
     def __init__(self,message,code="AUTH_REQUIRED",details=None):
         super().__init__(message);self.code=code;self.details=details or {}
 class CredentialProvider:
-    """Injected credential-file provider. Files must be private and are never copied."""
+    """Injected credential-file provider. Authentication requires an existing, parseable file."""
     def __init__(self,path=None,allow_environment_path=True):
         self.explicit_path=path
         self.path=path or (os.environ.get("GOOGLE_WORKSPACE_CREDENTIAL_FILE") if allow_environment_path else None)
@@ -15,32 +15,12 @@ class CredentialProvider:
     def read_document(self):
         if not self.path: raise AuthError("credential provider is required")
         p=Path(self.path)
+        if not p.exists(): raise AuthError("credential file is unavailable")
         try:
-            from .bindings import _check_parent_chain
-            _check_parent_chain(p)
-        except Exception as exc:
-            raise AuthError(str(exc),getattr(exc,"code","AUTH_REQUIRED"),getattr(exc,"details",{})) from None
-        flags=os.O_RDONLY|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0)
-        try:
-            fd=os.open(p,flags);info=os.fstat(fd);current=p.lstat()
-        except OSError: raise AuthError("credential file is unavailable") from None
-        try:
-            if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode): raise AuthError("credential file must be a regular non-symlink file")
-            if hasattr(os,"geteuid") and info.st_uid!=os.geteuid():raise AuthError("credential file is not owned by the current user")
-            if os.name!="nt" and (stat.S_IMODE(info.st_mode)!=0o600 or info.st_nlink!=1): raise AuthError("credential file must be private and have one link")
-            if (info.st_dev,info.st_ino)!=(current.st_dev,current.st_ino):raise AuthError("credential file changed while opening")
-            if info.st_size>64*1024*1024:raise AuthError("credential file exceeds the size limit")
-            raw=b"";remaining=64*1024*1024+1
-            while remaining:
-                chunk=os.read(fd,min(65536,remaining))
-                if not chunk:break
-                raw+=chunk;remaining-=len(chunk)
-            after=os.fstat(fd)
-            if len(raw)>64*1024*1024 or (info.st_dev,info.st_ino,info.st_size)!=(after.st_dev,after.st_ino,after.st_size):raise AuthError("credential file changed while reading")
-            return json.loads(raw.decode("utf-8"))
-        except AuthError:raise
-        except (OSError,UnicodeError,ValueError):raise AuthError("credential file is malformed or unreadable") from None
-        finally:os.close(fd)
+            if p.stat().st_size>64*1024*1024: raise AuthError("credential file exceeds the size limit")
+            return json.loads(p.read_text(encoding="utf-8"))
+        except AuthError: raise
+        except (OSError,UnicodeError,ValueError): raise AuthError("credential file is malformed or unreadable") from None
     def load(self,alias):
         if not self.path:
             try:

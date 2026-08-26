@@ -13,7 +13,6 @@ from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_
 from .bindings import (BindingError,binding_root,ensure_root,list_bindings,normalize_alias,resolve_binding,
  plan_import,import_binding,plan_rename,rename_binding,plan_remove,remove_binding,
  register_staged_binding)
-from .permissions import check_permissions,plan_repair,repair_permissions
 from .migration import plan_migration,apply_migration
 from .high_level_reads import normalize as normalize_high_level
 
@@ -27,7 +26,7 @@ def envelope(command,payload,account=None):
 def fail(command,payload,code,message,status=None,reason=None,account=None,details=None):
  out=envelope(command,payload,account);out["ok"]=False;out.pop("data",None);out.pop("page",None);out["error"]={"code":code,"message":message,"retryable":code in ("RATE_LIMITED","TRANSIENT","TIMEOUT","NETWORK_ERROR"),"providerStatus":status,"providerReason":reason,"details":redact(details or {}),"remediation":remediation(code)};return out,EXIT.get(code,12)
 def remediation(code):
- return {"APPROVAL_REQUIRED":"Run --preview, obtain approval for the effect digest, then pass --confirm","AUTH_REQUIRED":"Inject an approved mode-0600 OAuth credential file/provider","SYNC_TOKEN_EXPIRED":"Perform a fresh full synchronization","AMBIGUOUS_COMMIT":"Reconcile using the returned request fingerprint before retrying"}.get(code,"Review the sanitized error and correct the request")
+ return {"APPROVAL_REQUIRED":"Run --preview, obtain approval for the effect digest, then pass --confirm","AUTH_REQUIRED":"Inject an approved existing OAuth credential file/provider","SYNC_TOKEN_EXPIRED":"Perform a fresh full synchronization","AMBIGUOUS_COMMIT":"Reconcile using the returned request fingerprint before retrying"}.get(code,"Review the sanitized error and correct the request")
 def provider_error(e):
  if e.status==401:return "AUTH_EXPIRED"
  if e.status==404:return "NOT_FOUND"
@@ -50,28 +49,18 @@ def local_auth(command,payload,out):
   try:
    if sub=="list":items,revision=list_bindings();out["data"]={"items":items,"revision":revision};return out,0
    if sub=="status":
-    checks=check_permissions();permission_healthy=all(x["passed"] for x in checks)
-    data={"items":[],"revision":None,"permissionChecks":checks,"permissionHealthy":permission_healthy,"healthy":False}
-    bootstrap_artifact_absent=any(x.get("checkId") in {"registryPresent","credentialsDirectoryPresent","backupsDirectoryPresent"}
-                                  and x.get("present") is False for x in checks)
-    if permission_healthy and not bootstrap_artifact_absent:
-     try:
-      items,revision=list_bindings(validate_paths=True);data.update({"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)})
-     except BindingError as status_error:
-      data["bindingStatus"]={"available":False,"code":status_error.code}
-    elif permission_healthy:
-     data["bindingStatus"]={"available":False,"code":"BINDING_NOT_FOUND"}
-    out["data"]=data;return out,0
+    try:
+     items,revision=list_bindings(validate_paths=True);out["data"]={"items":items,"revision":revision,"healthy":all(x["healthy"] for x in items)}
+    except BindingError as status_error:
+     out["data"]={"items":[],"revision":None,"healthy":False,"bindingStatus":{"available":False,"code":status_error.code}}
+    return out,0
    if sub=="resolve":
     resolved,_,_,item,revision=resolve_binding(alias);out["data"]={"resource":{"alias":resolved,"subjectHash":item["subjectHash"],"emailHint":item.get("emailHint"),"portable":not item.get("externalReference",False),"revision":revision}};return out,0
-   if sub=="permissions.check":
-    checks=check_permissions();out["data"]={"checks":checks,"healthy":all(x["passed"] for x in checks)};return out,0
-   writes={"import","rename","remove","migrate","permissions.repair"}
+   writes={"import","rename","remove","migrate"}
    if sub not in writes:return fail(command,payload,"INVALID_ARGUMENT","unknown bindings action",account=alias)
    if sub=="import":target=plan_import(alias,payload["inputPath"],body.get("mode","copy"),body.get("sourceAlias"),payload.get("overwrite",False))
    elif sub=="rename":target=plan_rename(alias,body["newAlias"])
    elif sub=="remove":target=plan_remove(alias,body.get("deleteCredential",False))
-   elif sub=="permissions.repair":target=plan_repair()
    else:target=plan_migration([payload["inputPath"]],body.get("mappings"))
    if payload.get("preview") or payload.get("dryRun"):
     token=issue_preview(command,alias,payload,target,None);recoverability=target.get("recoverability","local-metadata");out["effects"]=[{"kind":"planned","targets":target,"before":None,"after":{"operation":sub},"recoverability":recoverability,"effectDigest":token}];out["data"]={"preview":True,"dryRun":bool(payload.get("dryRun")),"effectDigest":token,"plan":target};return out,0
@@ -82,8 +71,6 @@ def local_auth(command,payload,out):
    if sub=="import":doc=import_binding(alias,payload["inputPath"],body.get("mode","copy"),body.get("sourceAlias"),payload.get("overwrite",False),expected_revision=expected);resource={"alias":alias,"revision":doc["revision"]}
    elif sub=="rename":doc=rename_binding(alias,body["newAlias"],expected_revision=expected);resource={"alias":body["newAlias"],"revision":doc["revision"],"identityUnchanged":True}
    elif sub=="remove":doc=remove_binding(alias,body.get("deleteCredential",False),expected_revision=expected);resource={"alias":alias,"removed":True,"credentialDeleted":bool(body.get("deleteCredential",False)),"revision":doc["revision"]}
-   elif sub=="permissions.repair":
-    repaired,_=repair_permissions(expected_plan=target);resource={"repairedCategories":repaired}
    else:
     migrated,revision,_=apply_migration([payload["inputPath"]],body.get("mappings"),None);resource={"migrated":migrated,"revision":revision}
    out["data"]={"resource":resource};out["effects"]=[{"kind":"confirmed","resourceIds":[alias] if alias else [],"effectDigest":payload["confirm"],"recoverability":target.get("recoverability","local-metadata")}];return out,0

@@ -1,10 +1,10 @@
 """One-shot Google installed-app OAuth using a private loopback receiver.
 
-Only sanitized metadata is returned. Secret material is written atomically to a
-mode-0600 credential bundle and is never logged or returned.
+Only sanitized metadata is returned. Secret material is written atomically and is
+never logged or returned.
 """
 from __future__ import annotations
-import base64, hashlib, hmac, ipaddress, json, os, re, secrets, stat, threading, time, urllib.parse, urllib.request, webbrowser
+import base64, hashlib, hmac, ipaddress, json, os, re, secrets, threading, time, urllib.parse, urllib.request, webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from .security import safe_path
@@ -32,10 +32,10 @@ _BROADER={
 
 def _private_file(root, relative, *, existing=True):
     if not root or not relative or Path(relative).is_absolute(): raise LoginError("transferRoot and a relative path are required")
-    try: p=safe_path(root,relative,output=not existing)
-    except Exception as e: raise LoginError(str(e)) from None
-    if existing and (not p.is_file() or p.is_symlink()): raise LoginError("input must be a regular non-symlink file")
-    if p.exists() and os.name!="nt" and stat.S_IMODE(p.stat().st_mode)!=0o600: raise LoginError("file must be mode 0600")
+    base=Path(root).resolve();p=(base/relative).resolve()
+    try:p.relative_to(base)
+    except ValueError:raise LoginError("path escapes the transfer root") from None
+    if existing and not p.exists(): raise LoginError("OAuth authentication file is unavailable")
     return p
 
 def _client(path):
@@ -66,39 +66,17 @@ def _smoke_request(url, token, timeout):
     except Exception: raise LoginError("post-login smoke test failed") from None
 
 def _atomic_bundle(path, doc, overwrite):
-    data=(json.dumps(doc,sort_keys=True,separators=(",",":"),ensure_ascii=False)+"\n").encode();name="."+path.name+"."+secrets.token_hex(8)+".part";fd=dir_fd=None
+    data=(json.dumps(doc,sort_keys=True,separators=(",",":"),ensure_ascii=False)+"\n").encode();tmp=path.parent/("."+path.name+"."+secrets.token_hex(8)+".part")
     try:
-        dir_fd=os.open(path.parent,os.O_RDONLY|getattr(os,"O_DIRECTORY",0)|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0))
-        parent=os.fstat(dir_fd)
-        if not stat.S_ISDIR(parent.st_mode):raise LoginError("output parent is unsafe")
-        fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0),0o600,dir_fd=dir_fd)
-        fchown=getattr(os,"fchown",None)
-        if fchown is None:raise LoginError("descriptor ownership control is unavailable")
-        fchown(fd,parent.st_uid,parent.st_gid)
-        os.fchmod(fd,0o600)
-        offset=0
-        while offset<len(data):
-            written=os.write(fd,data[offset:])
-            if written<=0:raise OSError("short credential write")
-            offset+=written
-        os.fsync(fd);info=os.fstat(fd);current=os.stat(name,dir_fd=dir_fd,follow_symlinks=False)
-        if not stat.S_ISREG(info.st_mode) or info.st_nlink!=1 or stat.S_IMODE(info.st_mode)!=0o600 or info.st_gid!=parent.st_gid or (info.st_dev,info.st_ino,info.st_size)!=(current.st_dev,current.st_ino,current.st_size) or info.st_size!=len(data):raise LoginError("credential output changed during creation")
-        os.close(fd);fd=None
-        if overwrite: os.replace(name,path.name,src_dir_fd=dir_fd,dst_dir_fd=dir_fd)
-        else:
-            try: os.link(name,path.name,src_dir_fd=dir_fd,dst_dir_fd=dir_fd,follow_symlinks=False);os.unlink(name,dir_fd=dir_fd)
-            except FileExistsError: raise LoginError("output exists; pass overwrite explicitly") from None
-        final=os.stat(path.name,dir_fd=dir_fd,follow_symlinks=False)
-        if not stat.S_ISREG(final.st_mode) or final.st_nlink!=1 or stat.S_IMODE(final.st_mode)!=0o600 or final.st_gid!=parent.st_gid:raise LoginError("credential output verification failed")
-        os.fsync(dir_fd)
+        path.parent.mkdir(parents=True,exist_ok=True)
+        if path.exists() and not overwrite:raise LoginError("output exists; explicit overwrite is required")
+        fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        with os.fdopen(fd,"wb") as handle:
+            handle.write(data);handle.flush();os.fsync(handle.fileno())
+        os.replace(tmp,path)
     except LoginError:raise
-    except OSError:raise LoginError("credential output could not be committed safely") from None
-    finally:
-        if fd is not None: os.close(fd)
-        if dir_fd is not None:
-            try: os.unlink(name,dir_fd=dir_fd)
-            except FileNotFoundError: pass
-            os.close(dir_fd)
+    except OSError:raise LoginError("credential output could not be written") from None
+    finally:tmp.unlink(missing_ok=True)
 
 def _receiver(state, timeout, server_factory=HTTPServer):
     result={};done=threading.Event(); expected_host={"127.0.0.1"}
@@ -214,7 +192,6 @@ def desktop_login(*, transfer_root, client_path, output_path, alias, profiles, t
     if set(smoke_services)-{"gmail","calendar","drive"}: raise LoginError("unknown smoke test service")
     existing={"accounts":{}}
     if op.exists():
-        if os.name!="nt" and stat.S_IMODE(op.stat().st_mode)!=0o600: raise LoginError("existing output must be mode 0600")
         try: existing=json.loads(op.read_text());accounts=existing.get("accounts",existing)
         except Exception: raise LoginError("existing credential bundle is malformed") from None
         if alias in accounts: raise LoginError("account alias already exists")

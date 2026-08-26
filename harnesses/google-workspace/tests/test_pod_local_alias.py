@@ -1,6 +1,5 @@
 import json
 import os
-import stat
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -14,12 +13,10 @@ from google_workspace_core.auth import CredentialProvider
 from google_workspace_core.bindings import (
     BindingError, binding_root, import_binding, list_bindings, normalize_alias,
     remove_binding, rename_binding, resolve_binding, restore_registry_backup,
-    _check_parent_chain, _verify_parent_snapshot,
 )
 from google_workspace_core.core import run
 from google_workspace_core.high_level_reads import normalize
 from google_workspace_core.migration import apply_migration, preview_candidates
-from google_workspace_core.permissions import check_permissions, repair_permissions
 from google_workspace_core.security import redact
 
 
@@ -77,7 +74,7 @@ def test_explicit_path_precedence_and_binding_default(tmp_path, monkeypatch):
     assert implicit.resolved_alias == "work"
 
 
-def test_schema_corruption_permissions_migration_and_redaction(tmp_path):
+def test_schema_migration_ignores_credential_mode_and_redacts(tmp_path):
     root = tmp_path / "state"; source = bundle(tmp_path / "legacy.json")
     candidates = preview_candidates([str(source)])
     assert candidates[0]["healthy"] and str(source) not in json.dumps(candidates)
@@ -85,9 +82,7 @@ def test_schema_corruption_permissions_migration_and_redaction(tmp_path):
     assert results[0]["alias"] == "work"
     assert revision == 2
     credential = next((root / "credentials").iterdir()); credential.chmod(0o644)
-    assert not all(item["passed"] for item in check_permissions(root))
-    repaired, _plan = repair_permissions(root)
-    assert "file" in repaired and stat.S_IMODE(credential.stat().st_mode) == 0o600
+    assert resolve_binding("work", root)[0] == "work"
     canary = {"nested": [{"credentialRef": str(source), "providerResponse": "CANARY"}], "message": "Bearer CANARY"}
     output = json.dumps(redact(canary))
     assert "CANARY" not in output and str(source) not in output
@@ -118,8 +113,8 @@ def forge_binding_root(tmp_path):
 def synthetic_forge_location(monkeypatch):
     synthetic = lambda paths: [path.name for path in paths] == \
         ["root", ".local", "state", "openclaw", "google-workspace"]
-    monkeypatch.setattr("google_workspace_core.bindings._exact_governed_location", synthetic)
-    monkeypatch.setattr("google_workspace_core.permissions._exact_forge_location", synthetic)
+    # Retained as a compatibility fixture for binding-location tests. Runtime
+    # authentication no longer inspects ownership or filesystem modes.
 
 
 def test_forge_2777_process_root_binding_commands_and_alias_reads(tmp_path, monkeypatch):
@@ -152,42 +147,27 @@ def test_forge_2777_process_root_binding_commands_and_alias_reads(tmp_path, monk
         assert out["account"]["alias"] == "work"
 
 
-def test_forge_shared_parent_requires_exact_mode_and_private_boundary(tmp_path):
+def test_forge_shared_parent_modes_do_not_gate_bindings(tmp_path):
     source = bundle(tmp_path / "legacy.json")
     shared, root = forge_binding_root(tmp_path)
     import_binding("work", source, source_alias="legacy", root=root)
 
     shared.chmod(0o0777)
-    with pytest.raises(BindingError, match="writable by another user"):
-        list_bindings(root)
+    assert list_bindings(root)[0][0]["alias"] == "work"
 
     shared.chmod(0o2777)
     root.chmod(0o0770)
-    with pytest.raises(BindingError, match="writable by another user|containment boundary|unsafe type or permissions"):
-        list_bindings(root)
+    assert list_bindings(root)[0][0]["alias"] == "work"
 
 
-def test_binding_forge_exception_preserves_link_escape_and_race_rejections(tmp_path):
+def test_binding_file_links_do_not_gate_resolution(tmp_path):
     shared, root = forge_binding_root(tmp_path)
     import_binding("work", bundle(tmp_path / "legacy.json"), source_alias="legacy", root=root)
 
     credential = next((root / "credentials").iterdir())
     os.link(credential, tmp_path / "second-link.json")
-    with pytest.raises(BindingError, match="hard link"):
-        resolve_binding("work", root)
+    assert resolve_binding("work", root)[0] == "work"
     (tmp_path / "second-link.json").unlink()
-
-    link = root.parent / "linked-root"
-    link.symlink_to(root, target_is_directory=True)
-    with pytest.raises(BindingError, match="unsafe"):
-        list_bindings(link)
-
-    probe = root / "bindings.v1.json"
-    snapshot = _check_parent_chain(probe)
-    moved = shared / "moved-local"
-    (shared / ".local").rename(moved)
-    with pytest.raises(BindingError, match="changed"):
-        _verify_parent_snapshot(snapshot)
 
 
 def test_readonly_registry_absence_race_fails_without_bootstrap(tmp_path):

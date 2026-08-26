@@ -4,7 +4,7 @@ Each installed agent issues and stores its own Google OAuth credential on that a
 
 ## User-facing preflight and immediate post-install handoff
 
-Immediately after installation and validation, inspect whether the selected alias has a usable credential. If it does not, say that the capability is **installed but not yet connected**, identify the intended alias, explain `workspace-max`, the managed-browser consent flow, protected agent-local mode-0600 storage, revocation, and that later sends/shares/deletes still need approval. Ask: **“Start Google Workspace authorization now?”** Explain that this includes the durability setup, using the exact resume label **“Start Google Workspace authorization and durability setup now?”** Continue only after an explicit affirmative response in the current conversation. Do not open a browser, inspect private console state, invoke `auth.login`, or create credential state before that response.
+Immediately after installation and validation, inspect whether the selected alias has a usable credential. If it does not, say that the capability is **installed but not yet connected**, identify the intended alias, explain `workspace-max`, the managed-browser consent flow, protected agent-local storage, revocation, and that later sends/shares/deletes still need approval. Ask: **“Start Google Workspace authorization now?”** Explain that this includes the durability setup, using the exact resume label **“Start Google Workspace authorization and durability setup now?”** Continue only after an explicit affirmative response in the current conversation. Do not open a browser, inspect private console state, invoke `auth.login`, or create credential state before that response.
 
 Tell the owner that the agent will perform every automatable console step. The owner is needed only for Google login/MFA, legally meaningful final Publish/verification/admin approvals, and Google review. If deferred, record authorization as pending and give the exact resume action.
 
@@ -46,7 +46,7 @@ Prepare the narrow trusted-app or admin authorization required for the intended 
 Only after the applicable audience, verification, and admin gates are confirmed:
 
 1. Start/inspect that agent's OpenClaw-managed browser and obtain its literal loopback CDP URL.
-2. Place Desktop/installed-client JSON under a private transfer root as a regular mode-0600 file.
+2. Place Desktop/installed-client JSON under the selected transfer root; it only needs to exist and parse as an installed/Desktop OAuth client.
 3. Run the existing `auth.login` flow unchanged with a stable alias, `workspace-max`, relative client/output paths, local browser URL, at most ten minutes, and Gmail/Calendar/Drive smoke tests.
 4. The owner performs only sign-in/MFA, account choice, consent review, and consent confirmation. The agent handles callback validation and storage.
 5. Verify the configured Audience in Cloud Console; verify the authorized account's membership and domain against the intended audience; verify `auth.accounts.status`, identity, and the actually granted scopes; then verify sanitized Gmail, Calendar, and Drive smoke-test counts. A successful login alone is not sufficient.
