@@ -1,0 +1,29 @@
+{
+  "positive": {
+    "isolated_content_then_save": {
+      "trace": ["lease_acquired", "cifs_healthy", "source_hash_recorded", "residual_process_absent", "fresh_hop_bound", "CONTENT_PENDING_PASTE", "paste", "korean_anchors_visible", "CONTENT_PASTED_VERIFIED", "PATH_PENDING_DIALOG", "PATH_CONSUMED_VERIFIED", "reopen_verified", "pdf_verified", "source_hash_unchanged", "lease_released"],
+      "outcome": "success"
+    },
+    "raw_hwp_415_zip_fallback": {
+      "trace": ["final_hwp_hash_recorded", "raw_room_upload_http_415_confirmed", "one_file_zip_byte_identical", "zip_contents_recorded", "pdf_direct_delivery_allowed"],
+      "outcome": "zip_fallback"
+    },
+    "stale_owner_replaced_safely": {
+      "trace": ["stale_attempt_cancel_reclaim", "attempt_stopped_confirmed", "desktop_input_released", "forge_residual_reobserved_removed", "new_lease_acquired", "fresh_pid_window_differs"],
+      "outcome": "success"
+    }
+  },
+  "failure": {
+    "path_overwrites_unpasted_content": {"from": "CONTENT_PENDING_PASTE", "event": "path_write", "error": "CLIPBOARD_PHASE_VIOLATION", "forbidden": ["format", "save", "export", "delivery"]},
+    "paste_not_visibly_korean": {"event": "paste_dispatched_without_korean_anchor", "outcome": "blocked", "state_must_not_be": "CONTENT_PASTED_VERIFIED", "forbidden": ["path_clipboard", "save"]},
+    "cifs_missing_or_wrong_source": {"event": "mount_absent_wrong_source_stale_or_read_only", "outcome": "blocked_before_file_action", "automatic_remount": false},
+    "source_hash_changed": {"event": "before_after_sha256_mismatch", "outcome": "hard_failure", "actions": ["quarantine_outputs", "report"], "delivery": false},
+    "raw_hwp_415_without_zip_permission_or_packaging_success": {"event": "zip_fallback_unavailable", "outcome": "delivery_blocked", "alter_or_convert_hwp": false}
+  },
+  "concurrency": {
+    "second_worker_same_instance": {"event": "owner_a_holds_lease_worker_b_requests_control", "error": "HOP_GUI_BUSY", "worker_b_gui_process_actions": 0},
+    "expired_lease_but_worker_running": {"event": "heartbeat_expired_attempt_active", "outcome": "no_takeover_or_kill", "requires": ["cancel_reclaim_confirmed", "desktop_process_reobserved_clean"]},
+    "stale_worker_closes_during_paste": {"event": "stale_owner_close_relaunch", "outcome": "stale_action_rejected", "replacement_window_stable": true},
+    "two_windows_one_process": {"event": "two_actors_two_windows_shared_process", "error": "HOP_GUI_BUSY", "ownership_domain": "desktop_session_display_plus_hop_process"}
+  }
+}
