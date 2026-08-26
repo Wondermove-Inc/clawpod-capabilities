@@ -90,7 +90,8 @@
     ],
     "adjacent": [
       "verified-research",
-      "desktop"
+      "desktop",
+      "hwp-desktop"
     ]
   },
   "clawpod-org-operations": {
@@ -332,7 +333,8 @@
     "adjacent": [
       "clawpod-ocr",
       "clawpod-image-studio",
-      "clawpod-node-host"
+      "clawpod-node-host",
+      "hwp-desktop"
     ]
   },
   "soc-event-correlation": {
@@ -365,6 +367,22 @@
     "adjacent": [
       "claude-design",
       "clawpod-image-studio"
+    ]
+  },
+  "hwp-desktop": {
+    "positive": [
+      "Edit an HWP document on Linux with persistent HOP and Desktop",
+      "Open an HWPX working copy in HOP and preserve the original",
+      "Provision or roll back the persistent HOP AppImage after explicit approval"
+    ],
+    "negative": [
+      "Extract text from an HWP scan with OCR",
+      "Edit an HWP document in Hancom Docs on the web",
+      "Operate an unrelated native desktop application"
+    ],
+    "adjacent": [
+      "desktop",
+      "clawpod-ocr"
     ]
   }
 }
