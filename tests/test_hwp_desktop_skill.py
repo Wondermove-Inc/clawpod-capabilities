@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "hwp-desktop" / "SKILL.md"
-DESCRIPTION = "Use for Linux HWP/HWPX editing with persistent HOP and Desktop; use Hancom Docs for web editing."
+DESCRIPTION = "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR."
 
 
 def test_description_and_skill_only_surface_are_exact() -> None:
@@ -21,10 +21,12 @@ def test_routing_composes_desktop_without_colliding_with_ocr_or_web_editing() ->
     contracts = json.loads((ROOT / "tests" / "fixtures" / "routing_contracts.json").read_text(encoding="utf-8"))
     contract = contracts["hwp-desktop"]
     assert {"desktop", "clawpod-ocr"} <= set(contract["adjacent"])
-    assert "persistent HOP" in " ".join(contract["positive"])
+    positives = " ".join(contract["positive"])
+    assert "HOP" in positives
+    assert "Desktop" in positives
     negatives = " ".join(contract["negative"])
     assert "OCR" in negatives
-    assert "Hancom Docs" in negatives
+    assert "browser-based office suite" in negatives
     assert "hwp-desktop" in contracts["desktop"]["adjacent"]
     assert "hwp-desktop" in contracts["clawpod-ocr"]["adjacent"]
 

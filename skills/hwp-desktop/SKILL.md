@@ -1,6 +1,6 @@
 ---
 name: "hwp-desktop"
-description: "Use for Linux HWP/HWPX editing with persistent HOP and Desktop; use Hancom Docs for web editing."
+description: "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR."
 ---
 
 # HWP Desktop

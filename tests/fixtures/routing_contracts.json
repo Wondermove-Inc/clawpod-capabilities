@@ -371,13 +371,13 @@
   },
   "hwp-desktop": {
     "positive": [
-      "Edit an HWP document on Linux with persistent HOP and Desktop",
-      "Open an HWPX working copy in HOP and preserve the original",
-      "Provision or roll back the persistent HOP AppImage after explicit approval"
+      "Open and edit an HWP document on Linux with HOP through Desktop",
+      "Save an HWPX working copy in HOP through Desktop while preserving the original",
+      "Export an HWP file to PDF on Linux with HOP through Desktop"
     ],
     "negative": [
-      "Extract text from an HWP scan with OCR",
-      "Edit an HWP document in Hancom Docs on the web",
+      "Extract text from an HWP scan with OCR only",
+      "Edit a spreadsheet in an unrelated browser-based office suite",
       "Operate an unrelated native desktop application"
     ],
     "adjacent": [

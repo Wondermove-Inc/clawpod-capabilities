@@ -1443,7 +1443,7 @@
       "id": "hwp-desktop",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use for Linux HWP/HWPX editing with persistent HOP and Desktop; use Hancom Docs for web editing.",
+      "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR.",
       "path": "skills/hwp-desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1458,7 +1458,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ca96f9e2fb5535942bc01a67113aa4889e5d929a6f2f700a3f7fe9af559d3dff"
+          "sha256": "789b9c3684dbcabca8c70d18c1aa40b7cf25259ca739131cf9500391adb35e39"
         }
       ]
     },
