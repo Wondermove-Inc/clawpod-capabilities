@@ -16,7 +16,7 @@ from .bindings import (BindingError,binding_root,ensure_root,list_bindings,norma
 from .migration import plan_migration,apply_migration
 from .high_level_reads import normalize as normalize_high_level
 
-EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"ACCOUNT_REQUIRED":3,"BINDING_NOT_FOUND":3,"BINDING_AMBIGUOUS":3,"BINDING_IDENTITY_MISMATCH":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"BINDING_PERMISSION_DENIED":4,"BINDING_PERMISSION_INSECURE":4,"NOT_FOUND":5,"CONFLICT":6,"BINDING_CONFLICT":6,"MIGRATION_CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"BINDING_LOCK_TIMEOUT":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"BINDING_PATH_UNSAFE":10,"BINDING_REGISTRY_CORRUPT":10,"BINDING_SCHEMA_UNSUPPORTED":11,"MIGRATION_REQUIRED":11,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
+EXIT={"INVALID_ARGUMENT":2,"INVALID_MIME":2,"INVALID_TIME_ZONE":2,"INVALID_RECURRENCE":2,"AUTH_REQUIRED":3,"AUTH_EXPIRED":3,"ACCOUNT_NOT_FOUND":3,"ACCOUNT_REQUIRED":3,"BINDING_NOT_FOUND":3,"BINDING_AMBIGUOUS":3,"BINDING_IDENTITY_MISMATCH":3,"INSUFFICIENT_SCOPE":4,"PERMISSION_DENIED":4,"APPROVAL_REQUIRED":4,"BINDING_PERMISSION_DENIED":4,"BINDING_PERMISSION_INSECURE":4,"NOT_FOUND":5,"CONFLICT":6,"BINDING_CONFLICT":6,"MIGRATION_CONFLICT":6,"PRECONDITION_FAILED":6,"SYNC_TOKEN_EXPIRED":6,"IDEMPOTENCY_CONFLICT":6,"QUOTA_EXCEEDED":7,"RATE_LIMITED":7,"TRANSIENT":8,"TIMEOUT":8,"NETWORK_ERROR":8,"BINDING_LOCK_TIMEOUT":8,"PARTIAL_FAILURE":9,"AMBIGUOUS_COMMIT":9,"LOCAL_IO_ERROR":10,"CHECKSUM_MISMATCH":10,"BINDING_PATH_UNSAFE":10,"BINDING_REGISTRY_CORRUPT":10,"BINDING_SCHEMA_UNSUPPORTED":11,"MIGRATION_REQUIRED":11,"LOGIN_DETACHED_REQUIRED":11,"JOB_NOT_FOUND":5,"JOB_STALE":6,"JOB_CONFLICT":6,"WORKER_DIED":8,"CANCELLED":6,"PROVIDER_ERROR":11,"UNSUPPORTED_BY_PROVIDER":11,"UNSUPPORTED_BY_CONTRACT":11,"INTERNAL_ERROR":12}
 SCOPES={"identity":["openid","email"],"workspace-max":["https://mail.google.com/","https://www.googleapis.com/auth/gmail.settings.basic","https://www.googleapis.com/auth/gmail.settings.sharing","https://www.googleapis.com/auth/calendar","https://www.googleapis.com/auth/drive"],"gmail-read":["https://www.googleapis.com/auth/gmail.readonly"],"gmail-compose":["https://www.googleapis.com/auth/gmail.compose"],"gmail-modify":["https://www.googleapis.com/auth/gmail.modify"],"gmail-settings":["https://www.googleapis.com/auth/gmail.settings.basic"],"calendar-read":["https://www.googleapis.com/auth/calendar.readonly"],"calendar-events":["https://www.googleapis.com/auth/calendar.events"],"drive-file":["https://www.googleapis.com/auth/drive.file"],"drive-read":["https://www.googleapis.com/auth/drive.readonly"],"drive-manage":["https://www.googleapis.com/auth/drive"]}
 
 def now(): return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
@@ -89,7 +89,21 @@ def local_auth(command,payload,out):
   out["data"]={"resource":{"recommendedAudience":"internal" if internal else "external","externalPublishingStatus":None if internal else body["externalPublishingStatus"],"durability":"organization-members-only" if internal else ("temporary-testing" if testing else "production"),"reasons":reasons,"requiredGates":gates}}
   return out,0
  if action=="scopes.list": out["data"]={"profiles":SCOPES}; return out,0
+ if action.startswith("login."):
+  from .oauth_jobs import start as job_start,status as job_status,finalize as job_finalize,cancel as job_cancel,recover as job_recover
+  try:
+   if action=="login.start":resource=job_start(payload)
+   elif action=="login.status":resource=job_status(payload["handle"])
+   elif action=="login.finalize":resource=job_finalize(payload["handle"])
+   elif action=="login.cancel":resource=job_cancel(payload["handle"])
+   elif action=="login.recover":resource=job_recover(payload.get("handle"),payload.get("maxJobs",20))
+   else:return fail(command,payload,"INVALID_ARGUMENT","unknown login lifecycle action",account=payload.get("account"))
+  except BindingError as e:return fail(command,payload,e.code,str(e),account=payload.get("account"),details=e.details)
+  except (OSError,KeyError,ValueError):return fail(command,payload,"LOCAL_IO_ERROR","OAuth lifecycle operation failed safely",account=payload.get("account"))
+  out["data"]={"resource":resource};return out,0
  if action=="login":
+  if not payload.get("preview") and not payload.get("dryRun"):
+   return fail(command,payload,"LOGIN_DETACHED_REQUIRED","Interactive login is detached; use auth.login.start, auth.login.status, then auth.login.finalize",account=payload.get("account"))
   from .oauth_desktop import desktop_login,LoginError
   body=payload.get("body",{})
   bind=body.get("bind",True);staged=None

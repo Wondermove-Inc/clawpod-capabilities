@@ -9,8 +9,8 @@ class RuntimeManifest(unittest.TestCase):
  def test_actual_runtime_enums_and_command_grammar(self):
   safety={'readOnly','writeSafe','modifiesSource','destructive','secretUse','externalSideEffect','authReuse','humanAccountAction'}
   values={'string','number','integer','boolean','enum','path'}
-  self.assertEqual(len(MAN['commands']),162)
-  self.assertEqual(len(CONTRACTS),162)
+  self.assertEqual(len(MAN['commands']),167)
+  self.assertEqual(len(CONTRACTS),167)
   canonical=set()
   for alias,command in MAN['commands'].items():
    self.assertRegex(alias,r'^[a-z0-9][a-z0-9._:-]{0,127}$')

@@ -93,7 +93,7 @@ def test_onboarding_decision_schema_is_closed_and_requires_observations():
 def test_google_skill_requires_user_facing_authorization_preflight():
  skill=Path('skills/google-workspace/SKILL.md').read_text()
  onboarding=Path('skills/google-workspace/references/onboarding.md').read_text()
- for phrase in ('Immediately after this capability is installed','installed but not yet connected','workspace-max','what the user must do','what the agent will do','managed browser will open','explicitly agrees','Do not invoke `auth.login`'):
+ for phrase in ('Immediately after this capability is installed','installed but not yet connected','workspace-max','what the user must do','what the agent will do','managed browser will open','explicitly agrees','Do not invoke `auth.login.start`'):
   assert phrase in skill
  for phrase in ('User-facing preflight','Immediately after installation and validation','Start Google Workspace authorization now?','Continue only after an explicit affirmative response'):
   assert phrase in onboarding
