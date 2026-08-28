@@ -1,10 +1,15 @@
 # HTML artifact skeleton
 
-Author a **complete, self-contained document**. The panel may render it in a frame or inject it; a full document is safe either way. Inline every stylesheet and script. No external scripts, no remote images, no CDN. A Google Fonts `<link>` is optional progressive enhancement only — the fallback stack must already be a deliberate choice.
+The panel renders `html` artifacts as `<iframe sandbox="" srcDoc={content}>` (verified in `generic-artifact-panel.tsx`). That single line dictates the skeleton:
 
-## Three-state theming
+- **No JavaScript runs.** Do not ship `<script>`; nothing depends on it.
+- **No same-origin.** No `localStorage`, cookies, or fetch.
+- **The portal's CSP is inherited.** Fonts: system stacks, `data:` URIs, or `https://cdn.jsdelivr.net` only (Google Fonts is blocked). Images: `https:` and `data:`. Nothing else external.
+- **Only the OS theme reaches the frame.** Use `prefers-color-scheme`; the portal's own dark-mode class never propagates.
+- **The frame is 70 vh tall and 320–670 px wide.** Single column; content scrolls inside the frame.
+- **The card preview is `content` with tags stripped, first 240 chars.** Put `<style>` at the **end of `<body>`**, keep `<head>` to `meta` + `title`, and open `<body>` with the eyebrow, title, and lede so the preview reads as a sentence.
 
-The viewer may be in light, dark, or "system" with nothing stamped on the root. Structure tokens for all three:
+## Skeleton
 
 ```html
 <!doctype html>
@@ -12,9 +17,39 @@ The viewer may be in light, dark, or "system" with nothing stamped on the root. 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>Q3 Pricing Review</title>
+</head>
+<body>
+<main>
+  <header class="lede">
+    <p class="eyebrow">Pricing · Q3 2026</p>
+    <h1>Q3 Pricing Review</h1>
+    <p>Three tiers, two proposed changes, one decision needed by 12 September.</p>
+  </header>
+
+  <section class="card">
+    <h2>What changes</h2>
+    <p>…real content…</p>
+  </section>
+
+  <section>
+    <h2>Tier comparison</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Tier</th><th class="num">Today</th><th class="num">Proposed</th><th>State</th></tr></thead>
+        <tbody>
+          <tr><td>Pro</td><td class="num">49,000</td><td class="num">54,000</td><td><span class="pill warn">review</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- Styles last on purpose: the card preview is the first 240 characters of
+     tag-stripped content, so prose must come before CSS. -->
 <style>
-  /* 1. Complete light palette on bare :root — every color the page uses. */
+  /* 1. Complete palette on :root — every color the page uses. */
   :root {
     --ground: #F7F6F2;
     --surface: #FFFFFF;
@@ -22,71 +57,54 @@ The viewer may be in light, dark, or "system" with nothing stamped on the root. 
     --ink-muted: #5C6070;
     --line: #DCD9D0;
     --accent: #1F5F8B;
-    --accent-ink: #FFFFFF;
     --good: #2E7D5B;
     --warn: #B7791F;
     --crit: #B23A3A;
     --font-display: "Iowan Old Style", "Palatino Linotype", "Noto Serif KR", Georgia, serif;
     --font-body: "Avenir Next", "Segoe UI", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
     --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-    --measure: 65ch;
     --radius: 6px;
   }
-  /* 2. Dark tokens for "system" viewers, unless the host stamped light explicitly. */
+  /* 2. Dark redefines tokens only; it never introduces a new color. */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root {
       --ground: #15171C;
       --surface: #1E2128;
       --ink: #ECEAE3;
       --ink-muted: #A3A7B3;
       --line: #2F333D;
       --accent: #7FB2DC;
-      --accent-ink: #0F1B26;
       --good: #6FBF95;
       --warn: #E0B15A;
       --crit: #E27878;
     }
   }
-  /* 3. Explicit dark stamp wins in the other direction. */
-  :root[data-theme="dark"] {
-    --ground: #15171C;
-    --surface: #1E2128;
-    --ink: #ECEAE3;
-    --ink-muted: #A3A7B3;
-    --line: #2F333D;
-    --accent: #7FB2DC;
-    --accent-ink: #0F1B26;
-    --good: #6FBF95;
-    --warn: #E0B15A;
-    --crit: #E27878;
-  }
 
-  /* Components use tokens only. Never a literal color that works in one theme. */
   * { box-sizing: border-box; }
   html { color-scheme: light dark; }
   body {
     margin: 0;
-    background: var(--ground);   /* explicit — a transparent body borrows the host ground */
+    background: var(--ground);   /* explicit — never transparent */
     color: var(--ink);
-    font: 16px/1.6 var(--font-body);
+    font: 15px/1.6 var(--font-body);
     -webkit-font-smoothing: antialiased;
   }
-  main { max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; display: grid; gap: 2rem; }
-  h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
-  h1 { font-size: clamp(1.9rem, 3.5vw, 2.6rem); font-weight: 600; }
-  h2 { font-size: 1.35rem; font-weight: 600; }
-  p { max-width: var(--measure); margin: 0; }
-  .eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
-  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
-  .scroll { overflow-x: auto; }               /* wide tables, code, diagrams live inside this */
-  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
-  th, td { text-align: left; padding: .5rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); }
-  td.num, th.num { text-align: right; }
-  code, pre { font-family: var(--font-mono); font-size: .9em; }
-  pre { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
-  .pill { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+  main { padding: 1.25rem 1.25rem 2.5rem; display: grid; gap: 1.5rem; }
+  h1, h2 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(1.5rem, 5vw, 1.9rem); font-weight: 600; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem; }
+  p { margin: 0; max-width: 65ch; }
+  .lede { display: grid; gap: .35rem; }
+  .eyebrow { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
+  .scroll { overflow-x: auto; }               /* wide tables and SVG live inside this */
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
+  th { font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); }
+  .num { text-align: right; }
+  code, pre { font-family: var(--font-mono); font-size: .88em; }
+  pre { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .85rem; overflow-x: auto; }
+  .pill { display: inline-block; padding: .1rem .5rem; border-radius: 999px; font-size: .72rem; font-weight: 600; }
   .pill.good { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
   .pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
   .pill.crit { background: color-mix(in srgb, var(--crit) 15%, transparent); color: var(--crit); }
@@ -94,39 +112,33 @@ The viewer may be in light, dark, or "system" with nothing stamped on the root. 
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
-</head>
-<body>
-<main>
-  <header>
-    <div class="eyebrow">Pricing · Q3 2026</div>
-    <h1>Q3 Pricing Review</h1>
-    <p>Three tiers, two proposed changes, one decision needed by 12 September.</p>
-  </header>
-  <!-- real content follows -->
-</main>
 </body>
 </html>
 ```
 
 The palette and faces above are a **worked example**, not a house style. Replace them from your design plan every time; leaving them in place is exactly the templated look to avoid.
 
-## Rules the skeleton encodes
+## Web fonts that actually load
 
-- Every color the page uses is defined on bare `:root`. The dark blocks only **redefine** tokens; they never introduce a new one.
-- `body { background: var(--ground) }` is mandatory.
-- `html { color-scheme: light dark }` keeps form controls and scrollbars in step with the theme.
-- Wide content sits inside `.scroll` (or any `overflow-x: auto` container). The body never scrolls sideways.
-- Focus is visible; reduced motion is respected.
-- Preview text: the server strips tags and keeps the first 240 characters of `content` for the card. Put the eyebrow and lede at the top of `<body>` so the preview reads as a sentence, not as a CSS fragment.
+Google Fonts is blocked by the inherited CSP. If a specific face matters, load it from jsDelivr with a real fallback stack — for example a Fontsource package:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+```
+
+Place `<link>` tags in `<head>` (they carry no text, so they do not affect the preview). Treat them as enhancement: the system stack must already look intentional.
+
+## Charts and diagrams without scripts
+
+Author charts as inline SVG with tokens for color (`fill="var(--accent)"` works inside inline SVG). Give them the same care as type: a faint grid, tabular numbers on axes, an area fill, an emphasized endpoint. Semantic colors (`--good`, `--warn`, `--crit`) carry state; the accent carries emphasis; do not use the accent for both. Wrap any SVG wider than ~440 px in `.scroll` or give it `width: 100%; height: auto` with a `viewBox`.
+
+If the diagram is a flowchart, sequence, state, ER, or Gantt, consider a `markdown` artifact with a ```` ```mermaid ```` block instead — it renders natively and follows the portal theme.
+
+## CSS-only affordances
+
+`<details>/<summary>` for collapsible sections, `:target` for in-page tabs, `:hover` for row highlights, CSS counters for real sequences. Nothing else is interactive.
 
 ## Size discipline
 
-`content` is capped at 200,000 characters and data URIs count. Prefer inline SVG or Canvas over embedded raster images; if an image is essential, keep it small and compressed. Diagrams: hand-author only short SVG; anything generative goes to Canvas.
-
-## Interactivity
-
-Inline `<script>` is fine. `localStorage` may or may not be available in the panel — wrap every read and write in `try/catch` and render correctly with no stored value. Nothing in the page may depend on network access.
-
-## Charts and diagrams
-
-Give them the same care as type: an area fill, a faint grid, tabular numbers on axes, an emphasized endpoint or the one bar that matters. Semantic colors (`--good`, `--warn`, `--crit`) carry state; the accent carries emphasis; do not use the accent for both.
+`content` is capped at 200,000 characters and data URIs count. Prefer inline SVG over embedded raster images; if an image is essential, reference an `https:` URL or keep the data URI small.

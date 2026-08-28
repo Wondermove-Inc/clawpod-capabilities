@@ -6,7 +6,7 @@
       "id": "artifact-design",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or small interactive tool — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the message artifacts contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
+      "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -23,31 +23,35 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c40c94333844d7c68066f8cbd2d6775ab85428b975d1fbb3c13a95466e5f37f9"
+          "sha256": "5a9323fbdc1c93ba8e1b1f316f0dd0ac52682a2d8c6b3a8d559158610bb51356"
         },
         {
           "path": "references/checklist.md",
-          "sha256": "d225494a7f4e86575ddda0141f3f61dd605bcad4c3b7aafb60a4a770c409374e"
+          "sha256": "9306f45c4a11cc3869b5916266e40a5afdfefba21c877d2bb6cb382d8d7bc1c8"
+        },
+        {
+          "path": "references/choosing-the-type.md",
+          "sha256": "cc0ec47569daa38fae8c6b2c0114b37467247930d0eacb9ff57f30b886819f2d"
         },
         {
           "path": "references/design-fundamentals.md",
-          "sha256": "7e64f013f79becd28629e0398058c58b0b35cde1e96c93d793ad65906759cccf"
+          "sha256": "c425fa1d38a3fd691f05d3b913b5b4afd63e03b90d217f0269d5655363e4a58b"
         },
         {
           "path": "references/examples.md",
-          "sha256": "7aca14a14c7a98a4b39dc9162d153c15a10e70237517cbd9a4ba8c493623f0a0"
+          "sha256": "2681c709fb5ccd6ae8661c26492a46465682102f31bb89ad00a20c86e13c0871"
         },
         {
           "path": "references/html-skeleton.md",
-          "sha256": "f07a562a24f1bc6bab36a19995accd7fc6bf6c1e22df451b6addb57850a27057"
+          "sha256": "ca84efe62b4a69c9e5479a3493d565b636405115495d414464e2913a89d83dfd"
         },
         {
           "path": "references/markdown-craft.md",
-          "sha256": "8d3deae1409cc00d840c81abefd88bf2a4fb851d34564e7708545f44aa352cd2"
+          "sha256": "e79610d61e6a563e9689935630082f971c3bb04bd5a9c68b1bd36dd06022ccbc"
         },
         {
           "path": "references/publishing-contract.md",
-          "sha256": "391b28f3b7e1ade0bd40127d4575215a4111fa7b737c53768093387f369df55d"
+          "sha256": "28c91582de238134cf5228b7432a7d906b972ef319e17c8960a15fca37d161f5"
         }
       ]
     },

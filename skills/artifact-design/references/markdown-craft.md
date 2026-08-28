@@ -1,17 +1,32 @@
 # Markdown artifacts
 
-Choose `markdown` only when the content is prose-first and its whole structure is expressed by headings, lists, tables, and code blocks — a meeting summary, a decision record, a runbook, a reference sheet without charts. The renderer controls typography and color, so the design craft moves entirely into structure and words.
+Rendered by `react-markdown` with `remark-gfm` and `rehype-sanitize`, inside the portal's `prose prose-sm dark:prose-invert` styles (verified in `markdown-renderer.tsx`). The renderer controls typography and color and follows the portal theme, so the design craft moves entirely into structure and words.
 
-Choose `html` instead when any of these apply: layout beyond a single column, charts or diagrams, state encoded in color, interaction, a specific visual identity, or a table wider than a few short columns.
+## What renders
+
+- Headings, paragraphs, emphasis, lists, **GFM tables**, task lists, blockquotes, links (open in a new tab), `~~strikethrough~~`.
+- Fenced code with a language tag; a copy button is added automatically.
+- ```` ```mermaid ```` blocks render to SVG (flowchart, sequence, state, ER, Gantt, class, pie, git graph). Keep them small enough for a ~480 px column or they will scroll horizontally.
+- Images only from `https:` URLs. `data:` URIs are removed by the sanitizer.
+
+## What does not render
+
+- Raw HTML: `<div>`, `<span style>`, `<script>`, inline event handlers, `javascript:` links — all stripped. Do not rely on HTML inside markdown for layout or color.
+- Footnotes and math are not enabled.
+
+## Watch for
+
+- `task-123`, `back-45`, `#task-7` patterns are auto-linked to the portal task board. Write ticket-like tokens in backticks if they are not portal tasks.
+- The card preview is the first 240 characters of the content with any `<tags>` removed, so the H1 and the lede sentence become the preview. Open with them.
 
 ## Structure carries the design
 
 - **One H1** that is the artifact's name; it should match `title`.
-- A one-paragraph lede directly under it — this is also what the server keeps as the card preview (first 240 characters, tags stripped).
+- A one-paragraph lede directly under it.
 - Headings encode the reading path. Do not number sections unless the content is a real sequence.
 - Lists for parallel items; tables for comparisons with the same attributes per row; paragraphs for reasoning. Never a list of one.
-- Tables: header row, right-aligned numeric columns (`---:`), units in the header not the cells, at most six columns before you switch to HTML.
-- Code blocks with a language tag. Commands the reader will run get their own block, one command per block.
+- Tables: header row, right-aligned numeric columns (`---:`), units in the header not the cells, at most five columns in a 480 px column before you switch to HTML.
+- Commands the reader will run get their own block, one command per block.
 - Emphasis is information: bold the decision, the deadline, the owner — never a whole sentence.
 - No emoji as section markers; no horizontal rules as decoration (a rule marks a real change of part).
 
@@ -28,17 +43,18 @@ Connect a Mac or Windows 11 machine to ClawPod as a node in about ten minutes; t
 
 ## Before you start
 - Admin access on the machine
-- The ClawPod organization's Tailscale login link
+- The organization's Tailscale login link
 
-## Steps
-1. Install Tailscale and sign in with the organization account.
-2. Run the node installer …
+## Flow
+```mermaid
+flowchart LR
+  A[Install Tailscale] --> B[Sign in] --> C[Run node installer] --> D{Approved?}
+  D -- yes --> E[Paired]
+  D -- no --> F[Ask an admin]
+```
 
 ## Verify
 | Check | Command | Expected |
 |---|---|---|
 | Node visible | `clawpod node status` | `paired` |
-
-## If it fails
-…
 ```
