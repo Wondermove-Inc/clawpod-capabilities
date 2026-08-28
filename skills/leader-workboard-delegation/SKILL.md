@@ -1,6 +1,6 @@
 ---
 name: "leader-workboard-delegation"
-description: "Route leader delegation through Tasks-first delivery, with Workboard private progress only."
+description: "Use for leader delegation routing through Tasks-first delivery, with Workboard limited to private progress."
 ---
 
 # Tasks-first Leader Delegation Routing

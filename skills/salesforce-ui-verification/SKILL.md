@@ -1,6 +1,6 @@
 ---
 name: salesforce-ui-verification
-description: Verify Salesforce UI behavior with URL-only org access, Playwright snapshots, screenshots, and redacted evidence without performing Salesforce mutations.
+description: Use to verify Salesforce UI behavior with URL-only org access, Playwright snapshots, screenshots, and redacted evidence without performing Salesforce mutations.
 ---
 
 # Salesforce UI Verification

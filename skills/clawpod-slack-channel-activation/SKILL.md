@@ -1,6 +1,6 @@
 ---
 name: "clawpod-slack-channel-activation"
-description: "Safely activate Slack with onboarding, delivery refs, approvals, and validation."
+description: "Use to safely activate Slack with onboarding, delivery references, approvals, and validation."
 ---
 
 # ClawPoD Slack Channel Activation

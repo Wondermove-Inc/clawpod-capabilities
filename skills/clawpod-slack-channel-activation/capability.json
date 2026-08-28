@@ -2,7 +2,7 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.1.0",
-  "description": "Safely activate Slack with onboarding, delivery refs, approvals, and validation.",
+  "description": "Use to safely activate Slack with onboarding, delivery references, approvals, and validation.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

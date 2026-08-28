@@ -1,6 +1,6 @@
 ---
 name: salesforce-verification
-description: Verify Salesforce source, deploy-readiness, and runtime evidence for ClawPoD/OpenClaw work without authorizing actual org mutation.
+description: Use to verify Salesforce source, deploy-readiness, and runtime evidence for ClawPoD/OpenClaw work without authorizing actual org mutation.
 ---
 
 # Salesforce Verification

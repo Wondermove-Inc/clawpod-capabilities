@@ -364,7 +364,7 @@
       "id": "clawpod-slack-channel-activation",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Safely activate Slack with onboarding, delivery refs, approvals, and validation.",
+      "description": "Use to safely activate Slack with onboarding, delivery references, approvals, and validation.",
       "path": "skills/clawpod-slack-channel-activation",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -381,7 +381,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f03f9a4cb57ea30681599a8fb7e6566d8b1774de8c3c73785bccff4fbba44a87"
+          "sha256": "74e9dc7bd060f4c89b1f4a7608d84e1234e74e1063ac5ef30c8c94dd1dee6b50"
         },
         {
           "path": "references/onboarding.md",
@@ -711,7 +711,7 @@
       "id": "leader-workboard-delegation",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Route leader delegation through Tasks-first delivery, with Workboard private progress only.",
+      "description": "Use for leader delegation routing through Tasks-first delivery, with Workboard limited to private progress.",
       "path": "skills/leader-workboard-delegation",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -728,7 +728,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7f320cee3659f17de3345ef4df7232b16439ebcf4f49a685d20403f9599aa476"
+          "sha256": "33880a4092a64c20bcbf5acfed9e4fd8a29a465f22812b27fb9f3d21f2c2c10f"
         },
         {
           "path": "references/closeout-measurement-protocol.md",
@@ -1180,7 +1180,7 @@
       "id": "salesforce-org-inspection",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Perform read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.",
+      "description": "Use for read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.",
       "path": "skills/salesforce-org-inspection",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -1197,7 +1197,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b4f87539e07f9497cbd551871579faf8ff4ddb71439cd2bc6a2d17c7864084e1"
+          "sha256": "9da7d53a65df6275e83d3531eec645b025176db7360781a03102ff3b5b53670b"
         },
         {
           "path": "references/citation-register.md",
@@ -1244,7 +1244,7 @@
       "id": "salesforce-ui-verification",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Verify Salesforce UI behavior with URL-only org access, Playwright snapshots, screenshots, and redacted evidence without performing Salesforce mutations.",
+      "description": "Use to verify Salesforce UI behavior with URL-only org access, Playwright snapshots, screenshots, and redacted evidence without performing Salesforce mutations.",
       "path": "skills/salesforce-ui-verification",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -1261,7 +1261,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "12d9243b9895b58e85b35ec2fd1c80027a6fcd82ea2994b93603612c5b0a867c"
+          "sha256": "f86f66434561a9467103094dfbdcde2688f5ec47d663783b83b115dbdc8643c1"
         },
         {
           "path": "references/citation-register.md",
@@ -1277,7 +1277,7 @@
       "id": "salesforce-verification",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Verify Salesforce source, deploy-readiness, and runtime evidence for ClawPoD/OpenClaw work without authorizing actual org mutation.",
+      "description": "Use to verify Salesforce source, deploy-readiness, and runtime evidence for ClawPoD/OpenClaw work without authorizing actual org mutation.",
       "path": "skills/salesforce-verification",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -1294,7 +1294,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a363b725a63587e6cb41c2caee6a1310f44abdb7dba589e8eeff99fafa624187"
+          "sha256": "4684296adf42e37dbd42b5833af1e0b1bf3ecf61f327bda9e572b2b3ac603cd0"
         },
         {
           "path": "references/citation-register.md",
@@ -1443,7 +1443,7 @@
       "id": "web-browser",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Add safe CLI OAuth browser bridge guidance.",
+      "description": "Use for safe browser automation and CLI OAuth browser-bridge guidance.",
       "path": "skills/web-browser",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -1468,7 +1468,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "27ffede20686a86599e2b940078efee88f54fd1706c4706668462f8cf6e6991f"
+          "sha256": "2568a1f518c4df7c2adafb11544e3d49016d01aa0c21ccfbe5667d9136287078"
         },
         {
           "path": "package-lock.json",

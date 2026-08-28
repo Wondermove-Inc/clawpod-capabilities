@@ -2,7 +2,7 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.1.0",
-  "description": "Route leader delegation through Tasks-first delivery, with Workboard private progress only.",
+  "description": "Use for leader delegation routing through Tasks-first delivery, with Workboard limited to private progress.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

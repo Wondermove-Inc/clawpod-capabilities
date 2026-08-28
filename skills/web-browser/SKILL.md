@@ -1,6 +1,6 @@
 ---
 name: "web-browser"
-description: "Add safe CLI OAuth browser bridge guidance."
+description: "Use for safe browser automation and CLI OAuth browser-bridge guidance."
 ---
 
 # Web Browser Skill — Human-like Browser Automation

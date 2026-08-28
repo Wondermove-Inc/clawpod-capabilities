@@ -1,4 +1,21 @@
 {
+  "artifact-design": {
+    "positive": [
+      "Turn this analysis into a report artifact the team can reopen",
+      "Publish the plan as a designed one-pager in the room",
+      "Make a dashboard-style status page from these numbers",
+      "Write up the decisions as a markdown artifact"
+    ],
+    "negative": [
+      "Refine this presentation deck in Claude Design",
+      "Generate a standalone product photo",
+      "Answer this quick question in the message body"
+    ],
+    "adjacent": [
+      "claude-design",
+      "clawpod-image-studio"
+    ]
+  },
   "atlassian": {
     "positive": [
       "Update the Jira issue after approval",
@@ -80,6 +97,27 @@
       "artifact-design"
     ]
   },
+  "clawpod-node-host": {
+    "positive": [
+      "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
+      "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
+      "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
+      "Check whether a local machine is ready to become a node"
+    ],
+    "negative": [
+      "Why is my already configured ClawPod node connection failing?",
+      "Why is my paired node unauthorized?",
+      "Diagnose why an already configured node fails to pair",
+      "Run uname on the connected node",
+      "Administer Tailscale ACL policy and Serve/Funnel",
+      "Install an OpenClaw Gateway",
+      "Diagnose disk, memory, or failed services on an existing host"
+    ],
+    "adjacent": [
+      "desktop",
+      "ops-troubleshooting"
+    ]
+  },
   "clawpod-ocr": {
     "positive": [
       "Extract Korean text from this PDF",
@@ -118,6 +156,20 @@
       "codex-claude-project-development",
       "soc-event-correlation",
       "ops-troubleshooting"
+    ]
+  },
+  "clawpod-slack-channel-activation": {
+    "positive": [
+      "Activate the native OpenClaw Slack channel safely",
+      "Validate Slack delivery references and allowlists",
+      "Troubleshoot approved Slack channel onboarding without exposing secrets"
+    ],
+    "negative": [
+      "Route Salesforce practitioner delegation through Tasks",
+      "Send an unapproved live Slack test message"
+    ],
+    "adjacent": [
+      "leader-workboard-delegation"
     ]
   },
   "clawpod-video-studio": {
@@ -163,6 +215,27 @@
       "github",
       "clawpod-capability-registry",
       "clawpod-org-operations"
+    ]
+  },
+  "desktop": {
+    "positive": [
+      "Observe and operate a native desktop application when no typed API or DOM fits",
+      "Handle an operating-system dialog or browser chrome outside the web DOM",
+      "Recover and visually verify a bounded native GUI task",
+      "Compose a native file-dialog handoff after Browser DOM automation"
+    ],
+    "negative": [
+      "Inspect and click a normal web-page DOM element with Browser",
+      "Capture or operate an attached remote device screen through nodes",
+      "Read or mutate service state through its provider API",
+      "Extract text from a PDF image with OCR",
+      "Generate a standalone marketing image"
+    ],
+    "adjacent": [
+      "clawpod-ocr",
+      "clawpod-image-studio",
+      "clawpod-node-host",
+      "hwp-desktop"
     ]
   },
   "enterprise-newsletter": {
@@ -211,6 +284,36 @@
       "synology-smb-storage"
     ]
   },
+  "hwp-desktop": {
+    "positive": [
+      "Open and edit an HWP document on Linux with HOP through Desktop",
+      "Save an HWPX working copy in HOP through Desktop while preserving the original",
+      "Export an HWP file to PDF on Linux with HOP through Desktop"
+    ],
+    "negative": [
+      "Extract text from an HWP scan with OCR only",
+      "Edit a spreadsheet in an unrelated browser-based office suite",
+      "Operate an unrelated native desktop application"
+    ],
+    "adjacent": [
+      "desktop",
+      "clawpod-ocr"
+    ]
+  },
+  "leader-workboard-delegation": {
+    "positive": [
+      "Route this leader delegation through Tasks-first delivery",
+      "Decide whether practitioner work is Track A or Track B",
+      "Use Workboard only for private leader progress while Tasks remains shared"
+    ],
+    "negative": [
+      "Activate a Slack channel for the organization",
+      "Use hidden subagents as official Salesforce practitioners"
+    ],
+    "adjacent": [
+      "clawpod-slack-channel-activation"
+    ]
+  },
   "memory-graph": {
     "positive": [
       "Connect decisions to later outcomes",
@@ -223,27 +326,6 @@
     ],
     "adjacent": [
       "verified-research"
-    ]
-  },
-  "clawpod-node-host": {
-    "positive": [
-      "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
-      "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
-      "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
-      "Check whether a local machine is ready to become a node"
-    ],
-    "negative": [
-      "Why is my already configured ClawPod node connection failing?",
-      "Why is my paired node unauthorized?",
-      "Diagnose why an already configured node fails to pair",
-      "Run uname on the connected node",
-      "Administer Tailscale ACL policy and Serve/Funnel",
-      "Install an OpenClaw Gateway",
-      "Diagnose disk, memory, or failed services on an existing host"
-    ],
-    "adjacent": [
-      "desktop",
-      "ops-troubleshooting"
     ]
   },
   "notion": {
@@ -261,6 +343,26 @@
       "google-workspace"
     ]
   },
+  "ops-troubleshooting": {
+    "positive": [
+      "Diagnose why this server is slow or out of disk",
+      "Find out why the pod keeps restarting",
+      "Check the certificate, DNS, and port reachability for this service",
+      "Review recent logins, failed auth attempts, and pending security updates",
+      "Plan and, after approval, restart the failing service or rollout"
+    ],
+    "negative": [
+      "Correlate these security alerts into one attack story",
+      "Write the incident status update for stakeholders",
+      "Connect this Mac to ClawPod as a new node",
+      "Edit the nginx config and apply it now without a plan"
+    ],
+    "adjacent": [
+      "soc-event-correlation",
+      "clawpod-org-operations",
+      "clawpod-node-host"
+    ]
+  },
   "resend-email": {
     "positive": [
       "Verify a Resend sender",
@@ -274,6 +376,123 @@
     "adjacent": [
       "google-workspace",
       "enterprise-newsletter"
+    ]
+  },
+  "salesforce-dev-review": {
+    "positive": [
+      "Independently review this Salesforce source revision",
+      "Issue a read-only Salesforce development go or no-go finding",
+      "Review Salesforce mutation evidence without repairing it"
+    ],
+    "negative": [
+      "Implement the Salesforce fix under review",
+      "Deploy or retrieve Salesforce metadata"
+    ],
+    "adjacent": [
+      "salesforce-development"
+    ]
+  },
+  "salesforce-development": {
+    "positive": [
+      "Implement approved Salesforce source changes locally",
+      "Plan a bounded Apex or Flow repository change",
+      "Run local-only checks for Salesforce source"
+    ],
+    "negative": [
+      "Deploy the local Salesforce source to an org",
+      "Issue an independent go or no-go review of my own change"
+    ],
+    "adjacent": [
+      "salesforce-dev-review"
+    ]
+  },
+  "salesforce-org-change": {
+    "positive": [
+      "Execute this explicitly approved Salesforce deployment",
+      "Apply this approved Salesforce permission assignment",
+      "Perform this target-pinned Salesforce data change with rollback evidence"
+    ],
+    "negative": [
+      "Verify deploy readiness without authorization to mutate",
+      "Inspect Salesforce org facts read-only"
+    ],
+    "adjacent": [
+      "salesforce-verification"
+    ]
+  },
+  "salesforce-org-inspection": {
+    "positive": [
+      "Inspect a pinned Salesforce org schema read-only",
+      "Check Salesforce org limits without mutation",
+      "Collect redacted dependency evidence from a specified Salesforce org"
+    ],
+    "negative": [
+      "Install Salesforce CLI and authenticate a new org",
+      "Change Salesforce metadata or records"
+    ],
+    "adjacent": [
+      "salesforce-setup"
+    ]
+  },
+  "salesforce-setup": {
+    "positive": [
+      "Set up Salesforce CLI readiness for an approved agent",
+      "Prepare approved Salesforce authentication and explicit org binding",
+      "Verify local sf and Code Analyzer onboarding prerequisites"
+    ],
+    "negative": [
+      "Inspect Salesforce org metadata without onboarding work",
+      "Deploy Salesforce metadata to an org"
+    ],
+    "adjacent": [
+      "salesforce-org-inspection"
+    ]
+  },
+  "salesforce-ui-verification": {
+    "positive": [
+      "Verify Salesforce UI behavior without clicking mutating controls",
+      "Capture redacted Salesforce Lightning acceptance evidence",
+      "Check Salesforce component visibility for an approved user context"
+    ],
+    "negative": [
+      "Automate general web form submission outside Salesforce UI verification",
+      "Activate or edit a Salesforce page"
+    ],
+    "adjacent": [
+      "web-browser"
+    ]
+  },
+  "salesforce-verification": {
+    "positive": [
+      "Verify Salesforce source and deploy readiness",
+      "Evaluate Apex test evidence for a pinned revision",
+      "Check Salesforce Flow runtime evidence without authorizing deployment"
+    ],
+    "negative": [
+      "Execute the actual Salesforce deployment",
+      "Implement the failed Salesforce test fix"
+    ],
+    "adjacent": [
+      "salesforce-org-change"
+    ]
+  },
+  "soc-event-correlation": {
+    "positive": [
+      "Correlate these security alerts into one incident",
+      "Is this alert part of a larger attack",
+      "Reconstruct the attack story and recommend response",
+      "Triage and correlate the EDR, firewall, and identity alerts"
+    ],
+    "negative": [
+      "Run a single SIEM search query",
+      "Write or tune a detection rule",
+      "Draft the incident status report and stakeholder escalation",
+      "Diagnose why the server is out of disk and restart the failing service"
+    ],
+    "adjacent": [
+      "verified-research",
+      "clawpod-org-operations",
+      "ops-troubleshooting"
     ]
   },
   "synology-smb-storage": {
@@ -308,6 +527,20 @@
       "soc-event-correlation"
     ]
   },
+  "web-browser": {
+    "positive": [
+      "Automate an assigned web application through browser controls",
+      "Bridge an approved CLI OAuth flow through a browser",
+      "Inspect a web page with accessibility and screenshot evidence"
+    ],
+    "negative": [
+      "Issue a Salesforce-specific UI acceptance verdict",
+      "Use a service API when a typed provider tool is available"
+    ],
+    "adjacent": [
+      "salesforce-ui-verification"
+    ]
+  },
   "youtube-evidence-analysis": {
     "positive": [
       "Normalize this YouTube URL",
@@ -320,99 +553,6 @@
     ],
     "adjacent": [
       "verified-research"
-    ]
-  },
-  "desktop": {
-    "positive": [
-      "Observe and operate a native desktop application when no typed API or DOM fits",
-      "Handle an operating-system dialog or browser chrome outside the web DOM",
-      "Recover and visually verify a bounded native GUI task",
-      "Compose a native file-dialog handoff after Browser DOM automation"
-    ],
-    "negative": [
-      "Inspect and click a normal web-page DOM element with Browser",
-      "Capture or operate an attached remote device screen through nodes",
-      "Read or mutate service state through its provider API",
-      "Extract text from a PDF image with OCR",
-      "Generate a standalone marketing image"
-    ],
-    "adjacent": [
-      "clawpod-ocr",
-      "clawpod-image-studio",
-      "clawpod-node-host",
-      "hwp-desktop"
-    ]
-  },
-  "soc-event-correlation": {
-    "positive": [
-      "Correlate these security alerts into one incident",
-      "Is this alert part of a larger attack",
-      "Reconstruct the attack story and recommend response",
-      "Triage and correlate the EDR, firewall, and identity alerts"
-    ],
-    "negative": [
-      "Run a single SIEM search query",
-      "Write or tune a detection rule",
-      "Draft the incident status report and stakeholder escalation",
-      "Diagnose why the server is out of disk and restart the failing service"
-    ],
-    "adjacent": [
-      "verified-research",
-      "clawpod-org-operations",
-      "ops-troubleshooting"
-    ]
-  },
-  "artifact-design": {
-    "positive": [
-      "Turn this analysis into a report artifact the team can reopen",
-      "Publish the plan as a designed one-pager in the room",
-      "Make a dashboard-style status page from these numbers",
-      "Write up the decisions as a markdown artifact"
-    ],
-    "negative": [
-      "Refine this presentation deck in Claude Design",
-      "Generate a standalone product photo",
-      "Answer this quick question in the message body"
-    ],
-    "adjacent": [
-      "claude-design",
-      "clawpod-image-studio"
-    ]
-  },
-  "hwp-desktop": {
-    "positive": [
-      "Open and edit an HWP document on Linux with HOP through Desktop",
-      "Save an HWPX working copy in HOP through Desktop while preserving the original",
-      "Export an HWP file to PDF on Linux with HOP through Desktop"
-    ],
-    "negative": [
-      "Extract text from an HWP scan with OCR only",
-      "Edit a spreadsheet in an unrelated browser-based office suite",
-      "Operate an unrelated native desktop application"
-    ],
-    "adjacent": [
-      "desktop",
-      "clawpod-ocr"
-    ]
-  },
-  "ops-troubleshooting": {
-    "positive": [
-      "Diagnose why this server is slow or out of disk",
-      "Find out why the pod keeps restarting",
-      "Check the certificate, DNS, and port reachability for this service",
-      "Review recent logins, failed auth attempts, and pending security updates",
-      "Plan and, after approval, restart the failing service or rollout"
-    ],
-    "negative": [
-      "Correlate these security alerts into one attack story",
-      "Write the incident status update for stakeholders",
-      "Connect this Mac to ClawPod as a new node",
-      "Edit the nginx config and apply it now without a plan"
-    ],
-    "adjacent": [
-      "soc-event-correlation",
-      "clawpod-org-operations",
-      "clawpod-node-host"
     ]
   }
 }

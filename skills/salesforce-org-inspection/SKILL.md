@@ -1,6 +1,6 @@
 ---
 name: salesforce-org-inspection
-description: Perform read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.
+description: Use for read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.
 ---
 
 # Salesforce Org Inspection
