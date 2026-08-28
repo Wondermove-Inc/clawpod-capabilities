@@ -92,7 +92,8 @@
     ],
     "adjacent": [
       "verified-research",
-      "desktop"
+      "desktop",
+      "hwp-desktop"
     ]
   },
   "clawpod-org-operations": {
@@ -334,7 +335,8 @@
     "adjacent": [
       "clawpod-ocr",
       "clawpod-image-studio",
-      "clawpod-node-host"
+      "clawpod-node-host",
+      "hwp-desktop"
     ]
   },
   "soc-event-correlation": {
@@ -369,6 +371,22 @@
     "adjacent": [
       "claude-design",
       "clawpod-image-studio"
+    ]
+  },
+  "hwp-desktop": {
+    "positive": [
+      "Open and edit an HWP document on Linux with HOP through Desktop",
+      "Save an HWPX working copy in HOP through Desktop while preserving the original",
+      "Export an HWP file to PDF on Linux with HOP through Desktop"
+    ],
+    "negative": [
+      "Extract text from an HWP scan with OCR only",
+      "Edit a spreadsheet in an unrelated browser-based office suite",
+      "Operate an unrelated native desktop application"
+    ],
+    "adjacent": [
+      "desktop",
+      "clawpod-ocr"
     ]
   }
 }
