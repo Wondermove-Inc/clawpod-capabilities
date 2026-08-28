@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then propose plan-bound remediation (service restart, rollout restart, managed-pod delete) that runs only after explicit approval. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux"
+    ]
+  },
+  "safety": {
+    "risk": "destructive",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "ops-troubleshooting",
+    "version": "0.1.0"
+  },
+  "descriptionSource": "skill-frontmatter"
+}

@@ -1,0 +1,2615 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "ops-troubleshooting",
+  "title": "Ops Troubleshooting",
+  "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then propose plan-bound remediation (service restart, rollout restart, managed-pod delete) that runs only after explicit approval. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+  "version": "0.1.0",
+  "entrypoint": "./ops_troubleshooting.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 90000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Diagnose why this server is slow or out of disk",
+    "Find out why the pod keeps restarting",
+    "Check the certificate, DNS, and port reachability for this service",
+    "Review recent logins, failed auth attempts, and pending security updates",
+    "Plan and, after approval, restart the failing service or rollout"
+  ],
+  "capabilities": [
+    "bounded-read-only-diagnostics",
+    "evidence-recorded-commands",
+    "secret-redaction",
+    "linux-host-network-security",
+    "kubernetes-read-only",
+    "plan-bound-remediation"
+  ],
+  "authModel": {
+    "type": "protected-environment-or-existing-config",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "version": {
+      "description": "Report the harness release version, limits, and remediation allowlist.",
+      "baseArgv": [
+        "version"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "host.overview": {
+      "description": "Uptime, load, memory, swap, root disk, OS, and top CPU processes with threshold findings.",
+      "baseArgv": [
+        "host.overview"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "host.disk": {
+      "description": "Filesystem space and inode usage for local mounts with threshold findings.",
+      "baseArgv": [
+        "host.disk"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "warnPercent": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "warnPercent",
+          "type": "option",
+          "flag": "--warn-percent",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "host.processes": {
+      "description": "Top processes by CPU or memory, flagging zombies.",
+      "baseArgv": [
+        "host.processes"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "cpu",
+              "mem"
+            ]
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "sort",
+          "type": "option",
+          "flag": "--sort",
+          "valueType": "enum",
+          "optional": true,
+          "values": [
+            "cpu",
+            "mem"
+          ]
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "host.services": {
+      "description": "Failed systemd units, or the detailed state and restart count of one unit.",
+      "baseArgv": [
+        "host.services"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "unit",
+          "type": "option",
+          "flag": "--unit",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "host.journal": {
+      "description": "Bounded, redacted journal lines for a window, unit, priority, or pattern.",
+      "baseArgv": [
+        "host.journal"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string"
+          },
+          "tail": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "pattern": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "since",
+          "type": "option",
+          "flag": "--since",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tail",
+          "type": "option",
+          "flag": "--tail",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "unit",
+          "type": "option",
+          "flag": "--unit",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "priority",
+          "type": "option",
+          "flag": "--priority",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pattern",
+          "type": "option",
+          "flag": "--pattern",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "net.ports": {
+      "description": "Listening TCP/UDP sockets and which are exposed on all interfaces.",
+      "baseArgv": [
+        "net.ports"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "net.dns": {
+      "description": "Resolve a name with the host resolver and report timing and nameservers.",
+      "baseArgv": [
+        "net.dns"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "net.reach": {
+      "description": "TCP reachability to host:port with optional TLS certificate inspection and expiry findings.",
+      "baseArgv": [
+        "net.reach"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number"
+          },
+          "tls": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "host",
+          "port"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "host",
+          "type": "option",
+          "flag": "--host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "port",
+          "type": "option",
+          "flag": "--port",
+          "valueType": "integer",
+          "optional": false
+        },
+        {
+          "arg": "tls",
+          "type": "booleanFlag",
+          "flag": "--tls",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "net.route": {
+      "description": "Default routes and interface state from iproute2.",
+      "baseArgv": [
+        "net.route"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "security.logins": {
+      "description": "Recent login sessions from wtmp with per-user and per-source counts.",
+      "baseArgv": [
+        "security.logins"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "security.auth-events": {
+      "description": "Failed/accepted SSH logins and sudo use from the journal with brute-force findings.",
+      "baseArgv": [
+        "security.auth-events"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string"
+          },
+          "tail": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "since",
+          "type": "option",
+          "flag": "--since",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tail",
+          "type": "option",
+          "flag": "--tail",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "security.users": {
+      "description": "Interactive accounts, uid 0 accounts, admin group members, authorized_keys counts, and sensitive-file metadata.",
+      "baseArgv": [
+        "security.users"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "security.updates": {
+      "description": "Pending package updates, security updates, and reboot-required state (apt or dnf).",
+      "baseArgv": [
+        "security.updates"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        }
+      ]
+    },
+    "change.recent": {
+      "description": "Recently modified files under an allowlisted root plus recent package operations.",
+      "baseArgv": [
+        "change.recent"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "since",
+          "type": "option",
+          "flag": "--since",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.context": {
+      "description": "Current kubectl context, client/server versions, and read permissions.",
+      "baseArgv": [
+        "k8s.context"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.nodes": {
+      "description": "Node readiness, pressure conditions, taints, and optional usage.",
+      "baseArgv": [
+        "k8s.nodes"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "usage": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "usage",
+          "type": "booleanFlag",
+          "flag": "--usage",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.pods": {
+      "description": "Unhealthy pods with restart counts, waiting reasons, OOMKilled history, and scheduling failures.",
+      "baseArgv": [
+        "k8s.pods"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "allNamespaces": {
+            "type": "boolean"
+          },
+          "selector": {
+            "type": "string"
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allNamespaces",
+          "type": "booleanFlag",
+          "flag": "--all-namespaces",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "selector",
+          "type": "option",
+          "flag": "--selector",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.describe": {
+      "description": "kubectl describe for an allowlisted read-only kind (never secrets or configmaps).",
+      "baseArgv": [
+        "k8s.describe"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "kind",
+          "type": "option",
+          "flag": "--kind",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "k8s.logs": {
+      "description": "Bounded pod logs with tail, window, container, previous instance, and pattern filter.",
+      "baseArgv": [
+        "k8s.logs"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "container": {
+            "type": "string"
+          },
+          "tail": {
+            "type": "number"
+          },
+          "since": {
+            "type": "string"
+          },
+          "previous": {
+            "type": "boolean"
+          },
+          "pattern": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "container",
+          "type": "option",
+          "flag": "--container",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tail",
+          "type": "option",
+          "flag": "--tail",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "since",
+          "type": "option",
+          "flag": "--since",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "previous",
+          "type": "booleanFlag",
+          "flag": "--previous",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "pattern",
+          "type": "option",
+          "flag": "--pattern",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.events": {
+      "description": "Warning (or all) events sorted by recency with reason counts.",
+      "baseArgv": [
+        "k8s.events"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "allNamespaces": {
+            "type": "boolean"
+          },
+          "allTypes": {
+            "type": "boolean"
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allNamespaces",
+          "type": "booleanFlag",
+          "flag": "--all-namespaces",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "allTypes",
+          "type": "booleanFlag",
+          "flag": "--all-types",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "k8s.rollout": {
+      "description": "Rollout status, replica counts, conditions, images, and history for a workload.",
+      "baseArgv": [
+        "k8s.rollout"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "kind",
+          "type": "option",
+          "flag": "--kind",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "triage.host": {
+      "description": "One bounded pass over overview, disk, failed units, journal errors, and ports.",
+      "baseArgv": [
+        "triage.host"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string"
+          },
+          "tail": {
+            "type": "number"
+          },
+          "warnPercent": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "since",
+          "type": "option",
+          "flag": "--since",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tail",
+          "type": "option",
+          "flag": "--tail",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "warnPercent",
+          "type": "option",
+          "flag": "--warn-percent",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "triage.k8s": {
+      "description": "One bounded pass over context, nodes, unhealthy pods, and warning events.",
+      "baseArgv": [
+        "triage.k8s"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "allNamespaces": {
+            "type": "boolean"
+          },
+          "top": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allNamespaces",
+          "type": "booleanFlag",
+          "flag": "--all-namespaces",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "top",
+          "type": "option",
+          "flag": "--top",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "remediate.plan": {
+      "description": "Snapshot preconditions and write an approval-bound plan for one allowlisted action.",
+      "baseArgv": [
+        "remediate.plan"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "service.restart",
+              "k8s.rollout.restart",
+              "k8s.pod.delete"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "action",
+          "target"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "action",
+          "type": "option",
+          "flag": "--action",
+          "valueType": "enum",
+          "optional": false,
+          "values": [
+            "service.restart",
+            "k8s.rollout.restart",
+            "k8s.pod.delete"
+          ]
+        },
+        {
+          "arg": "target",
+          "type": "option",
+          "flag": "--target",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "namespace",
+          "type": "option",
+          "flag": "--namespace",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "reason",
+          "type": "option",
+          "flag": "--reason",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "remediate.apply": {
+      "description": "Apply an approved, unexpired plan once, after re-checking preconditions, and verify the outcome.",
+      "baseArgv": [
+        "remediate.apply"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutMs": {
+            "type": "number"
+          },
+          "toolRoot": {
+            "type": "string"
+          },
+          "stateRoot": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "kubeconfig": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "planId",
+          "confirm"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "toolRoot",
+          "type": "option",
+          "flag": "--tool-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "planId",
+          "type": "option",
+          "flag": "--plan-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "kubeconfig",
+          "type": "option",
+          "flag": "--kubeconfig",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "context",
+          "type": "option",
+          "flag": "--context",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    }
+  }
+}
