@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or small interactive tool — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the message artifacts contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "darwin",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}

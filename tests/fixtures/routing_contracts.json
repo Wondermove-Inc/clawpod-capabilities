@@ -25,12 +25,13 @@
       "Use Desktop instead of the Claude Design Harness for export planning and file verification",
       "Use Desktop instead of nodes to inspect an already paired remote screen",
       "Generate a standalone product photo instead of using Image Studio",
-      "Render a localized video"
+      "Render a localized video",
+      "Publish a designed report as a chat-room artifact"
     ],
     "adjacent": [
       "clawpod-image-studio",
       "clawpod-video-studio",
-      "diagram-design"
+      "artifact-design"
     ]
   },
   "clawpod-capability-registry": {
@@ -69,13 +70,14 @@
     ],
     "negative": [
       "Build a presentation deck",
-      "Produce a narrated video"
+      "Produce a narrated video",
+      "Publish a designed one-pager as a chat-room artifact"
     ],
     "adjacent": [
       "claude-design",
       "clawpod-video-studio",
       "desktop",
-      "diagram-design"
+      "artifact-design"
     ]
   },
   "clawpod-ocr": {
@@ -352,15 +354,17 @@
       "clawpod-org-operations"
     ]
   },
-  "diagram-design": {
+  "artifact-design": {
     "positive": [
-      "Draw an architecture diagram of this system",
-      "Turn this Mermaid flowchart into a polished SVG",
-      "Create a sequence diagram for the login flow"
+      "Turn this analysis into a report artifact the team can reopen",
+      "Publish the plan as a designed one-pager in the room",
+      "Make a dashboard-style status page from these numbers",
+      "Write up the decisions as a markdown artifact"
     ],
     "negative": [
+      "Refine this presentation deck in Claude Design",
       "Generate a standalone product photo",
-      "Refine this presentation deck in Claude Design"
+      "Answer this quick question in the message body"
     ],
     "adjacent": [
       "claude-design",

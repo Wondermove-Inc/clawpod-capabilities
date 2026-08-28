@@ -171,3 +171,7 @@ provider.
 ### Memory Graph 0.11.4
 
 Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. Version 0.11.0 adds complete lifecycle-aware extractor paging, external-agent natural-language candidate authoring, explicit-evidence-only Person/Project/Decision/Cause/Effect/Event causal graphs, bounded review pages, hydrated decision recall, and full offline semantic HTML. The Harness itself never calls a model, network, MCP, or live graph mutation surface.
+
+### Artifact Design 0.1.0
+
+Artifact Design is a prose-only Skill that decides when a reply's output deserves to be a ClawPod room artifact, designs it with a calibrated treatment (real typographic hierarchy, a chosen palette, light and dark tokens), and publishes it through the message `artifacts` / `artifact_refs` contract (`markdown` or `html`, at most 5 per message, 200,000 characters each). It replaces the standalone `diagram-design` package; diagram pages are one of the artifact shapes it produces.
