@@ -1,0 +1,9 @@
+{
+  "name": "web-browser-skill",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Human-like web browser automation skill using accessibility tree + screenshot hybrid approach",
+  "scripts": {
+    "browse": "node scripts/browse.js"
+  }
+}

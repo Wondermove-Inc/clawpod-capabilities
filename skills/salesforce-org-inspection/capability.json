@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Perform read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": true
+  }
+}

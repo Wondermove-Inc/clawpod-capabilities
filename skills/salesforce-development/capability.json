@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use for approved Salesforce local source planning, implementation, and local verification. This skill is read/write for repository files only and never authorizes Salesforce org mutation.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": true
+  }
+}

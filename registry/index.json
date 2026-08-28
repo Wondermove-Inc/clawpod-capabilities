@@ -361,6 +361,43 @@
       ]
     },
     {
+      "id": "clawpod-slack-channel-activation",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Safely activate Slack with onboarding, delivery refs, approvals, and validation.",
+      "path": "skills/clawpod-slack-channel-activation",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f03f9a4cb57ea30681599a8fb7e6566d8b1774de8c3c73785bccff4fbba44a87"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "4d394c493a09462cdefc6bbb29706ed5ee3f1268f837046f6ea9485fcbfb2014"
+        },
+        {
+          "path": "references/slack-file-delivery.md",
+          "sha256": "56f5c8cfd668c7fe2eb2d6e0ff4369352574b2fbd3ac621c74ebaac6b8c15c9b"
+        },
+        {
+          "path": "references/slack-message-delivery.md",
+          "sha256": "7fdb60d06d02c55b4488dbd9eb2df61205e63b633a63476fbd1196649ff30d50"
+        }
+      ]
+    },
+    {
       "id": "clawpod-video-studio",
       "type": "skill",
       "version": "0.2.3",
@@ -671,6 +708,63 @@
       ]
     },
     {
+      "id": "leader-workboard-delegation",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Route leader delegation through Tasks-first delivery, with Workboard private progress only.",
+      "path": "skills/leader-workboard-delegation",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "externally-visible",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "7f320cee3659f17de3345ef4df7232b16439ebcf4f49a685d20403f9599aa476"
+        },
+        {
+          "path": "references/closeout-measurement-protocol.md",
+          "sha256": "8f3e87289794f028e02897b7abafff4f0db18eec57da43bd7216ba8264cc8d80"
+        },
+        {
+          "path": "references/manager-led-agent-operating-model.md",
+          "sha256": "2be200edd5fef03e7d942efe7260d83eb005ffcdf7f64ed969a9af07dca864fa"
+        },
+        {
+          "path": "references/setup-guide.md",
+          "sha256": "6f6b95dde7605ab640b2157df9f6880e572b1dcf9be1aeb3a3e44ea3653f0385"
+        },
+        {
+          "path": "references/workboard-leader-practitioner-delegation-guide.md",
+          "sha256": "19aa4b17448dce9bca0b7cda98e14b57710557720d715cc430f198213e033e03"
+        },
+        {
+          "path": "scripts/eval-leader-workboard-delegation-skill.py",
+          "sha256": "b5fe6cf7bd21642de1204912757c02a5066c37c40f017f047626b58f86a248b3"
+        },
+        {
+          "path": "scripts/fixtures/closeout-fail.txt",
+          "sha256": "3e0e5db02c5962e4198727adb78ea86d6d55ac551e9d24f46a4e5737a42ed1cd"
+        },
+        {
+          "path": "scripts/fixtures/closeout-pass.txt",
+          "sha256": "f1b87517a5640b9914c9f40807ea0f6a620a02fb1cf17cbc324996dc6a2b07c9"
+        },
+        {
+          "path": "scripts/task-closeout-gate.py",
+          "sha256": "b83b59968595ead2e2c0acec3c84ef8d2167335c6883af7eb5c9da9f239ff33e"
+        }
+      ]
+    },
+    {
       "id": "memory-graph",
       "type": "skill",
       "version": "0.11.4",
@@ -824,6 +918,399 @@
       }
     },
     {
+      "id": "salesforce-dev-review",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Use for independent read-only Salesforce development and org-change review gates. Produces go/no-go findings and never edits, deploys, retrieves, mutates, or self-approves.",
+      "path": "skills/salesforce-dev-review",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "read-only",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "127ea3b7061137a39ca9201cd9d3d6ef72813538d4a750d306259769f756c034"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "4d465b92f2849d338185c73ef83d26b26d79d8a9692b147ceefb3d3fbadc8a86"
+        },
+        {
+          "path": "references/dev-rules/01_configuration_rules.md",
+          "sha256": "a35e0611c01c5cdeb54e33f10792252997fefde0e832227168c8f07644080c05"
+        },
+        {
+          "path": "references/dev-rules/02_soql_rules.md",
+          "sha256": "081629a9a3bd4c99b5ecd71ebf5cea9af0fe0fa43bd755fe1fd8134ca8c1d6f0"
+        },
+        {
+          "path": "references/dev-rules/03_apex_rules.md",
+          "sha256": "557a970a4ab9249b241d90229cdcff87de2ad66745556a2432e0dcd0758feae8"
+        },
+        {
+          "path": "references/dev-rules/04_flow_rules.md",
+          "sha256": "a657caccfd49b9567e917d58fb655bfbc37756ea25c2e0e9e2274f8cb8143a66"
+        },
+        {
+          "path": "references/dev-rules/05_lwc_rules.md",
+          "sha256": "5ed5ff2c4747855416603397f01627d48349985aec9aed03143b48287415abd8"
+        },
+        {
+          "path": "references/dev-rules/06_integration_rules.md",
+          "sha256": "572960c058dd4cd5aa02e47c510aa16b413577b78aca4150e9d1cf238a6172f0"
+        },
+        {
+          "path": "references/dev-rules/08_case_chatter_rules.md",
+          "sha256": "949ec7ba9a9fd6bdc9c63e4cf6a916554012e95cfa506177fbaa7679799429b8"
+        },
+        {
+          "path": "references/dev-rules/README.md",
+          "sha256": "4fabc01deaabeb645d8a82956d5f1f584aa501b532d4c1b5c11370d5583b2579"
+        },
+        {
+          "path": "references/dev-rules/common_rules.md",
+          "sha256": "f9107835ddaa7b1d333ee82a45be4bf5e929e726fc7f9d7029ec2d8d3dd5e8a5"
+        },
+        {
+          "path": "references/evidence-review.md",
+          "sha256": "0a26a145dab4b62f4cc30876de244819383303011fb4e6574c88e6da39e8ce3a"
+        },
+        {
+          "path": "references/mutation-review.md",
+          "sha256": "18749f07101840b0c7c621055ce48d0fff1e42afbf1ad32bc9c9ec22af14d2f5"
+        },
+        {
+          "path": "references/rule-matrix.md",
+          "sha256": "efe67f22a1851261c66773530ff18ee80310e850d0e076bbb5d999d33bcc0c24"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-development",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Use for approved Salesforce local source planning, implementation, and local verification. This skill is read/write for repository files only and never authorizes Salesforce org mutation.",
+      "path": "skills/salesforce-development",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "b7fc22ba2095bc5af1e33630aec7ad2f50a0457c1515df23f827ffc315dee2d5"
+        },
+        {
+          "path": "references/apex-soql.md",
+          "sha256": "098c450fbe349a616fcc349cae663d4feb231c7da4d698c800875b6d227a0483"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "4d465b92f2849d338185c73ef83d26b26d79d8a9692b147ceefb3d3fbadc8a86"
+        },
+        {
+          "path": "references/core-workflow.md",
+          "sha256": "14d24d06e62903da6e1ef8fc1068c35eb16834556fce37a6097d41631e76df35"
+        },
+        {
+          "path": "references/dev-rules/01_configuration_rules.md",
+          "sha256": "a35e0611c01c5cdeb54e33f10792252997fefde0e832227168c8f07644080c05"
+        },
+        {
+          "path": "references/dev-rules/02_soql_rules.md",
+          "sha256": "081629a9a3bd4c99b5ecd71ebf5cea9af0fe0fa43bd755fe1fd8134ca8c1d6f0"
+        },
+        {
+          "path": "references/dev-rules/03_apex_rules.md",
+          "sha256": "557a970a4ab9249b241d90229cdcff87de2ad66745556a2432e0dcd0758feae8"
+        },
+        {
+          "path": "references/dev-rules/04_flow_rules.md",
+          "sha256": "a657caccfd49b9567e917d58fb655bfbc37756ea25c2e0e9e2274f8cb8143a66"
+        },
+        {
+          "path": "references/dev-rules/05_lwc_rules.md",
+          "sha256": "5ed5ff2c4747855416603397f01627d48349985aec9aed03143b48287415abd8"
+        },
+        {
+          "path": "references/dev-rules/06_integration_rules.md",
+          "sha256": "572960c058dd4cd5aa02e47c510aa16b413577b78aca4150e9d1cf238a6172f0"
+        },
+        {
+          "path": "references/dev-rules/08_case_chatter_rules.md",
+          "sha256": "949ec7ba9a9fd6bdc9c63e4cf6a916554012e95cfa506177fbaa7679799429b8"
+        },
+        {
+          "path": "references/dev-rules/README.md",
+          "sha256": "4fabc01deaabeb645d8a82956d5f1f584aa501b532d4c1b5c11370d5583b2579"
+        },
+        {
+          "path": "references/dev-rules/common_rules.md",
+          "sha256": "f9107835ddaa7b1d333ee82a45be4bf5e929e726fc7f9d7029ec2d8d3dd5e8a5"
+        },
+        {
+          "path": "references/evidence-basics.md",
+          "sha256": "80985f343f69c56679a637dc5cca6c4a571be73e1f1e53ef28c8a4c2e0067cf1"
+        },
+        {
+          "path": "references/flow.md",
+          "sha256": "07dd11f615cd973df1779cffae66566de6d7b54d27fe35784ad76436c6c89c86"
+        },
+        {
+          "path": "references/integration.md",
+          "sha256": "a82cc3d7a829c91b344e5ccdffb87a04d66f42fb5e11c0bdcf8b1abdff788b45"
+        },
+        {
+          "path": "references/lwc.md",
+          "sha256": "69695883ef572abfd4f0bf907134714b2445e0e894f2bfae31d681bc1719209b"
+        },
+        {
+          "path": "references/metadata.md",
+          "sha256": "dc369c9f0db5e6589cbfb3d0911e42ecf1f8b001d2a342a02f0eaa4a0adfb6eb"
+        },
+        {
+          "path": "references/task-brief-template.md",
+          "sha256": "782f6dd4117715c5ea09941ebe044c47728554adee1abb7122ba411017c03811"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-org-change",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Use only for explicitly authorized Salesforce org mutation, including deploy, retrieve, activation, data changes, permission assignment, endpoint probes, event publication, and cleanup.",
+      "path": "skills/salesforce-org-change",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "ac14bf7274e990990cad812e0e00a7c97baf905d63bbd089b055e3846bbdb446"
+        },
+        {
+          "path": "references/activation-data-cleanup.md",
+          "sha256": "c0694beb8201cb21c6bb98cf09966c5115004e9138366e38818feffd378e4fe8"
+        },
+        {
+          "path": "references/authorization-boundary.md",
+          "sha256": "3bf95a2751782e8434b27f0b710726c39dc18224c87c4f673bb31f31ba4d570d"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "4d465b92f2849d338185c73ef83d26b26d79d8a9692b147ceefb3d3fbadc8a86"
+        },
+        {
+          "path": "references/deploy-retrieve.md",
+          "sha256": "ee93daeb6967a4ab4d1bfbbe33caf906dfe8fd038ef3fab64ace8c391ace5779"
+        },
+        {
+          "path": "references/dev-rules/01_configuration_rules.md",
+          "sha256": "a35e0611c01c5cdeb54e33f10792252997fefde0e832227168c8f07644080c05"
+        },
+        {
+          "path": "references/dev-rules/02_soql_rules.md",
+          "sha256": "081629a9a3bd4c99b5ecd71ebf5cea9af0fe0fa43bd755fe1fd8134ca8c1d6f0"
+        },
+        {
+          "path": "references/dev-rules/03_apex_rules.md",
+          "sha256": "557a970a4ab9249b241d90229cdcff87de2ad66745556a2432e0dcd0758feae8"
+        },
+        {
+          "path": "references/dev-rules/04_flow_rules.md",
+          "sha256": "a657caccfd49b9567e917d58fb655bfbc37756ea25c2e0e9e2274f8cb8143a66"
+        },
+        {
+          "path": "references/dev-rules/05_lwc_rules.md",
+          "sha256": "5ed5ff2c4747855416603397f01627d48349985aec9aed03143b48287415abd8"
+        },
+        {
+          "path": "references/dev-rules/06_integration_rules.md",
+          "sha256": "572960c058dd4cd5aa02e47c510aa16b413577b78aca4150e9d1cf238a6172f0"
+        },
+        {
+          "path": "references/dev-rules/08_case_chatter_rules.md",
+          "sha256": "949ec7ba9a9fd6bdc9c63e4cf6a916554012e95cfa506177fbaa7679799429b8"
+        },
+        {
+          "path": "references/dev-rules/README.md",
+          "sha256": "4fabc01deaabeb645d8a82956d5f1f584aa501b532d4c1b5c11370d5583b2579"
+        },
+        {
+          "path": "references/dev-rules/common_rules.md",
+          "sha256": "f9107835ddaa7b1d333ee82a45be4bf5e929e726fc7f9d7029ec2d8d3dd5e8a5"
+        },
+        {
+          "path": "references/request-intake.md",
+          "sha256": "f057f359923520eaad2c3bde14563470254cd0cb0d67147eb4eee299e4b067a9"
+        },
+        {
+          "path": "references/rollback-incident.md",
+          "sha256": "051f61a9d988f49941456a3833c160cd0d9e8007f1c9a6f6aecb8e900ec44eb3"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-org-inspection",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Perform read-only Salesforce org inspection with explicit target-org pinning, schema confirmation, dependency probes, limits checks, evidence redaction, and stop conditions.",
+      "path": "skills/salesforce-org-inspection",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "b4f87539e07f9497cbd551871579faf8ff4ddb71439cd2bc6a2d17c7864084e1"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "3746c93fbbcee2a71358665e937e19764480185d97b35878a1a50143baf80825"
+        },
+        {
+          "path": "references/read-only-inspection.md",
+          "sha256": "1708e246eb662b14dff92c803524f6eac96072f29ec177656305818bc396ebb8"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-setup",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "First-run Salesforce onboarding for a ClawPoD agent - verify or install sf tooling, install Java on Ubuntu after environment checks, use existing auth evidence when available, collect credentials and authenticate only when new or missing auth is approved and needed, bind the target org, and prove readiness with redacted evidence.",
+      "path": "skills/salesforce-setup",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "d9977389f0e0839970e72068ffc72a635388225d3b39ad3b64beb19cb7fc53e9"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "a9136cbdbb9f42bb3f04decc3fb484c9da041d93a9700f2c827b680ace0a990a"
+        },
+        {
+          "path": "references/setup-contract.md",
+          "sha256": "310f44d897b2119a792f54732cf6e1b44effcc805aec5845f9680bdba3e172a0"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-ui-verification",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Verify Salesforce UI behavior with URL-only org access, Playwright snapshots, screenshots, and redacted evidence without performing Salesforce mutations.",
+      "path": "skills/salesforce-ui-verification",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "12d9243b9895b58e85b35ec2fd1c80027a6fcd82ea2994b93603612c5b0a867c"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "2bca216db3bbd5c1ebb6531308afcc4e00da5b254e67e6e027727d3da85f2bd0"
+        },
+        {
+          "path": "references/ui-evidence.md",
+          "sha256": "887e8ce2a8e634ddbfb0055df8894e81c0e5d4d84fbe157db1d450e91436d29e"
+        }
+      ]
+    },
+    {
+      "id": "salesforce-verification",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Verify Salesforce source, deploy-readiness, and runtime evidence for ClawPoD/OpenClaw work without authorizing actual org mutation.",
+      "path": "skills/salesforce-verification",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "a363b725a63587e6cb41c2caee6a1310f44abdb7dba589e8eeff99fafa624187"
+        },
+        {
+          "path": "references/citation-register.md",
+          "sha256": "2bca216db3bbd5c1ebb6531308afcc4e00da5b254e67e6e027727d3da85f2bd0"
+        },
+        {
+          "path": "references/flow-runtime.md",
+          "sha256": "1033adbd1a30aecf0e7f78f1d2dfa3c8e4e6417bb1e8b5e8326d865d2be14b56"
+        },
+        {
+          "path": "references/verification-boundary.md",
+          "sha256": "0463cbb6d7ef45ff660b375f61de7fe4152d0552d9d8857e9d632f255e99ee08"
+        }
+      ]
+    },
+    {
       "id": "soc-event-correlation",
       "type": "skill",
       "version": "0.1.1",
@@ -951,6 +1438,71 @@
         "id": "verified-research",
         "version": "0.1.7"
       }
+    },
+    {
+      "id": "web-browser",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Add safe CLI OAuth browser bridge guidance.",
+      "path": "skills/web-browser",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ]
+      },
+      "safety": {
+        "risk": "credential-related",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "DESIGN.md",
+          "sha256": "125f5ac075d22363079e31280f5cee96d527d185e05c4daa9568df8b9e778420"
+        },
+        {
+          "path": "README.md",
+          "sha256": "37627d59bfe8fdbd3737ca7cc189a977a027bb47e8bb10cfca8dde88388eb628"
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "27ffede20686a86599e2b940078efee88f54fd1706c4706668462f8cf6e6991f"
+        },
+        {
+          "path": "package-lock.json",
+          "sha256": "111b23bf94554c1069ce5f5c119c97c15aa35b42d03f237ddcbf00e73e35af85"
+        },
+        {
+          "path": "package.json",
+          "sha256": "6d4e7766573f64feced2081cf804919ee2d31b34be60003759bf951f30cf0c3d"
+        },
+        {
+          "path": "scripts/browse.js",
+          "sha256": "3ff3569fe41164824cbacaed105dcb7b8b3d052d16558283ecbd117dfcfe4cbd"
+        },
+        {
+          "path": "scripts/lib/browser.js",
+          "sha256": "76191108702538a8b1dbc75340fbe2a3b387cd0faa43c1dc834c1e2397402e14"
+        },
+        {
+          "path": "scripts/lib/errors.js",
+          "sha256": "09e9a7b43f10d83fad2e280bc72ac6712a9cea26c9b512cb584dffe3c3937675"
+        },
+        {
+          "path": "scripts/lib/verify.js",
+          "sha256": "393ac29c452d63b101544444bbe79e34187a70247d660a652867af599ea4ada5"
+        },
+        {
+          "path": "scripts/lib/workflow.js",
+          "sha256": "442fcdce26664a23dacba5b1d39a6e18a10fd86b81dc83f38f509d4febe8055d"
+        },
+        {
+          "path": "web-browser-1.0.0.tar.gz",
+          "sha256": "843101c3b1778b7d938cc7bf5b5dff5740eac1a71ab2f6b4dac3ec9124f28034"
+        }
+      ]
     },
     {
       "id": "youtube-evidence-analysis",
