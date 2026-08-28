@@ -111,11 +111,13 @@
       "Install a capability from the registry",
       "Use Workboard as the shared board for independent peer agents",
       "Send this email through Resend",
-      "Correlate raw security alerts into one incident and recommend response"
+      "Correlate raw security alerts into one incident and recommend response",
+      "Find out why the pod keeps restarting"
     ],
     "adjacent": [
       "codex-claude-project-development",
-      "soc-event-correlation"
+      "soc-event-correlation",
+      "ops-troubleshooting"
     ]
   },
   "clawpod-video-studio": {
@@ -236,10 +238,12 @@
       "Diagnose why an already configured node fails to pair",
       "Run uname on the connected node",
       "Administer Tailscale ACL policy and Serve/Funnel",
-      "Install an OpenClaw Gateway"
+      "Install an OpenClaw Gateway",
+      "Diagnose disk, memory, or failed services on an existing host"
     ],
     "adjacent": [
-      "desktop"
+      "desktop",
+      "ops-troubleshooting"
     ]
   },
   "notion": {
@@ -349,11 +353,13 @@
     "negative": [
       "Run a single SIEM search query",
       "Write or tune a detection rule",
-      "Draft the incident status report and stakeholder escalation"
+      "Draft the incident status report and stakeholder escalation",
+      "Diagnose why the server is out of disk and restart the failing service"
     ],
     "adjacent": [
       "verified-research",
-      "clawpod-org-operations"
+      "clawpod-org-operations",
+      "ops-troubleshooting"
     ]
   },
   "artifact-design": {
@@ -387,6 +393,26 @@
     "adjacent": [
       "desktop",
       "clawpod-ocr"
+    ]
+  },
+  "ops-troubleshooting": {
+    "positive": [
+      "Diagnose why this server is slow or out of disk",
+      "Find out why the pod keeps restarting",
+      "Check the certificate, DNS, and port reachability for this service",
+      "Review recent logins, failed auth attempts, and pending security updates",
+      "Plan and, after approval, restart the failing service or rollout"
+    ],
+    "negative": [
+      "Correlate these security alerts into one attack story",
+      "Write the incident status update for stakeholders",
+      "Connect this Mac to ClawPod as a new node",
+      "Edit the nginx config and apply it now without a plan"
+    ],
+    "adjacent": [
+      "soc-event-correlation",
+      "clawpod-org-operations",
+      "clawpod-node-host"
     ]
   }
 }
