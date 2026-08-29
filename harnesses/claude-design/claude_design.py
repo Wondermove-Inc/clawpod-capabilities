@@ -310,8 +310,10 @@ def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict)
     for c in sib[i+1:]:
      ba,bc=bbox(a),bbox(c)
      dx=abs(ba[0]-bc[0]);dy=abs(ba[1]-bc[1])
-     if tol<dx<=4*tol and dy<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost left-aligned (off by {dx:g}px)",[a.get("id"),c.get("id")])
-     if tol<dy<=4*tol and dx<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost top-aligned (off by {dy:g}px)",[a.get("id"),c.get("id")])
+     # "Almost aligned" is the smell: edges that differ by more than the tolerance but less than 4x it.
+     # Siblings in the same column (near-equal left) or the same row (near-equal top) are flagged regardless of distance.
+     if tol<dx<=4*tol:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost left-aligned (off by {dx:g}px)",[a.get("id"),c.get("id")])
+     if tol<dy<=4*tol:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost top-aligned (off by {dy:g}px)",[a.get("id"),c.get("id")])
    rows={}
    for e in sib:
     rows.setdefault(round(bbox(e)[1]/max(tol,1)),[]).append(e)
