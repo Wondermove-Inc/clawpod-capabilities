@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.9",
-  "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+  "version": "0.4.0",
+  "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "claude-design",
-    "version": "0.3.9"
+    "version": "0.4.0"
   },
   "descriptionSource": "skill-frontmatter"
 }

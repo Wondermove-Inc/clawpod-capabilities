@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "claude-design",
   "title": "Claude Design",
-  "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
-  "version": "0.3.9",
+  "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+  "version": "0.4.0",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -15,6 +15,8 @@
   "whenToUse": [
     "Create a presentation deck",
     "Refine this UI wireframe",
+    "Run the layout quality gate and fix overflowing or misaligned slides",
+    "Hand over the deck as a Claude Design link so the user exports it themselves",
     "Export and verify the design system"
   ],
   "capabilities": [
@@ -3398,6 +3400,293 @@
           "type": "option",
           "flag": "--reflow-pages",
           "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.link.verify": {
+      "description": "projects link verify: validate the exact project/file route and produce the link-first handoff card",
+      "baseArgv": [
+        "projects.link.verify"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "projectUrl": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string"
+          },
+          "uiFilename": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "observedSlides": {
+            "type": "string"
+          },
+          "canvasServed": {
+            "type": "string"
+          },
+          "sourceVersion": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "deliverable": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "projectUrl",
+          "type": "option",
+          "flag": "--project-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "fileUrl",
+          "type": "option",
+          "flag": "--file-url",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "uiFilename",
+          "type": "option",
+          "flag": "--ui-filename",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "observedSlides",
+          "type": "option",
+          "flag": "--observed-slides",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "canvasServed",
+          "type": "option",
+          "flag": "--canvas-served",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "sourceVersion",
+          "type": "option",
+          "flag": "--source-version",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "language",
+          "type": "option",
+          "flag": "--language",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "deliverable",
+          "type": "option",
+          "flag": "--deliverable",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "projects.qa.layout": {
+      "description": "projects qa layout: deterministic per-slide layout gate (overflow, escape, overlap, off-canvas, misalignment, uneven spacing, font floor, density, title drift) with an auto-generated revision prompt",
+      "baseArgv": [
+        "projects.qa.layout"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "layoutJson"
+        ],
+        "properties": {
+          "layoutJson": {
+            "type": "string"
+          },
+          "expectedPages": {
+            "type": "string"
+          },
+          "minFontPx": {
+            "type": "string"
+          },
+          "tolerancePx": {
+            "type": "string"
+          },
+          "maxWords": {
+            "type": "string"
+          },
+          "overlapRatio": {
+            "type": "string"
+          },
+          "strict": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "request_id",
+          "data",
+          "warnings",
+          "evidence",
+          "retry_safe"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "retry_safe": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "layoutJson",
+          "type": "option",
+          "flag": "--layout-json",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "expectedPages",
+          "type": "option",
+          "flag": "--expected-pages",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "minFontPx",
+          "type": "option",
+          "flag": "--min-font-px",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "tolerancePx",
+          "type": "option",
+          "flag": "--tolerance-px",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxWords",
+          "type": "option",
+          "flag": "--max-words",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "overlapRatio",
+          "type": "option",
+          "flag": "--overlap-ratio",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "strict",
+          "type": "booleanFlag",
+          "flag": "--strict",
+          "valueType": "boolean",
           "optional": true
         }
       ]

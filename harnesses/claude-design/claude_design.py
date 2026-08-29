@@ -5,13 +5,15 @@ import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-VERSION="0.3.9"
+VERSION="0.4.0"
 DESIGN_URL="https://claude.ai/design"
 LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
 MCP_URL="https://api.anthropic.com/v1/design/mcp"
 MCP_DEFECT="Claude Code 2.1.229 sends an OAuth redirect_uri that the provider rejects; transport Connected does not prove tool authorization."
 DESTINATIONS=["Adobe","Base44","Canva","Gamma","Lovable","Miro","Replit","Vercel","Wix","Claude Code"]
+HANDOFF_LANGUAGES={"en","ko"}
+DELIVERABLES={"link","file"}
 FORMATS={"html":"text/html","pptx":"application/vnd.openxmlformats-officedocument.presentationml.presentation","pdf":"application/pdf"}
 PREVIEW_APPLY={
  "projects.share","projects.comment","projects.handoff","design-systems.publish","design-systems.set-default",
@@ -207,14 +209,160 @@ def export_plan(file_url,ui_filename,expected_pages,observed_slides,preview_page
  data["environment_workflow"]={"chrome":"In print preview, traverse the preview shadow DOM to activate Save when ordinary browser refs cannot reach it.","gtk":"In the native Save File dialog, enter the exact output path/name and activate Save; then verify the file on disk."}
  return data,None,None
 
+def link_handoff_card(project_id,project_url,file_url,ui_filename,expected_pages,source_version,language):
+ title=ui_filename[:-len(".dc.html")] if ui_filename.endswith(".dc.html") else ui_filename
+ if language=="ko":
+  lines=[f"## {title}",f"- 프로젝트: {project_url}",f"- 파일: {file_url}",f"- 슬라이드: {expected_pages}장"]
+  if source_version:lines.append(f"- 기준 소스: {source_version}")
+  lines+=["","**필요한 형식으로 직접 내보내기** (링크를 열고 Claude Design 상단의 Share 사용):","1. Share → Export → PowerPoint (.pptx)","2. Share → PDF → Print 또는 Save as PDF","3. Share → Export → HTML (.dc.html)","","내보내기는 본인 계정에서 몇 초면 끝나고, 항상 최신 버전이 나옵니다. 열리지 않으면 알려주세요 — 조직 공유를 켜 드리겠습니다."]
+ else:
+  lines=[f"## {title}",f"- Project: {project_url}",f"- File: {file_url}",f"- Slides: {expected_pages}"]
+  if source_version:lines.append(f"- Grounded on: {source_version}")
+  lines+=["","**Export the format you need yourself** (open the link, then use Share at the top of Claude Design):","1. Share → Export → PowerPoint (.pptx)","2. Share → PDF → Print or Save as PDF","3. Share → Export → HTML (.dc.html)","","Exporting from your own account takes seconds and always reflects the latest version. If the link does not open for you, say so and organization sharing will be enabled."]
+ return "\n".join(lines)
+
+def link_verify(a):
+ project_id=a.project_id;project_url=a.project_url;file_url=a.file_url;ui_filename=a.ui_filename
+ expected=positive_integer(a.expected_pages);observed=positive_integer(a.observed_slides);canvas=strict_bool(a.canvas_served)
+ language=a.language or "en";deliverable=a.deliverable or "link"
+ if not all([project_id,project_url,file_url,ui_filename]) or expected is None or observed is None or canvas is None:return None,"INVALID_INPUT","--project-id, --project-url, --file-url, --ui-filename, positive --expected-pages and --observed-slides, and --canvas-served true|false are required."
+ if language not in HANDOFF_LANGUAGES:return None,"INVALID_INPUT","--language must be en or ko."
+ if deliverable not in DELIVERABLES:return None,"INVALID_INPUT","--deliverable must be link or file."
+ for label,url in (("project_url",project_url),("file_url",file_url)):
+  parsed=urlparse(url)
+  if parsed.scheme!="https" or parsed.netloc!="claude.ai" or not parsed.path.startswith("/design"):return None,"INVALID_INPUT",f"--{label} must be an https://claude.ai/design URL."
+ if project_id not in project_url or project_id not in file_url:return None,"ACTIVE_FILE_MISMATCH","Both URLs must reference the exact project ID."
+ identity,problem=export_identity(file_url,ui_filename)
+ data={"project_id":project_id,"project_url":project_url,**identity,"expected_pages":expected,"observed_slide_count":observed,"observed_slide_count_matches":observed==expected,"canvas_served":canvas,"deliverable":deliverable,"language":language,"read_only":True,"provider_execution":False}
+ if problem:return data,"ACTIVE_FILE_MISMATCH",problem
+ if observed!=expected:return data,"SLIDE_COUNT_MISMATCH",f"Observed {observed} slides; expected {expected}. Fix the deck before handing over the link."
+ if canvas is not True:return data,"CANVAS_NOT_SERVED","The canvas or thumbnail was not actually served; reopen the exact file route before handing over the link."
+ data["handoff_card"]=link_handoff_card(project_id,project_url,file_url,ui_filename,expected,safe_text(a.source_version),language)
+ data["export_instructions"]=["Share → Export → PowerPoint (.pptx)","Share → PDF → Print or Save as PDF","Share → Export → HTML (.dc.html)"]
+ data["completion"]={"link_delivery_required":True,"native_file_export_required":deliverable=="file","access_fallback":"If the recipient cannot open the link, run projects.share.preview/apply once with organization scope; never export files as a workaround for access."}
+ data["next_action"]="Send the handoff card in the room message (or as a markdown artifact through artifact-design). Completion is the link opening for the recipient." if deliverable=="link" else "The user explicitly asked for files: continue with references/native-export.md after sending the link card."
+ return data,None,None
+
+QA_DEFAULTS={"min_font_px":14,"tolerance_px":4,"max_words":90,"overlap_ratio":0.15}
+
+def bbox(e):
+ b=e.get("bbox") or []
+ if len(b)!=4:return None
+ try:x,y,w,h=[float(v) for v in b]
+ except (TypeError,ValueError):return None
+ return (x,y,w,h) if w>=0 and h>=0 else None
+
+def intersect(a,b):
+ x=max(a[0],b[0]);y=max(a[1],b[1]);x2=min(a[0]+a[2],b[0]+b[2]);y2=min(a[1]+a[3],b[1]+b[3])
+ return max(0.0,x2-x)*max(0.0,y2-y)
+
+def ancestor(elements,child,other):
+ seen=set();cur=child
+ while cur and cur.get("parent") and cur["parent"] not in seen:
+  seen.add(cur["parent"]);cur=elements.get(cur["parent"])
+  if cur is other:return True
+ return False
+
+def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict):
+ slides=layout.get("slides") if isinstance(layout,dict) else None
+ viewport=layout.get("viewport",{}) if isinstance(layout,dict) else {}
+ if not isinstance(slides,list) or not slides:return None,"INVALID_INPUT","layout JSON must contain a non-empty slides array."
+ try:vw=float(viewport.get("width"));vh=float(viewport.get("height"))
+ except (TypeError,ValueError):return None,"INVALID_INPUT","layout JSON must declare viewport.width and viewport.height."
+ report=[];deck=[];titles=[];fonts=set();order=[]
+ for slide in slides:
+  index=slide.get("index");elements=[e for e in slide.get("elements",[]) if isinstance(e,dict)]
+  by_id={e.get("id"):e for e in elements if e.get("id")}
+  findings=[]
+  def add(code,severity,message,ids=()):findings.append({"code":code,"severity":severity,"message":message,"elements":[i for i in ids if i]})
+  texts=[e for e in elements if e.get("kind")=="text" and bbox(e)]
+  shapes=[e for e in elements if e.get("kind")=="shape"]
+  words=0
+  for e in texts:
+   b=bbox(e);txt=str(e.get("text") or "");words+=len(txt.split())
+   try:
+    if e.get("scrollWidth") is not None and float(e["scrollWidth"])>float(e.get("clientWidth",0))+1:add("TEXT_OVERFLOW","critical",f"text {e.get('id')} is wider than its box ({e['scrollWidth']}px > {e.get('clientWidth')}px)",[e.get("id")])
+    elif e.get("scrollHeight") is not None and float(e["scrollHeight"])>float(e.get("clientHeight",0))+1:add("TEXT_OVERFLOW","critical",f"text {e.get('id')} is taller than its box ({e['scrollHeight']}px > {e.get('clientHeight')}px)",[e.get("id")])
+   except (TypeError,ValueError):add("INVALID_ELEMENT","warning",f"element {e.get('id')} has non-numeric overflow metrics",[e.get("id")])
+   parent=by_id.get(e.get("parent"));pb=bbox(parent) if parent else None
+   if pb and (b[0]<pb[0]-tol or b[1]<pb[1]-tol or b[0]+b[2]>pb[0]+pb[2]+tol or b[1]+b[3]>pb[1]+pb[3]+tol):add("TEXT_OUTSIDE_SHAPE","critical",f"text {e.get('id')} escapes its container {parent.get('id')}",[e.get("id"),parent.get("id")])
+   if b[0]<-tol or b[1]<-tol or b[0]+b[2]>vw+tol or b[1]+b[3]>vh+tol:add("OFF_CANVAS","critical",f"element {e.get('id')} extends beyond the {int(vw)}x{int(vh)} canvas",[e.get("id")])
+   fp=e.get("fontPx")
+   if fp is not None:
+    try:
+     fp=float(fp);fonts.add(round(fp))
+     if fp<min_font:add("FONT_TOO_SMALL","warning",f"text {e.get('id')} uses {fp:g}px (< {min_font}px)",[e.get("id")])
+    except (TypeError,ValueError):pass
+  for e in elements:
+   b=bbox(e)
+   if e.get("kind")!="text" and b and (b[0]<-tol or b[1]<-tol or b[0]+b[2]>vw+tol or b[1]+b[3]>vh+tol):add("OFF_CANVAS","critical",f"element {e.get('id')} extends beyond the canvas",[e.get("id")])
+  for i,a in enumerate(texts):
+   for c in texts[i+1:]:
+    if ancestor(by_id,a,c) or ancestor(by_id,c,a):continue
+    ba,bc=bbox(a),bbox(c);small=min(ba[2]*ba[3],bc[2]*bc[3])
+    if small>0 and intersect(ba,bc)/small>overlap_ratio:add("OVERLAP","critical",f"text {a.get('id')} overlaps text {c.get('id')}",[a.get("id"),c.get("id")])
+  groups={}
+  for e in elements:
+   if bbox(e):groups.setdefault(e.get("parent"),[]).append(e)
+  for parent,siblings in groups.items():
+   sib=[e for e in siblings if e.get("kind") in {"text","shape","image"}]
+   for i,a in enumerate(sib):
+    for c in sib[i+1:]:
+     ba,bc=bbox(a),bbox(c)
+     dx=abs(ba[0]-bc[0]);dy=abs(ba[1]-bc[1])
+     if tol<dx<=4*tol and dy<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost left-aligned (off by {dx:g}px)",[a.get("id"),c.get("id")])
+     if tol<dy<=4*tol and dx<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost top-aligned (off by {dy:g}px)",[a.get("id"),c.get("id")])
+   rows={}
+   for e in sib:
+    rows.setdefault(round(bbox(e)[1]/max(tol,1)),[]).append(e)
+   for row in rows.values():
+    if len(row)>=3:
+     row.sort(key=lambda e:bbox(e)[0]);gaps=[bbox(row[k+1])[0]-(bbox(row[k])[0]+bbox(row[k])[2]) for k in range(len(row)-1)]
+     if max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"row of {len(row)} elements has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in row])
+   cols={}
+   for e in sib:
+    cols.setdefault(round(bbox(e)[0]/max(tol,1)),[]).append(e)
+   for col in cols.values():
+    if len(col)>=3:
+     col.sort(key=lambda e:bbox(e)[1]);gaps=[bbox(col[k+1])[1]-(bbox(col[k])[1]+bbox(col[k])[3]) for k in range(len(col)-1)]
+     if max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"column of {len(col)} elements has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in col])
+  kinds={str(e.get("shape")) for e in shapes if e.get("shape")}
+  if len(kinds)>3:add("INCONSISTENT_SHAPES","warning",f"{len(kinds)} different shape kinds on one slide ({', '.join(sorted(kinds))}); diagrams should use one shape per concept type")
+  if words>max_words:add("TEXT_DENSITY","warning",f"{words} words on one slide (> {max_words}); split or cut")
+  if not texts and not shapes:add("EMPTY_SLIDE","warning","slide has no text or shapes")
+  title=None
+  for e in texts:
+   b=bbox(e)
+   if b[1]<=vh*0.25 and e.get("fontPx") is not None:
+    try:
+     if title is None or float(e["fontPx"])>float(title["fontPx"]):title=e
+    except (TypeError,ValueError):pass
+  if title:titles.append((index,bbox(title)))
+  order.append(index)
+  report.append({"index":index,"findings":findings,"critical":sum(1 for f in findings if f["severity"]=="critical"),"warning":sum(1 for f in findings if f["severity"]=="warning"),"words":words})
+ if expected_pages is not None and len(slides)!=expected_pages:deck.append({"code":"PAGE_COUNT_MISMATCH","severity":"critical","message":f"layout has {len(slides)} slides; expected {expected_pages}"})
+ body=[t for t in titles if t[0]!=1]
+ if len(body)>=2:
+  xs=[t[1][0] for t in body];ys=[t[1][1] for t in body]
+  if max(xs)-min(xs)>2*tol or max(ys)-min(ys)>2*tol:deck.append({"code":"TITLE_DRIFT","severity":"warning","message":f"title position drifts across slides (x range {max(xs)-min(xs):g}px, y range {max(ys)-min(ys):g}px)"})
+ if len(fonts)>5:deck.append({"code":"FONT_SIZE_SPRAWL","severity":"warning","message":f"{len(fonts)} distinct font sizes across the deck ({', '.join(str(f) for f in sorted(fonts))}); keep a scale of at most 5"})
+ critical=sum(r["critical"] for r in report)+sum(1 for f in deck if f["severity"]=="critical");warning=sum(r["warning"] for r in report)+sum(1 for f in deck if f["severity"]=="warning")
+ passed=critical==0 and (not strict or warning==0)
+ prompt=[]
+ for r in report:
+  if r["findings"]:prompt.append(f"Slide {r['index']}: "+"; ".join(f["message"] for f in r["findings"]))
+ for f in deck:prompt.append("Deck: "+f["message"])
+ data={"pass":passed,"strict":strict,"summary":{"slides":len(slides),"critical":critical,"warning":warning},"thresholds":{"minFontPx":min_font,"tolerancePx":tol,"maxWords":max_words,"overlapRatio":overlap_ratio},"slides":report,"deck_findings":deck,"qa_pages":[r["index"] for r in report],"revision_prompt":("Fix the following layout defects without changing content or slide order. "+" ".join(prompt)) if prompt else None,"read_only":True,"provider_execution":False}
+ return data,None,None
+
 def handoff(command,values,action,source):
  return fail(command,"HUMAN_VERIFICATION",action+" Then reconcile "+source+" before retrying or claiming success.",False,{"url":DESIGN_URL,"values":values,"reconciliation_source":source})
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error","project-url","thumbnail-id","attempt","observed-project-id","observed-thumbnail-id","active-url","observed-ui-filename","canvas-served","browser-healthy","fresh-list-read","attempt1-fresh-list","attempt2-fresh-list","attempt1-browser-healthy","attempt2-browser-healthy","attempt1-thumbnail-id","attempt2-thumbnail-id","attempt1-error","attempt2-error","export-initiated","artifact-valid","review-pass-1","review-pass-2","render-pages","reflow-pages"]:p.add_argument("--"+name)
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error","project-url","thumbnail-id","attempt","observed-project-id","observed-thumbnail-id","active-url","observed-ui-filename","canvas-served","browser-healthy","fresh-list-read","attempt1-fresh-list","attempt2-fresh-list","attempt1-browser-healthy","attempt2-browser-healthy","attempt1-thumbnail-id","attempt2-thumbnail-id","attempt1-error","attempt2-error","export-initiated","artifact-valid","review-pass-1","review-pass-2","render-pages","reflow-pages","source-version","language","deliverable","layout-json","min-font-px","tolerance-px","max-words","overlap-ratio"]:p.add_argument("--"+name)
  p.add_argument("--expected-pages");p.add_argument("--observed-slides");p.add_argument("--preview-pages");p.add_argument("--qa-pages")
- p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
+ p.add_argument("--strict",action="store_true");p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
  return p
 
@@ -266,6 +414,27 @@ def main(argv=None):
   result=diagnose_route(a) if c.endswith("diagnose") else verify_route(a)
   state,retry,reason,next_action,evidence=result
   return envelope(c,data={"state":state,"retryAllowed":retry,"stopReason":reason,"nextAction":next_action,"evidence":evidence,"execute":False,"providerExecution":False},retry_safe=retry,evidence=[{"kind":"file-route-diagnosis","ref":hashlib.sha256(json.dumps(evidence,sort_keys=True).encode()).hexdigest(),"metadata":{"state":state,"attempt":attempt}}])
+ if c=="projects.link.verify":
+  data,code,message=link_verify(a)
+  if code:return fail(c,code,message,False,data)
+  return envelope(c,data=data,evidence=[{"kind":"link-handoff","ref":hashlib.sha256(json.dumps({k:data[k] for k in ("project_id","file_url","expected_pages")},sort_keys=True).encode()).hexdigest(),"metadata":{"deliverable":data["deliverable"],"slides":data["expected_pages"]}}])
+ if c=="projects.qa.layout":
+  if not a.layout_json:return fail(c,"INVALID_INPUT","--layout-json is required (path to the per-slide element geometry JSON captured from the canvas).")
+  try:raw=Path(a.layout_json).read_bytes();layout=json.loads(raw.decode("utf-8"))
+  except (OSError,ValueError) as e:return fail(c,"NOT_FOUND",f"layout JSON is unreadable: {e}")
+  expected=positive_integer(a.expected_pages) if a.expected_pages is not None else None
+  if a.expected_pages is not None and expected is None:return fail(c,"INVALID_INPUT","--expected-pages must be a positive integer when supplied.")
+  try:
+   min_font=float(a.min_font_px) if a.min_font_px is not None else QA_DEFAULTS["min_font_px"];tol=float(a.tolerance_px) if a.tolerance_px is not None else QA_DEFAULTS["tolerance_px"]
+   max_words=int(a.max_words) if a.max_words is not None else QA_DEFAULTS["max_words"];overlap=float(a.overlap_ratio) if a.overlap_ratio is not None else QA_DEFAULTS["overlap_ratio"]
+  except ValueError:return fail(c,"INVALID_INPUT","--min-font-px, --tolerance-px, --max-words, and --overlap-ratio must be numeric.")
+  if min_font<=0 or tol<=0 or max_words<=0 or not 0<overlap<1:return fail(c,"INVALID_INPUT","QA thresholds must be positive; --overlap-ratio must be between 0 and 1.")
+  data,code,message=qa_layout(layout,expected,min_font,tol,max_words,overlap,a.strict)
+  if code:return fail(c,code,message,False,data)
+  digest=hashlib.sha256(raw).hexdigest();data["layout_sha256"]=digest
+  ev=[{"kind":"layout-qa","ref":digest,"metadata":{"pass":data["pass"],"critical":data["summary"]["critical"],"warning":data["summary"]["warning"],"slides":data["summary"]["slides"]}}]
+  if not data["pass"]:return fail(c,"QA_FAILED","Layout QA found blocking defects; revise the deck with revision_prompt through projects.iterate and re-run the capture.",False,data)
+  return envelope(c,data=data,evidence=ev)
  if c in {"projects.export.plan","projects.export.diagnose"}:
   expected=positive_integer(a.expected_pages);observed=positive_integer(a.observed_slides);preview=positive_integer(a.preview_pages) if a.preview_pages is not None else None
   if not a.file_url or not a.ui_filename or expected is None or observed is None:return fail(c,"INVALID_INPUT","--file-url, --ui-filename, --expected-pages, and --observed-slides are required; page counts must be positive integers.")

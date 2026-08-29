@@ -99,8 +99,8 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.3.9",
-      "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.0",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -116,16 +116,28 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "05b365240ac43a4db0b857d3d7bf857471b8ad98156a9579782bd785db342f5f"
+          "sha256": "9a39b8fa09f0c0a1c029c9e75b26db498e6431d4f1928b63a7db7d48f57c9fad"
+        },
+        {
+          "path": "references/link-handoff.md",
+          "sha256": "633205059a8f5e17155dd31a8b894d2f032ba7b457cd54025174a63d6c8059e6"
+        },
+        {
+          "path": "references/native-export.md",
+          "sha256": "b214b3a4a4eb9642bb272c7273c017207a9d20edeeca040c6375912a697dd7c0"
         },
         {
           "path": "references/operations.md",
           "sha256": "77bd5c80c326cac6b3b7c4d3463842c10d44c58c3eb59276c1c719204768742e"
+        },
+        {
+          "path": "references/quality-gates.md",
+          "sha256": "12067b5dc244e66c7845309746eee1d4ac5c42b063daf9e06010bfed2bbb6495"
         }
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.3.9"
+        "version": "0.4.0"
       }
     },
     {
@@ -1045,8 +1057,8 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.3.9",
-      "description": "Use for Claude Design create/edit/QA/export and project/native export work; use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.0",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1062,23 +1074,23 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "9b41b28d5662e1d168f962f55e1e81a090d71856ea87045eca9c7c9bd3695be3"
+          "sha256": "f650de83eaa2eee8bd0448564a43f9401f009fd7d5e18bffa6bfb1a3e9dea8e5"
         },
         {
           "path": "TEST.md",
-          "sha256": "346db93d46e2a60c57dec6e17125f946b2e082977fd7f72555979aefd73470fb"
+          "sha256": "209de2104b194a92d4f014e6bc2337216448923e3b06beaa646ffb5d71123234"
         },
         {
           "path": "claude_design.py",
-          "sha256": "7fcfd175c0bfccca1ed7b6418fea5bb469b6e769e7415ac534cd4425f1b6542e"
+          "sha256": "c3d8b13196389f544424195bf71fadae4389574779b4a587d7dd0c05a260e4d0"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "f0486fdafa06f584c0c840bbeda6ab93b126cd719a5cd6f53aa0a305f6d90720"
+          "sha256": "0dc98221bd9e5098a13d02b035afbc89236d863fc805e4590313c0e951d2d39f"
         },
         {
           "path": "harness.json",
-          "sha256": "16fb05cbe7789081321a9b04d34595e184a114b5440b41efce38da8de2b82373"
+          "sha256": "fa2e9908b274f77eb989c753966721a91b3a284cbd028bf4c080385baa53b9a1"
         }
       ]
     },
