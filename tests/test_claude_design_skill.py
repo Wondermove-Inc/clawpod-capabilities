@@ -95,8 +95,8 @@ def test_link_first_delivery_is_the_default_and_file_export_is_opt_in() -> None:
     assert "Share → Export → PowerPoint" in link and "projects.share.preview" in link
     harness = json.loads((ROOT / "harnesses" / "claude-design" / "harness.json").read_text())
     assert harness["commands"]["projects.link.verify"]["safetyClasses"] == ["readOnly"]
-    assert harness["version"] == "0.4.0"
-    assert json.loads((ROOT / "skills" / "claude-design" / "capability.json").read_text())["linkedHarness"]["version"] == "0.4.0"
+    assert harness["version"] == "0.4.1"
+    assert json.loads((ROOT / "skills" / "claude-design" / "capability.json").read_text())["linkedHarness"]["version"] == "0.4.1"
 
 
 def test_quality_gates_are_deterministic_and_feed_a_bounded_revise_loop() -> None:

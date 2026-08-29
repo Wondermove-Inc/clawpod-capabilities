@@ -4,7 +4,7 @@
   "name": "claude-design",
   "title": "Claude Design",
   "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "entrypoint": "./claude_design.py",
   "packageRoot": ".",
   "execution": {
@@ -3595,6 +3595,9 @@
           },
           "strict": {
             "type": "boolean"
+          },
+          "maxFontSizes": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3679,6 +3682,13 @@
           "arg": "overlapRatio",
           "type": "option",
           "flag": "--overlap-ratio",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "maxFontSizes",
+          "type": "option",
+          "flag": "--max-font-sizes",
           "valueType": "string",
           "optional": true
         },

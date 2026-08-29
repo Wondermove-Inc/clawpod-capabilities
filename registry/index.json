@@ -99,7 +99,7 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
@@ -116,7 +116,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "9a39b8fa09f0c0a1c029c9e75b26db498e6431d4f1928b63a7db7d48f57c9fad"
+          "sha256": "1f1a1ee8d1963f823e01527fd11f1591ddd27fa37127485938a282bc1de21af8"
         },
         {
           "path": "references/link-handoff.md",
@@ -132,12 +132,12 @@
         },
         {
           "path": "references/quality-gates.md",
-          "sha256": "12067b5dc244e66c7845309746eee1d4ac5c42b063daf9e06010bfed2bbb6495"
+          "sha256": "fe56525b263fe6691a5e0278f5ac1e28830aadb10c460d3cbce5a147af01a504"
         }
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.4.0"
+        "version": "0.4.1"
       }
     },
     {
@@ -1057,7 +1057,7 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
@@ -1074,15 +1074,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "f650de83eaa2eee8bd0448564a43f9401f009fd7d5e18bffa6bfb1a3e9dea8e5"
+          "sha256": "d1297dcd1b8ec5999d92476a1c31819255aa157936bef9c91bbfb43adc8d7bcc"
         },
         {
           "path": "TEST.md",
-          "sha256": "209de2104b194a92d4f014e6bc2337216448923e3b06beaa646ffb5d71123234"
+          "sha256": "931ebd80f23dc138b41bbe223f0a7cbc71bfdf3fc047ba40c31152e1083a6dec"
         },
         {
           "path": "claude_design.py",
-          "sha256": "c3d8b13196389f544424195bf71fadae4389574779b4a587d7dd0c05a260e4d0"
+          "sha256": "ff2120092cb4611e03f49fcf85daa48244a15bc18fa03e7c2723b329c52ddc4e"
         },
         {
           "path": "command_contracts.json",
@@ -1090,7 +1090,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "fa2e9908b274f77eb989c753966721a91b3a284cbd028bf4c080385baa53b9a1"
+          "sha256": "03eba8a4fb18e752a63234d0272b6cd1fb8df870f4ea11eeb03bd5d886d708f0"
+        },
+        {
+          "path": "scripts/capture_layout.py",
+          "sha256": "301f77e19f5066f640de486f367da992ba0e9af77e7f799a4349e01e405a8e56"
         }
       ]
     },

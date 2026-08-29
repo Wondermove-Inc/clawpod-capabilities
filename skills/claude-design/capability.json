@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
   "compatibility": {
     "openclaw": ">=2026.4.11",
@@ -15,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "claude-design",
-    "version": "0.4.0"
+    "version": "0.4.1"
   },
   "descriptionSource": "skill-frontmatter"
 }

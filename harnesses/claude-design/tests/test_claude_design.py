@@ -6,7 +6,7 @@ def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],text=True,capture_output=True,env=env); return p,json.loads(p.stdout)
 
 def test_version():
- p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.4.0'
+ p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.4.1'
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
 def test_onboarding_plan_is_browser_first_and_minimal_human_input():
@@ -165,7 +165,7 @@ def test_unknown_unsupported():
 def test_unsafe_identifier_rejected():
  _,o=run('projects.update','--project-id','../../etc/passwd'); assert o['error']['code']=='INVALID_INPUT'
 def test_manifest_contract():
- m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.4.0'
+ m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.4.1'
  assert all(x not in (ROOT/'harness.json').read_text() for x in ['minimum','maximum','minLength','enum'])
 def test_contracts_match_manifest():
  m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==66 and c['commands']==list(m['commands'])
@@ -209,7 +209,7 @@ def test_link_verify_fails_closed_on_mismatch_and_bad_urls():
 def _layout(slides):return {"viewport":{"width":1920,"height":1080},"slides":slides}
 def _write(tmp,obj):
  f=Path(tmp)/'layout.json';f.write_text(json.dumps(obj));return f
-CLEAN=[{"index":i,"elements":[{"id":f"t{i}","kind":"text","text":"Title","bbox":[120,80,800,60],"fontPx":36,"clientWidth":800,"scrollWidth":700},
+CLEAN=[{"index":i,"elements":[{"id":f"t{i}","kind":"text","tag":"h1","text":"Title","bbox":[120,80,800,60],"fontPx":36,"clientWidth":800,"scrollWidth":700},
  {"id":f"box{i}","kind":"shape","shape":"rect","bbox":[120,200,400,200]},{"id":f"b{i}","kind":"text","text":"Body text that fits","bbox":[140,220,360,80],"fontPx":18,"parent":f"box{i}","clientWidth":360,"scrollWidth":300,"clientHeight":80,"scrollHeight":60}]} for i in (1,2,3)]
 
 def test_qa_layout_passes_clean_deck(tmp_path):
@@ -221,13 +221,22 @@ def test_qa_layout_catches_overflow_escape_overlap_misalignment_and_drift(tmp_pa
  s2=bad[1]['elements'];s2[2]['scrollWidth']=520                                  # text wider than box
  s2.append({"id":"esc","kind":"text","text":"escapes","bbox":[300,380,300,60],"fontPx":18,"parent":"box2"})   # escapes container
  s2.append({"id":"ov1","kind":"text","text":"a","bbox":[900,500,200,50],"fontPx":12});s2.append({"id":"ov2","kind":"text","text":"b","bbox":[950,510,200,50],"fontPx":18})  # overlap + small font
- s3=bad[2]['elements'];s3[0]['bbox']=[120,92,800,60];s3.append({"id":"sub","kind":"text","text":"subtitle","bbox":[131,150,600,40],"fontPx":20})  # title drift + almost left-aligned subtitle
+ s3=bad[2]['elements'];s3[0]['bbox']=[120,92,800,60];s3.append({"id":"sub","kind":"text","tag":"h1","text":"subtitle","bbox":[131,150,600,40],"fontPx":40})  # title drift + almost left-aligned peer heading
  s3+= [{"id":"c1","kind":"shape","shape":"rect","bbox":[100,600,200,100]},{"id":"c2","kind":"shape","shape":"rect","bbox":[320,600,200,100]},{"id":"c3","kind":"shape","shape":"rect","bbox":[560,600,200,100]},{"id":"off","kind":"shape","shape":"pill","bbox":[1800,900,300,100]},{"id":"c4","kind":"shape","shape":"diamond","bbox":[100,800,50,50]},{"id":"c5","kind":"shape","shape":"cloud","bbox":[200,800,50,50]}]
  p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(bad)),expected_pages='4')
  assert p.returncode==2 and o['error']['code']=='QA_FAILED' and o['retry_safe'] is False
  d=o['data'];codes={f['code'] for s in d['slides'] for f in s['findings']}|{f['code'] for f in d['deck_findings']}
  for code in ('TEXT_OVERFLOW','TEXT_OUTSIDE_SHAPE','OVERLAP','FONT_TOO_SMALL','MISALIGNED_EDGE','UNEVEN_SPACING','OFF_CANVAS','INCONSISTENT_SHAPES','TITLE_DRIFT','PAGE_COUNT_MISMATCH'):assert code in codes,code
  assert d['revision_prompt'].startswith('Fix the following layout defects') and 'Slide 2:' in d['revision_prompt'] and 'Deck:' in d['revision_prompt']
+
+def test_qa_layout_ignores_benign_geometry(tmp_path):
+ benign=json.loads(json.dumps(CLEAN)); el=benign[0]['elements']
+ el.append({"id":"lbl","kind":"text","tag":"span","text":"LED","bbox":[600,600,51,28],"fontPx":26,"overflow":"visible","clientHeight":35,"scrollHeight":39})        # visible overflow, not clipped
+ el.append({"id":"chk","kind":"shape","tag":"span","cls":"box","shape":"rect","bbox":[100,706,31,31]});el.append({"id":"lab","kind":"text","tag":"span","cls":"label","text":"5V","bbox":[152,700,150,43],"fontPx":32})   # centered pair, different roles
+ el.append({"id":"p","kind":"text","tag":"p","text":"para with strong","bbox":[100,800,600,64],"fontPx":27});el.append({"id":"st","kind":"text","tag":"strong","display":"inline","parent":"p","text":"strong","bbox":[366,800,91,27],"fontPx":27})   # inline child inside its paragraph
+ el.append({"id":"fig","kind":"image","tag":"figure","bbox":[100,880,800,150]});el+= [{"id":f"d{k}","kind":"text","tag":"text","inDiagram":True,"parent":"fig","text":"+","bbox":[120+k*230,900+k*7,26,27],"fontPx":26} for k in range(3)]   # diagram labels
+ _,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(benign)),expected_pages='3');assert o['ok'],o
+ assert o['data']['summary']['critical']==0 and o['data']['summary']['warning']==0,o['data']['slides'][0]['findings']
 
 def test_qa_layout_strict_and_invalid_inputs(tmp_path):
  warn=json.loads(json.dumps(CLEAN));warn[0]['elements'][0]['fontPx']=10

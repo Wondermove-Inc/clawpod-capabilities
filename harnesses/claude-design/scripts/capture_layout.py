@@ -46,24 +46,35 @@ CAPTURE_JS = r"""
     if (cs.clipPath && cs.clipPath !== 'none') return 'polygon'; if (r >= w / 2 && w > 0) return 'circle'; if (r > 40) return 'pill'; if (r > 0) return 'rounded'; return 'rect'; };
   const visibleBox = (el, cs) => cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || (cs.borderStyle !== 'none' && parseFloat(cs.borderWidth) > 0) || cs.boxShadow !== 'none';
   const out = { viewport: { width: Math.round(vw), height: Math.round(vh) }, slideSelector: window.__slideSelector, slides: slides.map((slide, i) => {
+    // Viewers stack slides and hide all but the current one (visibility:hidden / opacity:0). Geometry is still laid out,
+    // so force this slide visible only for the duration of the measurement and restore afterwards.
+    const saved = { visibility: slide.style.visibility, opacity: slide.style.opacity, display: slide.style.display };
+    slide.style.visibility = 'visible'; slide.style.opacity = '1'; if (getComputedStyle(slide).display === 'none') slide.style.display = 'block';
     const base = slide.getBoundingClientRect(); const ids = new Map();
-    const els = [...slide.querySelectorAll('*')].filter(el => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 2 && r.height > 2 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.matches('script,style,br'); });
+    const ownHidden = el => { const cs = getComputedStyle(el); return cs.display === 'none' || (el.style && (el.style.visibility === 'hidden' || el.style.display === 'none')); };
+    const els = [...slide.querySelectorAll('*')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2 && !ownHidden(el) && !el.matches('script,style,br'); });
     els.forEach(el => ids.set(el, 'e' + (++n)));
     const elements = [];
     for (const el of els) {
       const cs = getComputedStyle(el); const kind = kindOf(el);
       if (kind === 'shape' && !visibleBox(el, cs)) continue;           // skip invisible layout wrappers
-      const r = el.getBoundingClientRect(); let parent = el.parentElement;
-      while (parent && parent !== slide && !(ids.has(parent) && getComputedStyle(parent) && (kindOf(parent) !== 'shape' || visibleBox(parent, getComputedStyle(parent))))) parent = parent.parentElement;
-      elements.push({ id: ids.get(el), kind, shape: kind === 'shape' ? shapeOf(el, cs) : undefined,
+      const r = el.getBoundingClientRect();
+      let parent = el.parentElement; while (parent && parent !== slide && !ids.has(parent)) parent = parent.parentElement;   // nearest captured DOM ancestor
+      let box = el.parentElement; while (box && box !== slide && !(ids.has(box) && kindOf(box) === 'shape' && visibleBox(box, getComputedStyle(box)))) box = box.parentElement;   // nearest visible container
+      const cls = (el.getAttribute('class') || '').trim().split(/\s+/)[0] || undefined;
+      elements.push({ id: ids.get(el), kind, tag: el.tagName.toLowerCase(), cls, display: cs.display, position: cs.position,
+        inDiagram: !!(el.closest('figure, svg, canvas, table') && el.closest('figure, svg, canvas, table') !== el),
+        overflow: cs.overflowY !== 'visible' || cs.overflowX !== 'visible' || cs.textOverflow === 'ellipsis' ? 'clip' : 'visible',
+        shape: kind === 'shape' ? shapeOf(el, cs) : undefined,
         text: kind === 'text' ? (el.innerText || el.textContent).trim().slice(0, 200) : undefined,
         fontPx: kind === 'text' ? parseFloat(cs.fontSize) : undefined, fontFamily: kind === 'text' ? cs.fontFamily.split(',')[0].replace(/["']/g, '').trim() : undefined,
         color: kind === 'text' ? cs.color : undefined, background: cs.backgroundColor,
         bbox: [Math.round(r.left - base.left), Math.round(r.top - base.top), Math.round(r.width), Math.round(r.height)],
-        parent: parent && parent !== slide ? ids.get(parent) : undefined,
+        parent: parent && parent !== slide ? ids.get(parent) : undefined, box: box && box !== slide ? ids.get(box) : undefined,
         clientWidth: el.clientWidth, scrollWidth: el.scrollWidth, clientHeight: el.clientHeight, scrollHeight: el.scrollHeight });
     }
-    return { index: i + 1, elements };
+    slide.style.visibility = saved.visibility; slide.style.opacity = saved.opacity; slide.style.display = saved.display;
+    return { index: i + 1, label: slide.getAttribute('data-label') || slide.getAttribute('aria-label') || undefined, classes: (slide.className || '').toString().slice(0, 80), slideRect: [Math.round(base.left), Math.round(base.top), Math.round(base.width), Math.round(base.height)], elements };
   }) };
   const holder = document.createElement('script'); holder.type = 'application/json'; holder.id = '__layout_capture__';
   holder.textContent = JSON.stringify(out); document.documentElement.appendChild(holder);
