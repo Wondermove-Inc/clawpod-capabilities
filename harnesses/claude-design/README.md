@@ -1,6 +1,6 @@
 # Claude Design Harness
 
-Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, the layout quality gate, link-first handoff, opt-in native exports, design systems, templates, code sync, destinations, and administration. Version 0.4.0 adds `projects.qa.layout` and `projects.link.verify`; the surface is now 66 commands.
+Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, the layout quality gate, link-first handoff, opt-in native exports, design systems, templates, code sync, destinations, and administration. Version 0.4.1 (calibrated on a real export) adds `projects.qa.layout` and `projects.link.verify`; the surface is now 66 commands.
 
 Provider execution defaults to the logged-in `https://claude.ai/design` UI through the desktop/browser capability. The Harness plans actions, emits exact browser handoffs and reconciliation sources, gates effects with SHA-256 digests, and verifies exported artifacts. It never fakes provider success or inspects browser credentials.
 
@@ -10,7 +10,7 @@ Provider execution defaults to the logged-in `https://claude.ai/design` UI throu
 
 ## Quality gate
 
-`projects.qa.layout --layout-json <capture> --expected-pages N` evaluates per-slide element geometry captured from the canvas (bbox, font size, scroll/client sizes, parent, shape kind) and fails closed with `QA_FAILED` on any critical finding: `TEXT_OVERFLOW`, `TEXT_OUTSIDE_SHAPE`, `OVERLAP`, `OFF_CANVAS`, `PAGE_COUNT_MISMATCH`. Warnings cover `MISALIGNED_EDGE` (almost-aligned siblings), `UNEVEN_SPACING`, `FONT_TOO_SMALL`, `TEXT_DENSITY`, `INCONSISTENT_SHAPES`, `TITLE_DRIFT`, `FONT_SIZE_SPRAWL`, `EMPTY_SLIDE`; `--strict` makes them blocking. Thresholds: `--min-font-px 14 --tolerance-px 4 --max-words 90 --overlap-ratio 0.15`. The response includes `revision_prompt`, one instruction naming every defect per slide, meant to be pasted into `projects.iterate` for a bounded revise loop.
+`projects.qa.layout --layout-json <capture> --expected-pages N` evaluates per-slide element geometry captured from the canvas (bbox, font size, scroll/client sizes, parent, shape kind) and fails closed with `QA_FAILED` on any critical finding: `TEXT_OVERFLOW`, `TEXT_OUTSIDE_SHAPE`, `OVERLAP`, `OFF_CANVAS`, `PAGE_COUNT_MISMATCH`. Warnings cover `MISALIGNED_EDGE` (almost-aligned siblings), `UNEVEN_SPACING`, `FONT_TOO_SMALL`, `TEXT_DENSITY`, `INCONSISTENT_SHAPES`, `TITLE_DRIFT`, `FONT_SIZE_SPRAWL`, `EMPTY_SLIDE`; `--strict` makes them blocking. Thresholds: `--min-font-px 14 --tolerance-px 4 --max-words 90 --overlap-ratio 0.15 --max-font-sizes 8`. Alignment and spacing rules compare only peer elements (same kind/tag/class, similar font size) outside diagrams and accept centered pairs; overflow is a defect only when the element clips; overlaps ignore DOM ancestors and inline children. `scripts/capture_layout.py` produces the layout JSON offline from a `.dc.html` export through headless Chromium (local binary or `--docker-image`). The response includes `revision_prompt`, one instruction naming every defect per slide, meant to be pasted into `projects.iterate` for a bounded revise loop.
 
 ## Start
 

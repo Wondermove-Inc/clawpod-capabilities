@@ -5,7 +5,7 @@ import argparse, hashlib, json, mimetypes, os, re, shutil, subprocess, sys, uuid
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-VERSION="0.4.0"
+VERSION="0.4.1"
 DESIGN_URL="https://claude.ai/design"
 LONG_CONTENTEDITABLE_CHARS=600
 MCP_NAME="claude-design"
@@ -243,7 +243,21 @@ def link_verify(a):
  data["next_action"]="Send the handoff card in the room message (or as a markdown artifact through artifact-design). Completion is the link opening for the recipient." if deliverable=="link" else "The user explicitly asked for files: continue with references/native-export.md after sending the link card."
  return data,None,None
 
-QA_DEFAULTS={"min_font_px":14,"tolerance_px":4,"max_words":90,"overlap_ratio":0.15}
+QA_DEFAULTS={"min_font_px":14,"tolerance_px":4,"max_words":90,"overlap_ratio":0.15,"max_font_sizes":8}
+INLINE_DISPLAYS={"inline","inline-block","inline-flex","inline-grid","contents","table-cell","table-row","list-item"}
+
+def is_inline(e):return str(e.get("display") or "block") in INLINE_DISPLAYS
+def peers(a,c):
+ """Elements are comparable for alignment/spacing only when they play the same role: same kind, tag, first class, and similar text size."""
+ if a.get("kind")!=c.get("kind") or (a.get("tag") or "")!=(c.get("tag") or "") or (a.get("cls") or "")!=(c.get("cls") or ""):return False
+ fa,fc=a.get("fontPx"),c.get("fontPx")
+ if fa is not None and fc is not None:
+  try:
+   fa,fc=float(fa),float(fc)
+   if fa and fc and abs(fa-fc)/max(fa,fc)>0.2:return False
+  except (TypeError,ValueError):return False
+ return True
+def clips(e):return (e.get("overflow") or "clip")=="clip"
 
 def bbox(e):
  b=e.get("bbox") or []
@@ -263,7 +277,7 @@ def ancestor(elements,child,other):
   if cur is other:return True
  return False
 
-def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict):
+def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict,max_font_sizes=QA_DEFAULTS["max_font_sizes"]):
  slides=layout.get("slides") if isinstance(layout,dict) else None
  viewport=layout.get("viewport",{}) if isinstance(layout,dict) else {}
  if not isinstance(slides,list) or not slides:return None,"INVALID_INPUT","layout JSON must contain a non-empty slides array."
@@ -281,11 +295,13 @@ def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict)
   for e in texts:
    b=bbox(e);txt=str(e.get("text") or "");words+=len(txt.split())
    try:
-    if e.get("scrollWidth") is not None and float(e["scrollWidth"])>float(e.get("clientWidth",0))+1:add("TEXT_OVERFLOW","critical",f"text {e.get('id')} is wider than its box ({e['scrollWidth']}px > {e.get('clientWidth')}px)",[e.get("id")])
-    elif e.get("scrollHeight") is not None and float(e["scrollHeight"])>float(e.get("clientHeight",0))+1:add("TEXT_OVERFLOW","critical",f"text {e.get('id')} is taller than its box ({e['scrollHeight']}px > {e.get('clientHeight')}px)",[e.get("id")])
+    wide=e.get("scrollWidth") is not None and float(e["scrollWidth"])>float(e.get("clientWidth",0))+1
+    tall=e.get("scrollHeight") is not None and float(e["scrollHeight"])>float(e.get("clientHeight",0))+1
+    if (wide or tall) and clips(e):   # overflow only cuts text when the element clips; visible overflow is judged by the container check below
+     add("TEXT_OVERFLOW","critical",f"text {e.get('id')} is {'wider' if wide else 'taller'} than its clipping box ({e['scrollWidth'] if wide else e['scrollHeight']}px > {e.get('clientWidth') if wide else e.get('clientHeight')}px)",[e.get("id")])
    except (TypeError,ValueError):add("INVALID_ELEMENT","warning",f"element {e.get('id')} has non-numeric overflow metrics",[e.get("id")])
-   parent=by_id.get(e.get("parent"));pb=bbox(parent) if parent else None
-   if pb and (b[0]<pb[0]-tol or b[1]<pb[1]-tol or b[0]+b[2]>pb[0]+pb[2]+tol or b[1]+b[3]>pb[1]+pb[3]+tol):add("TEXT_OUTSIDE_SHAPE","critical",f"text {e.get('id')} escapes its container {parent.get('id')}",[e.get("id"),parent.get("id")])
+   container=by_id.get(e.get("box") or e.get("parent"));pb=bbox(container) if container else None
+   if pb and (b[0]<pb[0]-tol or b[1]<pb[1]-tol or b[0]+b[2]>pb[0]+pb[2]+tol or b[1]+b[3]>pb[1]+pb[3]+tol):add("TEXT_OUTSIDE_SHAPE","critical",f"text {e.get('id')} escapes its container {container.get('id')}",[e.get("id"),container.get("id")])
    if b[0]<-tol or b[1]<-tol or b[0]+b[2]>vw+tol or b[1]+b[3]>vh+tol:add("OFF_CANVAS","critical",f"element {e.get('id')} extends beyond the {int(vw)}x{int(vh)} canvas",[e.get("id")])
    fp=e.get("fontPx")
    if fp is not None:
@@ -296,8 +312,9 @@ def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict)
   for e in elements:
    b=bbox(e)
    if e.get("kind")!="text" and b and (b[0]<-tol or b[1]<-tol or b[0]+b[2]>vw+tol or b[1]+b[3]>vh+tol):add("OFF_CANVAS","critical",f"element {e.get('id')} extends beyond the canvas",[e.get("id")])
-  for i,a in enumerate(texts):
-   for c in texts[i+1:]:
+  blocks=[e for e in texts if not is_inline(e)]
+  for i,a in enumerate(blocks):
+   for c in blocks[i+1:]:
     if ancestor(by_id,a,c) or ancestor(by_id,c,a):continue
     ba,bc=bbox(a),bbox(c);small=min(ba[2]*ba[3],bc[2]*bc[3])
     if small>0 and intersect(ba,bc)/small>overlap_ratio:add("OVERLAP","critical",f"text {a.get('id')} overlaps text {c.get('id')}",[a.get("id"),c.get("id")])
@@ -305,54 +322,66 @@ def qa_layout(layout,expected_pages,min_font,tol,max_words,overlap_ratio,strict)
   for e in elements:
    if bbox(e):groups.setdefault(e.get("parent"),[]).append(e)
   for parent,siblings in groups.items():
-   sib=[e for e in siblings if e.get("kind") in {"text","shape","image"}]
+   sib=[e for e in siblings if e.get("kind") in {"text","shape","image"} and not is_inline(e) and not e.get("inDiagram")]
    for i,a in enumerate(sib):
     for c in sib[i+1:]:
+     if not peers(a,c):continue
      ba,bc=bbox(a),bbox(c)
      dx=abs(ba[0]-bc[0]);dy=abs(ba[1]-bc[1])
-     if tol<dx<=4*tol and dy<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost left-aligned (off by {dx:g}px)",[a.get("id"),c.get("id")])
-     if tol<dy<=4*tol and dx<=tol*16:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost top-aligned (off by {dy:g}px)",[a.get("id"),c.get("id")])
-   rows={}
-   for e in sib:
-    rows.setdefault(round(bbox(e)[1]/max(tol,1)),[]).append(e)
-   for row in rows.values():
-    if len(row)>=3:
-     row.sort(key=lambda e:bbox(e)[0]);gaps=[bbox(row[k+1])[0]-(bbox(row[k])[0]+bbox(row[k])[2]) for k in range(len(row)-1)]
-     if max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"row of {len(row)} elements has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in row])
-   cols={}
-   for e in sib:
-    cols.setdefault(round(bbox(e)[0]/max(tol,1)),[]).append(e)
-   for col in cols.values():
-    if len(col)>=3:
-     col.sort(key=lambda e:bbox(e)[1]);gaps=[bbox(col[k+1])[1]-(bbox(col[k])[1]+bbox(col[k])[3]) for k in range(len(col)-1)]
-     if max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"column of {len(col)} elements has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in col])
+     if abs((ba[0]+ba[2]/2)-(bc[0]+bc[2]/2))<=tol:dx=0   # centered horizontally counts as aligned
+     if abs((ba[1]+ba[3]/2)-(bc[1]+bc[3]/2))<=tol:dy=0   # centered vertically counts as aligned
+     # "Almost aligned" is the smell: edges that differ by more than the tolerance but less than 4x it.
+     # Siblings in the same column (near-equal left) or the same row (near-equal top) are flagged regardless of distance.
+     if tol<dx<=4*tol:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost left-aligned (off by {dx:g}px)",[a.get("id"),c.get("id")])
+     if tol<dy<=4*tol:add("MISALIGNED_EDGE","warning",f"{a.get('id')} and {c.get('id')} are almost top-aligned (off by {dy:g}px)",[a.get("id"),c.get("id")])
+   def peer_groups(items):
+    out=[]
+    for e in items:
+     for g in out:
+      if peers(g[0],e):g.append(e);break
+     else:out.append([e])
+    return out
+   for group in peer_groups(sib):
+    rows={}
+    for e in group:rows.setdefault(round(bbox(e)[1]/max(tol,1)),[]).append(e)
+    for row in rows.values():
+     if len(row)>=3:
+      row.sort(key=lambda e:bbox(e)[0]);gaps=[bbox(row[k+1])[0]-(bbox(row[k])[0]+bbox(row[k])[2]) for k in range(len(row)-1)]
+      if min(gaps)>=0 and max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"row of {len(row)} {row[0].get('tag') or 'elements'} has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in row])
+    cols={}
+    for e in group:cols.setdefault(round(bbox(e)[0]/max(tol,1)),[]).append(e)
+    for col in cols.values():
+     if len(col)>=3:
+      col.sort(key=lambda e:bbox(e)[1]);gaps=[bbox(col[k+1])[1]-(bbox(col[k])[1]+bbox(col[k])[3]) for k in range(len(col)-1)]
+      if min(gaps)>=0 and max(gaps)-min(gaps)>2*tol:add("UNEVEN_SPACING","warning",f"column of {len(col)} {col[0].get('tag') or 'elements'} has gaps from {min(gaps):g}px to {max(gaps):g}px",[e.get("id") for e in col])
   kinds={str(e.get("shape")) for e in shapes if e.get("shape")}
   if len(kinds)>3:add("INCONSISTENT_SHAPES","warning",f"{len(kinds)} different shape kinds on one slide ({', '.join(sorted(kinds))}); diagrams should use one shape per concept type")
   if words>max_words:add("TEXT_DENSITY","warning",f"{words} words on one slide (> {max_words}); split or cut")
   if not texts and not shapes:add("EMPTY_SLIDE","warning","slide has no text or shapes")
   title=None
-  for e in texts:
+  headings=[e for e in texts if str(e.get("tag") or "") in {"h1","h2"} and bbox(e)[1]<=vh*0.35]
+  for e in (headings or texts):
    b=bbox(e)
-   if b[1]<=vh*0.25 and e.get("fontPx") is not None:
+   if (headings or b[1]<=vh*0.25) and e.get("fontPx") is not None:
     try:
      if title is None or float(e["fontPx"])>float(title["fontPx"]):title=e
     except (TypeError,ValueError):pass
   if title:titles.append((index,bbox(title)))
   order.append(index)
-  report.append({"index":index,"findings":findings,"critical":sum(1 for f in findings if f["severity"]=="critical"),"warning":sum(1 for f in findings if f["severity"]=="warning"),"words":words})
+  report.append({"index":index,"label":slide.get("label"),"findings":findings,"critical":sum(1 for f in findings if f["severity"]=="critical"),"warning":sum(1 for f in findings if f["severity"]=="warning"),"words":words})
  if expected_pages is not None and len(slides)!=expected_pages:deck.append({"code":"PAGE_COUNT_MISMATCH","severity":"critical","message":f"layout has {len(slides)} slides; expected {expected_pages}"})
  body=[t for t in titles if t[0]!=1]
  if len(body)>=2:
   xs=[t[1][0] for t in body];ys=[t[1][1] for t in body]
   if max(xs)-min(xs)>2*tol or max(ys)-min(ys)>2*tol:deck.append({"code":"TITLE_DRIFT","severity":"warning","message":f"title position drifts across slides (x range {max(xs)-min(xs):g}px, y range {max(ys)-min(ys):g}px)"})
- if len(fonts)>5:deck.append({"code":"FONT_SIZE_SPRAWL","severity":"warning","message":f"{len(fonts)} distinct font sizes across the deck ({', '.join(str(f) for f in sorted(fonts))}); keep a scale of at most 5"})
+ if len(fonts)>max_font_sizes:deck.append({"code":"FONT_SIZE_SPRAWL","severity":"warning","message":f"{len(fonts)} distinct font sizes across the deck ({', '.join(str(f) for f in sorted(fonts))}); keep a scale of at most {max_font_sizes}"})
  critical=sum(r["critical"] for r in report)+sum(1 for f in deck if f["severity"]=="critical");warning=sum(r["warning"] for r in report)+sum(1 for f in deck if f["severity"]=="warning")
  passed=critical==0 and (not strict or warning==0)
  prompt=[]
  for r in report:
-  if r["findings"]:prompt.append(f"Slide {r['index']}: "+"; ".join(f["message"] for f in r["findings"]))
+  if r["findings"]:prompt.append(f"Slide {r['index']}{' (' + str(r['label']) + ')' if r.get('label') else ''}: "+"; ".join(f["message"] for f in r["findings"]))
  for f in deck:prompt.append("Deck: "+f["message"])
- data={"pass":passed,"strict":strict,"summary":{"slides":len(slides),"critical":critical,"warning":warning},"thresholds":{"minFontPx":min_font,"tolerancePx":tol,"maxWords":max_words,"overlapRatio":overlap_ratio},"slides":report,"deck_findings":deck,"qa_pages":[r["index"] for r in report],"revision_prompt":("Fix the following layout defects without changing content or slide order. "+" ".join(prompt)) if prompt else None,"read_only":True,"provider_execution":False}
+ data={"pass":passed,"strict":strict,"summary":{"slides":len(slides),"critical":critical,"warning":warning},"thresholds":{"minFontPx":min_font,"tolerancePx":tol,"maxWords":max_words,"overlapRatio":overlap_ratio,"maxFontSizes":max_font_sizes},"slides":report,"deck_findings":deck,"qa_pages":[r["index"] for r in report],"revision_prompt":("Fix the following layout defects without changing content or slide order. "+" ".join(prompt)) if prompt else None,"read_only":True,"provider_execution":False}
  return data,None,None
 
 def handoff(command,values,action,source):
@@ -360,7 +389,7 @@ def handoff(command,values,action,source):
 
 def parser():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument("command")
- for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error","project-url","thumbnail-id","attempt","observed-project-id","observed-thumbnail-id","active-url","observed-ui-filename","canvas-served","browser-healthy","fresh-list-read","attempt1-fresh-list","attempt2-fresh-list","attempt1-browser-healthy","attempt2-browser-healthy","attempt1-thumbnail-id","attempt2-thumbnail-id","attempt1-error","attempt2-error","export-initiated","artifact-valid","review-pass-1","review-pass-2","render-pages","reflow-pages","source-version","language","deliverable","layout-json","min-font-px","tolerance-px","max-words","overlap-ratio"]:p.add_argument("--"+name)
+ for name in ["project-id","design-system-id","template-id","repository-path","direction","effect-digest","prompt","template","model","access","role","principal","format","output-path","exact-name","destination","name","query","owner","sort","view","target","text","patch","sources","member","organization","scope","mcp-name","mcp-command","mcp-url","provenance","ref","tag-name","observed-text","error-message","gateway-status","file-url","ui-filename","provider-error","project-url","thumbnail-id","attempt","observed-project-id","observed-thumbnail-id","active-url","observed-ui-filename","canvas-served","browser-healthy","fresh-list-read","attempt1-fresh-list","attempt2-fresh-list","attempt1-browser-healthy","attempt2-browser-healthy","attempt1-thumbnail-id","attempt2-thumbnail-id","attempt1-error","attempt2-error","export-initiated","artifact-valid","review-pass-1","review-pass-2","render-pages","reflow-pages","source-version","language","deliverable","layout-json","min-font-px","tolerance-px","max-words","overlap-ratio","max-font-sizes"]:p.add_argument("--"+name)
  p.add_argument("--expected-pages");p.add_argument("--observed-slides");p.add_argument("--preview-pages");p.add_argument("--qa-pages")
  p.add_argument("--strict",action="store_true");p.add_argument("--starred",action="store_true");p.add_argument("--start-from-code",action="store_true");p.add_argument("--approve",action="store_true");p.add_argument("--contenteditable",action="store_true");p.add_argument("--evaluate-disabled",action="store_true")
  p.add_argument("--attachment",action="append",default=[]);p.add_argument("--option",action="append",default=[])
@@ -426,10 +455,10 @@ def main(argv=None):
   if a.expected_pages is not None and expected is None:return fail(c,"INVALID_INPUT","--expected-pages must be a positive integer when supplied.")
   try:
    min_font=float(a.min_font_px) if a.min_font_px is not None else QA_DEFAULTS["min_font_px"];tol=float(a.tolerance_px) if a.tolerance_px is not None else QA_DEFAULTS["tolerance_px"]
-   max_words=int(a.max_words) if a.max_words is not None else QA_DEFAULTS["max_words"];overlap=float(a.overlap_ratio) if a.overlap_ratio is not None else QA_DEFAULTS["overlap_ratio"]
+   max_words=int(a.max_words) if a.max_words is not None else QA_DEFAULTS["max_words"];overlap=float(a.overlap_ratio) if a.overlap_ratio is not None else QA_DEFAULTS["overlap_ratio"];max_fonts=int(a.max_font_sizes) if a.max_font_sizes is not None else QA_DEFAULTS["max_font_sizes"]
   except ValueError:return fail(c,"INVALID_INPUT","--min-font-px, --tolerance-px, --max-words, and --overlap-ratio must be numeric.")
-  if min_font<=0 or tol<=0 or max_words<=0 or not 0<overlap<1:return fail(c,"INVALID_INPUT","QA thresholds must be positive; --overlap-ratio must be between 0 and 1.")
-  data,code,message=qa_layout(layout,expected,min_font,tol,max_words,overlap,a.strict)
+  if min_font<=0 or tol<=0 or max_words<=0 or max_fonts<=0 or not 0<overlap<1:return fail(c,"INVALID_INPUT","QA thresholds must be positive; --overlap-ratio must be between 0 and 1.")
+  data,code,message=qa_layout(layout,expected,min_font,tol,max_words,overlap,a.strict,max_fonts)
   if code:return fail(c,code,message,False,data)
   digest=hashlib.sha256(raw).hexdigest();data["layout_sha256"]=digest
   ev=[{"kind":"layout-qa","ref":digest,"metadata":{"pass":data["pass"],"critical":data["summary"]["critical"],"warning":data["summary"]["warning"],"slides":data["summary"]["slides"]}}]
