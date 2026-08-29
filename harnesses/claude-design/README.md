@@ -1,8 +1,16 @@
 # Claude Design Harness
 
-Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, exports, design systems, templates, code sync, destinations, and administration. The 61-command surface is preserved.
+Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, the layout quality gate, link-first handoff, opt-in native exports, design systems, templates, code sync, destinations, and administration. Version 0.4.0 adds `projects.qa.layout` and `projects.link.verify`; the surface is now 66 commands.
 
 Provider execution defaults to the logged-in `https://claude.ai/design` UI through the desktop/browser capability. The Harness plans actions, emits exact browser handoffs and reconciliation sources, gates effects with SHA-256 digests, and verifies exported artifacts. It never fakes provider success or inspects browser credentials.
+
+## Deliverable: link first, files on request
+
+`projects.link.verify` validates the exact project/file route (https://claude.ai/design URLs that reference the same project ID, a URL-decoded `file` parameter equal to the active `.dc.html` filename, observed slide count equal to the expected count, canvas served) and renders a Korean or English `handoff_card` with the project link, file link, slide count, grounded source version, and the three self-service export routes. Completion is the recipient opening the link. Native PPTX/PDF export (`projects.export.plan/diagnose/verify`) remains available for explicit file requests only; room artifacts cannot carry binaries.
+
+## Quality gate
+
+`projects.qa.layout --layout-json <capture> --expected-pages N` evaluates per-slide element geometry captured from the canvas (bbox, font size, scroll/client sizes, parent, shape kind) and fails closed with `QA_FAILED` on any critical finding: `TEXT_OVERFLOW`, `TEXT_OUTSIDE_SHAPE`, `OVERLAP`, `OFF_CANVAS`, `PAGE_COUNT_MISMATCH`. Warnings cover `MISALIGNED_EDGE` (almost-aligned siblings), `UNEVEN_SPACING`, `FONT_TOO_SMALL`, `TEXT_DENSITY`, `INCONSISTENT_SHAPES`, `TITLE_DRIFT`, `FONT_SIZE_SPRAWL`, `EMPTY_SLIDE`; `--strict` makes them blocking. Thresholds: `--min-font-px 14 --tolerance-px 4 --max-words 90 --overlap-ratio 0.15`. The response includes `revision_prompt`, one instruction naming every defect per slide, meant to be pasted into `projects.iterate` for a bounded revise loop.
 
 ## Start
 

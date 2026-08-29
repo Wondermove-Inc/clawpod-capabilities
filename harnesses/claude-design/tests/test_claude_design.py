@@ -6,7 +6,7 @@ def run(*args,env=None):
  p=subprocess.run([str(CLI),*args],text=True,capture_output=True,env=env); return p,json.loads(p.stdout)
 
 def test_version():
- p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.3.9'
+ p,o=run('system.version'); assert p.returncode==0 and o['data']['version']=='0.4.0'
 def test_stable_envelope():
  _,o=run('system.version'); assert {'ok','command','request_id','data','warnings','evidence','retry_safe'}<=o.keys()
 def test_onboarding_plan_is_browser_first_and_minimal_human_input():
@@ -165,10 +165,10 @@ def test_unknown_unsupported():
 def test_unsafe_identifier_rejected():
  _,o=run('projects.update','--project-id','../../etc/passwd'); assert o['error']['code']=='INVALID_INPUT'
 def test_manifest_contract():
- m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.3.9'
+ m=json.loads((ROOT/'harness.json').read_text()); assert m['name']=='claude-design' and m['title']=='Claude Design' and m['version']=='0.4.0'
  assert all(x not in (ROOT/'harness.json').read_text() for x in ['minimum','maximum','minLength','enum'])
 def test_contracts_match_manifest():
- m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==64 and c['commands']==list(m['commands'])
+ m=json.loads((ROOT/'harness.json').read_text());c=json.loads((ROOT/'command_contracts.json').read_text());assert len(c['commands'])==66 and c['commands']==list(m['commands'])
 def test_export_contracts_use_gateway_supported_scalar_schemas():
  m=json.loads((ROOT/'harness.json').read_text())
  for name in ['projects.export.plan','projects.export.verify','projects.export.diagnose']:
@@ -179,3 +179,60 @@ def test_export_contracts_use_gateway_supported_scalar_schemas():
 def test_no_secret_literals_in_distributables():
  text='\n'.join(p.read_text(errors='ignore') for p in ROOT.rglob('*') if p.is_file() and 'tests' not in p.parts)
  assert 'TOP_SECRET_SENTINEL' not in text
+
+
+
+import subprocess as _sp, tempfile as _tf
+def run_kw(command,**kw):
+ args=[str(CLI),command]
+ for k,v in kw.items():
+  if v is True:args.append('--'+k.replace('_','-'))
+  else:args+=['--'+k.replace('_','-'),str(v)]
+ p=_sp.run(args,text=True,capture_output=True);return p,json.loads(p.stdout)
+BASE_LINK=dict(project_id='p14',project_url='https://claude.ai/design/p14',file_url='https://claude.ai/design/p14?file=deck.dc.html',ui_filename='deck.dc.html',expected_pages='14',observed_slides='14',canvas_served='true')
+
+def test_link_verify_produces_link_first_handoff_card():
+ p,o=run_kw('projects.link.verify',**BASE_LINK,source_version='v2.3.0 @ 9f1c2d');assert p.returncode==0 and o['ok']
+ d=o['data'];assert d['deliverable']=='link' and d['completion']['link_delivery_required'] and not d['completion']['native_file_export_required']
+ assert 'https://claude.ai/design/p14?file=deck.dc.html' in d['handoff_card'] and 'PowerPoint' in d['handoff_card'] and '9f1c2d' in d['handoff_card']
+ assert d['read_only'] and d['provider_execution'] is False and o['evidence'][0]['kind']=='link-handoff'
+
+def test_link_verify_korean_card_and_file_mode():
+ _,o=run_kw('projects.link.verify',**BASE_LINK,language='ko',deliverable='file');d=o['data']
+ assert '슬라이드: 14장' in d['handoff_card'] and d['completion']['native_file_export_required'] and 'native-export' in d['next_action']
+
+def test_link_verify_fails_closed_on_mismatch_and_bad_urls():
+ for kw,code in ((dict(observed_slides='13'),'SLIDE_COUNT_MISMATCH'),(dict(canvas_served='false'),'CANVAS_NOT_SERVED'),(dict(ui_filename='other.dc.html'),'ACTIVE_FILE_MISMATCH'),(dict(project_url='https://evil.example/design/p14'),'INVALID_INPUT'),(dict(language='fr'),'INVALID_INPUT'),(dict(file_url='https://claude.ai/design/p99?file=deck.dc.html'),'ACTIVE_FILE_MISMATCH')):
+  p,o=run_kw('projects.link.verify',**{**BASE_LINK,**kw});assert p.returncode==2 and o['error']['code']==code and o['retry_safe'] is False,(kw,o)
+ m=json.loads((ROOT/'harness.json').read_text());assert m['commands']['projects.link.verify']['safetyClasses']==['readOnly'] and any('link' in w for w in m['whenToUse'])
+
+def _layout(slides):return {"viewport":{"width":1920,"height":1080},"slides":slides}
+def _write(tmp,obj):
+ f=Path(tmp)/'layout.json';f.write_text(json.dumps(obj));return f
+CLEAN=[{"index":i,"elements":[{"id":f"t{i}","kind":"text","text":"Title","bbox":[120,80,800,60],"fontPx":36,"clientWidth":800,"scrollWidth":700},
+ {"id":f"box{i}","kind":"shape","shape":"rect","bbox":[120,200,400,200]},{"id":f"b{i}","kind":"text","text":"Body text that fits","bbox":[140,220,360,80],"fontPx":18,"parent":f"box{i}","clientWidth":360,"scrollWidth":300,"clientHeight":80,"scrollHeight":60}]} for i in (1,2,3)]
+
+def test_qa_layout_passes_clean_deck(tmp_path):
+ p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(CLEAN)),expected_pages='3');assert p.returncode==0 and o['data']['pass'] and o['data']['summary']=={'slides':3,'critical':0,'warning':0}
+ assert o['data']['qa_pages']==[1,2,3] and o['data']['revision_prompt'] is None and o['evidence'][0]['kind']=='layout-qa'
+
+def test_qa_layout_catches_overflow_escape_overlap_misalignment_and_drift(tmp_path):
+ bad=json.loads(json.dumps(CLEAN))
+ s2=bad[1]['elements'];s2[2]['scrollWidth']=520                                  # text wider than box
+ s2.append({"id":"esc","kind":"text","text":"escapes","bbox":[300,380,300,60],"fontPx":18,"parent":"box2"})   # escapes container
+ s2.append({"id":"ov1","kind":"text","text":"a","bbox":[900,500,200,50],"fontPx":12});s2.append({"id":"ov2","kind":"text","text":"b","bbox":[950,510,200,50],"fontPx":18})  # overlap + small font
+ s3=bad[2]['elements'];s3[0]['bbox']=[120,92,800,60];s3.append({"id":"sub","kind":"text","text":"subtitle","bbox":[131,150,600,40],"fontPx":20})  # title drift + almost left-aligned subtitle
+ s3+= [{"id":"c1","kind":"shape","shape":"rect","bbox":[100,600,200,100]},{"id":"c2","kind":"shape","shape":"rect","bbox":[320,600,200,100]},{"id":"c3","kind":"shape","shape":"rect","bbox":[560,600,200,100]},{"id":"off","kind":"shape","shape":"pill","bbox":[1800,900,300,100]},{"id":"c4","kind":"shape","shape":"diamond","bbox":[100,800,50,50]},{"id":"c5","kind":"shape","shape":"cloud","bbox":[200,800,50,50]}]
+ p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(bad)),expected_pages='4')
+ assert p.returncode==2 and o['error']['code']=='QA_FAILED' and o['retry_safe'] is False
+ d=o['data'];codes={f['code'] for s in d['slides'] for f in s['findings']}|{f['code'] for f in d['deck_findings']}
+ for code in ('TEXT_OVERFLOW','TEXT_OUTSIDE_SHAPE','OVERLAP','FONT_TOO_SMALL','MISALIGNED_EDGE','UNEVEN_SPACING','OFF_CANVAS','INCONSISTENT_SHAPES','TITLE_DRIFT','PAGE_COUNT_MISMATCH'):assert code in codes,code
+ assert d['revision_prompt'].startswith('Fix the following layout defects') and 'Slide 2:' in d['revision_prompt'] and 'Deck:' in d['revision_prompt']
+
+def test_qa_layout_strict_and_invalid_inputs(tmp_path):
+ warn=json.loads(json.dumps(CLEAN));warn[0]['elements'][0]['fontPx']=10
+ _,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(warn)));assert o['ok'] and o['data']['summary']['warning']==1
+ p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(warn)),strict=True);assert p.returncode==2 and o['error']['code']=='QA_FAILED'
+ p,o=run_kw('projects.qa.layout',layout_json=str(Path(tmp_path)/'missing.json'));assert o['error']['code']=='NOT_FOUND'
+ p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,{"slides":[]}));assert o['error']['code']=='INVALID_INPUT'
+ p,o=run_kw('projects.qa.layout',layout_json=_write(tmp_path,_layout(CLEAN)),overlap_ratio='7');assert o['error']['code']=='INVALID_INPUT'

@@ -34,6 +34,8 @@
     "projects.export.plan",
     "projects.export.diagnose",
     "projects.export.verify",
+    "projects.link.verify",
+    "projects.qa.layout",
     "projects.handoff.preview",
     "projects.handoff.apply",
     "projects.delete",
@@ -73,7 +75,11 @@
     "INVALID_INPUT",
     "NOT_FOUND",
     "UNSUPPORTED",
-    "VERIFICATION_FAILED"
+    "VERIFICATION_FAILED",
+    "ACTIVE_FILE_MISMATCH",
+    "SLIDE_COUNT_MISMATCH",
+    "CANVAS_NOT_SERVED",
+    "QA_FAILED"
   ],
   "browserReadiness": "Authenticated Design UI verified through desktop/browser",
   "mcpPolicy": {

@@ -18,6 +18,8 @@
     "positive": [
       "Create a presentation deck",
       "Refine this UI wireframe",
+      "Run the layout quality gate and fix overflowing or misaligned slides",
+      "Hand over the deck as a Claude Design link so the user exports it themselves",
       "Export and verify the design system"
     ],
     "negative": [
@@ -26,7 +28,9 @@
       "Use Desktop instead of nodes to inspect an already paired remote screen",
       "Generate a standalone product photo instead of using Image Studio",
       "Render a localized video",
-      "Publish a designed report as a chat-room artifact"
+      "Publish a designed report as a chat-room artifact",
+      "Export PPTX and PDF files by default when the user only asked for a deck",
+      "Hand over a deck that failed the layout quality gate without reporting the defects"
     ],
     "adjacent": [
       "clawpod-image-studio",
