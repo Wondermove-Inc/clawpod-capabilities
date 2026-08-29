@@ -1,6 +1,6 @@
 ---
 name: "clawpod-org-operations"
-description: "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use project-development for coding-session leases and the capability registry for package lifecycle."
+description: "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use the capability registry for package lifecycle."
 ---
 
 # ClawPod Organizational Operations
@@ -28,5 +28,5 @@ Coordinate organizational work with explicit responsibility, authority, evidence
 - Add **SOC/CSIRT** for security events, evidence handling, affected assets, IOC/TTP, regulatory or legal decisions, and tracked response contacts.
 - Add **SRE/incident** for service reliability, SEV operations, customer impact, incident command, mitigation, recovery, and live updates.
 - If multiple packs apply, name the primary operating context and add only materially relevant fields from the secondary pack.
-- Use `codex-claude-project-development` instead for coding-process onboarding, leases, or durable coding sessions. Use `clawpod-capability-registry` for capability package lifecycle.
+- Use `clawpod-capability-registry` for capability package lifecycle.
 - Use `soc-event-correlation` for the actual security-event analysis — grouping alerts into an incident, the attack story, ATT&CK/kill-chain mapping, and the response recommendation. The SOC/CSIRT pack here **coordinates and reports** that work (handoffs, escalations, incident updates, closure); it does not perform the correlation.

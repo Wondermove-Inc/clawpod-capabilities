@@ -61,7 +61,7 @@ import(process.argv[1]).then(async m => {
 
     def test_all_canonical_harnesses_match_live_gateway_parser(self):
         paths = sorted(ROOT.glob(HARNESS_GLOB))
-        self.assertEqual(len(paths), 21, f"expected 21 canonical Harness manifests, found {len(paths)}")
+        self.assertEqual(len(paths), 20, f"expected 20 canonical Harness manifests, found {len(paths)}")
         parsed = self._parse_with_gateway(
             [{"name": str(path.relative_to(ROOT)), "manifest": json.loads(path.read_text())} for path in paths]
         )

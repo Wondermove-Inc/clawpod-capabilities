@@ -28,6 +28,7 @@ def test_package_is_prose_only_skill_surface() -> None:
         "references/soc-csirt.md",
         "references/sre-incident.md",
         "references/evidence-boundaries.md",
+        "references/responding.md",
     }
     assert not (ROOT / "harnesses" / "clawpod-org-operations").exists()
     metadata = json.loads((SKILL / "capability.json").read_text())

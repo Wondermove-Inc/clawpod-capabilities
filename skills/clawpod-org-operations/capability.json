@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plan and validate topology-aware organizational operations with safe routing, state transfer, quality gates, and recovery guidance.",
   "compatibility": {
     "openclaw": ">=2026.4.0",

@@ -326,8 +326,8 @@
     {
       "id": "clawpod-org-operations",
       "type": "skill",
-      "version": "0.1.1",
-      "description": "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use project-development for coding-session leases and the capability registry for package lifecycle.",
+      "version": "0.1.2",
+      "description": "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use the capability registry for package lifecycle.",
       "path": "skills/clawpod-org-operations",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -344,7 +344,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "db01dcdbb242354b6d5ef539f9b084c680558998a945e8044425e0c1ca788e28"
+          "sha256": "cdffe669d47b6408f595895c5487b12930984936b5e86a9e0819f82ff90126dd"
         },
         {
           "path": "references/common-templates.md",
@@ -449,46 +449,6 @@
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
         "version": "0.1.5"
-      }
-    },
-    {
-      "id": "codex-claude-project-development",
-      "type": "skill",
-      "version": "0.2.4",
-      "description": "Use to onboard Codex or Claude, register projects, and coordinate cross-process coding sessions, leases, and git context; use ordinary coding for in-process edits and GitHub for remote repository operations.",
-      "path": "skills/codex-claude-project-development",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "7591eb548888a28119b7ca3ded662d1f833201a7e2e914850f25eea23b32ac0a"
-        },
-        {
-          "path": "references/onboarding.md",
-          "sha256": "ba61c0ec21c70bcab676e037a971b716407c9ad486a97822c7271654eb463a24"
-        },
-        {
-          "path": "references/safety.md",
-          "sha256": "09bc103751cbcd387299c78364b26891fd451a6f577ab1d599b6becaa4eb79c1"
-        },
-        {
-          "path": "references/shared-storage.md",
-          "sha256": "e854327ce5418cb68fc174cbd9c44910facc1d70e31733f826b8b69ba16669fd"
-        }
-      ],
-      "linkedHarness": {
-        "id": "codex-claude-project-development",
-        "version": "0.2.4"
       }
     },
     {
@@ -1449,38 +1409,6 @@
         {
           "path": "harness.json",
           "sha256": "6aeebcea554bd2feb7716a6acce47ec63a9c8269b22746883fffdb10f1a45006"
-        }
-      ]
-    },
-    {
-      "id": "codex-claude-project-development",
-      "type": "harness",
-      "version": "0.2.4",
-      "description": "Develop software projects with Codex and/or Claude across separate processes with canonical git context, leases, protected secrets, and fail-closed state.",
-      "path": "harnesses/codex-claude-project-development",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "ed2c59b20d8bb57f65c0eedea8067e4f9afe8a337e8a974bcd93ea0cc0a189f2"
-        },
-        {
-          "path": "codex_claude_project_development.py",
-          "sha256": "6103b43e84de5f5a26c381d8b90ee3b0d8b180e2b1765da98310fb5afba523b3"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "b970f6360b45d4e6922c66553c362121cf286c0bf638c9d307c08208c6d84738"
         }
       ]
     },

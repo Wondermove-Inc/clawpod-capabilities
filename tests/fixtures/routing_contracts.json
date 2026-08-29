@@ -45,11 +45,11 @@
       "Roll back the capability update"
     ],
     "negative": [
-      "Coordinate two coding agents",
-      "Run the selected capability's domain task"
+      "Run the selected capability's domain task",
+      "Draft the delegation request for this task"
     ],
     "adjacent": [
-      "codex-claude-project-development"
+      "clawpod-org-operations"
     ]
   },
   "clawpod-cloud-webhooks": {
@@ -111,7 +111,6 @@
       "Resolve a different organization WORKFLOW.md without carrying over the prior task service"
     ],
     "negative": [
-      "Coordinate source-code leases across Codex and Claude processes",
       "Install a capability from the registry",
       "Use Workboard as the shared board for independent peer agents",
       "Send this email through Resend",
@@ -119,9 +118,9 @@
       "Find out why the pod keeps restarting"
     ],
     "adjacent": [
-      "codex-claude-project-development",
       "soc-event-correlation",
-      "ops-troubleshooting"
+      "ops-troubleshooting",
+      "clawpod-capability-registry"
     ]
   },
   "clawpod-video-studio": {
@@ -153,22 +152,6 @@
       "clawpod-cloud-webhooks"
     ]
   },
-  "codex-claude-project-development": {
-    "positive": [
-      "Onboard Claude for this project",
-      "Resume a cross-process coding session",
-      "Coordinate Codex and Claude leases"
-    ],
-    "negative": [
-      "Make this edit in the current process",
-      "Open a GitHub issue"
-    ],
-    "adjacent": [
-      "github",
-      "clawpod-capability-registry",
-      "clawpod-org-operations"
-    ]
-  },
   "enterprise-newsletter": {
     "positive": [
       "Render the enterprise newsletter",
@@ -195,8 +178,7 @@
       "Coordinate durable coding sessions"
     ],
     "adjacent": [
-      "atlassian",
-      "codex-claude-project-development"
+      "atlassian"
     ]
   },
   "google-workspace": {
