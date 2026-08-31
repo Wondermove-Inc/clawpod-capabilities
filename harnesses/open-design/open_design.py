@@ -28,7 +28,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 SCHEMA_VERSION = 1
 VERIFIED_SERVER_SERIES = "0.20"
 TOKEN_ENV = "OPEN_DESIGN_API_TOKEN"
@@ -112,6 +112,7 @@ class Client:
         self.timeout = min(int(args.timeout_ms or DEFAULT_TIMEOUT_MS), MAX_TIMEOUT_MS) / 1000.0
         self.requests: list[dict[str, Any]] = []
         self.token = os.environ.get(TOKEN_ENV, "").strip()
+        self.api_style = config.get("apiStyle") or "root"
         ca = config.get("caCertPath")
         if config.get("insecureTls"):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -129,7 +130,14 @@ class Client:
     def call(self, method: str, path: str, *, body: bytes | None = None, content_type: str | None = None,
              expect_json: bool = True, ok: tuple[int, ...] = (200,), token_override: str | None = None,
              max_bytes: int = MAX_DOWNLOAD_BYTES) -> tuple[int, Any, dict[str, str]]:
-        url = self.base + path
+        if path.startswith("http"):
+            url = path
+        else:
+            # "mapped" proxies substitute the /agent-api prefix FOR the daemon's /api
+            # segment (…/agent-api/version); "root" proxies keep it (…/agent-api/api/version).
+            if self.api_style == "mapped" and path.startswith("/api/"):
+                path = path[len("/api"):]
+            url = self.base + path
         headers = {"Accept": "application/json" if expect_json else "*/*", "User-Agent": f"clawpod-open-design/{VERSION}"}
         token = self.token if token_override is None else token_override
         if token:
@@ -244,22 +252,46 @@ def cmd_config_set(args, root, _config, _client) -> dict[str, Any]:
             raise Fail("INVALID_CA", "caCertPath must be an absolute path to an existing PEM file")
     if os.environ.get(TOKEN_ENV, "") and os.environ[TOKEN_ENV] in json.dumps(vars(args), default=str):
         raise Fail("SECRET_IN_ARGV", "the API token must never appear in arguments; it is read only from the Gateway-injected environment")
+    style = args.api_style
+    if style is not None and style not in ("root", "mapped"):
+        raise Fail("INVALID_API_STYLE", "--api-style must be root or mapped")
     config = {"schemaVersion": SCHEMA_VERSION, "baseUrl": base_url, "webBaseUrl": web_base, "caCertPath": ca, "insecureTls": bool(args.insecure_tls_risk_accepted), "updatedAt": now_iso()}
+    detected = None
+    if style is None:
+        style = "root"
+        if base_url != web_origin(base_url):
+            # The base carries a proxy prefix: probe which layout the proxy uses.
+            probe_client = Client(args, {**config, "apiStyle": "root"})
+            for candidate in ("root", "mapped"):
+                probe_client.api_style = candidate
+                try:
+                    _, payload, _ = probe_client.call("GET", "/api/version")
+                    if isinstance(payload, dict) and (payload.get("version") or {}).get("version"):
+                        style = candidate
+                        detected = candidate
+                        break
+                except Fail:
+                    continue
+            else:
+                raise Fail("UNREACHABLE", "neither <base>/api/version nor <base>/version answered; check the Base URL, prefix, token, and TLS trust", "unavailable")
+    config["apiStyle"] = style
     path = root / "config.json"
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
         json.dump(config, stream, sort_keys=True)
     warnings = []
+    if detected:
+        warnings.append(f"api path style auto-detected as '{detected}' from a live probe")
     if base_url.startswith("http://") and not re.match(r"^http://(127\.|localhost)", base_url):
         warnings.append("baseUrl is plain HTTP on a non-loopback host; the token would travel unencrypted")
     if config["insecureTls"]:
         warnings.append("TLS verification is disabled (common for internal servers with private certificates); switch to caCertPath when a CA file is available")
-    return {"config": {k: config[k] for k in ("baseUrl", "webBaseUrl", "caCertPath", "insecureTls", "updatedAt")}, "warnings": warnings,
+    return {"config": {k: config[k] for k in ("baseUrl", "webBaseUrl", "apiStyle", "caCertPath", "insecureTls", "updatedAt")}, "warnings": warnings,
             "nextAction": "Run health to verify the server, then one bounded read (projects.list) before claiming readiness."}
 
 
 def cmd_config_status(args, root, config, _client) -> dict[str, Any]:
-    return {"config": {k: config.get(k) for k in ("baseUrl", "webBaseUrl", "caCertPath", "insecureTls", "updatedAt")}, "tokenPresent": bool(os.environ.get(TOKEN_ENV, "").strip())}
+    return {"config": {k: config.get(k) for k in ("baseUrl", "webBaseUrl", "apiStyle", "caCertPath", "insecureTls", "updatedAt")}, "tokenPresent": bool(os.environ.get(TOKEN_ENV, "").strip())}
 
 
 def cmd_health(args, root, config, client) -> dict[str, Any]:
@@ -285,7 +317,7 @@ def cmd_health(args, root, config, client) -> dict[str, Any]:
         findings.append({"severity": "warning", "code": "TOKEN_ABSENT", "message": f"{TOKEN_ENV} is not injected in this run"})
     if server_version and not server_version.startswith(VERIFIED_SERVER_SERIES + "."):
         findings.append({"severity": "warning", "code": "UNVERIFIED_SERVER_VERSION", "message": f"server {server_version} differs from the verified {VERIFIED_SERVER_SERIES}.x series; re-check the contract on breakage"})
-    return {"serverVersion": server_version, "capabilities": capabilities, "authEnforced": enforced,
+    return {"serverVersion": server_version, "capabilities": capabilities, "authEnforced": enforced, "apiStyle": client.api_style,
             "tokenPresent": bool(os.environ.get(TOKEN_ENV, "").strip()), "projectCount": len(projects.get("projects", [])), "findings": findings}
 
 
@@ -381,7 +413,7 @@ def cmd_preview_link(args, root, config, client) -> dict[str, Any]:
     if not isinstance(relative, str) or not relative.startswith("/"):
         raise Fail("MALFORMED_RESPONSE", "preview-url did not return a relative URL", "failed")
     web_url = (config.get("webBaseUrl") or web_origin(config["baseUrl"])) + relative
-    status, _, _ = client.call("GET", relative, expect_json=False, token_override="")
+    status, _, _ = client.call("GET", web_url, expect_json=False, token_override="")
     return {"file": name, "url": web_url, "webUrl": web_url, "apiUrl": config["baseUrl"] + relative,
             "opensWithoutToken": status == 200, "csp": data.get("csp"),
             "note": "hand people the webUrl; it embeds a scope token and opens for anyone who can reach the server network"}
@@ -460,6 +492,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--state-root")
     parser.add_argument("--base-url")
     parser.add_argument("--web-base-url")
+    parser.add_argument("--api-style")
     parser.add_argument("--ca-cert-path")
     parser.add_argument("--insecure-tls-risk-accepted", action="store_true")
     parser.add_argument("--timeout-ms", type=int)

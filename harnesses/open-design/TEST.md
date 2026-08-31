@@ -9,3 +9,9 @@ Validated 2026-08-31 against the live self-hosted deployment at the operator-pro
 ## 0.2.0
 
 - Base URL may carry a reverse-proxy path prefix; `preview.link` returns `webUrl` (web origin, prefix-free, for humans) and `apiUrl` (agent base). New tests run the full lifecycle through a `/agent-api`-prefixed fake proxy and verify webUrl/apiUrl composition and the prefix-free default derivation. 15 tests pass offline.
+
+## 0.2.1
+
+- Fixes the 0.2.0 regression where a `mapped` proxy (prefix substitutes `/api`, as on od.wondermove.local) got a double `/api` → 404. `config.set` probes both layouts and stores `apiStyle`; `--api-style` overrides; preview openness is now checked on the human webUrl.
+- Offline: 16 tests (mapped-proxy fake E2E incl. path-collapse evidence, explicit override, invalid style).
+- Live (od.wondermove.local vhost via resolver override, operator token): auto-detect `mapped`, health `authEnforced:true` (nginx enforces the Bearer token on /agent-api), create → upload (byte-identical) → preview webUrl opens tokenless → export.html → delete. Scratch project removed.
