@@ -569,7 +569,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -604,7 +604,7 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.4.0"
+        "version": "0.4.1"
       }
     },
     {
@@ -1730,7 +1730,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1759,6 +1759,10 @@
           "sha256": "33ce18b8f8c9c7bf65c40ddb85bb321226905754aded225e723d60d6f712957d"
         },
         {
+          "path": "CHANGES-v0.4.1.md",
+          "sha256": "27a5ba2b133654912c0a4d51dc487f9204fbe8e94c23de53b583749c3261a5fb"
+        },
+        {
           "path": "command_contracts.json",
           "sha256": "a57afef04a6fdd5a2a840cfe98e0fb29b8362e8620e48c892de81b9cbb9966eb"
         },
@@ -1780,7 +1784,7 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "7b67da4c4edb38aaa209fc224f4463c8bc2f1a59ff730e61770a0ab7822e4cee"
+          "sha256": "5c243030fb780e2a41604f56dda90c1dbb7970775e7ce0b10527ce4f92ac10f7"
         },
         {
           "path": "google_workspace_core/contracts.py",
@@ -1812,7 +1816,7 @@
         },
         {
           "path": "google_workspace_core/scopes.py",
-          "sha256": "6147b10934cc5ec2aacb45b4d3840add2dcafb37c678b5c80aa4c7820814527b"
+          "sha256": "f81547649dd42a9e8349950ca301262c94c4d5bdd5ee511e4dcdc3865f5b0d90"
         },
         {
           "path": "google_workspace_core/security.py",
@@ -1832,7 +1836,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "1d276a72c845df2533b9f32a26ac2b675551301bfa4ac63213246df2e59ef58d"
+          "sha256": "fe413f25eea0bdc1479061ebc08ab00aae13be7716e64209eca7e737a302c836"
         },
         {
           "path": "scripts/generate_schemas.py",

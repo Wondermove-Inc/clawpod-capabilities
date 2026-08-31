@@ -240,7 +240,7 @@ def preflight(command:str, params:dict) -> dict:
   tail=url.rsplit("/",1)[-1]
   if ":" in tail:
    stripped=url[:url.rfind(":")]
-   if command.startswith("sheets.") and (stripped.endswith("/values") or "/sheets/" in stripped or stripped.endswith(":search") or "/developerMetadata" in stripped):
+   if command.startswith("sheets.") and (stripped.endswith("/values") or "/sheets/" in stripped or "/developerMetadata" in stripped):
     return {"method":"GET","url":ident[1]+_q(params.get(ident[0],"")),"query":{"fields":ident[0]},"etag":False,"strategy":"parent"}
    return {"method":"GET","url":stripped,"query":{"fields":ident[0]} if stripped.rstrip("/").endswith(_q(params.get(ident[0],""))) else {},"etag":False,"strategy":"resource"}
   return {"method":"GET","url":url,"query":{},"etag":False,"strategy":"resource"}
