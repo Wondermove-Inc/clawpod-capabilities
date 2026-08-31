@@ -28,7 +28,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 SCHEMA_VERSION = 1
 VERIFIED_SERVER_SERIES = "0.20"
 TOKEN_ENV = "OPEN_DESIGN_API_TOKEN"
@@ -85,16 +85,24 @@ def load_config(root: Path) -> dict[str, Any]:
     if not isinstance(config, dict) or config.get("schemaVersion") != SCHEMA_VERSION or not isinstance(config.get("baseUrl"), str):
         raise Fail("MALFORMED_STATE", "config.json has an unexpected shape; re-run config.set", "precondition")
     for key, value in config.items():
-        if isinstance(value, str) and re.search(r"(?i)bearer\s|odagt_|token|secret|password", key + "=" + value) and key not in {"baseUrl", "caCertPath", "verifiedServerVersion", "updatedAt"}:
+        if isinstance(value, str) and re.search(r"(?i)bearer\s|odagt_|token|secret|password", key + "=" + value) and key not in {"baseUrl", "webBaseUrl", "caCertPath", "verifiedServerVersion", "updatedAt"}:
             raise Fail("UNSAFE_STATE", "config.json contains secret-like content; secrets belong only in the Gateway secret lane", "precondition")
     return config
 
 
-def validate_base_url(value: str) -> str:
+def validate_base_url(value: str, *, allow_path: bool = True, label: str = "baseUrl") -> str:
     from urllib.parse import urlparse
     parsed = urlparse(value.strip().rstrip("/"))
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.path not in ("", "/") or parsed.query or parsed.fragment or "@" in parsed.netloc:
-        raise Fail("INVALID_BASE_URL", "baseUrl must be http(s)://host[:port] with no path, query, or credentials")
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.query or parsed.fragment or "@" in parsed.netloc:
+        raise Fail("INVALID_BASE_URL", f"{label} must be http(s)://host[:port][/prefix] with no query, fragment, or credentials")
+    path = parsed.path.rstrip("/")
+    if path and (not allow_path or "//" in path or ".." in path):
+        raise Fail("INVALID_BASE_URL", f"{label} carries an unsupported path")
+    return f"{parsed.scheme}://{parsed.netloc}" + (path if allow_path else "")
+
+def web_origin(base_url: str) -> str:
+    from urllib.parse import urlparse
+    parsed = urlparse(base_url)
     return f"{parsed.scheme}://{parsed.netloc}"
 
 
@@ -223,7 +231,12 @@ def cmd_status(args, _root, _config, _client) -> dict[str, Any]:
 
 
 def cmd_config_set(args, root, _config, _client) -> dict[str, Any]:
+    # baseUrl is the AGENT API base and may carry a reverse-proxy prefix
+    # (e.g. https://od.example.local/agent-api — commands append /api/... after it).
+    # webBaseUrl is what humans open (the web UI origin); it defaults to the
+    # baseUrl's origin with the prefix dropped.
     base_url = validate_base_url(args.base_url or "")
+    web_base = validate_base_url(args.web_base_url, allow_path=False, label="webBaseUrl") if args.web_base_url else web_origin(base_url)
     ca = args.ca_cert_path
     if ca:
         ca_path = Path(ca)
@@ -231,7 +244,7 @@ def cmd_config_set(args, root, _config, _client) -> dict[str, Any]:
             raise Fail("INVALID_CA", "caCertPath must be an absolute path to an existing PEM file")
     if os.environ.get(TOKEN_ENV, "") and os.environ[TOKEN_ENV] in json.dumps(vars(args), default=str):
         raise Fail("SECRET_IN_ARGV", "the API token must never appear in arguments; it is read only from the Gateway-injected environment")
-    config = {"schemaVersion": SCHEMA_VERSION, "baseUrl": base_url, "caCertPath": ca, "insecureTls": bool(args.insecure_tls_risk_accepted), "updatedAt": now_iso()}
+    config = {"schemaVersion": SCHEMA_VERSION, "baseUrl": base_url, "webBaseUrl": web_base, "caCertPath": ca, "insecureTls": bool(args.insecure_tls_risk_accepted), "updatedAt": now_iso()}
     path = root / "config.json"
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
@@ -240,13 +253,13 @@ def cmd_config_set(args, root, _config, _client) -> dict[str, Any]:
     if base_url.startswith("http://") and not re.match(r"^http://(127\.|localhost)", base_url):
         warnings.append("baseUrl is plain HTTP on a non-loopback host; the token would travel unencrypted")
     if config["insecureTls"]:
-        warnings.append("TLS verification is disabled by explicit risk acceptance; prefer caCertPath")
-    return {"config": {k: config[k] for k in ("baseUrl", "caCertPath", "insecureTls", "updatedAt")}, "warnings": warnings,
+        warnings.append("TLS verification is disabled (common for internal servers with private certificates); switch to caCertPath when a CA file is available")
+    return {"config": {k: config[k] for k in ("baseUrl", "webBaseUrl", "caCertPath", "insecureTls", "updatedAt")}, "warnings": warnings,
             "nextAction": "Run health to verify the server, then one bounded read (projects.list) before claiming readiness."}
 
 
 def cmd_config_status(args, root, config, _client) -> dict[str, Any]:
-    return {"config": {k: config.get(k) for k in ("baseUrl", "caCertPath", "insecureTls", "updatedAt")}, "tokenPresent": bool(os.environ.get(TOKEN_ENV, "").strip())}
+    return {"config": {k: config.get(k) for k in ("baseUrl", "webBaseUrl", "caCertPath", "insecureTls", "updatedAt")}, "tokenPresent": bool(os.environ.get(TOKEN_ENV, "").strip())}
 
 
 def cmd_health(args, root, config, client) -> dict[str, Any]:
@@ -367,10 +380,11 @@ def cmd_preview_link(args, root, config, client) -> dict[str, Any]:
     relative = data.get("url")
     if not isinstance(relative, str) or not relative.startswith("/"):
         raise Fail("MALFORMED_RESPONSE", "preview-url did not return a relative URL", "failed")
-    url = config["baseUrl"] + relative
+    web_url = (config.get("webBaseUrl") or web_origin(config["baseUrl"])) + relative
     status, _, _ = client.call("GET", relative, expect_json=False, token_override="")
-    return {"file": name, "url": url, "opensWithoutToken": status == 200, "csp": data.get("csp"),
-            "note": "the preview URL embeds a scope token; anyone who can reach the server network can open it"}
+    return {"file": name, "url": web_url, "webUrl": web_url, "apiUrl": config["baseUrl"] + relative,
+            "opensWithoutToken": status == 200, "csp": data.get("csp"),
+            "note": "hand people the webUrl; it embeds a scope token and opens for anyone who can reach the server network"}
 
 
 def cmd_export_html(args, root, config, client) -> dict[str, Any]:
@@ -445,6 +459,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("command", choices=sorted(COMMANDS))
     parser.add_argument("--state-root")
     parser.add_argument("--base-url")
+    parser.add_argument("--web-base-url")
     parser.add_argument("--ca-cert-path")
     parser.add_argument("--insecure-tls-risk-accepted", action="store_true")
     parser.add_argument("--timeout-ms", type=int)

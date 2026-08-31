@@ -711,7 +711,7 @@
     {
       "id": "open-design",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
       "path": "skills/open-design",
       "compatibility": {
@@ -728,20 +728,20 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a0d975f7fb0817822681ab6dd7aa4d33f431bef25caf066d135994f2990d21d1"
+          "sha256": "b13113f70175a16e9464ecddf0d3d0f8368ae7a31e0f320a6a8249b9001e64e7"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "63477e816f1393006445cab5786eb2a62ccb8c57466265ed46021a85bbd03c12"
+          "sha256": "af675e4177e5150ec074d31f70aec6818635052856fa435114ec550eaa7c24ac"
         },
         {
           "path": "references/workflow.md",
-          "sha256": "d2534737983010caf0f644f8f19b93d62d06e43d3d683c014e9a8243a3bdd3f0"
+          "sha256": "c9c7f6907a181918a4d38de8cfea64ef07c7d0df4c5dd4a42e0c8744a07d0404"
         }
       ],
       "linkedHarness": {
         "id": "open-design",
-        "version": "0.1.0"
+        "version": "0.2.0"
       }
     },
     {
@@ -1953,7 +1953,7 @@
     {
       "id": "open-design",
       "type": "harness",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
       "path": "harnesses/open-design",
       "compatibility": {
@@ -1970,19 +1970,19 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "1edae41a27dd66a7631be092ce5d1d0ca55b16b132852bbf4b1195d836c8dfb3"
+          "sha256": "0a09116ea66ee4359aa52e115ae4c0d40d50ddcc8dc4a1aa9aa1402dc554e86e"
         },
         {
           "path": "TEST.md",
-          "sha256": "9f748d2e0b504b81ad5e1daefc48e453acb50a320b62c930249faabff7a0718a"
+          "sha256": "173115886284610ca68b24d4609b73e8c89df5d098aba9e424a158f5037fad34"
         },
         {
           "path": "harness.json",
-          "sha256": "d2c1e2cc60f1479b6558dfdaed1dc78b627d499d98e570626457835979815fa8"
+          "sha256": "b1d629fe140e35b001d19e923efe7a3b292b3ffa27372898004c39ceaae47007"
         },
         {
           "path": "open_design.py",
-          "sha256": "d13aadaa20982f3c677ca9d76048f84450992657ca576667ee6cccd567613a84"
+          "sha256": "e8e05c8927dd79c2dcf7d294d6b555784d1f265e165038ac02b13e2e9a1a1c98"
         }
       ]
     },

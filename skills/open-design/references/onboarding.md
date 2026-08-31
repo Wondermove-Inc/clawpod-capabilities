@@ -1,14 +1,14 @@
 # Onboarding script
 
-Say, in the user's language: the capability is **installed but not connected**, and you need two things — the OpenDesign server's **Base URL** (e.g. `https://192.168.254.110`) and its **API token** (`OD_API_TOKEN` value).
+Say, in the user's language: the capability is **installed but not connected**, and you need three things — the **agent-API Base URL** (may include a proxy prefix, e.g. `https://od.wondermove.local/agent-api`), the **web URL humans open** (e.g. `https://od.wondermove.local`; omit to derive it from the Base URL's origin), and the **API token** (`OD_API_TOKEN` value).
 
 - The token goes into the Gateway secret lane bound to `OPEN_DESIGN_API_TOKEN`. If the user pastes it in chat, store it via the secret lane and do not repeat it back.
-- If the server uses a private/self-signed certificate, also ask for the CA file path, or explicit acceptance of unverified TLS (`--insecure-tls-risk-accepted`).
+- Internal servers usually have private/self-signed certificates: pass `--ca-cert-path` when a CA file exists, otherwise `--insecure-tls-risk-accepted` — a supported everyday configuration for internal deployments.
 
 Then, with an owner-only state root (0700):
 
 ```
-open-design config.set --state-root <root> --base-url <url> [--ca-cert-path <pem> | --insecure-tls-risk-accepted]
+open-design config.set --state-root <root> --base-url <api url> [--web-base-url <web url>] [--ca-cert-path <pem> | --insecure-tls-risk-accepted]
 open-design health --state-root <root>
 ```
 
