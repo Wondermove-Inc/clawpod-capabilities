@@ -386,8 +386,12 @@ def test_enroll_generate_scripts_are_complete_credential_free_and_deterministic(
         assert "<" not in script.replace("<<", "") and "TODO" not in script and "REPLACE" not in script
         assert out["enrollScript"]["sha256"] == hashlib.sha256(script.encode()).hexdigest()
         assert out["enrollScript"]["containsCredentials"] is False and "SECRET" not in script
+        if platform == "windows":
+            assert script.count("Assert-Step") >= 5 and "$LASTEXITCODE" in script and "try {" not in script
         again = call(tmp_path, "enroll generate", fixture=source, extra=(*ENROLL, "--platform", platform, "--node-id", "clawpod-node-fixed00001"))[1]
         assert again["enrollScript"]["content"] == script
+    run, out = call(tmp_path, "enroll generate", extra=(*ENROLL, "--platform", "windows"))
+    assert out["enrollScript"]["platform"] == "windows" and "$ErrorActionPreference" in out["enrollScript"]["content"]
     run, out = call(tmp_path, "enroll generate", extra=(*ENROLL, "--platform", "macos"))
     assert run.returncode == 0 and out["enrollment"]["nodeId"].startswith("clawpod-node-")
     assert out["enrollment"]["gateway"] == {"host": "gateway.tailnet.ts.net", "port": 18789, "tls": True}

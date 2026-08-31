@@ -121,7 +121,8 @@ class Harness:
         self.fixture_path = os.environ.get("CLAWPOD_NODE_HOST_FIXTURE")
         self.fixture = load_json(Path(self.fixture_path)) if self.fixture_path else {}
         local_os = "macos" if sys.platform == "darwin" else "windows" if os.name == "nt" else "unsupported"
-        self.observed_os = self.fixture.get("os", args.platform_name if args.group in {"bootstrap", "enroll"} and args.platform_name else local_os)
+        self.observed_os = (args.platform_name if args.group == "enroll" and args.platform_name
+                            else self.fixture.get("os", args.platform_name if args.group == "bootstrap" and args.platform_name else local_os))
         endpoint = {"host": args.gateway_host, "port": args.gateway_port, "tls": args.tls, "tlsFingerprint": args.tls_fingerprint}
         self.target_hash = sha({"os": self.observed_os, "provider": self.provider, "endpoint": endpoint})
 
@@ -802,23 +803,30 @@ echo 'READY=enrolled'
 echo '완료: ClawPod 에이전트가 이 컴퓨터를 자동으로 승인합니다. 이 창은 닫으셔도 됩니다.'
 """
         return f"""$ErrorActionPreference = 'Stop'
+function Assert-Step {{ param($Message) if ($LASTEXITCODE -ne 0) {{ Write-Output "FAILED: $Message"; exit 1 }} }}
 if ($env:OPENCLAW_NODE_ROLLBACK -eq '1') {{ openclaw node stop; openclaw node uninstall; npm uninstall --global openclaw; exit 0 }}
 $ts = Get-Command tailscale.exe -ErrorAction SilentlyContinue
 if (-not $ts) {{ winget install --id tailscale.tailscale -e --silent --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User'); $ts = Get-Command tailscale.exe -ErrorAction SilentlyContinue }}
 if (-not $ts) {{ Write-Output 'ACTION: https://tailscale.com/download 에서 Tailscale을 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 20 }}
-try {{ tailscale status | Out-Null }} catch {{ tailscale login; Start-Sleep -Seconds 3 }}
-try {{ tailscale status | Out-Null }} catch {{ Write-Output 'ACTION: Tailscale에서 ClawPod와 같은 계정으로 로그인한 뒤 이 스크립트를 다시 실행하세요'; exit 21 }}
+tailscale status *> $null
+if ($LASTEXITCODE -ne 0) {{ tailscale login; Start-Sleep -Seconds 3 }}
+tailscale status *> $null
+if ($LASTEXITCODE -ne 0) {{ Write-Output 'ACTION: Tailscale에서 ClawPod와 같은 계정으로 로그인한 뒤 이 스크립트를 다시 실행하세요'; exit 21 }}
 tailscale ip -4 | Select-Object -First 1
 $npm = Get-Command npm -ErrorAction SilentlyContinue
 if (-not $npm) {{ winget install --id OpenJS.NodeJS.LTS -e --silent --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }}
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {{ Write-Output 'ACTION: https://nodejs.org 에서 Node.js LTS를 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 23 }}
-if ((npm view openclaw@{REQUIRED_VERSION} version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'version resolution mismatch' }}
+if ("$(npm view openclaw@{REQUIRED_VERSION} version)".Trim() -ne '{REQUIRED_VERSION}') {{ Write-Output 'FAILED: version resolution mismatch'; exit 1 }}
 npm install --global openclaw@{REQUIRED_VERSION}
-if ((openclaw --version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'installed version mismatch' }}
+Assert-Step 'openclaw install'
+if ("$(openclaw --version)".Trim() -ne '{REQUIRED_VERSION}') {{ Write-Output 'FAILED: installed version mismatch'; exit 1 }}
 $env:OPENCLAW_ALLOW_INSECURE_PRIVATE_WS = '1'
 openclaw node install --host '{host}' --port {port}{tls} --node-id '{node_id}'
+Assert-Step 'node install'
 openclaw node restart
+Assert-Step 'node start'
 openclaw node status
+Assert-Step 'node status'
 Write-Output 'ENROLL_NODE_ID={node_id}'
 Write-Output 'READY=enrolled'
 Write-Output '완료: ClawPod 에이전트가 이 컴퓨터를 자동으로 승인합니다. 이 창은 닫으셔도 됩니다.'

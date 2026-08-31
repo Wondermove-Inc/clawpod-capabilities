@@ -1278,7 +1278,7 @@
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "a83113555753d096998c23fe8a51448dec730f44b5d8e6d199e5217a1c9d21ae"
+          "sha256": "84c7947cf14809108406eaf02d2d605be60cd0564c11daaaacad7a5b5cecdbd8"
         },
         {
           "path": "fixtures/macos-ready.json",
@@ -1294,7 +1294,7 @@
         },
         {
           "path": "schemas/error-exit-codes.json",
-          "sha256": "d2bc34b4415034f49644886a07ad9d6e66e5a910d70055e161a820d6d4ea62eb"
+          "sha256": "8ac84fce525951c36dfc06df0aed6b1c09f3401897461b50f4814a6d648a2111"
         },
         {
           "path": "schemas/plan.schema.json",
