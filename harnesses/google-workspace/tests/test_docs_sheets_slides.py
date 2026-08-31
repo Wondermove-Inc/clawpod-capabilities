@@ -72,7 +72,13 @@ class Tests(unittest.TestCase):
  def test_full_scope_satisfies_readonly_and_readonly_never_writes(self):
   enforce('sheets.values.get',['https://www.googleapis.com/auth/spreadsheets'])
   with self.assertRaises(PermissionError):enforce('sheets.values.update',['https://www.googleapis.com/auth/spreadsheets.readonly'])
-  with self.assertRaises(PermissionError):enforce('docs.documents.batchUpdate',['https://www.googleapis.com/auth/drive'])
+ def test_drive_scopes_satisfy_editor_apis_like_google_does(self):
+  # Google accepts drive / drive.file on the editor APIs; the local gate must not be stricter.
+  enforce('docs.documents.batchUpdate',['https://www.googleapis.com/auth/drive'])
+  enforce('sheets.values.update',['https://www.googleapis.com/auth/drive.file'])
+  enforce('slides.read',['https://www.googleapis.com/auth/drive.readonly'])
+  with self.assertRaises(PermissionError):enforce('sheets.values.update',['https://www.googleapis.com/auth/drive.readonly'])
+  with self.assertRaises(PermissionError):enforce('docs.documents.batchUpdate',['https://www.googleapis.com/auth/drive.metadata.readonly'])
  def test_profiles_cover_all_six_scopes(self):
   for profile,scope in (('docs-read','documents.readonly'),('docs-edit','documents'),('sheets-read','spreadsheets.readonly'),('sheets-edit','spreadsheets'),('slides-read','presentations.readonly'),('slides-edit','presentations')):
    self.assertEqual(SCOPES[profile],['https://www.googleapis.com/auth/'+scope])

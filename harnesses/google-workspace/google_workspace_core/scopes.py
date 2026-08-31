@@ -73,6 +73,11 @@ def enforce(command,granted,safety=()):
  if DOCS in g:g.add(DOCS_RO)
  if SHEETS in g:g.add(SHEETS_RO)
  if SLIDES in g:g.add(SLIDES_RO)
+ # Google's editor APIs accept the Drive scopes directly (drive, drive.file with
+ # per-file visibility, drive.readonly for reads), so a Drive-scoped credential
+ # must not be blocked locally for Docs/Sheets/Slides commands.
+ if DRIVE in g or DRIVE_FILE in g:g|={DOCS,SHEETS,SLIDES,DOCS_RO,SHEETS_RO,SLIDES_RO}
+ if DRIVE_READ in g:g|={DOCS_RO,SHEETS_RO,SLIDES_RO}
  missing=required-g
  if missing:raise PermissionError('missing required OAuth scope(s): '+', '.join(sorted(missing)))
  return sorted(required)
