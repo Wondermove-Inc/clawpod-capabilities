@@ -2,7 +2,7 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.1.0",
-  "description": "Use to connect agents to a self-hosted OpenDesign server — onboard with Base URL and token, then create projects, upload agent-authored HTML, hand over scoped preview links, export HTML/ZIP, and import Claude Design zips; use claude-design for claude.ai canvas editing and artifact-design for chat-room artifacts.",
+  "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

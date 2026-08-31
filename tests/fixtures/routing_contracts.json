@@ -407,9 +407,10 @@
   },
   "open-design": {
     "positive": [
+      "Make a presentation deck and share it as a live preview link",
+      "Build a UI prototype the team can open and click through",
+      "Revise the design on the OpenDesign server and refresh its preview link",
       "Onboard the OpenDesign server with its base URL and token",
-      "Create an OpenDesign project and upload the deck HTML",
-      "Hand over the OpenDesign preview link for this design",
       "Export the OpenDesign project as HTML or a ZIP archive"
     ],
     "negative": [

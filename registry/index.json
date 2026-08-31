@@ -712,7 +712,7 @@
       "id": "open-design",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use to connect agents to a self-hosted OpenDesign server — onboard with Base URL and token, then create projects, upload agent-authored HTML, hand over scoped preview links, export HTML/ZIP, and import Claude Design zips; use claude-design for claude.ai canvas editing and artifact-design for chat-room artifacts.",
+      "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
       "path": "skills/open-design",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -728,7 +728,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "3e9832ebec92c051660e21523e35bc4781bb8e8543e6a4c130b473d2a70455b1"
+          "sha256": "a0d975f7fb0817822681ab6dd7aa4d33f431bef25caf066d135994f2990d21d1"
         },
         {
           "path": "references/onboarding.md",
@@ -1970,7 +1970,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "8c0b9e9126e388fd7f03545b52144aadfb25cd8b4515fa48ca338634ac3c0e2f"
+          "sha256": "d2c1e2cc60f1479b6558dfdaed1dc78b627d499d98e570626457835979815fa8"
         },
         {
           "path": "open_design.py",
