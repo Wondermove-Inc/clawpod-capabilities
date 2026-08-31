@@ -12,10 +12,15 @@ ROOT=Path(__file__).parent; CONTRACTS=json.loads((ROOT/'command_contracts.json')
 class Failure(Exception):
  def __init__(self,code,message,retryable=False,ambiguous=False,systemic=False): super().__init__(message); self.code,self.message,self.retryable,self.ambiguous,self.systemic=code,message,retryable,ambiguous,systemic
 def redact(v):
+ # Secret masking only. Response data is NEVER truncated: field values such as
+ # Confluence page bodies and Jira descriptions must round-trip intact.
  if isinstance(v,dict): return {k:('[REDACTED]' if SENSITIVE.search(k) else redact(x)) for k,x in v.items()}
  if isinstance(v,list): return [redact(x) for x in v]
- if isinstance(v,str): return re.sub(r'(?i)(basic|bearer)\s+\S+',r'\1 [REDACTED]',v)[:512]
+ if isinstance(v,str): return re.sub(r'(?i)(basic|bearer)\s+\S+',r'\1 [REDACTED]',v)
  return v
+def diagnostic(v):
+ # Error/diagnostic text stays bounded (repo convention: 512) after masking.
+ return redact(v)[:512] if isinstance(v,str) else redact(v)
 def secure_file(p,label):
  if p.is_symlink() or (p.exists() and p.stat().st_mode&0o077): raise Failure(label+'_permissions',f'{label} file must be regular mode 0600 or stricter')
 def safe_path(path,root,max_bytes=25*1024*1024):
@@ -129,7 +134,7 @@ def request(method,url,headers,body,timeout,retries=3,opener=urlopen,sleep=time.
    try:
     detail=json.loads(e.read(4096).decode('utf-8','replace'))
     message=detail.get('message') if isinstance(detail,dict) else None
-    if isinstance(message,str) and message: safe += ': ' + redact(message)
+    if isinstance(message,str) and message: safe += ': ' + diagnostic(message)
    except Exception: pass
    if e.code in (429,502,503,504) and attempt<retries: sleep(min(float(e.headers.get('Retry-After','0.25')),2)); continue
    raise Failure(code,safe,e.code in (429,502,503,504),False,e.code in (401,403))
@@ -192,11 +197,11 @@ def execute(ns,opener=urlopen):
  raw=False
  if upload: body,headers['Content-Type']=multipart(upload); headers['X-Atlassian-Token']='no-check'; raw=True
  elif body is not None:headers['Content-Type']='application/json'
- if c['method']=='GET' and ns.all_pages: result=paginate(c,url,headers,ns,opener)
+ if c['method']=='GET' and ns.all_pages: result=redact(paginate(c,url,headers,ns,opener))
  else:result=redact(request(c['method'],url,headers,body,ns.timeout_ms/1000,ns.retries,opener,raw=raw))
  if c['mutation']:idem(ns,fp,result)
  return result
-def item_error(e): return {'ok':False,'error':{'code':e.code,'message':redact(e.message),'retryable':e.retryable,'ambiguousCommit':e.ambiguous}}
+def item_error(e): return {'ok':False,'error':{'code':e.code,'message':diagnostic(e.message),'retryable':e.retryable,'ambiguousCommit':e.ambiguous}}
 def run_batch(ns):
  try: items=json.loads(Path(ns.batch).read_text() if Path(ns.batch).is_file() else ns.batch)
  except Exception: raise Failure('batch_invalid','batch must be a JSON array or readable JSON file')
