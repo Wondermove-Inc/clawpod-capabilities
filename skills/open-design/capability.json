@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use to connect agents to a self-hosted OpenDesign server — onboard with Base URL and token, then create projects, upload agent-authored HTML, hand over scoped preview links, export HTML/ZIP, and import Claude Design zips; use claude-design for claude.ai canvas editing and artifact-design for chat-room artifacts.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos"
+    ]
+  },
+  "safety": {
+    "risk": "externally-visible",
+    "approvalRequired": true
+  },
+  "linkedHarness": {
+    "id": "open-design",
+    "version": "0.1.0"
+  },
+  "descriptionSource": "skill-frontmatter"
+}

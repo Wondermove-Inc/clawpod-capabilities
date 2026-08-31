@@ -709,6 +709,42 @@
       }
     },
     {
+      "id": "open-design",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Use to connect agents to a self-hosted OpenDesign server — onboard with Base URL and token, then create projects, upload agent-authored HTML, hand over scoped preview links, export HTML/ZIP, and import Claude Design zips; use claude-design for claude.ai canvas editing and artifact-design for chat-room artifacts.",
+      "path": "skills/open-design",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "externally-visible",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "3e9832ebec92c051660e21523e35bc4781bb8e8543e6a4c130b473d2a70455b1"
+        },
+        {
+          "path": "references/onboarding.md",
+          "sha256": "63477e816f1393006445cab5786eb2a62ccb8c57466265ed46021a85bbd03c12"
+        },
+        {
+          "path": "references/workflow.md",
+          "sha256": "d2534737983010caf0f644f8f19b93d62d06e43d3d683c014e9a8243a3bdd3f0"
+        }
+      ],
+      "linkedHarness": {
+        "id": "open-design",
+        "version": "0.1.0"
+      }
+    },
+    {
       "id": "ops-troubleshooting",
       "type": "skill",
       "version": "0.1.0",
@@ -1903,6 +1939,42 @@
         {
           "path": "onboarding.py",
           "sha256": "819b0622d59e3e9106d7e2d1dd2847f3993d789c76331dc5088a43b2123c1e6b"
+        }
+      ]
+    },
+    {
+      "id": "open-design",
+      "type": "harness",
+      "version": "0.1.0",
+      "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
+      "path": "harnesses/open-design",
+      "compatibility": {
+        "openclaw": ">=2026.4.0",
+        "platforms": [
+          "linux",
+          "macos"
+        ]
+      },
+      "safety": {
+        "risk": "externally-visible",
+        "approvalRequired": true
+      },
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "1edae41a27dd66a7631be092ce5d1d0ca55b16b132852bbf4b1195d836c8dfb3"
+        },
+        {
+          "path": "TEST.md",
+          "sha256": "9f748d2e0b504b81ad5e1daefc48e453acb50a320b62c930249faabff7a0718a"
+        },
+        {
+          "path": "harness.json",
+          "sha256": "8c0b9e9126e388fd7f03545b52144aadfb25cd8b4515fa48ca338634ac3c0e2f"
+        },
+        {
+          "path": "open_design.py",
+          "sha256": "d13aadaa20982f3c677ca9d76048f84450992657ca576667ee6cccd567613a84"
         }
       ]
     },
