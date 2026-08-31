@@ -32,11 +32,41 @@ ADDITIONS={
  'gmail.read':('Perform bounded Gmail message or thread reads with normalized summaries.',('secretUse','authReuse','readOnly'),'gmail.messages.list'),
  'calendar.read':('Perform bounded upcoming or ranged Calendar reads with normalized summaries.',('secretUse','authReuse','readOnly'),'calendar.events.list'),
  'drive.read':('Perform bounded Drive search, recent, or metadata reads.',('secretUse','authReuse','readOnly'),'drive.files.list'),
+ # Google Docs v1 (complete public REST surface)
+ 'docs.read':('Read a Google Doc as bounded plain text with title and revision.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'docs.documents.get':('Read a Google Doc resource.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'docs.documents.create':('Create a blank Google Doc with a title.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'docs.documents.batchUpdate':('Apply a batch of Docs edit requests with optional revision write control.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ # Google Sheets v4 (complete public REST surface)
+ 'sheets.read':('Read one spreadsheet range as bounded values.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.spreadsheets.get':('Read spreadsheet metadata and optionally grid data.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.spreadsheets.getByDataFilter':('Read spreadsheet subsets selected by data filters.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.spreadsheets.create':('Create a spreadsheet with properties and optional sheets.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.spreadsheets.batchUpdate':('Apply a batch of spreadsheet structure/format requests.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.values.get':('Read values from one range.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.values.batchGet':('Read values from multiple ranges.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.values.batchGetByDataFilter':('Read values selected by data filters.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.values.update':('Write values into one range.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.values.append':('Append rows after a table in one range.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.values.clear':('Clear values from one range.',('secretUse','authReuse','destructive'),'drive.files.delete'),
+ 'sheets.values.batchUpdate':('Write values into multiple ranges in one call.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.values.batchClear':('Clear values from multiple ranges.',('secretUse','authReuse','destructive'),'drive.files.delete'),
+ 'sheets.values.batchClearByDataFilter':('Clear values selected by data filters.',('secretUse','authReuse','destructive'),'drive.files.delete'),
+ 'sheets.sheets.copyTo':('Copy one sheet into another spreadsheet.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'sheets.developerMetadata.get':('Read one developer metadata entry.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'sheets.developerMetadata.search':('Search developer metadata with data filters.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ # Google Slides v1 (complete public REST surface)
+ 'slides.read':('Read a presentation as a bounded per-slide text outline.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'slides.presentations.get':('Read a presentation resource.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'slides.presentations.create':('Create a blank presentation with a title.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'slides.presentations.batchUpdate':('Apply a batch of Slides edit requests with optional revision write control.',('secretUse','authReuse','writeSafe'),'drive.files.create'),
+ 'slides.pages.get':('Read one page (slide) resource.',('secretUse','authReuse','readOnly'),'drive.files.get'),
+ 'slides.pages.getThumbnail':('Generate a thumbnail URL for one slide.',('secretUse','authReuse','readOnly'),'drive.files.get'),
 }
 for name,(description,safety,source) in ADDITIONS.items():
  if name not in doc['commands']:
   template=copy.deepcopy(doc['commands'][source]);template['description']=description;template['baseArgv']=[name];template['safetyClasses']=list(safety);doc['commands'][name]=template
-SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
+SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page',documentId='documentId',spreadsheetId='spreadsheetId',presentationId='presentationId',pageObjectId='pageObjectId',sheetId='sheetId',metadataId='metadataId',range='A1:B2')
 PAGED={'list','search','instances'}
 def allowed_query(cmd,action):
  out=set()
@@ -61,6 +91,13 @@ def allowed_query(cmd,action):
   if cmd=='drive.files.move':out|={'addParents','removeParents'}
   if cmd.startswith(('drive.files.create','drive.files.update','drive.files.upload')):out|={'uploadType','addParents','removeParents','keepRevisionForever','ocrLanguage','ignoreDefaultVisibility'}
   if action in ('download','export','get'):out|={'acknowledgeAbuse','includePermissionsForView','includeLabels'}
+ if cmd=='docs.documents.get':out|={'suggestionsViewMode'}
+ if cmd=='sheets.spreadsheets.get':out|={'ranges','includeGridData'}
+ if cmd=='sheets.values.get':out|={'majorDimension','valueRenderOption','dateTimeRenderOption'}
+ if cmd=='sheets.values.batchGet':out|={'ranges','majorDimension','valueRenderOption','dateTimeRenderOption'}
+ if cmd in ('sheets.values.update','sheets.values.append'):out|={'valueInputOption','includeValuesInResponse','responseValueRenderOption','responseDateTimeRenderOption'}
+ if cmd=='sheets.values.append':out|={'insertDataOption'}
+ if cmd=='slides.pages.getThumbnail':out|={'thumbnailProperties.mimeType','thumbnailProperties.thumbnailSize'}
  if cmd=='drive.sharedDrives.create':out|={'requestId'}
  if cmd.startswith('drive.changes.') and action!='startPageToken':out|={'pageToken'}
  return out
@@ -141,7 +178,7 @@ for cmd,c in commands.items():
   elif cmd in ('auth.login','auth.login.start'):
    props['body']=O({
     'clientPath':S(),
-    'profiles':A(S(enum=['identity','workspace-max','gmail-read','gmail-compose','gmail-modify','gmail-settings','calendar-read','calendar-events','drive-file','drive-read','drive-manage']),minItems=1,maxItems=32),
+    'profiles':A(S(enum=['identity','workspace-max','gmail-read','gmail-compose','gmail-modify','gmail-settings','calendar-read','calendar-events','drive-file','drive-read','drive-manage','docs-read','docs-edit','sheets-read','sheets-edit','slides-read','slides-edit']),minItems=1,maxItems=32),
     'managedBrowserDevtoolsUrl':S(),
     'smokeTests':A(S(enum=['gmail','calendar','drive']),uniqueItems=True,maxItems=3),
     'bind':{'type':'boolean','const':True},
@@ -181,13 +218,19 @@ for cmd,c in commands.items():
   props['params']=O({'mode':S(enum=['messages','threads']),'userId':S(),'q':S(maxLength=20000),'labelIds':A(S(),maxItems=100),'includeSpamTrash':{'type':'boolean'},'includeBody':{'type':'boolean'},'maxResults':QUERY_TYPES['maxResults']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  if cmd=='calendar.read':
   props['params']=O({'calendarId':S(),'timeMin':S(format='date-time'),'timeMax':S(format='date-time'),'timeZone':S(),'singleEvents':{'type':'boolean'},'orderBy':S(enum=['startTime','updated']),'maxResults':QUERY_TYPES['maxResults']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
+ if cmd=='docs.read':
+  props['params']=O({'documentId':S(),'suggestionsViewMode':QUERY_TYPES['suggestionsViewMode']},required=['documentId']);props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','timeoutMs','params','requestId'));continue
+ if cmd=='sheets.read':
+  props['params']=O({'spreadsheetId':S(),'range':S(),'majorDimension':QUERY_TYPES['majorDimension'],'valueRenderOption':QUERY_TYPES['valueRenderOption'],'dateTimeRenderOption':QUERY_TYPES['dateTimeRenderOption']},required=['spreadsheetId','range']);props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','timeoutMs','params','requestId'));continue
+ if cmd=='slides.read':
+  props['params']=O({'presentationId':S()},required=['presentationId']);props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','timeoutMs','params','requestId'));continue
  if cmd=='drive.read':
   props['params']=O({'mode':S(enum=['search','recent','get']),'fileId':S(),'q':S(maxLength=20000),'spaces':QUERY_TYPES['spaces'],'corpora':QUERY_TYPES['corpora'],'driveId':S(),'orderBy':S(),'pageSize':QUERY_TYPES['pageSize']});props['body']=O({});exact_surface(c,s,('account','credentialPath','fields','pageSize','pageToken','allPages','maxItems','maxPages','timeoutMs','params','requestId'));continue
  op=operation(cmd,SAMPLES);req=sorted(op['pathParams']);ps={'type':'object','additionalProperties':False,'properties':{}}
  for key in req:ps['properties'][key]=S()
  for key in sorted(allowed_query(cmd,op['action'])):
   ps['properties'][key]=QUERY_TYPES.get(key,{'type':['string','boolean','integer','array']})
- required_query={'calendar.events.quickAdd':['text'],'calendar.events.move':['destination'],'drive.changes.list':['pageToken'],'drive.changes.watch':['pageToken'],'drive.sharedDrives.create':['requestId']}.get(cmd,[])
+ required_query={'calendar.events.quickAdd':['text'],'calendar.events.move':['destination'],'drive.changes.list':['pageToken'],'drive.changes.watch':['pageToken'],'drive.sharedDrives.create':['requestId'],'sheets.values.update':['valueInputOption'],'sheets.values.append':['valueInputOption']}.get(cmd,[])
  required=req+required_query
  if required:ps['required']=required
  props['params']=ps

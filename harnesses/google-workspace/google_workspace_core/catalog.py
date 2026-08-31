@@ -25,6 +25,9 @@ def service_for(command: str) -> tuple[str,str]:
  if command.startswith("gmail."): return "gmail","v1"
  if command.startswith("calendar."): return "calendar","v3"
  if command.startswith("drive."): return "drive","v3"
+ if command.startswith("docs."): return "docs","v1"
+ if command.startswith("sheets."): return "sheets","v4"
+ if command.startswith("slides."): return "slides","v1"
  return "oauth","v2"
 def _q(value): return quote(str(value),safe="")
 def _need(params,*keys):
@@ -47,6 +50,20 @@ def operation(command:str, params:dict) -> dict:
   cal=_q(p.get("calendarId","primary"));query={k:v for k,v in p.items() if k!="calendarId"};query.setdefault("singleEvents",True);query.setdefault("orderBy","startTime")
   query.setdefault("fields","nextPageToken,items(id,summary,start,end,organizer,attendees,status,recurringEventId,recurrence)")
   return {"service":"calendar","version":"v3","action":"read","method":"GET","url":"https://www.googleapis.com/calendar/v3/calendars/"+cal+"/events","query":query,"pathParams":set()}
+ if command=="docs.read":
+  did,=_need(p,"documentId")
+  query={k:v for k,v in p.items() if k!="documentId"}
+  query.setdefault("fields","documentId,title,revisionId,body(content(paragraph(elements(textRun(content)))))")
+  return {"service":"docs","version":"v1","action":"read","method":"GET","url":"https://docs.googleapis.com/v1/documents/"+_q(p["documentId"]),"query":query,"pathParams":{"documentId"}}
+ if command=="sheets.read":
+  sid,rng=_need(p,"spreadsheetId","range")
+  query={k:v for k,v in p.items() if k not in ("spreadsheetId","range")}
+  return {"service":"sheets","version":"v4","action":"read","method":"GET","url":"https://sheets.googleapis.com/v4/spreadsheets/"+_q(p["spreadsheetId"])+"/values/"+_q(p["range"]),"query":query,"pathParams":{"spreadsheetId","range"}}
+ if command=="slides.read":
+  pid,=_need(p,"presentationId")
+  query={k:v for k,v in p.items() if k!="presentationId"}
+  query.setdefault("fields","presentationId,title,revisionId,slides(objectId,pageElements(shape(text(textElements(textRun(content))))))")
+  return {"service":"slides","version":"v1","action":"read","method":"GET","url":"https://slides.googleapis.com/v1/presentations/"+_q(p["presentationId"]),"query":query,"pathParams":{"presentationId"}}
  if command=="drive.read":
   mode=p.get("mode","recent")
   if mode=="get":
@@ -151,6 +168,45 @@ def operation(command:str, params:dict) -> dict:
    upload_type=p.get("uploadType","resumable");query["uploadType"]=upload_type
    base="https://www.googleapis.com/upload/drive/v3"
    path="files"+("/"+_need(p,"fileId")[0] if command=="drive.files.update" else "")
+ elif service=="docs":
+  base="https://docs.googleapis.com/v1";path="documents"
+  if action in ("get","batchUpdate"):
+   did,=_need(p,"documentId");used.add("documentId");path+="/"+did
+  if action=="batchUpdate":path+=":batchUpdate"
+  methods={"get":"GET","create":"POST","batchUpdate":"POST"};method=methods[action]
+ elif service=="sheets":
+  base="https://sheets.googleapis.com/v4";resource=parts[1]
+  if resource=="spreadsheets":
+   path="spreadsheets"
+   if action in ("get","batchUpdate","getByDataFilter"):
+    sid,=_need(p,"spreadsheetId");used.add("spreadsheetId");path+="/"+sid
+   if action in ("batchUpdate","getByDataFilter"):path+=":"+action
+  elif resource=="values":
+   sid,=_need(p,"spreadsheetId");used.add("spreadsheetId")
+   if action in ("get","update","append","clear"):
+    rng,=_need(p,"range");used.add("range");path=f"spreadsheets/{sid}/values/{rng}"
+    if action in ("append","clear"):path+=":"+action
+   else:path=f"spreadsheets/{sid}/values:"+action
+  elif resource=="sheets":
+   sid,sheet=_need(p,"spreadsheetId","sheetId");used|={"spreadsheetId","sheetId"};path=f"spreadsheets/{sid}/sheets/{sheet}:copyTo"
+  elif resource=="developerMetadata":
+   sid,=_need(p,"spreadsheetId");used.add("spreadsheetId")
+   if action=="get":
+    mid,=_need(p,"metadataId");used.add("metadataId");path=f"spreadsheets/{sid}/developerMetadata/{mid}"
+   else:path=f"spreadsheets/{sid}/developerMetadata:search"
+  else: raise OperationError("unsupported service")
+  methods={"get":"GET","batchGet":"GET","create":"POST","batchUpdate":"POST","getByDataFilter":"POST","batchGetByDataFilter":"POST","update":"PUT","append":"POST","clear":"POST","batchClear":"POST","batchClearByDataFilter":"POST","copyTo":"POST","search":"POST"};method=methods[action]
+ elif service=="slides":
+  base="https://slides.googleapis.com/v1";resource=parts[1];path="presentations"
+  if resource=="presentations":
+   if action in ("get","batchUpdate"):
+    pid,=_need(p,"presentationId");used.add("presentationId");path+="/"+pid
+   if action=="batchUpdate":path+=":batchUpdate"
+  elif resource=="pages":
+   pid,po=_need(p,"presentationId","pageObjectId");used|={"presentationId","pageObjectId"};path+=f"/{pid}/pages/{po}"
+   if action=="getThumbnail":path+="/thumbnail"
+  else: raise OperationError("unsupported service")
+  methods={"get":"GET","getThumbnail":"GET","create":"POST","batchUpdate":"POST"};method=methods[action]
  else: raise OperationError("unsupported service")
  url=base+"/"+path
  return {"service":service,"version":version,"action":action,"method":method,"url":url,"query":query,"pathParams":used}
@@ -175,6 +231,19 @@ def preflight(command:str, params:dict) -> dict:
   # expose version tags only as HTTP headers, and others have no such field.
   # An unfiltered GET remains valid across these resource endpoints.
   return {"method":"GET","url":read,"query":{},"etag":True,"strategy":"resource"}
+ # Editor-API mutations (Docs/Sheets/Slides) address the resource through custom
+ # :verb URLs; the read check is the canonical resource (or the spreadsheet root
+ # for subresource verbs). Creates have no cheap identity read on these APIs.
+ if command.startswith(("docs.","sheets.","slides.")):
+  if action=="create":return {"method":None,"url":None,"query":{},"etag":False,"strategy":"validated-body"}
+  ident={"docs":("documentId","https://docs.googleapis.com/v1/documents/"),"sheets":("spreadsheetId","https://sheets.googleapis.com/v4/spreadsheets/"),"slides":("presentationId","https://slides.googleapis.com/v1/presentations/")}[command.split(".",1)[0]]
+  tail=url.rsplit("/",1)[-1]
+  if ":" in tail:
+   stripped=url[:url.rfind(":")]
+   if command.startswith("sheets.") and (stripped.endswith("/values") or "/sheets/" in stripped or stripped.endswith(":search") or "/developerMetadata" in stripped):
+    return {"method":"GET","url":ident[1]+_q(params.get(ident[0],"")),"query":{"fields":ident[0]},"etag":False,"strategy":"parent"}
+   return {"method":"GET","url":stripped,"query":{"fields":ident[0]} if stripped.rstrip("/").endswith(_q(params.get(ident[0],""))) else {},"etag":False,"strategy":"resource"}
+  return {"method":"GET","url":url,"query":{},"etag":False,"strategy":"resource"}
  # Creates validate a readable parent/identity, without pretending it has an ETag.
  if action in ("create","insert","import","send","quickAdd","start","watch","batchModify","batchDelete","stop","clear","transferOwnership","copy") or command.endswith(".emptyTrash"):
   if command.startswith("gmail."):

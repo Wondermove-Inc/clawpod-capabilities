@@ -3,14 +3,17 @@
   "kind": "openclaw.harness.v1",
   "name": "google-workspace",
   "title": "Google Workspace",
-  "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
-  "version": "0.3.8",
+  "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
+  "version": "0.4.0",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
     "Search approved Gmail mail",
     "Create a Google Calendar event",
-    "Change a Drive file permission"
+    "Change a Drive file permission",
+    "Write the report into a Google Doc",
+    "Append rows to a Google Sheet",
+    "Add slides to a Google Slides deck"
   ],
   "capabilities": [
     "gmail-v1",
@@ -46282,6 +46285,7440 @@
           "type": "option",
           "flag": "--max-jobs",
           "valueType": "number",
+          "optional": true
+        }
+      ]
+    },
+    "docs.read": {
+      "description": "Read a Google Doc as bounded plain text with title and revision.",
+      "baseArgv": [
+        "docs.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "docs.documents.get": {
+      "description": "Read a Google Doc resource.",
+      "baseArgv": [
+        "docs.documents.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "docs.documents.create": {
+      "description": "Create a blank Google Doc with a title.",
+      "baseArgv": [
+        "docs.documents.create"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "docs.documents.batch-update": {
+      "description": "Apply a batch of Docs edit requests with optional revision write control.",
+      "baseArgv": [
+        "docs.documents.batchUpdate"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.read": {
+      "description": "Read one spreadsheet range as bounded values.",
+      "baseArgv": [
+        "sheets.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.spreadsheets.get": {
+      "description": "Read spreadsheet metadata and optionally grid data.",
+      "baseArgv": [
+        "sheets.spreadsheets.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.spreadsheets.get-by-data-filter": {
+      "description": "Read spreadsheet subsets selected by data filters.",
+      "baseArgv": [
+        "sheets.spreadsheets.getByDataFilter"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.spreadsheets.create": {
+      "description": "Create a spreadsheet with properties and optional sheets.",
+      "baseArgv": [
+        "sheets.spreadsheets.create"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.spreadsheets.batch-update": {
+      "description": "Apply a batch of spreadsheet structure/format requests.",
+      "baseArgv": [
+        "sheets.spreadsheets.batchUpdate"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.get": {
+      "description": "Read values from one range.",
+      "baseArgv": [
+        "sheets.values.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.batch-get": {
+      "description": "Read values from multiple ranges.",
+      "baseArgv": [
+        "sheets.values.batchGet"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.batch-get-by-data-filter": {
+      "description": "Read values selected by data filters.",
+      "baseArgv": [
+        "sheets.values.batchGetByDataFilter"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.update": {
+      "description": "Write values into one range.",
+      "baseArgv": [
+        "sheets.values.update"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.append": {
+      "description": "Append rows after a table in one range.",
+      "baseArgv": [
+        "sheets.values.append"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.clear": {
+      "description": "Clear values from one range.",
+      "baseArgv": [
+        "sheets.values.clear"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.batch-update": {
+      "description": "Write values into multiple ranges in one call.",
+      "baseArgv": [
+        "sheets.values.batchUpdate"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.batch-clear": {
+      "description": "Clear values from multiple ranges.",
+      "baseArgv": [
+        "sheets.values.batchClear"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.values.batch-clear-by-data-filter": {
+      "description": "Clear values selected by data filters.",
+      "baseArgv": [
+        "sheets.values.batchClearByDataFilter"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "destructive"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.sheets.copy-to": {
+      "description": "Copy one sheet into another spreadsheet.",
+      "baseArgv": [
+        "sheets.sheets.copyTo"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.developer-metadata.get": {
+      "description": "Read one developer metadata entry.",
+      "baseArgv": [
+        "sheets.developerMetadata.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "sheets.developer-metadata.search": {
+      "description": "Search developer metadata with data filters.",
+      "baseArgv": [
+        "sheets.developerMetadata.search"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "slides.read": {
+      "description": "Read a presentation as a bounded per-slide text outline.",
+      "baseArgv": [
+        "slides.read"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "slides.presentations.get": {
+      "description": "Read a presentation resource.",
+      "baseArgv": [
+        "slides.presentations.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "slides.presentations.create": {
+      "description": "Create a blank presentation with a title.",
+      "baseArgv": [
+        "slides.presentations.create"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "slides.presentations.batch-update": {
+      "description": "Apply a batch of Slides edit requests with optional revision write control.",
+      "baseArgv": [
+        "slides.presentations.batchUpdate"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "slides.pages.get": {
+      "description": "Read one page (slide) resource.",
+      "baseArgv": [
+        "slides.pages.get"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "slides.pages.get-thumbnail": {
+      "description": "Generate a thumbnail URL for one slide.",
+      "baseArgv": [
+        "slides.pages.getThumbnail"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "authReuse",
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageToken": {
+            "type": "string"
+          },
+          "allPages": {
+            "type": "boolean"
+          },
+          "maxItems": {
+            "type": "number"
+          },
+          "maxPages": {
+            "type": "number"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "preview": {
+            "type": "boolean"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "ifMatch": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "params": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "inputPath": {
+            "type": "string"
+          },
+          "outputPath": {
+            "type": "string"
+          },
+          "transferRoot": {
+            "type": "string"
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "resume": {
+            "type": "boolean"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "credentialPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "effects",
+          "provenance"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {},
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "account": {},
+          "data": {
+            "type": "object"
+          },
+          "page": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "account",
+          "type": "option",
+          "flag": "--account",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "credentialPath",
+          "type": "option",
+          "flag": "--credential-path",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "fields",
+          "type": "option",
+          "flag": "--fields",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pageSize",
+          "type": "option",
+          "flag": "--page-size",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "pageToken",
+          "type": "option",
+          "flag": "--page-token",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "allPages",
+          "type": "booleanFlag",
+          "flag": "--all-pages",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "maxItems",
+          "type": "option",
+          "flag": "--max-items",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "maxPages",
+          "type": "option",
+          "flag": "--max-pages",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "dryRun",
+          "type": "booleanFlag",
+          "flag": "--dry-run",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "preview",
+          "type": "booleanFlag",
+          "flag": "--preview",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "confirm",
+          "type": "option",
+          "flag": "--confirm",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "requestId",
+          "type": "option",
+          "flag": "--request-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "ifMatch",
+          "type": "option",
+          "flag": "--if-match",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "idempotencyKey",
+          "type": "option",
+          "flag": "--idempotency-key",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "params",
+          "type": "option",
+          "flag": "--params",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "body",
+          "type": "option",
+          "flag": "--body",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "inputPath",
+          "type": "option",
+          "flag": "--input-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "outputPath",
+          "type": "option",
+          "flag": "--output-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "transferRoot",
+          "type": "option",
+          "flag": "--transfer-root",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "overwrite",
+          "type": "booleanFlag",
+          "flag": "--overwrite",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "resume",
+          "type": "booleanFlag",
+          "flag": "--resume",
+          "valueType": "boolean",
           "optional": true
         }
       ]

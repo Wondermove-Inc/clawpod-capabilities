@@ -187,7 +187,10 @@
     "positive": [
       "Search approved Gmail mail",
       "Create a Google Calendar event",
-      "Change a Drive file permission"
+      "Change a Drive file permission",
+      "Write the report into a Google Doc",
+      "Append rows to a Google Sheet",
+      "Add slides to a Google Slides deck"
     ],
     "negative": [
       "Send through Resend",

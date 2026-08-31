@@ -2,6 +2,9 @@
 GMAIL_META="https://www.googleapis.com/auth/gmail.metadata";GMAIL_READ="https://www.googleapis.com/auth/gmail.readonly";GMAIL_MOD="https://www.googleapis.com/auth/gmail.modify";GMAIL_LABELS="https://www.googleapis.com/auth/gmail.labels";GMAIL_COMPOSE="https://www.googleapis.com/auth/gmail.compose";GMAIL_SEND="https://www.googleapis.com/auth/gmail.send";GMAIL_INSERT="https://www.googleapis.com/auth/gmail.insert";GMAIL_SETTINGS="https://www.googleapis.com/auth/gmail.settings.basic";GMAIL_SHARING="https://www.googleapis.com/auth/gmail.settings.sharing";MAIL="https://mail.google.com/"
 CAL_SETTINGS="https://www.googleapis.com/auth/calendar.settings.readonly";CAL_LIST_RO="https://www.googleapis.com/auth/calendar.calendarlist.readonly";CAL_LIST="https://www.googleapis.com/auth/calendar.calendarlist";CAL_CAL_RO="https://www.googleapis.com/auth/calendar.calendars.readonly";CAL_CAL="https://www.googleapis.com/auth/calendar.calendars";CAL_EVENTS_RO="https://www.googleapis.com/auth/calendar.events.readonly";CAL_EVENTS="https://www.googleapis.com/auth/calendar.events";CAL_FREE="https://www.googleapis.com/auth/calendar.freebusy";CAL_ACL_RO="https://www.googleapis.com/auth/calendar.acls.readonly";CAL_ACL="https://www.googleapis.com/auth/calendar.acls";CAL="https://www.googleapis.com/auth/calendar"
 DRIVE_META="https://www.googleapis.com/auth/drive.metadata.readonly";DRIVE_READ="https://www.googleapis.com/auth/drive.readonly";DRIVE_FILE="https://www.googleapis.com/auth/drive.file";DRIVE="https://www.googleapis.com/auth/drive"
+DOCS_RO="https://www.googleapis.com/auth/documents.readonly";DOCS="https://www.googleapis.com/auth/documents"
+SHEETS_RO="https://www.googleapis.com/auth/spreadsheets.readonly";SHEETS="https://www.googleapis.com/auth/spreadsheets"
+SLIDES_RO="https://www.googleapis.com/auth/presentations.readonly";SLIDES="https://www.googleapis.com/auth/presentations"
 def required_scopes(c,safety=()):
  a=c.rsplit('.',1)[-1]
  if c=='gmail.read':return {GMAIL_READ}
@@ -34,6 +37,14 @@ def required_scopes(c,safety=()):
  if c=='calendar.freebusy.query':return {CAL_FREE}
  if c.startswith('calendar.acl.'):return {CAL_ACL_RO if a in ('list','get') else CAL_ACL}
  if c.startswith('calendar.channels.'):return {CAL}
+ if c.startswith('docs.'):
+  return {DOCS_RO} if c=='docs.read' or a=='get' else {DOCS}
+ if c.startswith('sheets.'):
+  if c=='sheets.read':return {SHEETS_RO}
+  if a in ('get','batchGet','getByDataFilter','batchGetByDataFilter','search'):return {SHEETS_RO}
+  return {SHEETS}
+ if c.startswith('slides.'):
+  return {SLIDES_RO} if c=='slides.read' or a in ('get','getThumbnail') else {SLIDES}
  if c.startswith('drive.'):
   if c.startswith(('drive.permissions.','drive.sharedDrives.','drive.channels.')):return {DRIVE}
   if c.startswith(('drive.comments.','drive.revisions.')):return {DRIVE_READ if a in ('list','get') else DRIVE}
@@ -57,6 +68,9 @@ def enforce(command,granted,safety=()):
  # enforces per-file visibility, so it safely satisfies those command checks.
  if DRIVE_FILE in g:g|={DRIVE_META,DRIVE_READ}
  if DRIVE_READ in g:g.add(DRIVE_META)
+ if DOCS in g:g.add(DOCS_RO)
+ if SHEETS in g:g.add(SHEETS_RO)
+ if SLIDES in g:g.add(SLIDES_RO)
  missing=required-g
  if missing:raise PermissionError('missing required OAuth scope(s): '+', '.join(sorted(missing)))
  return sorted(required)
