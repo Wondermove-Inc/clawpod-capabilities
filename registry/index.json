@@ -711,7 +711,7 @@
     {
       "id": "open-design",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
       "path": "skills/open-design",
       "compatibility": {
@@ -728,7 +728,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b13113f70175a16e9464ecddf0d3d0f8368ae7a31e0f320a6a8249b9001e64e7"
+          "sha256": "41445c85dd2b188e085a789358ffaa7b665ab5d264066f02a90c90882acc316d"
         },
         {
           "path": "references/onboarding.md",
@@ -741,7 +741,7 @@
       ],
       "linkedHarness": {
         "id": "open-design",
-        "version": "0.2.0"
+        "version": "0.2.1"
       }
     },
     {
@@ -1953,7 +1953,7 @@
     {
       "id": "open-design",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
       "path": "harnesses/open-design",
       "compatibility": {
@@ -1970,19 +1970,19 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "0a09116ea66ee4359aa52e115ae4c0d40d50ddcc8dc4a1aa9aa1402dc554e86e"
+          "sha256": "95e550ef16030af9e17411c86c8d3bf3e71db7b8245bfdb9fb79d1e6c4a270b1"
         },
         {
           "path": "TEST.md",
-          "sha256": "173115886284610ca68b24d4609b73e8c89df5d098aba9e424a158f5037fad34"
+          "sha256": "fb50178b87da6c429b7946e03636be48b573c532f8551f7ea5433d30a3c1a3a7"
         },
         {
           "path": "harness.json",
-          "sha256": "b1d629fe140e35b001d19e923efe7a3b292b3ffa27372898004c39ceaae47007"
+          "sha256": "6e7fe8d3ca8aa307aba11351425097e1c8e60ad18aa036e8674aa4c46e69ddf5"
         },
         {
           "path": "open_design.py",
-          "sha256": "e8e05c8927dd79c2dcf7d294d6b555784d1f265e165038ac02b13e2e9a1a1c98"
+          "sha256": "b3c1120356fc3933949693b8c552e5acd98c61fb6e37b39e8b014af5cfcdf565"
         }
       ]
     },

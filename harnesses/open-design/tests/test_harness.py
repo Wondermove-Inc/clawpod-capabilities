@@ -55,9 +55,12 @@ class FakeDaemon(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    mapped_proxy = False
     def _strip_prefix(self):
         if self.path.startswith("/agent-api/"):
-            self.path = self.path[len("/agent-api"):]
+            stripped = self.path[len("/agent-api"):]
+            # mapped proxy: /agent-api/<x> is the daemon's /api/<x>; root proxy keeps /api
+            self.path = ("/api" + stripped) if self.mapped_proxy else stripped
 
     def do_GET(self):  # noqa: N802
         self._strip_prefix()
@@ -154,6 +157,7 @@ class HarnessCase(unittest.TestCase):
 
     def setUp(self):
         FakeDaemon.enforce_auth = True
+        FakeDaemon.mapped_proxy = False
         FakeDaemon.slow = False
         FakeDaemon.projects = {}
         FakeDaemon.files = {}
@@ -203,6 +207,31 @@ class ContractTests(HarnessCase):
         out = self.run_cli("config.status", "--state-root", str(self.state))
         self.assertEqual(out["data"]["config"]["baseUrl"], self.base)
         self.assertTrue(out["data"]["tokenPresent"])
+
+    def test_mapped_proxy_layout_is_autodetected_and_works_end_to_end(self):
+        # nginx maps /agent-api/* directly onto the daemon's /api/* (the od.wondermove.local layout)
+        FakeDaemon.mapped_proxy = True
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api", "--web-base-url", self.base)
+        self.assertEqual(out["data"]["config"]["apiStyle"], "mapped")
+        self.assertTrue(any("auto-detected" in w for w in out["data"]["warnings"]))
+        out = self.run_cli("health", "--state-root", str(self.state))
+        self.assertEqual(out["data"]["apiStyle"], "mapped")
+        self.assertEqual(out["data"]["serverVersion"], "0.20.3")
+        pid = self.create_project()
+        local = self.write_local("deck.html", b"<html>x</html>")
+        self.run_cli("files.put", "--state-root", str(self.state), "--project-id", pid, "--path", local)
+        link = self.run_cli("preview.link", "--state-root", str(self.state), "--project-id", pid, "--file", "deck.html")
+        self.assertTrue(link["data"]["url"].startswith(self.base + "/api/projects/"))
+        self.assertTrue(link["data"]["apiUrl"].startswith(self.base + "/agent-api/api/"))
+        self.assertTrue(link["data"]["opensWithoutToken"])
+        paths = [r["path"] for r in link["data"]["evidence"]["requests"]]
+        self.assertTrue(any(p.startswith("/projects/") for p in paths), paths)   # /api collapsed: sent as <base>/projects/... not <base>/api/projects/...
+
+    def test_api_style_explicit_override_skips_probe(self):
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api", "--api-style", "mapped")
+        self.assertEqual(out["data"]["config"]["apiStyle"], "mapped")
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base, "--api-style", "sideways", expect=module.EXIT["invalid"])
+        self.assertEqual(out["error"]["code"], "INVALID_API_STYLE")
 
     def test_agent_api_prefix_and_separate_web_url(self):
         out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api/", "--web-base-url", self.base)
