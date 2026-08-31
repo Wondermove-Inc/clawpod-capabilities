@@ -432,3 +432,32 @@ def test_enroll_approve_fails_closed_on_ambiguity_absence_and_stale_request(tmp_
         run, out = call(tmp_path, "enroll approve", fixture=path, extra=("--node-id", "clawpod-node-fixed00001", *extra))
         assert run.returncode == 5 and out["errors"][0]["code"] == code
     assert not record.exists()
+
+def agent_fixture(tmp_path, **agent):
+    value = json.loads(FIXTURE.read_text()); value["agentTailscale"] = agent
+    path = tmp_path / f"agent-{len(list(tmp_path.iterdir()))}.json"; path.write_text(json.dumps(value)); return path
+
+def test_agent_own_tailscale_signin_gates_onboarding_and_link_is_not_redacted(tmp_path):
+    record = tmp_path / "record.jsonl"
+    needs = agent_fixture(tmp_path, present=True, backendState="NeedsLogin", loginUrl="https://login.tailscale.com/a/1a2b3c4d5e")
+    run, out = call(tmp_path, "agent status", fixture=needs)
+    assert run.returncode == 3 and out["status"] == "waiting_user" and out["nextAction"]["resumeCommand"] == "agent login"
+    run, out = call(tmp_path, "agent login", fixture=needs, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
+    assert run.returncode == 3 and out["safetyClass"] == "S4"
+    assert out["agentTailscale"]["url"] == "https://login.tailscale.com/a/1a2b3c4d5e"
+    assert "https://login.tailscale.com/a/1a2b3c4d5e" in out["nextAction"]["message"]
+    assert json.loads(record.read_text().splitlines()[-1])["argv"] == ["tailscale", "login"]
+    ready = agent_fixture(tmp_path, present=True, backendState="Running")
+    run, out = call(tmp_path, "agent status", fixture=ready)
+    assert run.returncode == 0 and out["agentTailscale"]["ready"] is True and "enroll generate" in out["nextAction"]["resumeCommand"]
+    run, out = call(tmp_path, "agent login", fixture=ready)
+    assert run.returncode == 0 and out["agentTailscale"]["ready"] is True
+
+def test_agent_tailscale_absent_or_linkless_fails_closed(tmp_path):
+    absent = agent_fixture(tmp_path, present=False)
+    for command in ("agent status", "agent login"):
+        run, out = call(tmp_path, command, fixture=absent)
+        assert run.returncode == 5 and out["errors"][0]["code"] == "AGENT_TAILSCALE_ABSENT"
+    linkless = agent_fixture(tmp_path, present=True, backendState="NeedsLogin")
+    run, out = call(tmp_path, "agent login", fixture=linkless)
+    assert run.returncode == 6 and out["errors"][0]["code"] == "LOGIN_URL_UNAVAILABLE"

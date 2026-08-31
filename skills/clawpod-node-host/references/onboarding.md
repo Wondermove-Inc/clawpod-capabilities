@@ -2,10 +2,11 @@
 
 ## Self-service enrollment (default)
 
-The default track has only four states and one user hand-off:
+The default track has five states and at most two user hand-offs:
 
 | State | Automatic work | User-facing gate |
 |---|---|---|
+| `agent` | `agent status`; if not connected, `agent login` to obtain the sign-in link (the pod ships with Tailscale installed but signed out). Poll `agent status` until Running. | Once: send the login link and ask the user to sign in with the ClawPod Tailscale account. Skip entirely when already connected. |
 | `platform` | None | Ask only whether the computer is Mac or Windows 11. |
 | `handoff` | `enroll generate` with the agent's own Gateway endpoint; verify the returned script mentions no placeholder. | Send the complete script and say: run it, and sign in to Tailscale with the same account as ClawPod if asked. Nothing else. |
 | `watch` | Poll `enroll status --node-id <id>` on a relaxed interval; `waiting_user` is normal, not an error. On the single match, `enroll approve` immediately without asking again. | None, unless the user reports an `ACTION:` line — then relay that one action and keep watching. |

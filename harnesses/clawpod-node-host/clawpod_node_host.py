@@ -25,6 +25,7 @@ from typing import Any
 
 REQUIRED_VERSION = "2026.4.11"
 ENROLL_NODE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{2,62}$")
+AGENT_LOGIN_URL = re.compile(r"https://login\.tailscale\.com/\S+")
 SCHEMA_VERSION = 1
 PLAN_TTL_SECONDS = 900
 TAILSCALE_TTL_SECONDS = 300
@@ -35,7 +36,7 @@ MUTATIONS = {
     "service.restart": "S1", "repair.apply": "S2", "uninstall.apply": "S3",
     "rollback.apply": "S3", "pairing.approve": "S4", "bootstrap.apply": "S2",
     "tailscale.install-apply": "S2", "tailscale.login-apply": "S4",
-    "ssh-server.apply": "S2", "enroll.approve": "S4",
+    "ssh-server.apply": "S2", "enroll.approve": "S4", "agent.login": "S4",
 }
 PLANNERS = {"install.plan", "repair.plan", "uninstall.plan", "rollback.plan"}
 ONBOARDING_PLANNERS = {"tailscale.install-plan", "tailscale.login-plan", "ssh-server.plan"}
@@ -44,7 +45,7 @@ COMMANDS = {
     "tailscale.address", "tailscale.same-tailnet", "tailscale.verify", "ssh-server.status", "ssh-server.verify", "service.status",
     "onboarding.status", "pairing.status", "validate.plan", "validate.run",
     "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate",
-    "enroll.generate", "enroll.status", *PLANNERS, *ONBOARDING_PLANNERS, *MUTATIONS,
+    "enroll.generate", "enroll.status", "agent.status", *PLANNERS, *ONBOARDING_PLANNERS, *MUTATIONS,
 }
 EXIT = {"success": 0, "noop": 0, "invalid": 2, "waiting_user": 3,
         "confirmation_required": 4, "precondition": 5, "failed": 6,
@@ -169,12 +170,12 @@ class Harness:
             return self.fail("INVALID_INPUT", "--json is required", "failed", "invalid")
         if self.a.target != "local":
             return self.fail("INVALID_INPUT", "--target must be local", "failed", "invalid")
-        needs_version = self.command in (set(MUTATIONS) - {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply", "enroll.approve"}) or self.command in PLANNERS
+        needs_version = self.command in (set(MUTATIONS) - {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply", "enroll.approve", "agent.login"}) or self.command in PLANNERS
         if needs_version and self.a.openclaw_version != REQUIRED_VERSION:
             return self.fail("VERSION_SPEC_REJECTED", f"only literal {REQUIRED_VERSION} is accepted", "failed", "invalid")
         if self.a.openclaw_version is not None and self.a.openclaw_version != REQUIRED_VERSION:
             return self.fail("VERSION_SPEC_REJECTED", f"only literal {REQUIRED_VERSION} is accepted", "failed", "invalid")
-        if not self.command.startswith("enroll.") and self.observed_os not in {"macos", "windows"}:
+        if self.a.group not in {"enroll", "agent"} and self.observed_os not in {"macos", "windows"}:
             return self.fail("UNSUPPORTED_OS", "only macOS and Windows 11 are supported", "failed", "precondition")
         if self.a.tls_fingerprint and not re.fullmatch(r"[a-f0-9]{64}", self.a.tls_fingerprint):
             return self.fail("INVALID_INPUT", "TLS fingerprint must be lowercase SHA-256", "failed", "invalid")
@@ -767,6 +768,66 @@ openclaw node status
             if not good: return self.fail("VALIDATION_FAILED", f"{wanted} validation did not pass", "failed", "failed")
         return out, 0
 
+    # ---- agent-side Tailscale sign-in: the pod ships with Tailscale installed but ----
+    # ---- logged out; the agent starts the login and hands the user the link.      ----
+
+    def agent_tailscale(self) -> dict[str, Any]:
+        if self.fixture_path:
+            return self.fixture.get("agentTailscale", {})
+        try:
+            completed = subprocess.run(["tailscale", "status", "--json"], text=True, capture_output=True, timeout=10, check=False)
+            parsed = json.loads(completed.stdout) if completed.stdout.strip() else {}
+            return {"present": True, "backendState": parsed.get("BackendState", "Unknown")}
+        except FileNotFoundError:
+            return {"present": False}
+        except (OSError, ValueError, subprocess.TimeoutExpired):
+            return {"present": True, "backendState": "Unknown"}
+
+    def agent_login_url(self) -> str | None:
+        if self.fixture_path:
+            return self.fixture.get("agentTailscale", {}).get("loginUrl")
+        import threading
+        proc = subprocess.Popen(["tailscale", "login"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        lines: list[str] = []
+        reader = threading.Thread(target=lambda: lines.extend(iter(proc.stdout.readline, "")), daemon=True)
+        reader.start()
+        timeout = float(os.environ.get("CLAWPOD_NODE_HOST_COMMAND_TIMEOUT", "60"))
+        reader.join(timeout=min(timeout, 30.0))
+        proc.terminate()
+        match = AGENT_LOGIN_URL.search("\n".join(lines))
+        return match.group(0) if match else None
+
+    def agent_status(self) -> tuple[dict[str, Any], int]:
+        ts = self.agent_tailscale()
+        if not ts.get("present"):
+            return self.fail("AGENT_TAILSCALE_ABSENT", "tailscale CLI is unavailable in the agent runtime; the pod image must ship Tailscale", "failed", "precondition")
+        state = ts.get("backendState", "Unknown")
+        out = self.base("success" if state == "Running" else "waiting_user")
+        out["agentTailscale"] = {"present": True, "state": state, "ready": state == "Running"}
+        if state != "Running":
+            out["nextAction"] = {"kind": "user", "message": "The agent's own Tailscale is not signed in yet. Run agent login, send the returned link to the user, and ask them to sign in with the ClawPod Tailscale account.", "resumeCommand": "agent login"}
+            return out, EXIT["waiting_user"]
+        out["nextAction"] = {"kind": "proceed", "message": "Agent Tailscale is connected; continue with enroll generate.", "resumeCommand": "enroll generate --platform <macos|windows> --gateway-host <gateway>"}
+        return out, 0
+
+    def agent_login(self) -> tuple[dict[str, Any], int]:
+        ts = self.agent_tailscale()
+        if not ts.get("present"):
+            return self.fail("AGENT_TAILSCALE_ABSENT", "tailscale CLI is unavailable in the agent runtime; the pod image must ship Tailscale", "failed", "precondition")
+        if ts.get("backendState") == "Running":
+            out = self.base()
+            out["agentTailscale"] = {"present": True, "state": "Running", "ready": True}
+            out["nextAction"] = {"kind": "proceed", "message": "Already signed in; continue with enroll generate.", "resumeCommand": "enroll generate --platform <macos|windows> --gateway-host <gateway>"}
+            return out, 0
+        self.record(["tailscale", "login"])
+        url = self.agent_login_url()
+        if not url:
+            return self.fail("LOGIN_URL_UNAVAILABLE", "tailscale did not produce an interactive sign-in link; check tailscaled inside the agent pod", "failed", "failed")
+        out = self.base("waiting_user")
+        out["agentTailscale"] = {"present": True, "state": ts.get("backendState", "NeedsLogin"), "ready": False, "url": url}
+        out["nextAction"] = {"kind": "user", "message": f"Send this link to the user and ask them to open it and sign in with the ClawPod Tailscale account: {url}", "resumeCommand": "agent status"}
+        return out, EXIT["waiting_user"]
+
     # ---- self-service enrollment: the agent hands the user ONE complete script; ----
     # ---- running it installs and connects the node, and the agent auto-approves. ----
 
@@ -915,6 +976,8 @@ Write-Output '완료: ClawPod 에이전트가 이 컴퓨터를 자동으로 승�
     def run(self) -> tuple[dict[str, Any], int]:
         invalid = self.validate_inputs()
         if invalid: return invalid
+        if self.command == "agent.status": return self.agent_status()
+        if self.command == "agent.login": return self.agent_login()
         if self.command == "enroll.generate": return self.enroll_generate()
         if self.command == "enroll.status": return self.enroll_status()
         if self.command == "enroll.approve": return self.enroll_approve()

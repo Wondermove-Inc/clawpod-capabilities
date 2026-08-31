@@ -19,6 +19,7 @@ Use the linked `clawpod-node-host` Harness. Always request JSON output. The only
 
 The default onboarding gives the user **one complete script and nothing else to decide**. Never send a script with placeholders, blanks to fill in, or "replace this" instructions — `enroll.generate` bakes in the real Gateway host, port, TLS flag, pinned `openclaw@2026.4.11`, and a generated node id.
 
+0. **First, the agent's own Tailscale.** The agent pod ships with Tailscale installed but signed out. Run `agent status`; if it is not connected, run `agent login`, send the returned link to the user (in Korean: `이 링크를 열어 ClawPod의 Tailscale 계정으로 로그인해주세요.`), and poll `agent status` until it reports connected. This is a one-time human sign-in; never try to enter credentials yourself, and never reinstall or reconfigure the agent's Tailscale.
 1. Ask only which OS the computer is (Mac or Windows 11).
 2. Run `enroll generate --platform <os> --gateway-host <the agent's own Gateway MagicDNS name> --gateway-port 18789 [--tls]`. Use the Gateway endpoint the agent itself connects to; the user is never asked for an address.
 3. Send the user the returned script verbatim (as a code block or file) with two sentences: run it in Terminal (macOS) or PowerShell (Windows), and sign in to Tailscale **with the same account as ClawPod** if the script asks. The script itself installs Tailscale and Node.js when missing, prints an `ACTION:` line and exits if a human sign-in is needed, and is safe to re-run from the top after that action.

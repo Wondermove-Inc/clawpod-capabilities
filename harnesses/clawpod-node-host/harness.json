@@ -41,6 +41,97 @@
     "requiresHumanAccount": true
   },
   "commands": {
+    "agent.status": {
+      "description": "Check whether the agent runtime's own Tailscale is signed in and connected — the first gate of onboarding.",
+      "baseArgv": [
+        "--json",
+        "agent",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
+    "agent.login": {
+      "description": "Start the agent's own Tailscale interactive sign-in and return the login link to hand to the user.",
+      "baseArgv": [
+        "--json",
+        "agent",
+        "login"
+      ],
+      "safetyClasses": [
+        "humanAccountAction",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": []
+    },
     "enroll.generate": {
       "description": "Produce one complete, credential-free per-OS enrollment script (Tailscale, openclaw install, node install with gateway endpoint and node id baked in) for the user to run.",
       "baseArgv": [

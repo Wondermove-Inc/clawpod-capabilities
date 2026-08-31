@@ -3,6 +3,8 @@
 Self-service enrollment commands take no plan/confirm handshake:
 
 ```text
+clawpod-node-host --json agent status
+clawpod-node-host --json agent login
 clawpod-node-host --json enroll generate --platform macos --gateway-host <magicdns> --gateway-port 18789 --tls
 clawpod-node-host --json enroll status --node-id <id>
 clawpod-node-host --json enroll approve --node-id <id>
