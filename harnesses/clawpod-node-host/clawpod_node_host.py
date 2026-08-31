@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 REQUIRED_VERSION = "2026.4.11"
+ENROLL_NODE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{2,62}$")
 SCHEMA_VERSION = 1
 PLAN_TTL_SECONDS = 900
 TAILSCALE_TTL_SECONDS = 300
@@ -34,7 +35,7 @@ MUTATIONS = {
     "service.restart": "S1", "repair.apply": "S2", "uninstall.apply": "S3",
     "rollback.apply": "S3", "pairing.approve": "S4", "bootstrap.apply": "S2",
     "tailscale.install-apply": "S2", "tailscale.login-apply": "S4",
-    "ssh-server.apply": "S2",
+    "ssh-server.apply": "S2", "enroll.approve": "S4",
 }
 PLANNERS = {"install.plan", "repair.plan", "uninstall.plan", "rollback.plan"}
 ONBOARDING_PLANNERS = {"tailscale.install-plan", "tailscale.login-plan", "ssh-server.plan"}
@@ -42,7 +43,8 @@ COMMANDS = {
     "system.inspect", "version.inspect", "tailscale.install-status", "tailscale.status",
     "tailscale.address", "tailscale.same-tailnet", "tailscale.verify", "ssh-server.status", "ssh-server.verify", "service.status",
     "onboarding.status", "pairing.status", "validate.plan", "validate.run",
-    "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate", *PLANNERS, *ONBOARDING_PLANNERS, *MUTATIONS,
+    "bootstrap.inspect", "bootstrap.plan", "bootstrap.generate",
+    "enroll.generate", "enroll.status", *PLANNERS, *ONBOARDING_PLANNERS, *MUTATIONS,
 }
 EXIT = {"success": 0, "noop": 0, "invalid": 2, "waiting_user": 3,
         "confirmation_required": 4, "precondition": 5, "failed": 6,
@@ -119,7 +121,7 @@ class Harness:
         self.fixture_path = os.environ.get("CLAWPOD_NODE_HOST_FIXTURE")
         self.fixture = load_json(Path(self.fixture_path)) if self.fixture_path else {}
         local_os = "macos" if sys.platform == "darwin" else "windows" if os.name == "nt" else "unsupported"
-        self.observed_os = self.fixture.get("os", args.platform_name if args.group == "bootstrap" and args.platform_name else local_os)
+        self.observed_os = self.fixture.get("os", args.platform_name if args.group in {"bootstrap", "enroll"} and args.platform_name else local_os)
         endpoint = {"host": args.gateway_host, "port": args.gateway_port, "tls": args.tls, "tlsFingerprint": args.tls_fingerprint}
         self.target_hash = sha({"os": self.observed_os, "provider": self.provider, "endpoint": endpoint})
 
@@ -166,12 +168,12 @@ class Harness:
             return self.fail("INVALID_INPUT", "--json is required", "failed", "invalid")
         if self.a.target != "local":
             return self.fail("INVALID_INPUT", "--target must be local", "failed", "invalid")
-        needs_version = self.command in (set(MUTATIONS) - {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply"}) or self.command in PLANNERS
+        needs_version = self.command in (set(MUTATIONS) - {"tailscale.install-apply", "tailscale.login-apply", "ssh-server.apply", "enroll.approve"}) or self.command in PLANNERS
         if needs_version and self.a.openclaw_version != REQUIRED_VERSION:
             return self.fail("VERSION_SPEC_REJECTED", f"only literal {REQUIRED_VERSION} is accepted", "failed", "invalid")
         if self.a.openclaw_version is not None and self.a.openclaw_version != REQUIRED_VERSION:
             return self.fail("VERSION_SPEC_REJECTED", f"only literal {REQUIRED_VERSION} is accepted", "failed", "invalid")
-        if self.observed_os not in {"macos", "windows"}:
+        if not self.command.startswith("enroll.") and self.observed_os not in {"macos", "windows"}:
             return self.fail("UNSUPPORTED_OS", "only macOS and Windows 11 are supported", "failed", "precondition")
         if self.a.tls_fingerprint and not re.fullmatch(r"[a-f0-9]{64}", self.a.tls_fingerprint):
             return self.fail("INVALID_INPUT", "TLS fingerprint must be lowercase SHA-256", "failed", "invalid")
@@ -764,9 +766,150 @@ openclaw node status
             if not good: return self.fail("VALIDATION_FAILED", f"{wanted} validation did not pass", "failed", "failed")
         return out, 0
 
+    # ---- self-service enrollment: the agent hands the user ONE complete script; ----
+    # ---- running it installs and connects the node, and the agent auto-approves. ----
+
+    def enroll_script(self, node_id: str) -> str:
+        """A complete, credential-free script: gateway endpoint, pinned version, and node id
+        are all baked in — the user edits nothing and answers nothing except a Tailscale login."""
+        host = self.a.gateway_host; port = self.a.gateway_port or 18789
+        tls = " --tls" if self.a.tls else ""
+        if self.observed_os == "macos":
+            return f"""#!/bin/sh
+set -eu
+umask 077
+if [ "${{OPENCLAW_NODE_ROLLBACK:-0}}" = 1 ]; then openclaw node stop || true; openclaw node uninstall || true; npm uninstall --global openclaw || true; exit 0; fi
+TS=$(command -v tailscale 2>/dev/null || true)
+[ -n "$TS" ] || for c in /Applications/Tailscale.app/Contents/MacOS/Tailscale "$HOME/Applications/Tailscale.app/Contents/MacOS/Tailscale"; do [ -x "$c" ] && TS="$c" && break; done
+if [ -z "$TS" ]; then
+  if command -v brew >/dev/null 2>&1; then brew install --cask tailscale && open -a Tailscale && sleep 5; TS=/Applications/Tailscale.app/Contents/MacOS/Tailscale; fi
+fi
+[ -n "$TS" ] || {{ echo 'ACTION: https://tailscale.com/download 에서 Tailscale을 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 20; }}
+"$TS" status >/dev/null 2>&1 || "$TS" login >/dev/null 2>&1 || true
+"$TS" status >/dev/null 2>&1 || {{ echo 'ACTION: Tailscale 앱에서 ClawPod와 같은 계정으로 로그인한 뒤 이 스크립트를 다시 실행하세요'; exit 21; }}
+"$TS" ip -4 | head -n 1
+command -v npm >/dev/null 2>&1 || {{ command -v brew >/dev/null 2>&1 && brew install node@22 && export PATH="/opt/homebrew/opt/node@22/bin:/usr/local/opt/node@22/bin:$PATH"; }}
+command -v npm >/dev/null 2>&1 || {{ echo 'ACTION: https://nodejs.org 에서 Node.js LTS를 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 23; }}
+npm view openclaw@{REQUIRED_VERSION} version | grep -qx '{REQUIRED_VERSION}'
+npm install --global openclaw@{REQUIRED_VERSION}
+test "$(openclaw --version)" = '{REQUIRED_VERSION}'
+export OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1
+openclaw node install --host '{host}' --port {port}{tls} --node-id '{node_id}'
+openclaw node restart
+openclaw node status
+echo 'ENROLL_NODE_ID={node_id}'
+echo 'READY=enrolled'
+echo '완료: ClawPod 에이전트가 이 컴퓨터를 자동으로 승인합니다. 이 창은 닫으셔도 됩니다.'
+"""
+        return f"""$ErrorActionPreference = 'Stop'
+if ($env:OPENCLAW_NODE_ROLLBACK -eq '1') {{ openclaw node stop; openclaw node uninstall; npm uninstall --global openclaw; exit 0 }}
+$ts = Get-Command tailscale.exe -ErrorAction SilentlyContinue
+if (-not $ts) {{ winget install --id tailscale.tailscale -e --silent --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User'); $ts = Get-Command tailscale.exe -ErrorAction SilentlyContinue }}
+if (-not $ts) {{ Write-Output 'ACTION: https://tailscale.com/download 에서 Tailscale을 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 20 }}
+try {{ tailscale status | Out-Null }} catch {{ tailscale login; Start-Sleep -Seconds 3 }}
+try {{ tailscale status | Out-Null }} catch {{ Write-Output 'ACTION: Tailscale에서 ClawPod와 같은 계정으로 로그인한 뒤 이 스크립트를 다시 실행하세요'; exit 21 }}
+tailscale ip -4 | Select-Object -First 1
+$npm = Get-Command npm -ErrorAction SilentlyContinue
+if (-not $npm) {{ winget install --id OpenJS.NodeJS.LTS -e --silent --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }}
+if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {{ Write-Output 'ACTION: https://nodejs.org 에서 Node.js LTS를 설치한 뒤 이 스크립트를 다시 실행하세요'; exit 23 }}
+if ((npm view openclaw@{REQUIRED_VERSION} version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'version resolution mismatch' }}
+npm install --global openclaw@{REQUIRED_VERSION}
+if ((openclaw --version).Trim() -ne '{REQUIRED_VERSION}') {{ throw 'installed version mismatch' }}
+$env:OPENCLAW_ALLOW_INSECURE_PRIVATE_WS = '1'
+openclaw node install --host '{host}' --port {port}{tls} --node-id '{node_id}'
+openclaw node restart
+openclaw node status
+Write-Output 'ENROLL_NODE_ID={node_id}'
+Write-Output 'READY=enrolled'
+Write-Output '완료: ClawPod 에이전트가 이 컴퓨터를 자동으로 승인합니다. 이 창은 닫으셔도 됩니다.'
+"""
+
+    def enroll_generate(self) -> tuple[dict[str, Any], int]:
+        if not self.a.platform_name and "os" not in self.fixture:
+            return self.fail("PLATFORM_REQUIRED", "--platform macos|windows is required to pick the target computer's script", "failed", "invalid")
+        if not self.a.gateway_host:
+            return self.fail("GATEWAY_REQUIRED", "--gateway-host is required so the generated script is complete", "failed", "invalid")
+        node_id = self.a.node_id or f"clawpod-node-{uuid.uuid4().hex[:10]}"
+        if not ENROLL_NODE_ID.fullmatch(node_id):
+            return self.fail("INVALID_NODE_ID", "node id must be 3-63 characters of letters, digits, and hyphens", "failed", "invalid")
+        script = self.enroll_script(node_id)
+        if SECRET_PATTERN.search(script):
+            return self.fail("SCRIPT_UNSAFE", "generated script unexpectedly matched a secret pattern", "failed", "failed")
+        out = self.base()
+        out["enrollScript"] = {"platform": self.observed_os, "sha256": sha(script.encode()), "content": script, "containsCredentials": False}
+        out["enrollment"] = {"nodeId": node_id, "gateway": {"host": self.a.gateway_host, "port": self.a.gateway_port or 18789, "tls": bool(self.a.tls)}, "openclawVersion": REQUIRED_VERSION}
+        out["nextAction"] = {"kind": "handoff", "message": "Send this script to the user to run on that computer, then poll enroll.status --node-id and approve with enroll.approve when the request appears.", "resumeCommand": f"enroll status --node-id {node_id}"}
+        return out, 0
+
+    def enroll_requests(self) -> list[dict[str, Any]] | tuple[dict[str, Any], int]:
+        if self.fixture_path:
+            return self.fixture.get("deviceRequests", [])
+        argv = ["openclaw", "devices", "list", "--json"]
+        self.record(argv)
+        timeout = float(os.environ.get("CLAWPOD_NODE_HOST_COMMAND_TIMEOUT", "60"))
+        try:
+            completed = subprocess.run(argv, text=True, capture_output=True, timeout=timeout, check=False)
+            parsed = json.loads(completed.stdout or "[]")
+        except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+            return self.fail("PAIRING_LIST_UNAVAILABLE", f"device request listing failed: {type(exc).__name__}", "failed", "failed")
+        requests = parsed.get("requests", parsed) if isinstance(parsed, dict) else parsed
+        return requests if isinstance(requests, list) else []
+
+    def enroll_matches(self, requests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        wanted = self.a.node_id
+        return [r for r in requests if isinstance(r, dict) and wanted in {r.get("nodeId"), r.get("displayName"), r.get("name")}]
+
+    def enroll_status(self) -> tuple[dict[str, Any], int]:
+        if not self.a.node_id:
+            return self.fail("NODE_ID_REQUIRED", "--node-id from enroll.generate is required", "failed", "invalid")
+        requests = self.enroll_requests()
+        if isinstance(requests, tuple): return requests
+        matches = self.enroll_matches(requests)
+        out = self.base("success" if matches else "waiting_user")
+        out["enrollment"] = {"nodeId": self.a.node_id, "found": bool(matches), "matchCount": len(matches),
+                            "requestIdHash": sha(matches[0].get("requestId")) if len(matches) == 1 and matches[0].get("requestId") else None,
+                            "nodeFingerprint": matches[0].get("nodeFingerprint") if len(matches) == 1 else None}
+        if not matches:
+            out["nextAction"] = {"kind": "wait", "message": "The node has not connected yet; ask the user to run the script (or finish the Tailscale login) and poll again.", "resumeCommand": f"enroll status --node-id {self.a.node_id}"}
+            return out, EXIT["waiting_user"]
+        if len(matches) > 1:
+            return self.fail("PAIRING_AMBIGUOUS", "multiple pairing requests carry this node id; approve manually with pairing commands", "failed", "precondition")
+        out["nextAction"] = {"kind": "approve", "message": "Approve with enroll.approve to finish pairing.", "resumeCommand": f"enroll approve --node-id {self.a.node_id}"}
+        return out, 0
+
+    def enroll_approve(self) -> tuple[dict[str, Any], int]:
+        if not self.a.node_id:
+            return self.fail("NODE_ID_REQUIRED", "--node-id from enroll.generate is required", "failed", "invalid")
+        requests = self.enroll_requests()
+        if isinstance(requests, tuple): return requests
+        matches = self.enroll_matches(requests)
+        if len(matches) != 1:
+            return self.fail("PAIRING_AMBIGUOUS" if matches else "PAIRING_NOT_FOUND",
+                             "exactly one pairing request must carry this node id", "failed", "precondition")
+        request_id = matches[0].get("requestId")
+        if not request_id or (self.a.pairing_request_id and self.a.pairing_request_id != request_id):
+            return self.fail("PAIRING_REQUEST_STALE", "pairing request is stale or changed", "failed", "precondition")
+        argv = ["openclaw", "devices", "approve", request_id]
+        self.record(argv)
+        if not self.fixture_path:
+            timeout = float(os.environ.get("CLAWPOD_NODE_HOST_COMMAND_TIMEOUT", "60"))
+            try:
+                completed = subprocess.run(argv, text=True, capture_output=True, timeout=timeout, check=False)
+                if completed.returncode != 0:
+                    return self.fail("PAIRING_APPROVE_FAILED", sanitize(completed.stderr.strip() or "approve command failed"), "failed", "failed")
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                return self.fail("PAIRING_APPROVE_FAILED", f"approve command failed: {type(exc).__name__}", "failed", "failed")
+        out = self.base()
+        out["effects"] = [{"type": "device-request-approved", "requestIdHash": sha(request_id), "nodeId": self.a.node_id}]
+        out["nextAction"] = {"kind": "verify", "message": "Run validate.run --validation-level connection to confirm the node is connected.", "resumeCommand": "validate run --validation-level connection"}
+        return out, 0
+
     def run(self) -> tuple[dict[str, Any], int]:
         invalid = self.validate_inputs()
         if invalid: return invalid
+        if self.command == "enroll.generate": return self.enroll_generate()
+        if self.command == "enroll.status": return self.enroll_status()
+        if self.command == "enroll.approve": return self.enroll_approve()
         if self.command in {"bootstrap.inspect", "bootstrap.generate"}: return self.bootstrap_readonly()
         if self.command == "bootstrap.plan": return self.bootstrap_plan()
         if self.command == "bootstrap.apply": return self.bootstrap_apply()

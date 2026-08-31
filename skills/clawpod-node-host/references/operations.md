@@ -1,6 +1,16 @@
 # Operations and recovery
 
-Invoke global options before the two-word command, for example:
+Self-service enrollment commands take no plan/confirm handshake:
+
+```text
+clawpod-node-host --json enroll generate --platform macos --gateway-host <magicdns> --gateway-port 18789 --tls
+clawpod-node-host --json enroll status --node-id <id>
+clawpod-node-host --json enroll approve --node-id <id>
+```
+
+`enroll status` exits 3 while the user has not yet run the script. `enroll approve` requires exactly one matching pairing request; ambiguity fails closed to the exact-request `pairing` commands. Rollback: re-run the same generated script with `OPENCLAW_NODE_ROLLBACK=1`.
+
+For the SSH fallback, invoke global options before the two-word command, for example:
 
 ```text
 clawpod-node-host --json --state <owner-state> --openclaw-version 2026.4.11 --gateway-host <magicdns> --gateway-port 18789 --tls install plan

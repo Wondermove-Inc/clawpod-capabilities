@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-node-host",
   "title": "ClawPod Node Host",
-  "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
-  "version": "0.1.2",
+  "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+  "version": "0.2.0",
   "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {
@@ -13,12 +13,16 @@
     "requiresJson": true
   },
   "whenToUse": [
+    "Connect this Mac or Windows PC to ClawPod as a node — just give me a script to run",
     "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
+    "Generate a ready-to-run enrollment script with the gateway address already filled in",
+    "Watch for my PC's pairing request and approve it automatically after I run the script",
     "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
     "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
     "Check whether a local machine is ready to become a node"
   ],
   "capabilities": [
+    "self-service-enrollment",
     "exact-version-gate",
     "pre-node-bootstrap",
     "strict-ssh-host-key-binding",
@@ -37,6 +41,251 @@
     "requiresHumanAccount": true
   },
   "commands": {
+    "enroll.generate": {
+      "description": "Produce one complete, credential-free per-OS enrollment script (Tailscale, openclaw install, node install with gateway endpoint and node id baked in) for the user to run.",
+      "baseArgv": [
+        "--json",
+        "enroll",
+        "generate"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "platform",
+          "gatewayHost"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "gatewayHost": {
+            "type": "string"
+          },
+          "gatewayPort": {
+            "type": "integer"
+          },
+          "tls": {
+            "type": "boolean"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "gatewayHost",
+          "type": "option",
+          "flag": "--gateway-host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "gatewayPort",
+          "type": "option",
+          "flag": "--gateway-port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "tls",
+          "type": "booleanFlag",
+          "flag": "--tls",
+          "optional": true,
+          "valueType": "boolean"
+        },
+        {
+          "arg": "nodeId",
+          "type": "option",
+          "flag": "--node-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "displayName",
+          "type": "option",
+          "flag": "--display-name",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
+    "enroll.status": {
+      "description": "Check whether the pairing request from the user-run enrollment script has arrived for the given node id.",
+      "baseArgv": [
+        "--json",
+        "enroll",
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "nodeId"
+        ],
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "nodeId",
+          "type": "option",
+          "flag": "--node-id",
+          "valueType": "string",
+          "optional": false
+        }
+      ]
+    },
+    "enroll.approve": {
+      "description": "Approve the single pairing request that carries the enrollment node id, completing the self-service pairing.",
+      "baseArgv": [
+        "--json",
+        "enroll",
+        "approve"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "nodeId"
+        ],
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "pairingRequestId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "target": {},
+          "version": {},
+          "tailscale": {},
+          "service": {},
+          "pairing": {},
+          "capabilities": {},
+          "plan": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "nodeId",
+          "type": "option",
+          "flag": "--node-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "pairingRequestId",
+          "type": "option",
+          "flag": "--pairing-request-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
     "bootstrap.inspect": {
       "description": "Inspect a selected pre-node bootstrap transport with strict host-key and protected-credential gates.",
       "baseArgv": [

@@ -8,10 +8,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "routing_contracts.json"
 CLAWPOD_NODE_HOST_DESCRIPTION = (
-    "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring "
-    "networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate "
-    "Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect "
-    "instead when an already configured node fails to connect or pair."
+    "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow"
+    ": hand the user one complete, credential-free script (Tailscale, openclaw install, gateway"
+    " address baked in), then auto-detect and approve the pairing request. Can also drive SSH-b"
+    "ased provisioning, verification, recovery, and removal. Use node-connect instead when an a"
+    "lready configured node fails to connect or pair."
 )
 
 

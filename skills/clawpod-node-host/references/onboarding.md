@@ -1,5 +1,20 @@
 # Progressive onboarding
 
+## Self-service enrollment (default)
+
+The default track has only four states and one user hand-off:
+
+| State | Automatic work | User-facing gate |
+|---|---|---|
+| `platform` | None | Ask only whether the computer is Mac or Windows 11. |
+| `handoff` | `enroll generate` with the agent's own Gateway endpoint; verify the returned script mentions no placeholder. | Send the complete script and say: run it, and sign in to Tailscale with the same account as ClawPod if asked. Nothing else. |
+| `watch` | Poll `enroll status --node-id <id>` on a relaxed interval; `waiting_user` is normal, not an error. On the single match, `enroll approve` immediately without asking again. | None, unless the user reports an `ACTION:` line — then relay that one action and keep watching. |
+| `verify` | `validate run --validation-level connection`, then report connected. | None. |
+
+The script is idempotent: after any `ACTION:` stop (Tailscale install/login, Node.js install) the user simply re-runs it. Ambiguous or absent pairing matches fall back to `pairing status` / `pairing approve <exact-requestId>`.
+
+## Agent-driven SSH provisioning (fallback)
+
 Advance one state at a time. Persist only the state name and redacted facts so a later turn resumes at the first unmet gate. Ask one question or action per turn, never a checklist.
 
 Supported paths are macOS Remote Login/OpenSSH, Windows OpenSSH Server, Tailscale SSH, and a local command. Password, key, SSH agent, and Tailscale SSH have no product-level preference.
