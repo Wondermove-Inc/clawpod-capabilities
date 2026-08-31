@@ -71,8 +71,10 @@ def body_schema(command,method):
  METADATA_LOOKUP=O({"locationType":S(enum=["ROW","COLUMN","SHEET","SPREADSHEET"]),"metadataId":I(minimum=0),"metadataKey":S(),"metadataValue":S(),"visibility":S(enum=["DOCUMENT","PROJECT"]),"locationMatchingStrategy":S(enum=["EXACT_LOCATION","INTERSECTING_LOCATION"]),"metadataLocation":O({"locationType":S(),"spreadsheet":B(),"sheetId":I(minimum=0),"dimensionRange":O({"sheetId":I(minimum=0),"dimension":S(enum=["ROWS","COLUMNS"]),"startIndex":I(minimum=0),"endIndex":I(minimum=0)})})},minProperties=1)
  DATA_FILTERS=A(O({"a1Range":S(),"gridRange":GRID_RANGE,"developerMetadataLookup":METADATA_LOOKUP},minProperties=1),minItems=1,maxItems=100)
  if command=="docs.documents.create":return O({"title":S(maxLength=4096)},minProperties=1)
- if command in ("docs.documents.batchUpdate","slides.presentations.batchUpdate"):
+ if command=="docs.documents.batchUpdate":
   return O({"requests":EDITOR_REQUESTS,"writeControl":O({"requiredRevisionId":S(),"targetRevisionId":S()})},("requests",))
+ if command=="slides.presentations.batchUpdate":
+  return O({"requests":EDITOR_REQUESTS,"writeControl":O({"requiredRevisionId":S()})},("requests",))
  if command=="slides.presentations.create":return O({"title":S(maxLength=4096)},minProperties=1)
  if command=="sheets.spreadsheets.create":
   SHEET_STUB={"type":"object","minProperties":1,"additionalProperties":{"type":["object","array","string","number","boolean"]}}

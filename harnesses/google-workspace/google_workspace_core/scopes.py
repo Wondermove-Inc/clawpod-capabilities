@@ -41,7 +41,9 @@ def required_scopes(c,safety=()):
   return {DOCS_RO} if c=='docs.read' or a=='get' else {DOCS}
  if c.startswith('sheets.'):
   if c=='sheets.read':return {SHEETS_RO}
-  if a in ('get','batchGet','getByDataFilter','batchGetByDataFilter','search'):return {SHEETS_RO}
+  # Google accepts spreadsheets.readonly only on the GET reads; the DataFilter
+  # POST reads and developerMetadata endpoints require the full scope.
+  if a in ('get','batchGet') and not c.startswith('sheets.developerMetadata.'):return {SHEETS_RO}
   return {SHEETS}
  if c.startswith('slides.'):
   return {SLIDES_RO} if c=='slides.read' or a in ('get','getThumbnail') else {SLIDES}

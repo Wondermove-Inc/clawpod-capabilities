@@ -63,7 +63,9 @@ class Tests(unittest.TestCase):
  def test_read_write_scope_split(self):
   self.assertEqual(required_scopes('docs.documents.get'),{'https://www.googleapis.com/auth/documents.readonly'})
   self.assertEqual(required_scopes('docs.documents.batchUpdate'),{'https://www.googleapis.com/auth/documents'})
-  self.assertEqual(required_scopes('sheets.values.batchGetByDataFilter'),{'https://www.googleapis.com/auth/spreadsheets.readonly'})
+  self.assertEqual(required_scopes('sheets.values.batchGet'),{'https://www.googleapis.com/auth/spreadsheets.readonly'})
+  self.assertEqual(required_scopes('sheets.values.batchGetByDataFilter'),{'https://www.googleapis.com/auth/spreadsheets'})
+  self.assertEqual(required_scopes('sheets.developerMetadata.get'),{'https://www.googleapis.com/auth/spreadsheets'})
   self.assertEqual(required_scopes('sheets.values.clear'),{'https://www.googleapis.com/auth/spreadsheets'})
   self.assertEqual(required_scopes('slides.pages.getThumbnail'),{'https://www.googleapis.com/auth/presentations.readonly'})
   self.assertEqual(required_scopes('slides.presentations.batchUpdate'),{'https://www.googleapis.com/auth/presentations'})
@@ -79,11 +81,12 @@ class Tests(unittest.TestCase):
  def test_batch_update_bodies_require_requests(self):
   for name in ('docs.documents.batchUpdate','sheets.spreadsheets.batchUpdate','slides.presentations.batchUpdate'):
    self.assertIn('requests',body_schema(name,'POST')['required'])
+  self.assertNotIn('targetRevisionId',body_schema('slides.presentations.batchUpdate','POST')['properties']['writeControl']['properties'])
   self.assertEqual(body_schema('sheets.values.update','PUT')['required'],['values'])
   self.assertEqual(body_schema('sheets.values.batchUpdate','POST')['required'],['valueInputOption','data'])
  def test_safety_classes_gate_mutations(self):
   entries=catalog()
-  for name in ('docs.documents.get','sheets.values.get','slides.read','sheets.developerMetadata.search'):
+  for name in ('docs.documents.get','sheets.values.get','slides.read','sheets.developerMetadata.search','sheets.spreadsheets.getByDataFilter'):
    self.assertIn('readOnly',entries[name]['safetyClasses'],name)
   for name in ('docs.documents.batchUpdate','sheets.values.update','slides.presentations.create','sheets.sheets.copyTo'):
    self.assertIn('writeSafe',entries[name]['safetyClasses'],name)

@@ -1760,7 +1760,7 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "e8afc9c80745746b8cc021056688a79bac8b1075e77db7b4c45867c38fc91610"
+          "sha256": "a57afef04a6fdd5a2a840cfe98e0fb29b8362e8620e48c892de81b9cbb9966eb"
         },
         {
           "path": "google_workspace.py",
@@ -1784,7 +1784,7 @@
         },
         {
           "path": "google_workspace_core/contracts.py",
-          "sha256": "f314d61c8f7ea7178501a08c99e2b30c5c12440217bf1c0786fe16df63b8898a"
+          "sha256": "433c11769fc2213bb455c31dfe7a6117049440c02806daf001d459eb77b5bf08"
         },
         {
           "path": "google_workspace_core/core.py",
@@ -1812,7 +1812,7 @@
         },
         {
           "path": "google_workspace_core/scopes.py",
-          "sha256": "b91e16fe1b6c1a22af66b703e81fd71ed5b1668dc56c68f8c1ae2808d9e1ba62"
+          "sha256": "6147b10934cc5ec2aacb45b4d3840add2dcafb37c678b5c80aa4c7820814527b"
         },
         {
           "path": "google_workspace_core/security.py",

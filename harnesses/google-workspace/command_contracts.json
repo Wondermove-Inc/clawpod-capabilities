@@ -61346,7 +61346,7 @@
       "additionalProperties": false
     },
     "requiredScopes": [
-      "https://www.googleapis.com/auth/spreadsheets.readonly"
+      "https://www.googleapis.com/auth/spreadsheets"
     ]
   },
   "sheets.spreadsheets.create": {
@@ -63531,7 +63531,7 @@
       "additionalProperties": false
     },
     "requiredScopes": [
-      "https://www.googleapis.com/auth/spreadsheets.readonly"
+      "https://www.googleapis.com/auth/spreadsheets"
     ]
   },
   "sheets.values.update": {
@@ -66771,7 +66771,7 @@
       "additionalProperties": false
     },
     "requiredScopes": [
-      "https://www.googleapis.com/auth/spreadsheets.readonly"
+      "https://www.googleapis.com/auth/spreadsheets"
     ]
   },
   "sheets.developerMetadata.search": {
@@ -67394,7 +67394,7 @@
       "additionalProperties": false
     },
     "requiredScopes": [
-      "https://www.googleapis.com/auth/spreadsheets.readonly"
+      "https://www.googleapis.com/auth/spreadsheets"
     ]
   },
   "slides.read": {
@@ -68203,11 +68203,6 @@
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 4096
-                },
-                "targetRevisionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 4096
                 }
               }
             }
@@ -68346,11 +68341,6 @@
                     "additionalProperties": false,
                     "properties": {
                       "requiredRevisionId": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 4096
-                      },
-                      "targetRevisionId": {
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 4096
