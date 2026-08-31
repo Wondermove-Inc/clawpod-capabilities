@@ -54,4 +54,26 @@ def normalize(command,data,params=None):
                     if hint:hints.append(hint)
             items.append({"id":item.get("id"),"name":item.get("name"),"mimeType":item.get("mimeType"),"modifiedTime":item.get("modifiedTime"),"ownerCount":len(owners),"ownerHints":hints,"parents":item.get("parents",[]),"webViewLink":item.get("webViewLink"),"size":item.get("size")})
         return items,data.get("nextPageToken")
+    if command=="docs.read":
+        text=[]
+        for element in (data.get("body") or {}).get("content",[]):
+            paragraph=element.get("paragraph") if isinstance(element,dict) else None
+            if not isinstance(paragraph,dict):continue
+            run="".join(e.get("textRun",{}).get("content","") for e in paragraph.get("elements",[]) if isinstance(e,dict))
+            if run:text.append(run.rstrip("\n"))
+        return [{"documentId":data.get("documentId"),"title":data.get("title"),"revisionId":data.get("revisionId"),"paragraphCount":len(text),"text":"\n".join(text)}],None
+    if command=="sheets.read":
+        values=data.get("values",[])
+        return [{"range":data.get("range"),"majorDimension":data.get("majorDimension"),"rowCount":len(values),"columnCount":max((len(r) for r in values),default=0),"values":values}],None
+    if command=="slides.read":
+        slides=[]
+        for index,slide in enumerate(data.get("slides",[]),1):
+            lines=[]
+            for element in slide.get("pageElements",[]):
+                shape=element.get("shape") if isinstance(element,dict) else None
+                if not isinstance(shape,dict):continue
+                run="".join(t.get("textRun",{}).get("content","") for t in (shape.get("text") or {}).get("textElements",[]) if isinstance(t,dict)).strip()
+                if run:lines.append(run)
+            slides.append({"index":index,"objectId":slide.get("objectId"),"text":lines})
+        return [{"presentationId":data.get("presentationId"),"title":data.get("title"),"revisionId":data.get("revisionId"),"slideCount":len(slides),"slides":slides}],None
     return None,None

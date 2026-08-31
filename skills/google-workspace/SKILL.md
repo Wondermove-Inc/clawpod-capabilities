@@ -1,6 +1,6 @@
 ---
 name: google-workspace
-description: "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, or Drive files, permissions, comments, and shared drives; it is not Outlook or generic web automation and can feed Enterprise Newsletter."
+description: "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter."
 ---
 
 # Google Workspace
@@ -27,3 +27,12 @@ Authentication readiness checks only that the selected OAuth authentication file
 Absent optional `credentials/` and `backups/` directories are non-applicable in permission status and repair preview. Do not create them during inspection or permission repair; a later credential operation may create them only after its own explicit authorization.
 
 Read `references/operations.md` for command families and ambiguity rules. Read `references/scopes.md` before consent. Read `references/onboarding.md` whenever an agent has no local credential.
+
+## Docs, Sheets, and Slides (0.4.0)
+
+The full public REST surface of the three editor APIs is available: `docs.documents.*` (get/create/batchUpdate), `sheets.spreadsheets.*`, `sheets.values.*` (get/update/append/clear and every batch variant), `sheets.sheets.copyTo`, `sheets.developerMetadata.*`, and `slides.presentations.*`/`slides.pages.*` (including thumbnails). High-level reads `docs.read` (plain-text extraction), `sheets.read` (one range's values), and `slides.read` (per-slide text outline) cover most read intents in one bounded call.
+
+- Every content edit goes through `batchUpdate`-style requests and the standard mutation gate (`--dry-run` preview → approval → `--confirm`); `sheets.values.clear`/`batchClear*` are destructive.
+- Least-privilege scopes per command (`documents`/`spreadsheets`/`presentations`, each with `.readonly`); new OAuth profiles `docs-read|docs-edit|sheets-read|sheets-edit|slides-read|slides-edit`, and `workspace-max` now includes all three editors.
+- **Accounts onboarded before 0.4.0 must re-consent** to use these commands: run `auth.login` again with the needed profiles (existing Gmail/Calendar/Drive grants keep working; the harness reports `INSUFFICIENT_SCOPE` with the exact missing scope until then). Enable the Google Docs, Sheets, and Slides APIs on the OAuth client's Cloud project.
+- Use Drive commands for file-level operations on the same documents (move, share, export to PDF/XLSX via `drive.files.export`).

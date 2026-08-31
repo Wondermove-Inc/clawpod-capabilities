@@ -59,3 +59,5 @@ Use typed `credentialPath` for later calls. Never echo the path. If a previous t
 A sanitized `invalid_grant` refresh failure can mean Testing-mode seven-day expiry, user revocation, password/security changes, long inactivity, token limits, or an invalid/expired refresh token. Inspect Audience and account/admin state, then reauthorize the affected agent; never expose Google's response body. Revocation is available from the Google Account connections page and by removing the protected local bundle through the approved logout flow.
 
 The browser endpoint may come from `GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL` or `OPENCLAW_BROWSER_CDP_URL`; explicit typed input wins. Accept only literal loopback HTTP endpoints. Never ask the owner to copy an OAuth URL, code, token, client secret, or credential file.
+
+> 0.4.0: Docs, Sheets, and Slides scopes are part of `workspace-max` and available as narrow profiles (`docs-read|docs-edit|sheets-read|sheets-edit|slides-read|slides-edit`). Accounts consented before 0.4.0 must run `auth.login` again to add them; enable the Docs/Sheets/Slides APIs on the OAuth client's Cloud project.

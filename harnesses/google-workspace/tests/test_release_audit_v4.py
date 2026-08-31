@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from google_workspace_core.catalog import catalog,operation,preflight
 from google_workspace_core.core import run
 
-SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page')
+SAMPLES={k:k for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};SAMPLES.update(userId='me',kind='imap',mimeType='text/plain',requestId='request',pageToken='page',documentId='documentId',spreadsheetId='spreadsheetId',presentationId='presentationId',pageObjectId='pageObjectId',sheetId='sheetId',metadataId='metadataId',range='A1:B2')
 
 class ReleaseAuditV4(unittest.TestCase):
  def setUp(self):
@@ -16,7 +16,7 @@ class ReleaseAuditV4(unittest.TestCase):
  def mock(self,responses):
   path=Path(self.tmp.name)/f'{time.time_ns()}.json';path.write_text(json.dumps(responses));os.environ['GOOGLE_WORKSPACE_MOCK_HTTP']=str(path)
  def test_inventory_schemas_scopes_and_recursive_closure(self):
-  commands=catalog();self.assertEqual(len(commands),167);self.assertEqual(sum(not k.startswith('auth.') for k in commands),147)
+  commands=catalog();self.assertEqual(len(commands),194);self.assertEqual(sum(not k.startswith('auth.') for k in commands),174)
   open_nodes=[]
   def scan(node,path):
    if isinstance(node,dict):

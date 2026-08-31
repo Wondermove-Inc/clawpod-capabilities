@@ -18,7 +18,7 @@ class AdversarialContract(unittest.TestCase):
     if 'params' in c['inputSchema']['properties']:self.assertFalse(c['inputSchema']['properties']['params']['additionalProperties'])
     if not cmd.startswith('auth.'):self.assertTrue(c['requiredScopes'])
  def test_every_remote_command_resolves(self):
-  s={k:'x/id' for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};s.update(kind='imap',mimeType='text/plain',requestId='r')
+  s={k:'x/id' for k in ('messageId','threadId','attachmentId','labelId','draftId','calendarId','eventId','ruleId','settingId','fileId','permissionId','commentId','replyId','revisionId','driveId','sendAsEmail','smimeInfoId','forwardingEmail','delegateEmail','filterId')};s.update(kind='imap',mimeType='text/plain',requestId='r');s.update(documentId='doc1',spreadsheetId='sheet1',presentationId='pres1',pageObjectId='page1',sheetId='sh1',metadataId='meta1',range='A1:B2')
   for cmd in catalog():
    if cmd.startswith('auth.'):continue
    op=operation(cmd,s);self.assertTrue(op['url'].startswith('https://'));self.assertNotIn('/id',op['url'])
