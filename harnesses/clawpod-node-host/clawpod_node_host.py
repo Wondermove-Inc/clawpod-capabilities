@@ -786,16 +786,28 @@ openclaw node status
     def agent_login_url(self) -> str | None:
         if self.fixture_path:
             return self.fixture.get("agentTailscale", {}).get("loginUrl")
-        import threading
+        import threading, time
         proc = subprocess.Popen(["tailscale", "login"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         lines: list[str] = []
         reader = threading.Thread(target=lambda: lines.extend(iter(proc.stdout.readline, "")), daemon=True)
         reader.start()
         timeout = float(os.environ.get("CLAWPOD_NODE_HOST_COMMAND_TIMEOUT", "60"))
-        reader.join(timeout=min(timeout, 30.0))
+        deadline = time.monotonic() + min(timeout, 30.0)
+        url = None
+        while time.monotonic() < deadline:
+            match = AGENT_LOGIN_URL.search("\n".join(lines))
+            if match:
+                url = match.group(0); break
+            if proc.poll() is not None and not reader.is_alive():
+                match = AGENT_LOGIN_URL.search("\n".join(lines))
+                url = match.group(0) if match else None; break
+            time.sleep(0.2)
         proc.terminate()
-        match = AGENT_LOGIN_URL.search("\n".join(lines))
-        return match.group(0) if match else None
+        try:
+            proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            proc.kill(); proc.wait()
+        return url
 
     def agent_status(self) -> tuple[dict[str, Any], int]:
         ts = self.agent_tailscale()

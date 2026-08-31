@@ -1278,7 +1278,7 @@
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "8e92c053acd01d730eefd4499652034b5b521ea755e5ca21f8805f494a483ff8"
+          "sha256": "da8a63a9d15631abcf399505a7715150b0a1b39571046c56cabe9a1fd578f25d"
         },
         {
           "path": "fixtures/macos-ready.json",
