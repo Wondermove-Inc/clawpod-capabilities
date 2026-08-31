@@ -30,12 +30,14 @@
       "Render a localized video",
       "Publish a designed report as a chat-room artifact",
       "Export PPTX and PDF files by default when the user only asked for a deck",
-      "Hand over a deck that failed the layout quality gate without reporting the defects"
+      "Hand over a deck that failed the layout quality gate without reporting the defects",
+      "Upload the deck to the self-hosted OpenDesign server"
     ],
     "adjacent": [
       "clawpod-image-studio",
       "clawpod-video-studio",
-      "artifact-design"
+      "artifact-design",
+      "open-design"
     ]
   },
   "clawpod-capability-registry": {
@@ -358,11 +360,13 @@
     "negative": [
       "Refine this presentation deck in Claude Design",
       "Generate a standalone product photo",
-      "Answer this quick question in the message body"
+      "Answer this quick question in the message body",
+      "Host this design on the OpenDesign server and share its preview link"
     ],
     "adjacent": [
       "claude-design",
-      "clawpod-image-studio"
+      "clawpod-image-studio",
+      "open-design"
     ]
   },
   "hwp-desktop": {
@@ -399,6 +403,24 @@
       "soc-event-correlation",
       "clawpod-org-operations",
       "clawpod-node-host"
+    ]
+  },
+  "open-design": {
+    "positive": [
+      "Make a presentation deck and share it as a live preview link",
+      "Build a UI prototype the team can open and click through",
+      "Revise the design on the OpenDesign server and refresh its preview link",
+      "Onboard the OpenDesign server with its base URL and token",
+      "Export the OpenDesign project as HTML or a ZIP archive"
+    ],
+    "negative": [
+      "Edit the deck on the claude.ai/design canvas",
+      "Publish a markdown report as a chat-room artifact",
+      "Generate a standalone product photo"
+    ],
+    "adjacent": [
+      "claude-design",
+      "artifact-design"
     ]
   }
 }

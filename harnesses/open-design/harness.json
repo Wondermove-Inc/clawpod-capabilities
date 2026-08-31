@@ -1,0 +1,1395 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "open-design",
+  "title": "Open Design",
+  "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
+  "version": "0.1.0",
+  "entrypoint": "./open_design.py",
+  "packageRoot": ".",
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 150000,
+    "requiresJson": true
+  },
+  "whenToUse": [
+    "Make a presentation deck and share it as a live preview link",
+    "Build a UI prototype the team can open and click through",
+    "Revise the design on the OpenDesign server and refresh its preview link",
+    "Onboard the OpenDesign server with its base URL and token",
+    "Export the OpenDesign project as HTML or a ZIP archive"
+  ],
+  "capabilities": [
+    "self-hosted-open-design",
+    "protected-token-env",
+    "tls-trust-configuration",
+    "auth-enforcement-probe",
+    "byte-identical-upload-verify",
+    "scoped-preview-links",
+    "claude-design-import"
+  ],
+  "authModel": {
+    "type": "protected-environment-or-existing-config",
+    "storesSecrets": false,
+    "requiresHumanAccount": false
+  },
+  "commands": {
+    "status": {
+      "description": "Report the harness release version and the token environment contract.",
+      "baseArgv": [
+        "status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": []
+    },
+    "config.set": {
+      "description": "Store the OpenDesign Base URL and TLS trust in owner-only state (the token is never stored).",
+      "baseArgv": [
+        "config.set"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "caCertPath": {
+            "type": "string"
+          },
+          "insecureTlsRiskAccepted": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "baseUrl"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "baseUrl",
+          "type": "option",
+          "flag": "--base-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "caCertPath",
+          "type": "option",
+          "flag": "--ca-cert-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "input"
+        },
+        {
+          "arg": "insecureTlsRiskAccepted",
+          "type": "booleanFlag",
+          "flag": "--insecure-tls-risk-accepted",
+          "valueType": "boolean",
+          "optional": true
+        }
+      ]
+    },
+    "config.status": {
+      "description": "Show the stored connection configuration and whether the token env is injected.",
+      "baseArgv": [
+        "config.status"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        }
+      ]
+    },
+    "health": {
+      "description": "Verify server version, latency, and whether the daemon actually enforces its API token.",
+      "baseArgv": [
+        "health"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "projects.list": {
+      "description": "List projects with kind and status summaries.",
+      "baseArgv": [
+        "projects.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "projects.get": {
+      "description": "Read one project's full record.",
+      "baseArgv": [
+        "projects.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "projects.create": {
+      "description": "Create a project with a client-generated UUID and agent-authored name/kind.",
+      "baseArgv": [
+        "projects.create"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "kind",
+          "type": "option",
+          "flag": "--kind",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "projects.delete": {
+      "description": "Delete a project after exact displayed-name match and explicit approval; verifies absence.",
+      "baseArgv": [
+        "projects.delete"
+      ],
+      "safetyClasses": [
+        "destructive",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "exactName": {
+            "type": "string"
+          },
+          "approve": {
+            "type": "boolean"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "exactName",
+          "type": "option",
+          "flag": "--exact-name",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "approve",
+          "type": "booleanFlag",
+          "flag": "--approve",
+          "valueType": "boolean",
+          "optional": true
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "files.list": {
+      "description": "List a project's files with sizes and export capabilities.",
+      "baseArgv": [
+        "files.list"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "files.put": {
+      "description": "Upload a local file and verify a byte-identical read-back before claiming success.",
+      "baseArgv": [
+        "files.put"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId",
+          "path"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "path",
+          "type": "option",
+          "flag": "--path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "files.get": {
+      "description": "Download one project file (inline or to --out-path).",
+      "baseArgv": [
+        "files.get"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "outPath": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId",
+          "name"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "name",
+          "type": "option",
+          "flag": "--name",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outPath",
+          "type": "option",
+          "flag": "--out-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "preview.link": {
+      "description": "Mint the human-facing scoped preview URL for one file and verify it opens.",
+      "baseArgv": [
+        "preview.link"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId",
+          "file"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "file",
+          "type": "option",
+          "flag": "--file",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "export.html": {
+      "description": "Export one file as standalone HTML (optionally saved locally).",
+      "baseArgv": [
+        "export.html"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "outPath": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId",
+          "fileName"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "fileName",
+          "type": "option",
+          "flag": "--file-name",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outPath",
+          "type": "option",
+          "flag": "--out-path",
+          "valueType": "path",
+          "optional": true,
+          "pathRole": "output"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "export.archive": {
+      "description": "Download the whole project as a ZIP archive.",
+      "baseArgv": [
+        "export.archive"
+      ],
+      "safetyClasses": [
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "outPath": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId",
+          "outPath"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "outPath",
+          "type": "option",
+          "flag": "--out-path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "output"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "export.manifest": {
+      "description": "Read the project's export manifest (files, entry, export capabilities).",
+      "baseArgv": [
+        "export.manifest"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "projectId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    },
+    "import.claude-design": {
+      "description": "Import a Claude Design export .zip as a new OpenDesign project.",
+      "baseArgv": [
+        "import.claude-design"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stateRoot": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "stateRoot",
+          "path"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "number"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {},
+          "effects": {
+            "type": "array"
+          },
+          "error": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "stateRoot",
+          "type": "option",
+          "flag": "--state-root",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "inout"
+        },
+        {
+          "arg": "path",
+          "type": "option",
+          "flag": "--path",
+          "valueType": "path",
+          "optional": false,
+          "pathRole": "input"
+        },
+        {
+          "arg": "timeoutMs",
+          "type": "option",
+          "flag": "--timeout-ms",
+          "valueType": "integer",
+          "optional": true
+        }
+      ]
+    }
+  }
+}
