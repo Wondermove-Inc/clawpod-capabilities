@@ -4,7 +4,7 @@
   "name": "atlassian",
   "title": "Atlassian",
   "description": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "entrypoint": "./atlassian.py",
   "packageRoot": ".",
   "execution": {

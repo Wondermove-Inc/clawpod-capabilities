@@ -205,7 +205,30 @@ def test_direct_basic_uses_per_run_environment(tmp_path,monkeypatch):
 def test_secretrefs_metadata_contract():
  manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
  binding=json.loads(Path('harnesses/atlassian/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.3.1' and 'credentialEnvironment' not in manifest
+ assert manifest['version']=='0.3.5' and 'credentialEnvironment' not in manifest
  assert binding['names']==['ATLASSIAN_EMAIL','ATLASSIAN_API_TOKEN'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.1'
+ assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.5'
+
+
+def test_response_data_is_masked_but_never_truncated():
+ long_text='K'*5000
+ out=a.redact({'body':{'storage':{'value':long_text}},'note':'Bearer abc123 then text','fields':{'description':long_text}})
+ assert out['body']['storage']['value']==long_text and out['fields']['description']==long_text
+ assert out['note'].startswith('Bearer [REDACTED]')
+ assert len(a.diagnostic('E'*5000))==512
+
+def ns_instance(**kw):
+ import types; n=ns(**kw)
+ return types.SimpleNamespace(**{k:getattr(n,k) for k in dir(n) if not k.startswith('__')})
+
+def test_execute_returns_long_fields_intact_and_paginated_results_masked(tmp_path,monkeypatch):
+ monkeypatch.setenv('TEST_TOKEN','supersecret')
+ long_text='X'*4096
+ def opener(req,timeout=None): return Response({'description':long_text,'authorization':'should-hide','comment':'Basic dXNlcjpwYXNz trailing'})
+ r=a.execute(ns_instance(command='jira.issues.get',site='one',issueIdOrKey='T-1',sites_file=str(sites(tmp_path))),opener=opener)
+ assert r['description']==long_text and len(r['description'])==4096
+ assert r['authorization']=='[REDACTED]' and r['comment'].startswith('Basic [REDACTED]')
+ def opener2(req,timeout=None): return Response({'values':[{'body':long_text,'password':'hide-me'}]})
+ r=a.execute(ns_instance(command='jira.issues.search',site='one',all_pages=True,sites_file=str(sites(tmp_path))),opener=opener2)
+ assert r['items'][0]['body']==long_text and r['items'][0]['password']=='[REDACTED]'

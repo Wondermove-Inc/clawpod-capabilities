@@ -93,7 +93,7 @@
       ],
       "linkedHarness": {
         "id": "atlassian",
-        "version": "0.3.4"
+        "version": "0.3.5"
       }
     },
     {
@@ -960,7 +960,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -986,7 +986,7 @@
         },
         {
           "path": "atlassian.py",
-          "sha256": "5d169866fbf0eacd3daaa2c481d04419982830a7c42ffe2f4cf65651d075ebbb"
+          "sha256": "3a81fce46f1b726d86a051aa0b4805e5f90984e2e126e6eb1ad1d66c08ce6d61"
         },
         {
           "path": "command_contracts.json",
@@ -994,7 +994,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "96c8a6ea2246a05c9eee243630afc0c937102eac4c80bcc727b86c7b2da3a6a4"
+          "sha256": "10898a2d81f89911cce60a796f1ab30e9f70fe2739452eb512c9e5292fc8e46a"
         },
         {
           "path": "oauth3lo.py",
@@ -1006,7 +1006,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "11903fcd80d0e1ca74dad344e90aef44fa3dc8ad57778c6e26159bf47c22f0f4"
+          "sha256": "07940c906d71baae9ad3526ade99f0137de36c21271b99eb77329436b834bda3"
         },
         {
           "path": "test_oauth_async.py",
