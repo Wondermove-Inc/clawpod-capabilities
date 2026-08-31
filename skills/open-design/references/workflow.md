@@ -23,7 +23,8 @@ OpenDesign's own chat/agent loop (`/api/chat`) is deliberately not used: authori
 open-design projects.create --state-root R --name "Q3 실적 리뷰 덱" --kind deck
 open-design files.put --state-root R --project-id P --path /workspace/q3-review.html
 open-design preview.link --state-root R --project-id P --file q3-review.html
-# → data.url: https://<server>/api/projects/P/preview/<scope>/q3-review.html  (open without API token)
+# → data.webUrl: https://<web host>/api/projects/P/preview/<scope>/q3-review.html  (사람용; agent-api 접두사 없음, API 토큰 없이 열림)
+# → data.apiUrl: https://<web host>/agent-api/api/projects/...                    (에이전트 검증용)
 
 # revision: edit locally, re-gate, re-upload the same name, re-mint the link
 open-design files.put --state-root R --project-id P --path /workspace/q3-review.html

@@ -55,7 +55,12 @@ class FakeDaemon(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _strip_prefix(self):
+        if self.path.startswith("/agent-api/"):
+            self.path = self.path[len("/agent-api"):]
+
     def do_GET(self):  # noqa: N802
+        self._strip_prefix()
         if self.slow:
             time.sleep(3)
         if self.path == "/api/version":
@@ -96,6 +101,7 @@ class FakeDaemon(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"message": "no route"}})
 
     def do_POST(self):  # noqa: N802
+        self._strip_prefix()
         if not self._authorized():
             return self._json(401, {"error": {"message": "unauthorized"}})
         length = int(self.headers.get("Content-Length", 0))
@@ -127,6 +133,7 @@ class FakeDaemon(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"message": "no route"}})
 
     def do_DELETE(self):  # noqa: N802
+        self._strip_prefix()
         if not self._authorized():
             return self._json(401, {"error": {"message": "unauthorized"}})
         pid = self.path.strip("/").split("/")[2]
@@ -197,8 +204,29 @@ class ContractTests(HarnessCase):
         self.assertEqual(out["data"]["config"]["baseUrl"], self.base)
         self.assertTrue(out["data"]["tokenPresent"])
 
+    def test_agent_api_prefix_and_separate_web_url(self):
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api/", "--web-base-url", self.base)
+        self.assertEqual(out["data"]["config"]["baseUrl"], self.base + "/agent-api")
+        self.assertEqual(out["data"]["config"]["webBaseUrl"], self.base)
+        out = self.run_cli("health", "--state-root", str(self.state))
+        self.assertEqual(out["data"]["serverVersion"], "0.20.3")
+        pid = self.create_project()
+        local = self.write_local("deck.html", b"<html>x</html>")
+        self.run_cli("files.put", "--state-root", str(self.state), "--project-id", pid, "--path", local)
+        link = self.run_cli("preview.link", "--state-root", str(self.state), "--project-id", pid, "--file", "deck.html")
+        self.assertTrue(link["data"]["url"].startswith(self.base + "/api/projects/"))       # human URL: web origin, no prefix
+        self.assertTrue(link["data"]["apiUrl"].startswith(self.base + "/agent-api/api/"))   # agent URL keeps the prefix
+        self.assertTrue(link["data"]["opensWithoutToken"])
+
+    def test_web_base_url_defaults_to_origin_of_prefixed_base(self):
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api")
+        self.assertEqual(out["data"]["config"]["webBaseUrl"], self.base)
+        out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", self.base + "/agent-api", "--web-base-url", self.base + "/web", expect=module.EXIT["invalid"])
+        self.assertEqual(out["error"]["code"], "INVALID_BASE_URL")
+
     def test_base_url_and_state_validation_fail_closed(self):
         out = self.run_cli("config.set", "--state-root", str(self.state), "--base-url", "https://u:p@host/x?q=1", expect=module.EXIT["invalid"])
+        self.run_cli("config.set", "--state-root", str(self.state), "--base-url", "https://host/a//b", expect=module.EXIT["invalid"])
         self.assertEqual(out["error"]["code"], "INVALID_BASE_URL")
         self.state.chmod(0o755)
         out = self.run_cli("projects.list", "--state-root", str(self.state), expect=module.EXIT["precondition"])

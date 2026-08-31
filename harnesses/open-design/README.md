@@ -1,6 +1,6 @@
 # Open Design Harness
 
-Canonical `open-design` / **Open Design** Harness. Version 0.1.0.
+Canonical `open-design` / **Open Design** Harness. Version 0.2.0. The agent-API Base URL may carry a reverse-proxy prefix (e.g. `/agent-api`); a separate `webBaseUrl` (default: the Base URL's origin) builds the human-facing preview links. Unverified TLS is a supported configuration for internal servers via `--insecure-tls-risk-accepted`.
 
 Typed client for a self-hosted OpenDesign daemon (verified against v0.20.3; contract in `docs/open-design-contract.md`). Python standard library only. 16 commands: config/health onboarding, project and file lifecycle, scoped preview links, HTML/ZIP export, export manifest, and Claude Design `.zip` import.
 
