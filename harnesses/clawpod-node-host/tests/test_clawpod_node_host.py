@@ -367,3 +367,97 @@ def test_routing_contract_has_three_positive_two_negative_and_collisions():
     assert len(route["positive"]) >= 3 and len(route["negative"]) >= 2
     joined = " ".join(route["negative"]).lower()
     assert "gateway" in joined and ("unauthorized" in joined or "connected node" in joined)
+
+ENROLL = ("--gateway-host", "gateway.tailnet.ts.net", "--gateway-port", "18789", "--tls")
+
+def enroll_fixture(tmp_path, requests, os_name="macos"):
+    value = json.loads(FIXTURE.read_text()); value["deviceRequests"] = requests
+    if os_name != "macos": value = {**json.loads((ROOT / "fixtures" / "windows-ready.json").read_text()), "deviceRequests": requests}
+    path = tmp_path / f"enroll-{len(list(tmp_path.iterdir()))}.json"; path.write_text(json.dumps(value)); return path
+
+def test_enroll_generate_scripts_are_complete_credential_free_and_deterministic(tmp_path):
+    for platform, source, marker in (("macos", FIXTURE, "#!/bin/sh"), ("windows", ROOT / "fixtures" / "windows-ready.json", "$ErrorActionPreference")):
+        run, out = call(tmp_path, "enroll generate", fixture=source, extra=(*ENROLL, "--platform", platform, "--node-id", "clawpod-node-fixed00001"))
+        assert run.returncode == 0 and out["ok"] and out["enrollScript"]["platform"] == platform
+        script = out["enrollScript"]["content"]
+        assert marker in script and "openclaw@2026.4.11" in script
+        assert "--host 'gateway.tailnet.ts.net' --port 18789 --tls --node-id 'clawpod-node-fixed00001'" in script
+        assert "tailscale" in script.lower() and "OPENCLAW_ALLOW_INSECURE_PRIVATE_WS" in script
+        assert "<" not in script.replace("<<", "") and "TODO" not in script and "REPLACE" not in script
+        assert out["enrollScript"]["sha256"] == hashlib.sha256(script.encode()).hexdigest()
+        assert out["enrollScript"]["containsCredentials"] is False and "SECRET" not in script
+        if platform == "windows":
+            assert script.count("Assert-Step") >= 5 and "$LASTEXITCODE" in script and "try {" not in script
+        again = call(tmp_path, "enroll generate", fixture=source, extra=(*ENROLL, "--platform", platform, "--node-id", "clawpod-node-fixed00001"))[1]
+        assert again["enrollScript"]["content"] == script
+    run, out = call(tmp_path, "enroll generate", extra=(*ENROLL, "--platform", "windows"))
+    assert out["enrollScript"]["platform"] == "windows" and "$ErrorActionPreference" in out["enrollScript"]["content"]
+    run, out = call(tmp_path, "enroll generate", extra=(*ENROLL, "--platform", "macos"))
+    assert run.returncode == 0 and out["enrollment"]["nodeId"].startswith("clawpod-node-")
+    assert out["enrollment"]["gateway"] == {"host": "gateway.tailnet.ts.net", "port": 18789, "tls": True}
+    assert out["nextAction"]["kind"] == "handoff" and out["enrollment"]["nodeId"] in out["nextAction"]["resumeCommand"]
+
+def test_enroll_generate_rejects_incomplete_or_invalid_inputs(tmp_path):
+    run, out = call(tmp_path, "enroll generate", extra=("--platform", "macos"))
+    assert run.returncode == 2 and out["errors"][0]["code"] == "GATEWAY_REQUIRED"
+    run, out = call(tmp_path, "enroll generate", extra=(*ENROLL, "--platform", "macos", "--node-id", "bad id!"))
+    assert run.returncode == 2 and out["errors"][0]["code"] == "INVALID_NODE_ID"
+
+def test_enroll_status_waits_then_approve_records_exactly_one_approval(tmp_path):
+    record = tmp_path / "record.jsonl"
+    request = {"requestId": "req-42", "nodeId": "clawpod-node-fixed00001", "nodeFingerprint": "fp-1"}
+    empty = enroll_fixture(tmp_path, [])
+    run, out = call(tmp_path, "enroll status", fixture=empty, extra=("--node-id", "clawpod-node-fixed00001"))
+    assert run.returncode == 3 and out["status"] == "waiting_user" and out["enrollment"]["found"] is False
+    assert out["nextAction"]["kind"] == "wait"
+    ready = enroll_fixture(tmp_path, [request])
+    run, out = call(tmp_path, "enroll status", fixture=ready, extra=("--node-id", "clawpod-node-fixed00001"))
+    assert run.returncode == 0 and out["enrollment"]["matchCount"] == 1 and out["nextAction"]["kind"] == "approve"
+    assert "req-42" not in json.dumps(out)
+    run, out = call(tmp_path, "enroll approve", fixture=ready, extra=("--node-id", "clawpod-node-fixed00001"), env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
+    assert run.returncode == 0 and out["safetyClass"] == "S4"
+    assert out["effects"] == [{"type": "device-request-approved", "requestIdHash": hashlib.sha256(json.dumps("req-42", ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()).hexdigest(), "nodeId": "clawpod-node-fixed00001"}] or out["effects"][0]["type"] == "device-request-approved"
+    assert json.loads(record.read_text().splitlines()[-1])["argv"] == ["openclaw", "devices", "approve", "req-42"]
+
+def test_enroll_approve_fails_closed_on_ambiguity_absence_and_stale_request(tmp_path):
+    record = tmp_path / "record.jsonl"
+    request = {"requestId": "req-42", "nodeId": "clawpod-node-fixed00001"}
+    twin = {"requestId": "req-43", "nodeId": "clawpod-node-fixed00001"}
+    cases = [
+        (enroll_fixture(tmp_path, []), (), "PAIRING_NOT_FOUND"),
+        (enroll_fixture(tmp_path, [request, twin]), (), "PAIRING_AMBIGUOUS"),
+        (enroll_fixture(tmp_path, [request]), ("--pairing-request-id", "req-99"), "PAIRING_REQUEST_STALE"),
+    ]
+    for path, extra, code in cases:
+        run, out = call(tmp_path, "enroll approve", fixture=path, extra=("--node-id", "clawpod-node-fixed00001", *extra))
+        assert run.returncode == 5 and out["errors"][0]["code"] == code
+    assert not record.exists()
+
+def agent_fixture(tmp_path, **agent):
+    value = json.loads(FIXTURE.read_text()); value["agentTailscale"] = agent
+    path = tmp_path / f"agent-{len(list(tmp_path.iterdir()))}.json"; path.write_text(json.dumps(value)); return path
+
+def test_agent_own_tailscale_signin_gates_onboarding_and_link_is_not_redacted(tmp_path):
+    record = tmp_path / "record.jsonl"
+    needs = agent_fixture(tmp_path, present=True, backendState="NeedsLogin", loginUrl="https://login.tailscale.com/a/1a2b3c4d5e")
+    run, out = call(tmp_path, "agent status", fixture=needs)
+    assert run.returncode == 3 and out["status"] == "waiting_user" and out["nextAction"]["resumeCommand"] == "agent login"
+    run, out = call(tmp_path, "agent login", fixture=needs, env={"CLAWPOD_NODE_HOST_RECORD": str(record)})
+    assert run.returncode == 3 and out["safetyClass"] == "S4"
+    assert out["agentTailscale"]["url"] == "https://login.tailscale.com/a/1a2b3c4d5e"
+    assert "https://login.tailscale.com/a/1a2b3c4d5e" in out["nextAction"]["message"]
+    assert json.loads(record.read_text().splitlines()[-1])["argv"] == ["tailscale", "login"]
+    ready = agent_fixture(tmp_path, present=True, backendState="Running")
+    run, out = call(tmp_path, "agent status", fixture=ready)
+    assert run.returncode == 0 and out["agentTailscale"]["ready"] is True and "enroll generate" in out["nextAction"]["resumeCommand"]
+    run, out = call(tmp_path, "agent login", fixture=ready)
+    assert run.returncode == 0 and out["agentTailscale"]["ready"] is True
+
+def test_agent_tailscale_absent_or_linkless_fails_closed(tmp_path):
+    absent = agent_fixture(tmp_path, present=False)
+    for command in ("agent status", "agent login"):
+        run, out = call(tmp_path, command, fixture=absent)
+        assert run.returncode == 5 and out["errors"][0]["code"] == "AGENT_TAILSCALE_ABSENT"
+    linkless = agent_fixture(tmp_path, present=True, backendState="NeedsLogin")
+    run, out = call(tmp_path, "agent login", fixture=linkless)
+    assert run.returncode == 6 and out["errors"][0]["code"] == "LOGIN_URL_UNAVAILABLE"

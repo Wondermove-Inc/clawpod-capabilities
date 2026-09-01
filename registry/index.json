@@ -247,8 +247,8 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.1.2",
-      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+      "version": "0.2.0",
+      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -264,20 +264,20 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5fe098ed236990d0f11e0c28c77a48e3065238212dfdff929c3ead52a7e5e581"
+          "sha256": "492f7a01b5b6394818a031a2949496cefcaeea51f4f00ca3afb34fbcfba7c3ec"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "b9a6a507fc7d312da4dcf8bc2dd73e9a8b367b9f93e38261e5ce2ccf1713a9a7"
+          "sha256": "a3cc0ea3262581b75e9ed57e479f0541e86381e2780bbe19d3e05db2a20cff3c"
         },
         {
           "path": "references/operations.md",
-          "sha256": "77f31864ec928f0472d20b8b7d79fe40478df2a5fd7a25b6c4cca7db4d37eec1"
+          "sha256": "3f6899f376cd138d0e4bca10a7d1e781143276e4dfe7febbbc53d6d7182b1f5a"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.1.2"
+        "version": "0.2.0"
       }
     },
     {
@@ -1253,8 +1253,8 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.1.2",
-      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node without manually configuring networking, SSH, or the node service. Can guide the human-only sign-in and approval steps, then automate Tailscale, SSH readiness, node installation, pairing, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+      "version": "0.2.0",
+      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -1278,7 +1278,7 @@
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "c6604e12c39625a92e20af2e2d4b597f56d7cf708e651440f2a93071be01177d"
+          "sha256": "da8a63a9d15631abcf399505a7715150b0a1b39571046c56cabe9a1fd578f25d"
         },
         {
           "path": "fixtures/macos-ready.json",
@@ -1290,11 +1290,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "0d9e0a83fd7f13061ad30f25d67a36154b7012efea8c6be438a501d060895cfe"
+          "sha256": "419ed8666959c2322779e4203fb41e810e6fe40f10356af3395b70c3542985ab"
         },
         {
           "path": "schemas/error-exit-codes.json",
-          "sha256": "d2bc34b4415034f49644886a07ad9d6e66e5a910d70055e161a820d6d4ea62eb"
+          "sha256": "9d120ae7904b6c6d257d5bb8ee3fa5c7062db29df006a9d8dfbbbf759b5a7306"
         },
         {
           "path": "schemas/plan.schema.json",
