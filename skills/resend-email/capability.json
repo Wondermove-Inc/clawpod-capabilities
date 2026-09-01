@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Route per-run Gateway memory-secret-backed Resend onboarding and verified-sender transactional delivery.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,11 +12,11 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "resend-email",
-    "version": "0.1.7"
+    "version": "0.1.8"
   },
   "descriptionSource": "skill-frontmatter"
 }

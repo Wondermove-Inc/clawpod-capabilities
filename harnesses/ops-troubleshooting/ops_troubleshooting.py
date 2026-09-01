@@ -37,7 +37,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SCHEMA_VERSION = 1
 EXIT = {
     "ok": 0,

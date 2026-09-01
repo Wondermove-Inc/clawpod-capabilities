@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Compose bounded, brand-token enterprise newsletters with computed HTML/text parity and bind reviewed content and private recipient sets to deterministic release manifests.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,7 +12,7 @@
   },
   "safety": {
     "risk": "write-safe",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "enterprise-newsletter",

@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Route GitHub work through the guarded Harness, including verified local repository bootstrap and existing-repository branch push.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,11 +12,11 @@
   },
   "safety": {
     "risk": "credential-related",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "github",
-    "version": "0.3.3"
+    "version": "0.3.4"
   },
   "descriptionSource": "skill-frontmatter"
 }

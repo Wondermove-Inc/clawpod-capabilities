@@ -28,7 +28,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 SCHEMA_VERSION = 1
 VERIFIED_SERVER_SERIES = "0.20"
 TOKEN_ENV = "OPEN_DESIGN_API_TOKEN"

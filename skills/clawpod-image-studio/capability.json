@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Route guarded detached image jobs and a complete offline professional photo production procedure.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,11 +12,11 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "clawpod-image-studio",
-    "version": "0.4.3"
+    "version": "0.4.4"
   },
   "descriptionSource": "skill-frontmatter"
 }

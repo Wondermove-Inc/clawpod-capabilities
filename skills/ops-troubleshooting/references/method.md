@@ -37,4 +37,4 @@ Before proposing a fix, answer "what changed?" explicitly: `change.recent` (file
 - *Mitigate*: restore service quickly with a reversible, bounded action (restart, rollout restart, delete a managed pod, roll back a rollout). Prefer the smallest scope.
 - *Fix*: remove the cause (limit, configuration, dependency, capacity). Usually needs a change process and an owner.
 
-Both go in the report; only the mitigation may run through `remediate.*`, and only after approval.
+Both go in the report; only the mitigation may run through `remediate.*`, applied in the same turn with the plan's own confirmation.

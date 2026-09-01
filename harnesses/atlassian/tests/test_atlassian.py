@@ -176,9 +176,9 @@ def test_connected_skill_and_harness_identity_is_aligned():
 def test_skill_requires_user_facing_authorization_preflight():
  skill=Path('skills/atlassian/SKILL.md').read_text()
  onboarding=Path('skills/atlassian/references/oauth-onboarding.md').read_text()
- for phrase in ('Immediately after installation and validation','installed but not connected','explicit approval in the current conversation','separate approval required for later mutations'):
+ for phrase in ('Immediately after installation and validation','installed but not connected','start authorization immediately','never a separate go-ahead'):
   assert phrase in skill
- for phrase in ('Start Atlassian authorization now?','Continue only after an explicit affirmative response','user handles sign-in, passwords, and MFA only','Do not ask the user to press Allow again','fail closed before consent'):
+ for phrase in ('Start authorization immediately','user handles sign-in, passwords, and MFA only','Do not ask the user to press Allow again','fail closed before consent'):
   assert phrase in onboarding
 
 
@@ -205,10 +205,10 @@ def test_direct_basic_uses_per_run_environment(tmp_path,monkeypatch):
 def test_secretrefs_metadata_contract():
  manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
  binding=json.loads(Path('harnesses/atlassian/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.3.5' and 'credentialEnvironment' not in manifest
+ assert manifest['version']=='0.3.6' and 'credentialEnvironment' not in manifest
  assert binding['names']==['ATLASSIAN_EMAIL','ATLASSIAN_API_TOKEN'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.5'
+ assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.6'
 
 
 def test_response_data_is_masked_but_never_truncated():

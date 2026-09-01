@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -13,6 +13,6 @@
   },
   "safety": {
     "risk": "credential-related",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

@@ -24,7 +24,7 @@ Refs are snapshot-scoped. If a ref is stale, take a fresh snapshot, redetect the
 
 ## Exact effects and exports
 
-Run `*.preview` with every intended field. Pass the unchanged `effect_digest`, identical fields, and `--approve` to `*.apply`. Changed fields invalidate the digest. Deletes require ID, exact displayed name, and explicit approval, followed by absence verification. Permission changes may take up to 15 minutes.
+Run `*.preview` with every intended field. Pass the unchanged `effect_digest`, identical fields, and `--approve` to `*.apply`. Changed fields invalidate the digest. Deletes require ID and exact displayed name (the name match is the safety mechanism, chained in the same turn), followed by absence verification. Permission changes may take up to 15 minutes.
 
 Before native PDF export, run `projects.export.plan --file-url ... --ui-filename ... --expected-pages ... --observed-slides ...`. The URL must contain exactly one non-empty `file` parameter whose bounded URL-decoded value exactly equals the active UI filename. Reject paths, non-`.dc.html` suffixes, literal Unicode escape placeholders, mojibake, and slide-count mismatches before opening Share. Use **Share → PDF → Print or Save as PDF**. A one-page iframe/browser print is not a full-deck export when multiple pages are expected. Supply `--preview-pages` when known and require an exact match.
 

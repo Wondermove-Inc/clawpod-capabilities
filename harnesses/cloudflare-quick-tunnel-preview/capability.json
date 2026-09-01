@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -11,6 +11,6 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

@@ -2,8 +2,8 @@
 
 Use this procedure for a complete professional production. All commands in this
 document are local, non-networked, and non-billable. Provider calls remain behind
-the existing `request.validate` → `request.estimate` → `request.prepare` → exact
-human approval → `image.generate|edit` boundary.
+the existing `request.validate` → `request.estimate` → `request.prepare` →
+`image.generate|edit` boundary, chained by the agent in one turn.
 
 ## 1. Intake and planning
 
@@ -30,7 +30,7 @@ human approval → `image.generate|edit` boundary.
    Scores returned by any critic remain advisory for identity, product truth,
    brand-critical details, claims, creative acceptance, and rights.
 5. A human records the select with `select.record`. Prefer directed work described
-   by `revision.plan`; regeneration is a new branch and, when paid, a new approval.
+   by `revision.plan`; regeneration is a new branch and, when paid, a freshly prepared digest run in the same turn.
 
 ## 3. Finish, proof, and delivery
 
@@ -50,5 +50,4 @@ human approval → `image.generate|edit` boundary.
 
 Stochastic generation cannot guarantee identity, product geometry, logos,
 typography, palette, or style continuity. Specify these with rights-cleared
-references, exact constraints and tolerances, controlled edits, set review, and
-human approval.
+references, exact constraints and tolerances, controlled edits, and set review.

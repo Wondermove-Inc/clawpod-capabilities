@@ -58,7 +58,7 @@
     {
       "id": "atlassian",
       "type": "skill",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "description": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
       "path": "skills/atlassian",
       "compatibility": {
@@ -71,16 +71,16 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4555c0d1690199cf1865512b4cd2710ccf3f220744100116ea61c13c1e644bd0"
+          "sha256": "4be5503e0d0bbf2f9e94f4cc1a18595b637eef6f4e612fc0ed3a6d27224b80b8"
         },
         {
           "path": "references/commands.md",
-          "sha256": "0aee319e787f7a61dc892136d384180aa6b25d7040a8bdb01cb1c2a560f5e103"
+          "sha256": "6e5fa8a618a89079b01ed96c7c286d12f3d7bf65fb17fdc5f2e0a660a91df758"
         },
         {
           "path": "references/configuration.md",
@@ -88,18 +88,18 @@
         },
         {
           "path": "references/oauth-onboarding.md",
-          "sha256": "37baf06ed4bb27b40b762cb84f31512376e408abe23403e231b8551439585dd7"
+          "sha256": "3b47df3791c43b94608b673c1c6ac6a49fc48bc1b17a224062d48a578d2c7bc8"
         }
       ],
       "linkedHarness": {
         "id": "atlassian",
-        "version": "0.3.5"
+        "version": "0.3.6"
       }
     },
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
@@ -111,12 +111,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "1f1a1ee8d1963f823e01527fd11f1591ddd27fa37127485938a282bc1de21af8"
+          "sha256": "2bb2b3b4d506336617b05f2514c22d1009517bee22005f004128ea832b514bd7"
         },
         {
           "path": "references/link-handoff.md",
@@ -128,7 +128,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "77bd5c80c326cac6b3b7c4d3463842c10d44c58c3eb59276c1c719204768742e"
+          "sha256": "46888d992e8ebadc10e7a4579366d2476c68c6a6cfa2f30382868cb6039a7ea1"
         },
         {
           "path": "references/quality-gates.md",
@@ -137,13 +137,13 @@
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.4.1"
+        "version": "0.4.2"
       }
     },
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
@@ -156,23 +156,23 @@
       },
       "safety": {
         "risk": "write-safe",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "deaad1939db1f02bec51a4d7b4045e5ed5da622308559a7b2573451f28e50b7c"
+          "sha256": "74eaa0c0253061b4b0bb106b9eb69bbecb5b4123e0a12bd97bd0fcc27ed7499f"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.3.4"
+        "version": "0.3.5"
       }
     },
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "description": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
@@ -183,27 +183,27 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5be6aecfd5d773d4d759c7b17d3329b86c3a78c74c8575a1c6615ef0b92d425d"
+          "sha256": "7f641edaa3886b171e672aac7a8ae6b7edf6bb4e1fac9aeb661117c2091bd70c"
         },
         {
           "path": "references/portal-endpoint-contract.md",
-          "sha256": "393a16363010e0ba6c2484050509e5d7e572f41f1345085566497904f3f7e126"
+          "sha256": "661e85167d55933d5500abb516546aa54c6d5490d3a2d6391e1a11778955c0c4"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.2.6"
+        "version": "0.2.7"
       }
     },
     {
       "id": "clawpod-image-studio",
       "type": "skill",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
@@ -215,20 +215,20 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0bcdfa006e97ff48d2ba10385e9c0b51d403ee703b0e6e4ab249f668b51aa0b0"
+          "sha256": "2f87515b60f6eff04d1e51eddbf176fee3eb413d486f4a423c41315bdaee823b"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "c58743ec5aee928260a213ecf5c8ced1f8ad6330398310638e7f68c5451c0f1d"
+          "sha256": "e106645e500cbd815f007a3e902975ebbfffb8bfdf10673ffd4e27d758805977"
         },
         {
           "path": "references/professional-production.md",
-          "sha256": "9a9b4c5f98a3f014cbc8ebe4f563998fa4fba5251a8a665955de02f41f655cfc"
+          "sha256": "8c43f6d59cfcb0254efd478f400315575d1131247e681e78d7fce073962d44df"
         },
         {
           "path": "references/providers.md",
@@ -241,13 +241,13 @@
       ],
       "linkedHarness": {
         "id": "clawpod-image-studio",
-        "version": "0.4.3"
+        "version": "0.4.4"
       }
     },
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -259,16 +259,16 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "492f7a01b5b6394818a031a2949496cefcaeea51f4f00ca3afb34fbcfba7c3ec"
+          "sha256": "d41969b5ab9832308ab429d7c1805b72f5b3ea5829969033b7311eb6b274e912"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "a3cc0ea3262581b75e9ed57e479f0541e86381e2780bbe19d3e05db2a20cff3c"
+          "sha256": "6591712c3551a876dbc98892b2efea9787fcf3b78f4e26b9301d7f7755d7b22e"
         },
         {
           "path": "references/operations.md",
@@ -277,13 +277,13 @@
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.2.0"
+        "version": "0.2.1"
       }
     },
     {
       "id": "clawpod-ocr",
       "type": "skill",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
       "path": "skills/clawpod-ocr",
       "compatibility": {
@@ -294,12 +294,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a74ad4ad5ece27e14377f98d0e0a32615b04c89fe19693d9c33381807d21ff81"
+          "sha256": "20cd115425981a0f396e86d5563044c5dda783267847fd5f1f6c45e5ef9774a8"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -307,7 +307,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "86adab2c8117c9efaf98e5e3e190f1957cc0788a8936637946c9c5d55fdeec54"
+          "sha256": "55bfece1f9c3cc114e15d7bc5b44e5969c1e7b8f285f5846e8b1aca201c28cb1"
         },
         {
           "path": "references/operations.md",
@@ -320,7 +320,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-ocr",
-        "version": "0.3.4"
+        "version": "0.3.5"
       }
     },
     {
@@ -375,7 +375,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "skill",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
@@ -387,12 +387,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ad8acc63b5124bf99f52817da543f12d79187dfc570f2b99b3dbba88c04943a4"
+          "sha256": "e8d5339ba50b7ad7d622508ac6e0992bed192a89c4492b6e00fb1d1cbedf8551"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -404,7 +404,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "d2289a245b0ea113b711d0ea40ecf4f04a418b8b7fbc093a7ed763049fc641f0"
+          "sha256": "de00e0fef03b420761eb0793ca3d2329852bf65a3a3e2610bdb40cd2dc8a4f2a"
         },
         {
           "path": "references/operations.md",
@@ -421,13 +421,13 @@
       ],
       "linkedHarness": {
         "id": "clawpod-video-studio",
-        "version": "0.2.3"
+        "version": "0.2.4"
       }
     },
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "skill",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure.",
       "path": "skills/cloudflare-quick-tunnel-preview",
       "compatibility": {
@@ -438,23 +438,23 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6f522fcbcfbd7313f569dc02321613c4b01a8ef995dfc285c45a8dfce62400ce"
+          "sha256": "cb6a5acd0c2ab37976bbdf1b171cb0ed43247767512ae599783d3cd033a0f884"
         }
       ],
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
       "id": "desktop",
       "type": "skill",
-      "version": "3.0.6",
+      "version": "3.0.7",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "skills/desktop",
       "compatibility": {
@@ -465,12 +465,12 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "af31885a4d30167cccffa24d1d3b724e2afba0455852ee87cf532fdcdafc1466"
+          "sha256": "100c04de53439e2cf6e89388e4e9f571bb5a8ca10deab276e39486db53551133"
         },
         {
           "path": "references/operations.md",
@@ -478,18 +478,18 @@
         },
         {
           "path": "references/safety.md",
-          "sha256": "20b8db794bd3e3b2ab7bc7a5a67f953c6170e168e188d8284c37f5c6688506cf"
+          "sha256": "6d4d6ec515c2d20eee27ce9204795cfdb2e29f9f26f25e5608d791a4de52c68e"
         }
       ],
       "linkedHarness": {
         "id": "desktop",
-        "version": "3.0.5"
+        "version": "3.0.6"
       }
     },
     {
       "id": "enterprise-newsletter",
       "type": "skill",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
       "path": "skills/enterprise-newsletter",
       "compatibility": {
@@ -501,12 +501,12 @@
       },
       "safety": {
         "risk": "write-safe",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a0df60d50d8a612a007d2ebb6f64534efc494a86f88ef289e2e52184f02abb5d"
+          "sha256": "af225c37a9a1ce67e29288586943dcad88d6fee38bc7e2c52c05314198377f0b"
         },
         {
           "path": "assets/enterprise-dark-v1.html",
@@ -533,7 +533,7 @@
     {
       "id": "github",
       "type": "skill",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration.",
       "path": "skills/github",
       "compatibility": {
@@ -545,31 +545,31 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "96c6b65b1a14f907c8db99a58f065466722a9932e459eed173eec4a43e063d9a"
+          "sha256": "31caf2bfbc93c21321874e1f09a68d274ccb740e83e1cd0102a3ac87fe5722f7"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "b2b2326ea64fbb232860da3f0d59b60ba5694efa65260a0268ad5372b59df8b5"
+          "sha256": "3871bf8e19ba68c046577e15adcc03556440bf2ee3cc4c087722165e14857340"
         },
         {
           "path": "references/operations.md",
-          "sha256": "7768d31f44e8f2833c07d2278d3e806f12e1d716872d207ca2e39578675873ea"
+          "sha256": "d5aa09c1a5863146b6e8018593b89a99386cf9cb4d35288b20607b358fbfd508"
         }
       ],
       "linkedHarness": {
         "id": "github",
-        "version": "0.3.3"
+        "version": "0.3.4"
       }
     },
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -582,20 +582,20 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d2ab7d4c73b8416c9c854b9120264a02d1b2e82bd284dd7113d9b26e6224c7fc"
+          "sha256": "98528fe9071aabd3b8c8de0379157823db8b9d4e64b189dfaefa9be8f068d7ac"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "84b2b8616c421cd4bfabee2f4488e7e0ab8dabd9e8c5aeb5f9c310496153f9a4"
+          "sha256": "10796d92991101d6e655fe1cc3dfec784e61a5ac529fadef522c225f780c79e3"
         },
         {
           "path": "references/operations.md",
-          "sha256": "95331d246140ccef5e36d4bb3a7794aa96a9d2b908602edaedf21e6dcb04f41e"
+          "sha256": "8addffdd11f6b849998ad484fc52b32c534149053ee14388aef9abae1397fdcc"
         },
         {
           "path": "references/scopes.md",
@@ -604,13 +604,13 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.4.2"
+        "version": "0.4.3"
       }
     },
     {
       "id": "hwp-desktop",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR.",
       "path": "skills/hwp-desktop",
       "compatibility": {
@@ -621,7 +621,7 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -645,7 +645,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.11.4",
+      "version": "0.11.5",
       "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -658,23 +658,23 @@
       },
       "safety": {
         "risk": "write-safe",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "8ee5210702a0582c180e3dc3f1f96746c92616edb93bcbdbebb1676bba85c307"
+          "sha256": "5d5bf7fa9364a374bab6e1b2330cb21e6cf1c9b7b1cb7fc2fc5d74492a726bd2"
         }
       ],
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.11.4"
+        "version": "0.11.5"
       }
     },
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.10",
+      "version": "0.1.11",
       "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
       "path": "skills/notion",
       "compatibility": {
@@ -687,12 +687,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a9a72ea635ed9b94dfae29315803b6d8f955c9c644e86a7b9bb21330f7cb8962"
+          "sha256": "21a01109f365a4a7a88e3ecc6f055336d9246982060b3cb3ba2c55d7ecdfd6c4"
         },
         {
           "path": "references/commands.md",
@@ -700,18 +700,18 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "fecfddc86d33c3fcf08c14599c1cb1846d371aac059d6477ff26f7507a5b2ff4"
+          "sha256": "2734896c01466f84226a805beec526d2c86d1eefc4860878f4b7f97705b752a4"
         }
       ],
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.10"
+        "version": "0.1.11"
       }
     },
     {
       "id": "open-design",
       "type": "skill",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
       "path": "skills/open-design",
       "compatibility": {
@@ -723,12 +723,12 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "41445c85dd2b188e085a789358ffaa7b665ab5d264066f02a90c90882acc316d"
+          "sha256": "9c929d0df37333021572eae62d91c0f738c1b9e39def188b15adef6848260400"
         },
         {
           "path": "references/onboarding.md",
@@ -741,14 +741,14 @@
       ],
       "linkedHarness": {
         "id": "open-design",
-        "version": "0.2.1"
+        "version": "0.2.2"
       }
     },
     {
       "id": "ops-troubleshooting",
       "type": "skill",
-      "version": "0.1.0",
-      "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then propose plan-bound remediation (service restart, rollout restart, managed-pod delete) that runs only after explicit approval. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+      "version": "0.1.1",
+      "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
       "path": "skills/ops-troubleshooting",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -758,16 +758,16 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "e6e20502f2baea920cbd72640e223191d0c1c5d5aecedc693a538e594f2f503b"
+          "sha256": "3d33d2a90ed8281a39959e47228b37573bc7c53f3ec5a6975ad555477e2c782a"
         },
         {
           "path": "references/method.md",
-          "sha256": "ef9397b74499d8196eeec4227dfbd2f154ddcd19b1d9f5c40452d047486fa806"
+          "sha256": "5969976be3aa716635411ecf76fa5b33a9b6350e3bb18d159b0743e8c34abaff"
         },
         {
           "path": "references/playbook-change-and-config.md",
@@ -791,7 +791,7 @@
         },
         {
           "path": "references/remediation-boundary.md",
-          "sha256": "7d18e46fc982d285e0f83561371aa4f5a029fbc2bedaefea12900a7b40c04d9b"
+          "sha256": "c1573476c76e89a2638aefed77733a60a9ba92add26c20f640944ffea9124ca2"
         },
         {
           "path": "references/reporting.md",
@@ -800,13 +800,13 @@
       ],
       "linkedHarness": {
         "id": "ops-troubleshooting",
-        "version": "0.1.0"
+        "version": "0.1.1"
       }
     },
     {
       "id": "resend-email",
       "type": "skill",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
       "path": "skills/resend-email",
       "compatibility": {
@@ -818,17 +818,17 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4a08e789797283373bdf1ae03ebe660a0da76b318f35b902bc4543426471ecf6"
+          "sha256": "dacebe13cfc35fbb124641b28f9d4f9c6f7efb845c966f3afe6d8ca27af113b9"
         }
       ],
       "linkedHarness": {
         "id": "resend-email",
-        "version": "0.1.7"
+        "version": "0.1.8"
       }
     },
     {
@@ -887,7 +887,7 @@
     {
       "id": "synology-smb-storage",
       "type": "skill",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
@@ -898,12 +898,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c776966cdefa9c406a7af1f82dc76ca9c6ce288a392689abf2681c5f1778a6e6"
+          "sha256": "31517b6124fc0263865f2c86122bc51846ae6585239d80b81af1d78d195028fd"
         },
         {
           "path": "references/operations.md",
@@ -912,13 +912,13 @@
       ],
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
       "id": "verified-research",
       "type": "skill",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
       "path": "skills/verified-research",
       "compatibility": {
@@ -944,7 +944,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "9d558f81405ac5a08d377e7d31553a5d5b51a0224f88c7bfade2366845e08d22"
+          "sha256": "b9249a30c7215ac930857bf29e030c2fe2178a59734f076a9c37653d5b6c09e4"
         },
         {
           "path": "references/research-policy.md",
@@ -996,7 +996,7 @@
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
@@ -1009,7 +1009,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1030,7 +1030,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "10898a2d81f89911cce60a796f1ab30e9f70fe2739452eb512c9e5292fc8e46a"
+          "sha256": "c91dcf60dc15142a2ab6ffc928aba14ea6b506ef4c2fdc052884a3da15875dfc"
         },
         {
           "path": "oauth3lo.py",
@@ -1042,7 +1042,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "07940c906d71baae9ad3526ade99f0137de36c21271b99eb77329436b834bda3"
+          "sha256": "415a7ffeb3e76b2060fff847882614d819db32037cf847b5e5ad261f3784aa82"
         },
         {
           "path": "test_oauth_async.py",
@@ -1053,7 +1053,7 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
@@ -1065,12 +1065,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "d1297dcd1b8ec5999d92476a1c31819255aa157936bef9c91bbfb43adc8d7bcc"
+          "sha256": "39059983fa01aa28bc612e8d42064a72321bcf056917698a47c72966d18a2d10"
         },
         {
           "path": "TEST.md",
@@ -1078,7 +1078,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "ff2120092cb4611e03f49fcf85daa48244a15bc18fa03e7c2723b329c52ddc4e"
+          "sha256": "093b1412ae21441ba799e6a5de63431cc5979fa6fe966914142cd29ec431e4bb"
         },
         {
           "path": "command_contracts.json",
@@ -1086,7 +1086,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "03eba8a4fb18e752a63234d0272b6cd1fb8df870f4ea11eeb03bd5d886d708f0"
+          "sha256": "079d00b021ee977b9417ee9f601dab0483b4443a3b1c96a83f311ecd28f7b3ec"
         },
         {
           "path": "scripts/capture_layout.py",
@@ -1097,7 +1097,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
@@ -1110,7 +1110,7 @@
       },
       "safety": {
         "risk": "write-safe",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1123,14 +1123,14 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f23e50b113b2d53c8595e105977f34539417d92f14a1ea7a00142966c95c9faa"
+          "sha256": "78be96dfb5cd4f76d6a9faacff4eeaf9fef763d807ef2033329659492c8533d4"
         }
       ]
     },
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
@@ -1141,12 +1141,12 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "20539f1fbf49020bdde79f0c2a5fccc66e721c0b038e2f0299878b623b14fda7"
+          "sha256": "d3810d5644ec25365263299b99aba48426b95711698302efaeea81f4da62731f"
         },
         {
           "path": "TEST.md",
@@ -1158,7 +1158,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "3b3e476f01ccc84f3b9e6c15f34019ce99093dffb0060ede0ee26bfc15d99215"
+          "sha256": "5c7ca97c748f7605c52a639da1ec27edccd4ebbd20b7c22784787394fe63fda0"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -1198,18 +1198,18 @@
         },
         {
           "path": "harness.json",
-          "sha256": "1f8ec934e1716d66cda0e0e8a3fe31e4d4fd0f65eecf39b4614e21cad2bc6694"
+          "sha256": "05e4b928c4ccf8996802a349c21dec120b4523521e29fb14a295f9b1954c5ff1"
         },
         {
           "path": "setup.py",
-          "sha256": "bd1a15c15f10f53b1fa4f4c5ec0462159c914bdcc7d3a12c3edc967df2f15a79"
+          "sha256": "29c30d9e79ba0c386e25c826f0ef33606dff8908624226025f6f3143c2f525ed"
         }
       ]
     },
     {
       "id": "clawpod-image-studio",
       "type": "harness",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
       "path": "harnesses/clawpod-image-studio",
       "compatibility": {
@@ -1221,16 +1221,16 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "b18812283e40875be79c81edcf3aad28c14297b06e797144815f28903acd5824"
+          "sha256": "d5925b54e0115767352bb5018c4f8f6802bf13d4655c4253901a3c5d40a276b9"
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "e507b4b9142b9e583f43b133fe0d9a44250bd3048843c01ca2f2d859a2331d89"
+          "sha256": "1c0a1ca52138e740709f5120b68ae8179847a01376e337d23f1bf5f41405d146"
         },
         {
           "path": "command_contracts.json",
@@ -1238,7 +1238,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "6fc3295f5cb4910f3aa700df08b302cc4601895faf10bccf02f64661b2d87222"
+          "sha256": "168b65fa891bc140d8678e7610ad0d930228663545ff40f63abe9774f98d987e"
         },
         {
           "path": "professional_studio.py",
@@ -1253,7 +1253,7 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
@@ -1265,7 +1265,7 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1290,7 +1290,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "419ed8666959c2322779e4203fb41e810e6fe40f10356af3395b70c3542985ab"
+          "sha256": "f9e8cedb91c7a717af265f382ef59adb706b79f6b4471b29993df0b9d967575c"
         },
         {
           "path": "schemas/error-exit-codes.json",
@@ -1317,7 +1317,7 @@
     {
       "id": "clawpod-ocr",
       "type": "harness",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Bounded local Korean and English OCR with enterprise comparison DOCX reports and optional guarded Ollama correction.",
       "path": "harnesses/clawpod-ocr",
       "compatibility": {
@@ -1328,7 +1328,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1341,7 +1341,7 @@
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "f2f8070ad7ea207c49915bccd5589acb4cc8112ba782794b3912a92fa9b1f3bf"
+          "sha256": "58422cf8ebc09142ce34d86d692cc9870c2d8a87d31440e1264811f52b1b9841"
         },
         {
           "path": "command_contracts.json",
@@ -1349,7 +1349,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "d95d05becbd7b467b03aab8178f8aa4f3799e48fad450e4ae99bf0e147e00ad3"
+          "sha256": "f29840ee083e7f0b71912b2c69e73c0ea40231dd8ca87b0b4bca6e4e0c316d57"
         },
         {
           "path": "templates/enterprise-comparison-template.docx",
@@ -1368,7 +1368,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "harness",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "description": "Execute guarded OpenMontage tools, pipelines, detached jobs, provider verification, media QA, and transactional runtime lifecycle operations.",
       "path": "harnesses/clawpod-video-studio",
       "compatibility": {
@@ -1380,7 +1380,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1393,7 +1393,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "cf27bdd6e75a3c716590c43a12c30560b9bf751e32b8cfb7fd9b86922574d976"
+          "sha256": "9eb7bf50ca94a184f55dbb8852236a99f741904cddfab262e65e7468df8a86fc"
         },
         {
           "path": "command_contracts.json",
@@ -1405,7 +1405,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "711b51a6320f76a07e3a5d9617e9548f6e62facb91765175155f527f4354c33d"
+          "sha256": "153b2d6c3179da1cd2afa86f402c0f79a350fb016e4c1b6ce40258549a81b003"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",
@@ -1424,7 +1424,7 @@
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
       "path": "harnesses/cloudflare-quick-tunnel-preview",
       "compatibility": {
@@ -1435,23 +1435,23 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "cloudflare_quick_tunnel_preview.py",
-          "sha256": "b2996571bbadcda10dbb46085bb32fd97855b169e01bd509d556fc710fdffd1b"
+          "sha256": "9f7c3d38d5a4912f6e276b8cc1572bfd1138b2261b466677c438195b1ee9ee89"
         },
         {
           "path": "harness.json",
-          "sha256": "6aeebcea554bd2feb7716a6acce47ec63a9c8269b22746883fffdb10f1a45006"
+          "sha256": "424a8aa86f1b2b21dc403243ab1820e813d03a2b2ce08cb2af0184718b9cdaca"
         }
       ]
     },
     {
       "id": "desktop",
       "type": "harness",
-      "version": "3.0.5",
+      "version": "3.0.6",
       "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
       "path": "harnesses/desktop",
       "compatibility": {
@@ -1462,7 +1462,7 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1519,7 +1519,7 @@
         },
         {
           "path": "desktop.py",
-          "sha256": "90018589ecaa25b920a6869f77589b06d6704774bfe59f8a5cecdb73b3c7ac3f"
+          "sha256": "dc8b09d6bf0f80de2bd7bddd63527c2a99612114ec7fe32b078dd9b638dd1ae4"
         },
         {
           "path": "engine/desktop",
@@ -1635,7 +1635,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "630316ff694ad0e24a34b76d6078fc7e4777b7616c3b427443ad37018d8615eb"
+          "sha256": "33c6f297e7784b312881f880c3aeaba7df9f7f73164f77dd5550d392f71d81c7"
         },
         {
           "path": "precision_lab/README.md",
@@ -1686,7 +1686,7 @@
     {
       "id": "github",
       "type": "harness",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "description": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
       "path": "harnesses/github",
       "compatibility": {
@@ -1698,7 +1698,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1719,18 +1719,18 @@
         },
         {
           "path": "harness.json",
-          "sha256": "eabf6063cbb1e57cdc5c7cb3786da2b5f606264df603fd90c8123df11b0165dc"
+          "sha256": "05530c6b12b020073943b0f0057bf6f47b96c6977cffd09a629dbae224a2e011"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "d9337063c20b9b60f6f335e0322555242ffee9efeebde36779abd486a198bd52"
+          "sha256": "ade05891e1d4f24811249283a380417a306415cb0935449e89ce061b3d1b6e1e"
         }
       ]
     },
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1743,7 +1743,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1836,7 +1836,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "abbfaa4f7386271fe2587b6d63ea5da0da686a59c03f5723bba726bc71ead853"
+          "sha256": "fa060295e6bfc5476ef6f0de6e4c72c3b9f7a049befd91ce4112d6901b5bf5f5"
         },
         {
           "path": "scripts/generate_schemas.py",
@@ -1847,7 +1847,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.11.4",
+      "version": "0.11.5",
       "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1860,12 +1860,12 @@
       },
       "safety": {
         "risk": "write-safe",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "ec3a5c9d369c65fbfafa3314a504fb744f30c68ffc00acd5d229a261eae9a550"
+          "sha256": "b0d6f346db358331f453521f33e43987d2d483855fbbfacb819d4e44f3caf745"
         },
         {
           "path": "agent_authoring_driver.py",
@@ -1873,11 +1873,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "20be640444e9d2f7c0fb0befbada4de3c411029ccb78ba513f07fe80d2581f4b"
+          "sha256": "5f44f86de138926aa22f5926b34fecdf3a58abf3bdeb38c629a686235fbb6b02"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "583e9527da8287a319991e78b4b0ce3852ab4cc7b801f680cd4d736b54581305"
+          "sha256": "6ce57f6cc28eb448354b7ba10403923a8525b2283b76c0f9a83de5b6e1391deb"
         },
         {
           "path": "ontology.py",
@@ -1908,7 +1908,7 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.10",
+      "version": "0.1.11",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
@@ -1921,7 +1921,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -1938,7 +1938,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "ef886e19fb18d84d7c8ae4cf22dcc0bc47273f92d2e5e1a028814841f9c0216a"
+          "sha256": "1bbd49fc0f2ba1fdc8349c0fd3040db459e40d43e5f423919e04ad85b645b7ac"
         },
         {
           "path": "notion.py",
@@ -1953,7 +1953,7 @@
     {
       "id": "open-design",
       "type": "harness",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
       "path": "harnesses/open-design",
       "compatibility": {
@@ -1965,12 +1965,12 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "95e550ef16030af9e17411c86c8d3bf3e71db7b8245bfdb9fb79d1e6c4a270b1"
+          "sha256": "6059864e10f931bda51f78c9e222eece062729798427ea58af3d2e65a8064e46"
         },
         {
           "path": "TEST.md",
@@ -1978,19 +1978,19 @@
         },
         {
           "path": "harness.json",
-          "sha256": "6e7fe8d3ca8aa307aba11351425097e1c8e60ad18aa036e8674aa4c46e69ddf5"
+          "sha256": "f8e4c49fd7a088642df148d507da6bb50627a1a7e0892c278c5c4b042ac2958f"
         },
         {
           "path": "open_design.py",
-          "sha256": "b3c1120356fc3933949693b8c552e5acd98c61fb6e37b39e8b014af5cfcdf565"
+          "sha256": "19dec307e6482c089e2cfe8610b78e519fdcd1367c903fb4bb5076d96e879dbe"
         }
       ]
     },
     {
       "id": "ops-troubleshooting",
       "type": "harness",
-      "version": "0.1.0",
-      "description": "Bounded, evidence-recorded read-only diagnostics for Linux hosts, networks, Kubernetes, and security hygiene, plus approval-bound plan/apply remediation for service restart, rollout restart, and managed-pod delete.",
+      "version": "0.1.1",
+      "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
       "path": "harnesses/ops-troubleshooting",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -2000,12 +2000,12 @@
       },
       "safety": {
         "risk": "destructive",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
           "path": "README.md",
-          "sha256": "718c7e4a18a5dc48dc0c82a9c0df8b9a68dee23e59458df8454c03c1201a1db7"
+          "sha256": "c242cd0f54a77a482a33435094d89acb818d7a75d5db56cc9295e9e11b43373b"
         },
         {
           "path": "TEST.md",
@@ -2013,11 +2013,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "121a25d2118c3d46c4708185b88e8294ff254966e9d4102dd63c99e92e9dca3d"
+          "sha256": "804f614ffb4a742a832a19ebfc077c25bcc36a7022af965df08db264ac7868d8"
         },
         {
           "path": "ops_troubleshooting.py",
-          "sha256": "7fee76d13916407fee086268adf41c2b8a0373142da809070f3f618203f82fb9"
+          "sha256": "730b8d204c6edcf598a69ed108cfe47c3dc2716555de8a332b4f5d4b1ff51d17"
         },
         {
           "path": "scripts/generate_manifest.py",
@@ -2028,7 +2028,7 @@
     {
       "id": "resend-email",
       "type": "harness",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Guarded Resend email with per-run Gateway memory-secret injection, protected onboarding, verified senders, previews, and retry-safe delivery.",
       "path": "harnesses/resend-email",
       "compatibility": {
@@ -2040,7 +2040,7 @@
       },
       "safety": {
         "risk": "externally-visible",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -2053,22 +2053,22 @@
         },
         {
           "path": "harness.json",
-          "sha256": "e488ead9cc2e9fa2e3dabdd069765d88c09d8067608fed09f4d52ae10ad4c4c2"
+          "sha256": "4deffcfcec150ffc8ce22ac8c49d883a3e0ae81c80531759cdf1edb5a178b54c"
         },
         {
           "path": "resend_email.py",
-          "sha256": "7e2949ec2e6c7ea54d90e27df7568dfc2aebf4199bd2a2577250c6a83e59990a"
+          "sha256": "891b0e118ce66f7139d1036e7d9cfe9ef8e0ce2ab3f1a8717b73bc591ca30a48"
         },
         {
           "path": "scripts/generate_manifest.py",
-          "sha256": "b740aa02560b2cb95647824843b8a59d3a318b4b728867ba76ffe752cd61e770"
+          "sha256": "eec27f87a77828e0c984c34f967ccf6e71a82ec3f8f530a069971f17c45d5fbc"
         }
       ]
     },
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
@@ -2079,7 +2079,7 @@
       },
       "safety": {
         "risk": "credential-related",
-        "approvalRequired": true
+        "approvalRequired": false
       },
       "files": [
         {
@@ -2092,7 +2092,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f70caeda3a35087934887c31aeaab21843abd0ed08f069fb55839f73d47ab983"
+          "sha256": "b73e020a6c79608253801d0019be43961c19d1a87712e15872c2ffe6b5e4b2d9"
         },
         {
           "path": "synology_smb_storage.py",

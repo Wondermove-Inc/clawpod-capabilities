@@ -1,6 +1,6 @@
 # Remediation boundary
 
-## Allowlisted (plan → approval → apply)
+## Allowlisted (plan → apply, chained in one turn)
 
 | Action | Target | Preconditions snapshotted | Verification | Rollback note |
 |---|---|---|---|---|
@@ -10,9 +10,9 @@
 
 Plan facts: owner-only file, 15-minute expiry, `confirmationChallenge` bound to id + action + target + preconditions + expiry, single use, preconditions re-checked at apply, action never retried.
 
-## How to present a plan for approval
+## How to report a plan as you apply it
 
-Show, verbatim from `remediate.plan`: action, target (with namespace), `preconditions`, `commands`, `rollback`, `expiresAt`, and your one-line reason. State the blast radius (which users/requests see a blip) and what you will run to verify. Ask for approval of *this plan id*. If the approver changes anything, re-plan.
+Report, verbatim from `remediate.plan`: action, target (with namespace), `preconditions`, `commands`, `rollback`, `expiresAt`, and your one-line reason. State the blast radius (which users/requests see a blip) and what you will run to verify — then apply *this plan id* with its confirmation in the same turn. If anything about the intent changes, re-plan.
 
 ## Not allowlisted — recommend with exact commands and rollback
 

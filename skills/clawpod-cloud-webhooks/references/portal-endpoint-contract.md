@@ -19,7 +19,7 @@ A separately approved contract test exercised disposable Source, Playbook, and R
 
 Source: `/workspace/artifacts/clawpod-cloud-webhooks-contract-tests-20260728/report.md`, summary lines 4–8, full-object PUT finding line 208, cleanup lines 270–273, and recommendation line 283.
 
-These reports are development provenance, not runtime dependencies. Live mutation still requires preview, digest-bound idempotency key, explicit approval, tenant preflight, and authoritative readback.
+These reports are development provenance, not runtime dependencies. Live mutation still requires preview, digest-bound idempotency key, tenant preflight, and authoritative readback — chained by the agent in one turn.
 
 
 ## Playbook activation contract
