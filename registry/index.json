@@ -887,7 +887,7 @@
     {
       "id": "synology-smb-storage",
       "type": "skill",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
@@ -903,7 +903,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "31517b6124fc0263865f2c86122bc51846ae6585239d80b81af1d78d195028fd"
+          "sha256": "81c806fd9005844f226407458b3044aedecba6cfabda61889922601264cddfcb"
         },
         {
           "path": "references/operations.md",
@@ -912,7 +912,7 @@
       ],
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.6"
+        "version": "0.1.7"
       }
     },
     {
@@ -2068,7 +2068,7 @@
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
@@ -2092,11 +2092,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "b73e020a6c79608253801d0019be43961c19d1a87712e15872c2ffe6b5e4b2d9"
+          "sha256": "af43869ed0b7761d7fcd9653da96009ab8fed2cf772b69b253a4fa6e85cd63e6"
         },
         {
           "path": "synology_smb_storage.py",
-          "sha256": "959c3601b719cf324a9580915cb06c5fccb35150fe3c6eed18f3093edf025ecb"
+          "sha256": "32352a9916655a921effc93b2394daef065ab14b2f833d4498a71247e29c072b"
         }
       ]
     },
