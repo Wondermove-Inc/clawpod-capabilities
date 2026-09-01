@@ -569,7 +569,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -591,7 +591,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "866739399895a7a7ca1a48ffda215026d2c94e38a441a75ed903f1f79680faa8"
+          "sha256": "84b2b8616c421cd4bfabee2f4488e7e0ab8dabd9e8c5aeb5f9c310496153f9a4"
         },
         {
           "path": "references/operations.md",
@@ -604,7 +604,7 @@
       ],
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.4.1"
+        "version": "0.4.2"
       }
     },
     {
@@ -1730,7 +1730,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1792,7 +1792,7 @@
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "fdce4e5299dfc7f12405fbb881bce4f6339ce2c69cbfe14c4701b03fbd29715d"
+          "sha256": "5e61f925af63fed7af40d4651adb184e55c215a60772a1efbcc18d17651c1422"
         },
         {
           "path": "google_workspace_core/high_level_reads.py",
@@ -1812,7 +1812,7 @@
         },
         {
           "path": "google_workspace_core/oauth_jobs.py",
-          "sha256": "952f01fd197ab9f91f31009e52f41efe44073b56c2e62f8fbd4e48b6fc7e9ec1"
+          "sha256": "dafa6150d62a9aa80f4808b629b7246a234863c9cf0bc21287d6cb1876f76782"
         },
         {
           "path": "google_workspace_core/scopes.py",
@@ -1836,7 +1836,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "fe413f25eea0bdc1479061ebc08ab00aae13be7716e64209eca7e737a302c836"
+          "sha256": "abbfaa4f7386271fe2587b6d63ea5da0da686a59c03f5723bba726bc71ead853"
         },
         {
           "path": "scripts/generate_schemas.py",

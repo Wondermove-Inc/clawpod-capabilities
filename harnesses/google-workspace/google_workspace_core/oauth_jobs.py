@@ -111,7 +111,11 @@ def finalize(handle):
   if d['status']!='ready_to_finalize':raise BindingError('JOB_CONFLICT','OAuth job is not ready to finalize')
   staged=jobs/'staging'/(handle+'.json')
   if hashlib.sha256(staged.read_bytes()).hexdigest()!=d.get('stagedDigest'):raise BindingError('JOB_STALE','staged credential failed integrity validation')
-  doc=register_staged_binding(d['account'],staged,overwrite=d['overwrite'],root=root,expected_revision=d['bindingRevision'])
+  final=root/'credentials'/(os.urandom(16).hex()+'.json')
+  os.replace(staged,final)
+  try:doc=register_staged_binding(d['account'],final,overwrite=d['overwrite'],root=root,expected_revision=d['bindingRevision'])
+  except BaseException:
+   os.replace(final,staged);raise
   d.update(status='finalized',updatedAt=_now(),revision=d['revision']+1,bound=True,alreadyFinalized=False);d['revision']=doc['revision'];_cleanup(jobs,d);_save(jobs,d);return _public(d)
 def cancel(handle):
  jobs=_jobs()
@@ -142,16 +146,19 @@ def worker(handle):
   with _lock(jobs,handle):d=_load(jobs,handle);d.update(status='pending_callback',updatedAt=_now(),revision=d['revision']+1);_save(jobs,d)
   staged=jobs/'staging'/(handle+'.json')
   result=desktop_login(transfer_root=cfg['transferRoot'],client_path=cfg['clientPath'],output_path=staged.name,output_root=staged.parent,alias=cfg['account'],profiles=cfg['profiles'],timeout=cfg['timeout'],overwrite=False,managed_browser_devtools_url=cfg.get('managedBrowserDevtoolsUrl'),smoke_tests=cfg.get('smokeTests',[]))
-  if any(not x.get('ok') for x in result.get('smokeTests',{}).values()):raise LoginError('requested post-login smoke test failed')
+  failed=sorted(k for k,v in result.get('smokeTests',{}).items() if not v.get('ok'))
   with _lock(jobs,handle):
    d=_load(jobs,handle)
    if d['status'] in TERMINAL:_cleanup(jobs,d);return
-   safe={'email':result['email'],'subjectHash':result['subject_hash'],'scopes':result['scopes'],'smokeTests':result['smokeTests']}
+   safe={'email':result['email'],'subjectHash':result['subject_hash'],'scopes':result['scopes'],'smokeTests':result['smokeTests'],'smokeTestsPassed':not failed}
+   if failed:safe['failedSmokeTests']=failed
    d.update(status='ready_to_finalize',updatedAt=_now(),revision=d['revision']+1,result=safe,stagedDigest=hashlib.sha256(staged.read_bytes()).hexdigest());d.pop('pid',None);_cleanup(jobs,d,staged=False);_save(jobs,d)
- except Exception:
+ except Exception as exc:
+  code=getattr(exc,'code','AUTH_REQUIRED') if isinstance(exc,BindingError) else 'AUTH_REQUIRED'
+  message=str(exc) if isinstance(exc,(LoginError,BindingError)) and str(exc) else 'Authorization failed safely'
   try:
    with _lock(jobs,handle):
     d=_load(jobs,handle)
-    if d['status'] not in TERMINAL:d.update(status='failed',updatedAt=_now(),revision=d['revision']+1,error={'code':'AUTH_REQUIRED','message':'Authorization failed safely','retryable':False});_cleanup(jobs,d);_save(jobs,d)
+    if d['status'] not in TERMINAL:d.update(status='failed',updatedAt=_now(),revision=d['revision']+1,error={'code':code,'message':message,'retryable':False});_cleanup(jobs,d);_save(jobs,d)
   except Exception:pass
 if __name__=='__main__' and len(sys.argv)==3 and sys.argv[1]=='--worker':worker(sys.argv[2])
