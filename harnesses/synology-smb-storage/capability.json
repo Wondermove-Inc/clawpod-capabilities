@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
   "compatibility": {
     "openclaw": ">=2026.4.0",

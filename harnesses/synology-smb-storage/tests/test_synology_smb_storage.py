@@ -219,7 +219,16 @@ def test_per_run_secretrefs_manifest_contract():
  while not (root/'harnesses').exists(): root=root.parent
  manifest=json.loads((root/'harnesses/synology-smb-storage/harness.json').read_text())
  binding=json.loads((root/'harnesses/synology-smb-storage/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.1.6' and 'credentialEnvironment' not in manifest
+ assert manifest['version']=='0.1.7' and 'credentialEnvironment' not in manifest
  assert binding['names']==['SYNOLOGY_SMB_PASSWORD'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads((root/'skills/synology-smb-storage/capability.json').read_text())['linkedHarness']['version']=='0.1.6'
+ assert json.loads((root/'skills/synology-smb-storage/capability.json').read_text())['linkedHarness']['version']=='0.1.7'
+
+def test_mount_status_reports_fstype_and_source_for_skill_verification(tmp_path,monkeypatch):
+ monkeypatch.setattr(smb,'ROOT',tmp_path/'shared')
+ monkeypatch.setattr(smb,'mounted',lambda:{'fstype':'cifs','source':'//nas/team'})
+ d=smb.status(None)
+ assert d=={'mounted':True,'target':str(tmp_path/'shared'),'fstype':'cifs','source':'//nas/team'}
+ monkeypatch.setattr(smb,'mounted',lambda:None)
+ d=smb.status(None)
+ assert d=={'mounted':False,'target':str(tmp_path/'shared'),'fstype':None,'source':None}

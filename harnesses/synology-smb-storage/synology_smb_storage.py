@@ -128,7 +128,7 @@ def mount_restore(a):
   raise Fault("MOUNT_VERIFY_FAILED","expected CIFS source and target were not verified",{"retrySafe":False})
  return {"mounted":True,"changed":True,"source":source,"target":str(ROOT),"secretUsed":True,"externalSideEffect":True,"options":list(SAFE_OPTS)}
 def status(a):
- record=mounted(); return {"mounted":bool(record),"target":str(ROOT),"source":None if not record else record["source"]}
+ record=mounted(); return {"mounted":bool(record),"target":str(ROOT),"fstype":None if not record else record["fstype"],"source":None if not record else record["source"]}
 def unmount(a):
  if not mounted(): return {"mounted":False,"changed":False}
  cp=run(["umount",str(ROOT)])
