@@ -21,6 +21,6 @@ For each provider, explain required account and permissions, billing exposure, d
 
 Persist safe pointer and connection metadata only. Use per-run owner-scoped `secretRefs` with identical prepare/run mappings. Report `connected`, `configured_unverified`, `deferred`, or `revoked`.
 
-## Approval separation
+## Step separation
 
 Verification, paid generation, editing, comparison, publication, and external sharing are each their own prepared step — run each with its own digest in the same turn, without approval pauses.

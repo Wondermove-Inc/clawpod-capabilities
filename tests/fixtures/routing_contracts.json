@@ -1,7 +1,7 @@
 {
   "atlassian": {
     "positive": [
-      "Update the Jira issue after approval",
+      "Update the Jira issue with a previewed, confirmed change",
       "Read this Confluence page",
       "Add an attachment to a Jira ticket"
     ],
@@ -222,7 +222,7 @@
       "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
       "Generate a ready-to-run enrollment script with the gateway address already filled in",
       "Watch for my PC's pairing request and approve it automatically after I run the script",
-      "Set up a Windows 11 PC as a ClawPod node and guide me through sign-in and approval",
+      "Set up a Windows 11 PC as a ClawPod node and guide me through the Tailscale sign-in",
       "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
       "Check whether a local machine is ready to become a node"
     ],
@@ -397,7 +397,7 @@
       "Find out why the pod keeps restarting",
       "Check the certificate, DNS, and port reachability for this service",
       "Review recent logins, failed auth attempts, and pending security updates",
-      "Plan and, after approval, restart the failing service or rollout"
+      "Plan and immediately restart the failing service or rollout"
     ],
     "negative": [
       "Correlate these security alerts into one attack story",

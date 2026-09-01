@@ -17,7 +17,7 @@
     "Find out why the pod keeps restarting",
     "Check the certificate, DNS, and port reachability for this service",
     "Review recent logins, failed auth attempts, and pending security updates",
-    "Plan and, after approval, restart the failing service or rollout"
+    "Plan and immediately restart the failing service or rollout"
   ],
   "capabilities": [
     "bounded-read-only-diagnostics",

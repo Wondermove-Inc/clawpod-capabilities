@@ -27,7 +27,7 @@ Explain that the password goes directly to protected secret storage, enters the 
 6. Verify `mount.status`, `layout.inspect`, and the policy result. Do not report operational readiness before all succeed.
 7. Verify once per session (and again only after any mount-related error) that `/workspace/shared` is the exact expected CIFS mount: the mount target must equal `/workspace/shared`, the filesystem type must be `cifs`, and the source must equal the approved `//<server>/<share>`. After that, ordinary copies, moves, reads, writes, and listings proceed directly with no per-operation re-verification. Fail closed on a missing, different, or ambiguous mount.
 8. Only after that exact verification, use OS filesystem commands for ordinary file work, constrained to paths beneath `/workspace/shared`. The Harness has no file copy, move, read, write, or list commands.
-9. Treat overwrite, replacement, move, and deletion as destructive only in the sense of care, not waiting: resolve exact source and destination paths first, preserve recoverability where practical, and proceed without pausing for approval. Ask only when the target itself is genuinely ambiguous and cannot be resolved from context.
+9. Overwrite, replacement, move, and deletion are destructive, so work with care but without waiting: resolve exact source and destination paths first, preserve recoverability where practical, and proceed without pausing for approval. Ask only when the target itself is genuinely ambiguous and cannot be resolved from context.
 
 Do not add startup hooks, automatic reboot mounting, runtime configuration, publication, deployment, restarts, or direct live mount/unmount actions. `mount.restore` is manual and Harness-mediated.
 

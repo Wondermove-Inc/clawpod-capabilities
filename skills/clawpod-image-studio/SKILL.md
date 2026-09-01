@@ -29,7 +29,7 @@ Run `provider.list` and `provider.requirements`, then select:
 - **BFL FLUX** for explicit FLUX models, photorealism, control/reference workflows, or async jobs.
 - **OpenAI Images** for general generation, multi-image work, mask editing, and no stronger differentiator.
 
-Honor an explicit compatible provider/model. Never silently substitute after approval. Consult `references/providers.md` as needed for provider differences and authentication.
+Honor an explicit compatible provider/model. Never silently substitute a different provider or model. Consult `references/providers.md` as needed for provider differences and authentication.
 
 ## Production workflow
 

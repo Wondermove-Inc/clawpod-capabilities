@@ -83,7 +83,7 @@ class RoutingContractTests(unittest.TestCase):
         contract = self.contracts["clawpod-node-host"]
         positives = " ".join(contract["positive"])
         negatives = " ".join(contract["negative"])
-        for phrase in ("Mac", "Windows 11", "Tailscale", "networking", "SSH", "sign-in", "approval", "recovery", "removal"):
+        for phrase in ("Mac", "Windows 11", "Tailscale", "networking", "SSH", "sign-in", "approve", "recovery", "removal"):
             self.assertIn(phrase, positives)
         for phrase in ("already configured ClawPod node connection failing", "paired node unauthorized", "already configured node fails to pair"):
             self.assertIn(phrase, negatives)

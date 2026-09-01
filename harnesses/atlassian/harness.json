@@ -13,7 +13,7 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Update the Jira issue after approval",
+    "Update the Jira issue with a previewed, confirmed change",
     "Read this Confluence page",
     "Add an attachment to a Jira ticket"
   ],

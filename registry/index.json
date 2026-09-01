@@ -188,7 +188,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f45fb2fd348d5eec3570b0c0192a7578dbbdbb838a814e529e82b5750c2bf21a"
+          "sha256": "7f641edaa3886b171e672aac7a8ae6b7edf6bb4e1fac9aeb661117c2091bd70c"
         },
         {
           "path": "references/portal-endpoint-contract.md",
@@ -220,15 +220,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "44abde613e98d1ad588c0fe312e232d6d68f192636f5be8b47c03a3a803ed860"
+          "sha256": "62ce81eae457dc0eff8015559c9d3b5fe1d8e1aeb34a46b5f0609fd6bae23b2e"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "f1ad8de8bffddae04b6bf62adb5aa675d9b2ae5eecb8f5533470e70972e5c0be"
+          "sha256": "e106645e500cbd815f007a3e902975ebbfffb8bfdf10673ffd4e27d758805977"
         },
         {
           "path": "references/professional-production.md",
-          "sha256": "9a9b4c5f98a3f014cbc8ebe4f563998fa4fba5251a8a665955de02f41f655cfc"
+          "sha256": "8c43f6d59cfcb0254efd478f400315575d1131247e681e78d7fce073962d44df"
         },
         {
           "path": "references/providers.md",
@@ -587,15 +587,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "dbf385e126229e0e675480ae9553833ff5261585c96af10b6e6f7f8eea4dcee2"
+          "sha256": "98528fe9071aabd3b8c8de0379157823db8b9d4e64b189dfaefa9be8f068d7ac"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "0f3aba73f6c2f628b57cd1b0cfeb36173535026a93adfec9cbb0e85f6512c523"
+          "sha256": "10796d92991101d6e655fe1cc3dfec784e61a5ac529fadef522c225f780c79e3"
         },
         {
           "path": "references/operations.md",
-          "sha256": "95331d246140ccef5e36d4bb3a7794aa96a9d2b908602edaedf21e6dcb04f41e"
+          "sha256": "8addffdd11f6b849998ad484fc52b32c534149053ee14388aef9abae1397fdcc"
         },
         {
           "path": "references/scopes.md",
@@ -791,7 +791,7 @@
         },
         {
           "path": "references/remediation-boundary.md",
-          "sha256": "7d18e46fc982d285e0f83561371aa4f5a029fbc2bedaefea12900a7b40c04d9b"
+          "sha256": "c1573476c76e89a2638aefed77733a60a9ba92add26c20f640944ffea9124ca2"
         },
         {
           "path": "references/reporting.md",
@@ -903,7 +903,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7870ea4aec7d04c025b0c5619aa620e332a1a263b03ac90d69bb149cc3b866c3"
+          "sha256": "31517b6124fc0263865f2c86122bc51846ae6585239d80b81af1d78d195028fd"
         },
         {
           "path": "references/operations.md",
@@ -1030,7 +1030,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "10898a2d81f89911cce60a796f1ab30e9f70fe2739452eb512c9e5292fc8e46a"
+          "sha256": "2fa2101d10dfb507e4ea1b10724d5361a142a08259b73d3019a54a3201304346"
         },
         {
           "path": "oauth3lo.py",
@@ -1290,7 +1290,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "419ed8666959c2322779e4203fb41e810e6fe40f10356af3395b70c3542985ab"
+          "sha256": "0a4ee886c5199ea9c1d77a1fc18f1220bbcdad1dd65cacc412e1d58f16f9118c"
         },
         {
           "path": "schemas/error-exit-codes.json",
@@ -2013,7 +2013,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f27f997f026360d4042111c5b15bdd325b931cb7e531f84d06bf324e7802010d"
+          "sha256": "b88a2a1371d53c925051411ad09f7c0fff8e2ec5230bf4caff201b805273741b"
         },
         {
           "path": "ops_troubleshooting.py",
