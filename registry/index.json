@@ -912,7 +912,7 @@
       ],
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
@@ -2068,7 +2068,7 @@
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
@@ -2092,7 +2092,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f70caeda3a35087934887c31aeaab21843abd0ed08f069fb55839f73d47ab983"
+          "sha256": "b73e020a6c79608253801d0019be43961c19d1a87712e15872c2ffe6b5e4b2d9"
         },
         {
           "path": "synology_smb_storage.py",

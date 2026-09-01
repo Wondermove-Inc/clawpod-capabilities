@@ -219,7 +219,7 @@ def test_per_run_secretrefs_manifest_contract():
  while not (root/'harnesses').exists(): root=root.parent
  manifest=json.loads((root/'harnesses/synology-smb-storage/harness.json').read_text())
  binding=json.loads((root/'harnesses/synology-smb-storage/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.1.5' and 'credentialEnvironment' not in manifest
+ assert manifest['version']=='0.1.6' and 'credentialEnvironment' not in manifest
  assert binding['names']==['SYNOLOGY_SMB_PASSWORD'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads((root/'skills/synology-smb-storage/capability.json').read_text())['linkedHarness']['version']=='0.1.5'
+ assert json.loads((root/'skills/synology-smb-storage/capability.json').read_text())['linkedHarness']['version']=='0.1.6'
