@@ -129,10 +129,12 @@ def local_auth(command,payload,out):
    result=desktop_login(transfer_root=payload.get("transferRoot"),client_path=body.get("clientPath"),output_path=output_path,output_root=output_root,alias=payload.get("account"),profiles=body.get("profiles",[]),timeout=payload.get("timeoutMs",600000)/1000,overwrite=payload.get("overwrite",False) if not bind else False,managed_browser_devtools_url=browser_url,smoke_tests=body.get("smokeTests",[]))
    if bind:
     staged=root/"credentials"/name
-    if any(not item.get("ok") for item in result.get("smokeTests",{}).values()):
-     staged.unlink(missing_ok=True);raise LoginError("requested post-login smoke test failed")
+    failed=sorted(k for k,v in result.get("smokeTests",{}).items() if not v.get("ok"))
     doc=register_staged_binding(payload.get("account"),staged,overwrite=payload.get("overwrite",False),root=root,expected_revision=expected_revision)
-    result["bound"]=True;result["revision"]=doc["revision"]
+    result["bound"]=True;result["revision"]=doc["revision"];result["smokeTestsPassed"]=not failed
+    if failed:
+     result["failedSmokeTests"]=failed
+     out["warnings"].append({"code":"SMOKE_TEST_FAILED","message":"post-login smoke tests failed ("+", ".join(failed)+"); the authorization succeeded and was bound — verify those services separately"})
    else:
     result["bound"]=False;out["warnings"].append({"code":"MIGRATION_REQUIRED","message":"file-only login is deprecated; import the bundle into pod-local bindings"})
    result["desktopLocal"]=True;result["browserMode"]="managed-devtools" if browser_url else "system-browser"

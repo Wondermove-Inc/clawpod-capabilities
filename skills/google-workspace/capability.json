@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -17,7 +17,7 @@
   },
   "linkedHarness": {
     "id": "google-workspace",
-    "version": "0.4.1"
+    "version": "0.4.2"
   },
   "descriptionSource": "skill-frontmatter"
 }
