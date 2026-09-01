@@ -12,7 +12,7 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "resend-email",

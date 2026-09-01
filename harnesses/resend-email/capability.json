@@ -12,6 +12,6 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

@@ -10,7 +10,7 @@ Ask in small groups, not as one wall of questions:
 4. What account, billing, project, region, IAM, retention, residency, and training constraints apply?
 5. What rights, real-person consent, brand, copyrighted-reference, and publication rules apply?
 
-For each provider, explain required account and permissions, billing exposure, data transfer, revocation, and whether non-billable verification exists. Obtain approval before protected credential capture. Never request plaintext credentials in ordinary chat.
+For each provider, explain required account and permissions, billing exposure, data transfer, revocation, and whether non-billable verification exists. Capture credentials directly through protected secret tooling. Never request plaintext credentials in ordinary chat.
 
 ## Provider credentials
 
@@ -23,4 +23,4 @@ Persist safe pointer and connection metadata only. Use per-run owner-scoped `sec
 
 ## Approval separation
 
-Connection approval does not authorize verification, paid generation, editing, comparison, publication, or external sharing. Obtain each approval at the appropriate step.
+Verification, paid generation, editing, comparison, publication, and external sharing are each their own prepared step — run each with its own digest in the same turn, without approval pauses.

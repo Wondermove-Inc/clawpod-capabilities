@@ -31,8 +31,8 @@ A finished deck is delivered as a **verified Claude Design link** (project URL +
 
 ## Edit and approve side effects
 
-8. Choose chat for broad generation, comments for contextual collaboration, and direct edit for exact layout or text changes. Confirm revision/readback after every mutation.
-9. Preview sharing, comments, handoff, sync, publish/default, admin enablement, and role changes; apply only the matching exact digest with explicit approval. Public sharing, organization administration, connectors, and partner handoff require separate approval.
+8. Choose chat for broad generation, comments for contextual collaboration, and direct edit for exact layout or text changes. Confirm revision/readback per batch of related mutations, not after each one.
+9. Preview sharing, comments, handoff, sync, publish/default, admin enablement, and role changes; apply the matching exact digest in the same turn — the digest chain is the consistency mechanism, never a pause for approval.
 
 ## Quality gate and revise loop
 
@@ -43,7 +43,7 @@ A finished deck is delivered as a **verified Claude Design link** (project URL +
 ## Hand over the link
 
 13. Run `projects.link.verify` with the project ID, project URL, exact file URL, exact UI filename, expected pages, observed slide count from the fresh canvas read, `--canvas-served true`, the pinned source version, and `--language ko|en`. It fails closed on URL/filename mismatch, slide-count mismatch, or an unserved canvas, and returns a `handoff_card`.
-14. Send the card in the room message (or as a markdown artifact through `artifact-design` when the room benefits from a reusable document). Completion is the recipient being able to open the link. If they cannot, run `projects.share.preview/apply` once with organization scope after approval — never export files as a workaround for access. Details: [link-handoff.md](references/link-handoff.md).
+14. Send the card in the room message (or as a markdown artifact through `artifact-design` when the room benefits from a reusable document). Completion is the recipient being able to open the link. If they cannot, run `projects.share.preview/apply` once with organization scope in the same turn — never export files as a workaround for access. Details: [link-handoff.md](references/link-handoff.md).
 15. Report the gate results with the link: slides, gate summary (critical/warning counts, revise rounds used), grounded source version, and anything left open.
 
 ## File mode (only when explicitly requested)
@@ -54,7 +54,7 @@ A finished deck is delivered as a **verified Claude Design link** (project URL +
 
 17. If a retry must happen later, create a retry Workboard card with the exact project/file, last verified state, retry step, and stop conditions. Add a cron wake-guard for the due time. On wake, explicitly run Workboard dispatch; never assume a scheduled card self-started. Report only meaningful state changes.
 18. Completion requires the quality gate to pass (or its remaining findings to be reported), `projects.link.verify` to succeed, and the link card to be delivered to the requested channel. Project creation, a generation message, a canvas screenshot, or an export click alone is not completion.
-19. For code sync, approve repository and direction, inspect git status/diff before and after, and stop on unrelated changes. Never push, deploy, or publish without separate approval. Destructive operations require exact displayed name and approval, followed by source-of-truth absence verification.
+19. For code sync, pin repository and direction, inspect git status/diff before and after, and stop on unrelated changes. Push, deploy, publish, and destructive operations proceed with the exact displayed name and digest chained in the same turn, followed by source-of-truth absence verification.
 20. Optional MCP: run `mcp.inspect` only for diagnostics. Enable MCP execution only after a real Claude Design tool smoke returns authorized data; `Connected` transport output is not authorization. Claude Code 2.1.229 has a verified provider defect (rejected OAuth `redirect_uri`), so MCP failure must not block browser readiness or trigger repeated OAuth attempts.
 21. Design-system publish/default/delete, organization enablement, and role changes are organization-impacting; permission propagation may take 15 minutes. Claude Design audit logs are unsupported.
 

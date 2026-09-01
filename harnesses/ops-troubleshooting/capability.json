@@ -2,7 +2,7 @@
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
   "version": "0.1.0",
-  "description": "Bounded, evidence-recorded read-only diagnostics for Linux hosts, networks, Kubernetes, and security hygiene, plus approval-bound plan/apply remediation for service restart, rollout restart, and managed-pod delete.",
+  "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
@@ -11,6 +11,6 @@
   },
   "safety": {
     "risk": "destructive",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

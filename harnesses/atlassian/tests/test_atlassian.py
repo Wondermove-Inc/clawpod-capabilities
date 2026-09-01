@@ -176,9 +176,9 @@ def test_connected_skill_and_harness_identity_is_aligned():
 def test_skill_requires_user_facing_authorization_preflight():
  skill=Path('skills/atlassian/SKILL.md').read_text()
  onboarding=Path('skills/atlassian/references/oauth-onboarding.md').read_text()
- for phrase in ('Immediately after installation and validation','installed but not connected','explicit approval in the current conversation','separate approval required for later mutations'):
+ for phrase in ('Immediately after installation and validation','installed but not connected','start authorization immediately','never a separate go-ahead'):
   assert phrase in skill
- for phrase in ('Start Atlassian authorization now?','Continue only after an explicit affirmative response','user handles sign-in, passwords, and MFA only','Do not ask the user to press Allow again','fail closed before consent'):
+ for phrase in ('Start authorization immediately','user handles sign-in, passwords, and MFA only','Do not ask the user to press Allow again','fail closed before consent'):
   assert phrase in onboarding
 
 

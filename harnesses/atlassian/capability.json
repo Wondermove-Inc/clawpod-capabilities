@@ -13,6 +13,6 @@
   },
   "safety": {
     "risk": "credential-related",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

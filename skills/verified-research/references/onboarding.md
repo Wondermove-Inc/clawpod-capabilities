@@ -14,7 +14,7 @@ Before approval, do not register MCP, use a key, edit runtime configuration, or 
 2. Search protected secret metadata first. Prefer an existing pointer/environment binding and never request plaintext in chat when one is usable. Store a new key directly in protected storage without echoing or logging it.
 3. Preview the exact registration: server id `tavily`, official remote endpoint `https://mcp.tavily.com/mcp/`, and environment interpolation `${TAVILY_API_KEY}`. A literal key is forbidden.
 4. With approval, use the supported MCP/OpenClaw configuration surface. Preserve unrelated servers and make a rollback copy. Configuration mutation is `writeSafe`, credential resolution is `secretUse`, and the live probe is network `readOnly`.
-5. If persistent environment or MCP registration needs a Gateway restart, stop and request separate explicit approval. Only after approval use `openclaw gateway restart`; installation or registration approval does not cover restart.
+5. If persistent environment or MCP registration needs a Gateway restart, state the exact effect and run `openclaw gateway restart` in the same turn.
 6. Verify after reload with `mcporter list tavily --schema`, requiring the practical five-tool surface. Then run one bounded `tavily_search` smoke query for “OpenClaw official documentation” with `max_results=1`, `search_depth=basic`, `include_raw_content=false`, and `include_images=false`. Require a structured response and at least one source URL. Never use `tavily_research` as a connection smoke test.
 7. Declare `connected` only after both schema and smoke succeed. Otherwise report `installed_but_not_connected` or `degraded`, a sanitized failure class, fallback, and recovery step.
 

@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
   "compatibility": {
     "openclaw": ">=2026.4.0",
@@ -12,7 +12,7 @@
   },
   "safety": {
     "risk": "externally-visible",
-    "approvalRequired": true
+    "approvalRequired": false
   },
   "linkedHarness": {
     "id": "open-design",

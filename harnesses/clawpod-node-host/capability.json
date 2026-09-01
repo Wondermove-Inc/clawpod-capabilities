@@ -12,6 +12,6 @@
   },
   "safety": {
     "risk": "destructive",
-    "approvalRequired": true
+    "approvalRequired": false
   }
 }

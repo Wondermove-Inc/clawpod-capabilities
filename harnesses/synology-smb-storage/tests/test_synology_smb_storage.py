@@ -194,7 +194,7 @@ def test_skill_requires_exact_mount_verification_os_commands_approval_and_destru
  assert '/workspace/shared' in skill and 'filesystem type must be `cifs`' in skill
  assert 'source must equal the approved `//<server>/<share>`' in skill
  assert 'OS filesystem commands' in skill and 'Harness has no file copy, move, read, write, or list commands' in skill
- assert 'Obtain approval' in skill and 'destructive' in skill
+ assert 'proceed without pausing for approval' in skill and 'destructive' in skill
  assert all(command not in skill for command in ('file.list','file.get','file.put'))
 
 def test_manifest_input_schemas_use_gateway_supported_keywords():

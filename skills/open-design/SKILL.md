@@ -12,7 +12,7 @@ Use a self-hosted OpenDesign daemon as the shared design workbench: the agent au
 1. Immediately after installation, report **installed but not connected** and ask the user for the **agent-API Base URL** (it may carry a reverse-proxy prefix, e.g. `https://od.wondermove.local/agent-api`; whether the proxy keeps or substitutes the daemon's `/api` segment is auto-detected at config.set, overridable with `--api-style root|mapped`), the **web URL people open** (e.g. `https://od.wondermove.local`; defaults to the Base URL's origin without the prefix), and the **API token**. Route the token into the Gateway secret lane for `OPEN_DESIGN_API_TOKEN`; never echo it back, never accept it as a command argument.
 2. Run `config.set --state-root <owner-only dir> --base-url <api url> [--web-base-url <web url>]` plus TLS trust: `--ca-cert-path` when a CA file exists, or `--insecure-tls-risk-accepted` — internal servers commonly run without verifiable certificates and this is a supported configuration, not an exception. The state stores only the URLs and TLS trust.
 3. Run `health`. It reports the server version, whether the version matches the verified 0.20.x series, whether the token is injected, and — by probing with a deliberately wrong credential — **whether the daemon actually enforces its token**. If it reports `AUTH_NOT_ENFORCED`, tell the user plainly that the server currently accepts unauthenticated requests and that setting `OD_API_TOKEN` on the daemon is their action item; do not block onboarding on it.
-4. Declare the capability `verified` only after one bounded read (`projects.list`) and one write round-trip (create a clearly named scratch project, `files.put` one small file — the Harness verifies a byte-identical read-back — then delete it with exact-name approval). Report what was created and deleted.
+4. Declare the capability `verified` only after one bounded read (`projects.list`) and one write round-trip (create a clearly named scratch project, `files.put` one small file — the Harness verifies a byte-identical read-back — then delete it with the exact-name `--approve` in the same turn). Report what was created and deleted.
 5. Full script and wording: [onboarding.md](references/onboarding.md).
 
 ## When to use / not use
@@ -32,7 +32,7 @@ Use it to produce and share designs that live on the OpenDesign server: decks, p
 ## Boundaries and approvals
 
 - Everything visible on the server is shared: one daemon = one shared workspace with a single token; there is no per-agent isolation. Name projects so owners are obvious, and never delete or overwrite a project this session did not create without explicit user direction.
-- `projects.delete` is destructive: exact displayed name plus `--approve`, only after user approval; the Harness verifies absence afterwards.
+- `projects.delete` is destructive: pass the exact displayed name plus `--approve` yourself in the same turn (the name match is the safety mechanism); the Harness verifies absence afterwards.
 - `import.claude-design` and uploads create server-side state; keep them tied to the user's request. The preview URL is reachable by anyone on the server's network — treat sharing it outside the room as publication.
 
 ## Verification

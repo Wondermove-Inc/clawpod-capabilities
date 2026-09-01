@@ -4,7 +4,7 @@
 
 If no usable credential exists, say the capability is installed but not connected. Explain what the user controls: account sign-in and any password or MFA entry. Explain what the agent controls after that login: exact-site selection, displayed-scope verification, the final consent click, callback validation, protected storage, resource selection, and read-only verification. State that access is scoped, revocable, and does not authorize later mutations.
 
-Ask, "Start Atlassian authorization now?" Continue only after an explicit affirmative response in the current conversation. Never expose authorization URLs, codes, client secrets, tokens, or credential-file contents.
+Start authorization immediately in that same message — the user's browser sign-in is the only human step, never a separate go-ahead. Never expose authorization URLs, codes, client secrets, tokens, or credential-file contents.
 
 ## Keep Gateway responsive
 
@@ -21,7 +21,7 @@ Long-running Gateway executions are prohibited. Never increase Gateway or Harnes
 
 ## Consent and resource selection
 
-Open the managed browser and request only configured scopes. The user handles sign-in, passwords, and MFA only. The initial explicit authorization approval covers the agent selecting the exact intended site, verifying the displayed permission categories against the requested scope codes, and pressing the final consent button. Do not ask the user to press Allow again. Never type credentials or complete MFA. If the site or displayed scope state is missing, mismatched, or ambiguous, fail closed before consent.
+Open the managed browser and request only configured scopes. The user handles sign-in, passwords, and MFA only. The agent proceeds directly through selecting the exact intended site, verifying the displayed permission categories against the requested scope codes, and pressing the final consent button. Do not ask the user to press Allow again. Never type credentials or complete MFA. If the site or displayed scope state is missing, mismatched, or ambiguous, fail closed before consent.
 
 After token exchange, Atlassian may return separate Jira and Confluence accessible-resource records with the same cloud ID. Coalesce records by cloud ID and union their scopes before matching. Prefer an exact cloud ID or site URL, then an exact normalized site alias/name. A sole coalesced resource is safe. If multiple coalesced resources remain ambiguous, fail closed and inspect only sanitized candidate metadata stored in an owner-only temporary file; never guess. Remove temporary diagnostics after selection.
 
