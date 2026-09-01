@@ -16,7 +16,7 @@
   },
   "linkedHarness": {
     "id": "clawpod-image-studio",
-    "version": "0.4.3"
+    "version": "0.4.4"
   },
   "descriptionSource": "skill-frontmatter"
 }

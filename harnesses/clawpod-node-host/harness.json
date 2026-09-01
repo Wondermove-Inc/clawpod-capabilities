@@ -4,7 +4,7 @@
   "name": "clawpod-node-host",
   "title": "ClawPod Node Host",
   "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {

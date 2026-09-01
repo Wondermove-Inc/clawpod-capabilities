@@ -5,7 +5,7 @@ description: "Use to troubleshoot Linux host, network, Kubernetes, and security-
 
 # Ops Troubleshooting
 
-Take an operational symptom — "the server is slow", "the pod keeps restarting", "the certificate alert fired", "someone is hammering SSH" — to a confirmed cause, a safe fix, and verified recovery. This Skill supplies the method and the playbooks; the linked Harness (v0.1.0) supplies bounded, evidence-recorded diagnostics and plan-bound remediation. Diagnosis is autonomous. Change is not.
+Take an operational symptom — "the server is slow", "the pod keeps restarting", "the certificate alert fired", "someone is hammering SSH" — to a confirmed cause, a safe fix, and verified recovery. This Skill supplies the method and the playbooks; the linked Harness (v0.1.1) supplies bounded, evidence-recorded diagnostics and plan-bound remediation. Diagnosis is autonomous. Change is not.
 
 ## Boundaries
 

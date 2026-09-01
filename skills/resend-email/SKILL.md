@@ -5,7 +5,7 @@ description: "Use to onboard Resend, verify senders, preview messages, attach fi
 
 # Resend Email
 
-Use only the paired `resend-email` Harness (version 0.1.7). Never construct curl requests. The Harness accepts the key only through protected `RESEND_API_KEY` environment injection, never as an argument.
+Use only the paired `resend-email` Harness (version 0.1.8). Never construct curl requests. The Harness accepts the key only through protected `RESEND_API_KEY` environment injection, never as an argument.
 
 ## First use and onboarding
 

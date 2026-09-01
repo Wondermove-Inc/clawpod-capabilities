@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.11.4",
+  "version": "0.11.5",
   "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
   "compatibility": {
     "openclaw": ">=2026.4.11",

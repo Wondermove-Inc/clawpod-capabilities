@@ -154,11 +154,11 @@ Never publish credentials, internal endpoints, customer data, private configurat
 
 No license has been selected yet. Until one is added, copyright remains with the repository owner and reuse is not granted beyond applicable law.
 
-### ClawPod OCR 0.3.4
+### ClawPod OCR 0.3.5
 
 ClawPod OCR produces local enterprise `.docx` comparison reports for one or multiple completed OCR jobs. Reports preserve and distinguish raw OCR from separately corrected text and include source imagery, QA metadata, document controls, and file-specific sections.
 
-### ClawPod Image Studio 0.4.3
+### ClawPod Image Studio 0.4.4
 
 ClawPod Image Studio now includes an additive, offline professional production
 slice: revisioned projects and briefs, strict shot compilation, content-addressed
@@ -168,7 +168,7 @@ delivery manifests/packages. Its existing protected-secret and exact paid-intent
 provider boundary remains unchanged; Studio registration commands never call a
 provider.
 
-### Memory Graph 0.11.4
+### Memory Graph 0.11.5
 
 Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding of a private, rebuildable Memory MCP graph from the exact recognized core workspace allowlist and canonical memory. Version 0.11.0 adds complete lifecycle-aware extractor paging, external-agent natural-language candidate authoring, explicit-evidence-only Person/Project/Decision/Cause/Effect/Event causal graphs, bounded review pages, hydrated decision recall, and full offline semantic HTML. The Harness itself never calls a model, network, MCP, or live graph mutation surface.
 
@@ -176,14 +176,14 @@ Memory Graph is a paired Skill and Harness for autonomous, per-agent onboarding 
 
 Artifact Design is a prose-only Skill that decides when a reply's output deserves to be a ClawPod room artifact, designs it for the actual rendering surface (a 320–670 px panel; HTML in a script-less sandboxed iframe with OS-level dark mode and the portal's CSP; markdown in the portal's themed renderer with mermaid), and publishes it through the verified save-then-`artifact_refs` contract (`POST /internal/chat-rooms/:roomId/artifacts` → `POST /internal/messages`, `markdown` or `html`, at most 5 per message, 200,000 characters each, `expectedVersion` CAS). It replaces the standalone `diagram-design` package; diagram pages are one of the artifact shapes it produces.
 
-### Ops Troubleshooting 0.1.0
+### Ops Troubleshooting 0.1.1
 
 Ops Troubleshooting is a paired Skill and Harness for infrastructure and security-hygiene problem solving. The Skill supplies the method (intake, hypothesis tree, evidence rules, mitigate-vs-fix) and five playbooks (host, network, Kubernetes, security hygiene, change/config). The Harness supplies 24 bounded, read-only diagnostics over `/proc`, systemd, journald, iproute2, sockets/TLS, `kubectl`, and package managers — every response records the exact commands executed — plus `remediate.plan` → `remediate.apply` for three allowlisted actions (service restart, rollout restart, managed-pod delete) that run once, only against an approved, unexpired, precondition-bound plan. Compromise signals hand off to `soc-event-correlation`; reporting routes through `clawpod-org-operations`.
 
-### Claude Design 0.4.1
+### Claude Design 0.4.2
 
 Claude Design 0.4.0 makes the **verified project link** the deliverable: `projects.link.verify` checks the exact project/file route and slide count and renders a Korean/English handoff card so the user exports PPTX/PDF themselves in seconds, while agent-driven native export becomes an explicit opt-in (room artifacts cannot carry binaries). It also adds a deterministic layout quality gate, `projects.qa.layout`, that evaluates per-slide geometry captured from the canvas — text overflow, text escaping shapes, overlaps, off-canvas elements, near-miss alignment, uneven spacing, font floor, density, inconsistent diagram shapes, title drift — and returns a `revision_prompt` for a bounded revise loop through `projects.iterate`, alongside content and structure rubrics (one message per slide, layout family, diagram grammar, text budgets).
 
-### Open Design 0.2.1
+### Open Design 0.2.2
 
 Open Design is a paired Skill and Harness that connects agents to a self-hosted OpenDesign server. Onboarding takes the server's Base URL and API token (token only through the Gateway-injected `OPEN_DESIGN_API_TOKEN` environment; never argv, state, or logs) and is `verified` only after a read plus a scratch write round-trip. The 16-command Harness covers health with a real auth-enforcement probe, project/file lifecycle with byte-identical upload verification, scoped preview links that open without the API token, HTML/ZIP export, and Claude Design `.zip` import — validated live against OpenDesign v0.20.3 (contract in `docs/open-design-contract.md`). 0.2.x adds reverse-proxy prefixed agent-API base URLs (e.g. `/agent-api`), a separate human web URL for preview links, and first-class support for internal servers without verifiable TLS; 0.2.1 auto-detects whether the proxy keeps the daemon's `/api` segment (`root`) or substitutes it (`mapped`) — verified live against the od.wondermove.local vhost, fixing the 0.2.0 double-`/api` 404 regression. The agent authors the HTML itself (artifact-design craft, claude-design layout gate) and delivers the preview link first.

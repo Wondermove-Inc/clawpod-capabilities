@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
   "compatibility": {
     "openclaw": ">=2026.4.0",

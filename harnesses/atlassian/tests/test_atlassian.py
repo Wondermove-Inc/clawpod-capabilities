@@ -205,10 +205,10 @@ def test_direct_basic_uses_per_run_environment(tmp_path,monkeypatch):
 def test_secretrefs_metadata_contract():
  manifest=json.loads(Path('harnesses/atlassian/harness.json').read_text())
  binding=json.loads(Path('harnesses/atlassian/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.3.5' and 'credentialEnvironment' not in manifest
+ assert manifest['version']=='0.3.6' and 'credentialEnvironment' not in manifest
  assert binding['names']==['ATLASSIAN_EMAIL','ATLASSIAN_API_TOKEN'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.5'
+ assert json.loads(Path('skills/atlassian/capability.json').read_text())['linkedHarness']['version']=='0.3.6'
 
 
 def test_response_data_is_masked_but_never_truncated():

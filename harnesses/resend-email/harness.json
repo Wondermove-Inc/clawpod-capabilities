@@ -4,7 +4,7 @@
   "name": "resend-email",
   "title": "Resend Email",
   "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "entrypoint": "./resend_email.py",
   "packageRoot": ".",
   "execution": {

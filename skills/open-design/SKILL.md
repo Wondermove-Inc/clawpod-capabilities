@@ -5,7 +5,7 @@ description: "Use when the user asks for a designed deliverable to build, share,
 
 # Open Design
 
-Use a self-hosted OpenDesign daemon as the shared design workbench: the agent authors the HTML itself, the server stores it, renders a sandboxed preview, and exports it. The paired Harness (v0.2.1) is the only network surface — typed commands, a JSON envelope with a per-request evidence trail, and no response truncation. The API token travels only through the Gateway-injected `OPEN_DESIGN_API_TOKEN` environment; it never appears in arguments, state, chat, or logs.
+Use a self-hosted OpenDesign daemon as the shared design workbench: the agent authors the HTML itself, the server stores it, renders a sandboxed preview, and exports it. The paired Harness (v0.2.2) is the only network surface — typed commands, a JSON envelope with a per-request evidence trail, and no response truncation. The API token travels only through the Gateway-injected `OPEN_DESIGN_API_TOKEN` environment; it never appears in arguments, state, chat, or logs.
 
 ## Onboarding (mandatory, in this order)
 

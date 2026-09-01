@@ -1,6 +1,6 @@
 # Claude Design Harness
 
-Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, the layout quality gate, link-first handoff, opt-in native exports, design systems, templates, code sync, destinations, and administration. Version 0.4.1 (calibrated on a real export) adds `projects.qa.layout` and `projects.link.verify`; the surface is now 66 commands.
+Deterministic browser-first guardrails for Claude Design onboarding, auth/browser readiness, exact short/long prompt input, projects, sharing, the layout quality gate, link-first handoff, opt-in native exports, design systems, templates, code sync, destinations, and administration. Version 0.4.2 (calibrated on a real export) adds `projects.qa.layout` and `projects.link.verify`; the surface is now 66 commands.
 
 Provider execution defaults to the logged-in `https://claude.ai/design` UI through the desktop/browser capability. The Harness plans actions, emits exact browser handoffs and reconciliation sources, gates effects with SHA-256 digests, and verifies exported artifacts. It never fakes provider success or inspects browser credentials.
 

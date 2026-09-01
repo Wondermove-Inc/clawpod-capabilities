@@ -5,7 +5,7 @@ description: "Use for Claude Design create/edit/QA and link-first deck handoff: 
 
 # Claude Design
 
-Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.1) for deterministic planning, exact-digest approvals, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with Desktop only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use Desktop instead of Browser for ordinary Claude Design DOM work.
+Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.2) for deterministic planning, exact-digest approvals, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with Desktop only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use Desktop instead of Browser for ordinary Claude Design DOM work.
 
 Immediately after installation, state that the capability is installed and browser-first. Open Claude Design and verify the authenticated Design UI. Reuse the existing browser session. Ask the user only for sign-in, MFA, or provider consent when browser authentication is absent. Do not require MCP endpoint registration, Claude Code OAuth, setup tokens, or CLI work.
 

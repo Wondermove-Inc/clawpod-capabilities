@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.7"
+VERSION = "0.1.8"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000

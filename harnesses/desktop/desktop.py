@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, os, pathlib, re, shutil, struct, subprocess, sys, time, uuid, zlib
-VERSION='3.0.5'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
+VERSION='3.0.6'; SCHEMA='desktop.v3'; STOP=re.compile(r'captcha|recaptcha|hcaptcha|turnstile|verify you are human|human verification|bot detection',re.I)
 OBS=set('capabilities environment.preflight session.list session.get app.list app.get window.list window.get screen.list screen.capture ui.observe ui.find ui.read ui.table ui.wait ui.verify image.locate dialog.inspect clipboard.inspect download.inspect task.get task.events task.artifacts'.split())
 S1=set('app.launch app.focus window.activate window.move window.resize window.minimize window.maximize window.restore pointer.move pointer.scroll keyboard.key keyboard.shortcut'.split())
 S4={'window.close','process.terminate','process.kill'}
