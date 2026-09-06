@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw.harness.v1",
+  "name": "clawpod-agent-wake-bridge",
+  "title": "ClawPod Agent Wake Bridge",
+  "description": "Validate correlated bridge rounds, send authorized wakes, stage authenticated Markdown, and await one bounded callback.",
+  "version": "0.1.1",
+  "entrypoint": "./bridge.py",
+  "packageRoot": ".",
+  "commands": {
+    "preflight": {
+      "description": "preflight a bounded bridge round using strict JSON input.",
+      "baseArgv": [
+        "preflight"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "request",
+          "allowHosts"
+        ],
+        "properties": {
+          "request": {
+            "type": "string"
+          },
+          "allowHosts": {
+            "type": "string"
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "documentFile": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "status",
+          "data",
+          "error",
+          "timing"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {},
+          "timing": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "request",
+          "type": "option",
+          "flag": "--request",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "allowHosts",
+          "type": "option",
+          "flag": "--allow-host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "documentFile",
+          "type": "option",
+          "flag": "--document-file",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
+      ]
+    },
+    "send": {
+      "description": "Send a full envelope or construct a correlated reply from original request plus text/result content.",
+      "baseArgv": [
+        "send"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "request",
+          "allowHosts",
+          "targetUrl"
+        ],
+        "properties": {
+          "request": {
+            "type": "string"
+          },
+          "allowHosts": {
+            "type": "string"
+          },
+          "targetUrl": {
+            "type": "string"
+          },
+          "documentFile": {
+            "type": "string"
+          },
+          "replyContentFile": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "status",
+          "data",
+          "error",
+          "timing"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {},
+          "timing": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "request",
+          "type": "option",
+          "flag": "--request",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "allowHosts",
+          "type": "option",
+          "flag": "--allow-host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "targetUrl",
+          "type": "option",
+          "flag": "--target-url",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "documentFile",
+          "type": "option",
+          "flag": "--document-file",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "replyContentFile",
+          "type": "option",
+          "flag": "--reply-content-file",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        }
+      ]
+    },
+    "receive": {
+      "description": "Receive one callback, fetch its immutable original request, or stage Markdown; long waits require supervised generic exec.",
+      "baseArgv": [
+        "receive"
+      ],
+      "safetyClasses": [
+        "secretUse",
+        "externalSideEffect",
+        "writeSafe"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "request",
+          "allowHosts",
+          "mode"
+        ],
+        "properties": {
+          "request": {
+            "type": "string"
+          },
+          "allowHosts": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "inbox",
+              "document",
+              "request"
+            ]
+          },
+          "workspaceRoot": {
+            "type": "string"
+          },
+          "documentFile": {
+            "type": "string"
+          },
+          "bind": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer"
+          },
+          "output": {
+            "type": "string"
+          },
+          "readyFile": {
+            "type": "string"
+          },
+          "stagingDir": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "status",
+          "data",
+          "error",
+          "timing"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {},
+          "timing": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "request",
+          "type": "option",
+          "flag": "--request",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "allowHosts",
+          "type": "option",
+          "flag": "--allow-host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "mode",
+          "type": "option",
+          "flag": "--mode",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "workspaceRoot",
+          "type": "option",
+          "flag": "--workspace-root",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "documentFile",
+          "type": "option",
+          "flag": "--document-file",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
+        },
+        {
+          "arg": "bind",
+          "type": "option",
+          "flag": "--bind",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "port",
+          "type": "option",
+          "flag": "--port",
+          "valueType": "integer",
+          "optional": true
+        },
+        {
+          "arg": "output",
+          "type": "option",
+          "flag": "--output",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "readyFile",
+          "type": "option",
+          "flag": "--ready-file",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "stagingDir",
+          "type": "option",
+          "flag": "--staging-dir",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        }
+      ]
+    },
+    "verify": {
+      "description": "verify a bounded bridge round using strict JSON input.",
+      "baseArgv": [
+        "verify"
+      ],
+      "safetyClasses": [
+        "readOnly",
+        "secretUse"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "request",
+          "allowHosts",
+          "proof"
+        ],
+        "properties": {
+          "request": {
+            "type": "string"
+          },
+          "allowHosts": {
+            "type": "string"
+          },
+          "proof": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "status",
+          "data",
+          "error",
+          "timing"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "command": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {},
+          "timing": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "request",
+          "type": "option",
+          "flag": "--request",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        },
+        {
+          "arg": "allowHosts",
+          "type": "option",
+          "flag": "--allow-host",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "proof",
+          "type": "option",
+          "flag": "--proof",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": false
+        }
+      ]
+    }
+  },
+  "execution": {
+    "cwd": ".",
+    "timeoutMs": 120000,
+    "requiresJson": true
+  },
+  "passthroughEnv": [
+    "OPENCLAW_HOOK_TOKEN"
+  ]
+}

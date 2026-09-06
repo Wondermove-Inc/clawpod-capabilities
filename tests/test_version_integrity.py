@@ -81,7 +81,18 @@ class CandidateFinalVersionIntegrityTests(unittest.TestCase):
     def test_all_release_units_have_exact_metadata_and_registry_versions(self) -> None:
         self.assertTrue(self.ids)
         harness_ids = sorted(path.name for path in (ROOT / "harnesses").iterdir() if path.is_dir())
-        self.assertTrue(set(harness_ids).issubset(self.ids))
+        # [VERIFIED] Bridge Skill ownership is external: control-plane Salesforce
+        # skills-playground/sync-policy.json:183-188 assigns it to clawpod-common.
+        # README.md:103-119 defines independent Skill/Harness package types.
+        harness_only = {"clawpod-agent-wake-bridge"}
+        self.assertEqual(set(harness_ids) - set(self.ids), harness_only)
+        self.assertTrue((set(harness_ids) - harness_only).issubset(self.ids))
+        for capability_id in harness_only:
+            harness = load(ROOT / "harnesses" / capability_id / "capability.json")
+            manifest = load(ROOT / "harnesses" / capability_id / "harness.json")
+            self.assertEqual(manifest["version"], harness["version"], capability_id)
+            self.assertEqual(self.entries[("harness", capability_id)]["version"], harness["version"], capability_id)
+            self.assertNotIn(("skill", capability_id), self.entries)
         for capability_id in self.ids:
             skill = load(ROOT / "skills" / capability_id / "capability.json")
             self.assertEqual(self.entries[("skill", capability_id)]["version"], skill["version"], capability_id)
