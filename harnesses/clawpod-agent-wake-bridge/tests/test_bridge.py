@@ -461,6 +461,147 @@ class BridgeTests(unittest.TestCase):
                         writer.join(timeout=1)
                         connection.close()
 
+    def test_request_fetch_reply_content_full_subprocess_round(self):
+        _, context = self.make_repo()
+        doc = self.root/'handoff.md'
+        doc.write_text('# Synthetic handoff\n한글 bytes\n')
+        req, _ = b.prepare(dict(request(free_port()), repository=context), ['127.0.0.1'], doc)
+        process, original, proof_path = self.start_inbox(req, doc)
+        before = original.read_bytes()
+        fetch_path = '/request/' + req['nonce']
+        self.assertEqual(self.call(req, 'GET', fetch_path, token='wrong')[0], 401)
+        self.assertEqual(self.call(req, 'GET', '/request/'+'f'*32)[0], 404)
+        first = self.call(req, 'GET', fetch_path)
+        self.assertEqual(first[0], 200)
+        self.assertEqual(json.loads(first[1]), req)
+        self.assertEqual(self.call(req, 'GET', fetch_path), first)
+        self.assertFalse(proof_path.exists())
+        stage = self.root/'fetched'; stage.mkdir()
+        reference = {key:req[key] for key in ('nonce','msgid','target','reply_to')}
+        bad_reference = self.save('bad-reference.json', dict(reference,target='OTHER'))
+        code, result = self.cli('receive','--mode','request','--request',bad_reference,
+                                '--allow-host','127.0.0.1','--staging-dir',stage)
+        self.assertNotEqual(code, 0)
+        self.assertEqual(result['error']['code'], 'REQUEST_REFERENCE')
+        self.assertEqual(list(stage.iterdir()), [])
+        reference_file = self.save('reference.json', reference)
+        args = ('receive','--mode','request','--request',reference_file,'--allow-host','127.0.0.1','--staging-dir',stage)
+        code, result = self.cli(*args)
+        self.assertEqual(code, 0, result)
+        self.assertEqual(result['data']['kat'], 'passed')
+        self.assertNotIn('envelope', result['data'])
+        staged = Path(result['data']['staged_path'])
+        self.assertEqual(json.loads(staged.read_text()), req)
+        self.assertFalse(proof_path.exists())
+        code, result = self.cli(*args)
+        self.assertNotEqual(code, 0)
+        self.assertEqual(result['error']['code'], 'OUTPUT_COLLISION')
+        terminal = reply(req)
+        content = self.save('content.json', {'text':'Reviewed handoff.', 'result':terminal['result']})
+        staged_before = staged.read_bytes()
+        code, result = self.cli('send','--request',staged,'--reply-content-file',content,
+                                '--allow-host','127.0.0.1','--target-url',req['reply_to'])
+        self.assertEqual(code, 0, result)
+        self.assertEqual(result['status'], 'accepted')
+        stdout, stderr = process.communicate(timeout=5)
+        self.assertEqual(stderr, '')
+        self.assertEqual(json.loads(stdout)['status'], 'complete')
+        observed = json.loads(proof_path.read_text())
+        self.assertEqual(observed['target'], 'OPERATOR')
+        self.assertEqual(observed['agent_name'], 'AGENT')
+        self.assertEqual(observed['document'], req['document'])
+        self.assertEqual(observed['repository'], req['repository'])
+        self.assertEqual(original.read_bytes(), before)
+        self.assertEqual(staged.read_bytes(), staged_before)
+        code, result = self.cli('verify','--request',staged,'--allow-host','127.0.0.1','--proof',proof_path)
+        self.assertEqual(code, 0, result)
+
+    def test_reference_validation_precedes_network(self):
+        reference = {key:request()[key] for key in ('nonce','msgid','target','reply_to')}
+        for changes in ({'nonce':'bad'},{'msgid':1},{'target':None},{'extra':True},
+                        {'reply_to':'http://127.0.0.1:54321/other'}):
+            with self.subTest(changes=changes), patch.object(b,'http_call') as transport:
+                with self.assertRaises(b.BridgeError):
+                    b.fetch_request(dict(reference,**changes),['127.0.0.1'],self.root)
+                transport.assert_not_called()
+        symlink = self.root/'stage-link'; symlink.symlink_to(self.root, target_is_directory=True)
+        with patch.object(b,'http_call') as transport:
+            with self.assertRaises(b.BridgeError): b.fetch_request(reference,['127.0.0.1'],symlink)
+            transport.assert_not_called()
+
+    def test_request_fetch_rejects_bad_http_and_envelope_without_stage(self):
+        state = {'body':b'', 'type':'application/json; charset=utf-8', 'code':200}
+        seen = []
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self,*args): pass
+            def do_GET(self):
+                seen.append(self.path)
+                self.send_response(state['code'])
+                self.send_header('Content-Type',state['type'])
+                self.send_header('Location','http://example.com/forbidden')
+                self.end_headers()
+                self.wfile.write(state['body'])
+        server = ThreadingHTTPServer(('127.0.0.1',0),Handler)
+        threading.Thread(target=server.serve_forever,daemon=True).start()
+        self.addCleanup(server.server_close); self.addCleanup(server.shutdown)
+        req = request(server.server_port)
+        reference = {key:req[key] for key in ('nonce','msgid','target','reply_to')}
+        valid = b.dumps(req)
+        variants = [{'body':b''},{'body':b'\xff'},{'body':b'x'*(b.MAX_BODY+1)},
+                    {'body':valid[:-1]+b',"msgid":"duplicate"}'},{'type':'text/plain'},
+                    {'type':'application/json; charset=latin-1'},{'code':302},
+                    {'body':b.dumps(dict(req,target='WRONG'))},
+                    {'body':b.dumps(dict(req,msgid='wrong-round'))},
+                    {'body':b.dumps(dict(req,nonce='f'*32))},
+                    {'body':b.dumps(reply(req))},{'body':b.dumps(dict(req,legacy=True))}]
+        for variant in variants:
+            state.update(body=valid,type='application/json; charset=utf-8',code=200)
+            state.update(variant)
+            count = len(seen)
+            with self.subTest(variant=list(variant)), self.assertRaises(b.BridgeError):
+                b.fetch_request(reference,['127.0.0.1'],self.root)
+            self.assertEqual(len(seen),count+1)
+            self.assertFalse((self.root/('request-'+req['nonce']+'.json')).exists())
+
+    def test_reply_content_rejects_legacy_fields_and_bad_proof_before_send(self):
+        req = request()
+        req['document'] = b.document_metadata(b'content','note.md',req)
+        _, req['repository'] = self.make_repo()
+        original = self.save('original.json',req)
+        valid = {'text':'done','result':reply(req)['result']}
+        for content in (dict(valid,nonce=req['nonce']),dict(valid,target='OPERATOR'),
+                        {'text':'done','result':{'status':'complete'}},
+                        {'text':'done','result':dict(valid['result'],document_sha256='0'*64)}):
+            with self.subTest(content=content),patch.object(b,'http_call') as transport:
+                content_path = self.save('reply-content.json',content)
+                args = b.parser().parse_args(['send','--request',str(original),'--reply-content-file',str(content_path),
+                                              '--allow-host','127.0.0.1','--target-url',req['reply_to']])
+                with self.assertRaises(b.BridgeError): b.execute(args)
+                transport.assert_not_called()
+        with self.assertRaises(b.BridgeError) as error:
+            b.compose_reply(req,dict(valid,legacy='field'),['127.0.0.1'])
+        self.assertEqual(error.exception.code,'REPLY_CONTENT_FIELDS')
+        content_path = self.save('reply-content.json',valid)
+        with patch.object(b,'http_call') as transport:
+            args = b.parser().parse_args(['send','--request',str(original),'--reply-content-file',str(content_path),
+                                          '--document-file','missing.md','--allow-host','127.0.0.1','--target-url',req['reply_to']])
+            with self.assertRaises(b.BridgeError): b.execute(args)
+            transport.assert_not_called()
+
+    def test_reply_content_failed_or_blocked_preserves_context(self):
+        req = request()
+        req['document'] = b.document_metadata(b'content','note.md',req)
+        _, req['repository'] = self.make_repo()
+        before = copy.deepcopy(req)
+        for status in ('failed','blocked'):
+            observed = b.compose_reply(req,{'text':'Could not complete','result':{'status':status}},['127.0.0.1'])
+            self.assertEqual(observed['target'],req['agent_name'])
+            self.assertEqual(observed['agent_name'],req['target'])
+            self.assertEqual(observed['document'],req['document'])
+            self.assertEqual(observed['repository'],req['repository'])
+            self.assertEqual(b.correlate(req,observed,['127.0.0.1']),status)
+        self.assertEqual(req,before)
+
 
 def url_port(req):
     return int(req['reply_to'].split(':')[-1].split('/')[0])

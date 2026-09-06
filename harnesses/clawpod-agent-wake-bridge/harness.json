@@ -4,7 +4,7 @@
   "name": "clawpod-agent-wake-bridge",
   "title": "ClawPod Agent Wake Bridge",
   "description": "Validate correlated bridge rounds, send authorized wakes, stage authenticated Markdown, and await one bounded callback.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoint": "./bridge.py",
   "packageRoot": ".",
   "commands": {
@@ -102,7 +102,7 @@
       ]
     },
     "send": {
-      "description": "send a bounded bridge round using strict JSON input.",
+      "description": "Send a full envelope or construct a correlated reply from original request plus text/result content.",
       "baseArgv": [
         "send"
       ],
@@ -128,6 +128,9 @@
             "type": "string"
           },
           "documentFile": {
+            "type": "string"
+          },
+          "replyContentFile": {
             "type": "string"
           }
         },
@@ -191,11 +194,19 @@
           "valueType": "path",
           "pathRole": "input",
           "optional": true
+        },
+        {
+          "arg": "replyContentFile",
+          "type": "option",
+          "flag": "--reply-content-file",
+          "valueType": "path",
+          "pathRole": "input",
+          "optional": true
         }
       ]
     },
     "receive": {
-      "description": "Receive one callback or stage one Markdown file; waits above 120 seconds require generic exec background supervision.",
+      "description": "Receive one callback, fetch its immutable original request, or stage Markdown; long waits require supervised generic exec.",
       "baseArgv": [
         "receive"
       ],
@@ -219,7 +230,12 @@
             "type": "string"
           },
           "mode": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "inbox",
+              "document",
+              "request"
+            ]
           },
           "workspaceRoot": {
             "type": "string"

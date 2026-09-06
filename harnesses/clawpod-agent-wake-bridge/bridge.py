@@ -260,6 +260,26 @@ def correlate(expected, reply, allowed):
     return reply['result']['status']
 
 
+def compose_reply(original, content, allowed):
+    validate_envelope(original, allowed)
+    require(original['kind'] == 'request', 'REQUEST_REQUIRED')
+    require(isinstance(content, dict) and set(content) == {'text', 'result'}, 'REPLY_CONTENT_FIELDS')
+    reply = dict(original, kind='info', reply_required=False, target=original['agent_name'],
+                 agent_name=original['target'], text=content['text'], result=content['result'])
+    correlate(original, reply, allowed)
+    return reply
+
+
+def validate_reference(reference, allowed):
+    exact(reference, ('nonce', 'msgid', 'target', 'reply_to'))
+    require(isinstance(reference['nonce'], str) and NONCE.fullmatch(reference['nonce']), 'INVALID_NONCE')
+    for key in ('msgid', 'target'):
+        require(isinstance(reference[key], str) and ID.fullmatch(reference[key]), 'INVALID_ID')
+    endpoint(reference['reply_to'], allowed, '/inbox')
+    reject_secrets(dumps(reference), reference['nonce'])
+    return reference
+
+
 def http_call(url, allowed, method, token, body=None):
     u = endpoint(url, allowed)
     connection = (http.client.HTTPSConnection if u.scheme == 'https' else http.client.HTTPConnection)(
@@ -310,7 +330,29 @@ def download(request, allowed, staging_dir):
     return {'document': doc, 'staged_path': str(target)}
 
 
+def fetch_request(reference, allowed, staging_dir):
+    validate_reference(reference, allowed)
+    directory = safe_local(staging_dir)
+    require(directory.is_dir(), 'STAGING_REQUIRED')
+    target = safe_local(directory / ('request-' + reference['nonce'] + '.json'))
+    require(not target.exists(), 'OUTPUT_COLLISION')
+    origin = urlsplit(reference['reply_to'])
+    url = f'{origin.scheme}://{origin.netloc}/request/{reference["nonce"]}'
+    code, content_type, raw = http_call(url, allowed, 'GET', derive(secret(), reference['nonce']))
+    require(code == 200, 'REQUEST_HTTP')
+    require(content_type.lower().replace(' ', '') in ('application/json', 'application/json;charset=utf-8'), 'REQUEST_TYPE')
+    request = validate_envelope(parse_json(raw), allowed)
+    require(request['kind'] == 'request' and all(request[key] == value for key, value in reference.items()), 'REQUEST_REFERENCE')
+    reject_secrets(raw, reference['nonce'])
+    atomic_new(target, dumps(request))
+    return {'staged_path': str(target), 'msgid': request['msgid'], 'nonce': request['nonce'],
+            'target': request['target'], 'kat': 'passed'}
+
+
 def inbox(request, allowed, bind, port, output, ready_file=None, raw_document=None):
+    # Snapshot the normalized envelope once; callers cannot change served bytes later.
+    request = parse_json(dumps(validate_envelope(request, allowed)))
+    request_bytes = dumps(request)
     require(request['kind'] == 'request', 'REQUEST_REQUIRED')
     endpoint(f'http://{bind}:{port}/inbox', allowed, '/inbox')
     callback = urlsplit(request['reply_to'])
@@ -350,6 +392,8 @@ def inbox(request, allowed, bind, port, output, ready_file=None, raw_document=No
                 return self.answer(401)
             if time.monotonic() >= deadline or done.is_set():
                 return self.answer(410)
+            if self.path == '/request/' + request['nonce']:
+                return self.answer(200, request_bytes, 'application/json; charset=utf-8')
             if self.path != '/document/' + request['nonce'] or raw_document is None:
                 return self.answer(404)
             self.answer(200, raw_document, 'text/markdown; charset=utf-8')
@@ -465,8 +509,9 @@ def parser():
             p.add_argument('--document-file')
         if command == 'send':
             p.add_argument('--target-url', required=True)
+            p.add_argument('--reply-content-file')
         if command == 'receive':
-            p.add_argument('--mode', required=True, choices=('inbox', 'document'))
+            p.add_argument('--mode', required=True, choices=('inbox', 'document', 'request'))
             p.add_argument('--bind')
             p.add_argument('--port', type=int)
             p.add_argument('--output')
@@ -480,7 +525,15 @@ def parser():
 def execute(args):
     kat()
     args.allow_host = [host for item in args.allow_host for host in item.split(',')]
-    request = validate_envelope(load_request(args.request), args.allow_host)
+    source = load_request(args.request)
+    if args.command == 'receive' and args.mode == 'request':
+        require(args.staging_dir and not any((args.bind, args.port, args.output, args.ready_file,
+                                              args.document_file, args.workspace_root)), 'CLI_ARGUMENTS')
+        return 'staged', fetch_request(source, args.allow_host, args.staging_dir)
+    request = validate_envelope(source, args.allow_host)
+    if args.command == 'send' and args.reply_content_file:
+        require(not args.document_file, 'CLI_ARGUMENTS')
+        request = compose_reply(request, load_request(args.reply_content_file), args.allow_host)
     repo_proof = None
     if args.command == 'preflight' or (args.command == 'receive' and args.mode == 'document'):
         if 'repository' in request:

@@ -13,3 +13,9 @@
 [VERIFIED] Independent review reproduced two failures: case aliases bypassed forbidden paths on macOS, and a continuously dripping HTTP header kept the process alive after TTL/SIGTERM. Evidence: reviewer `/tmp/bridge-cp1-review-6dop13dx/reproduce.py` and `verdict.json`.
 
 Test mixed-case `.Git`, `.ENV`, `.env.*` input/output/staging/repository paths including actual macOS aliases. Keep unauthenticated header and authenticated body connections open while sending bytes more frequently than the idle timeout; require process exit on both absolute TTL and SIGTERM without closing the client first. Preserve callback ACK, concurrency, and terminal-failure tests.
+
+## 0.1.1 envelope reliability regressions
+
+[ESTIMATED] Test original-request fetch and deterministic reply construction independently of agent transcription. Basis: the approved envelope rework brief and its callback diagnosis evidence.
+
+Preserve all 20 existing tests. Add an actual synthetic loopback round that serves immutable normalized request JSON, fetches/stages it using a four-field reference, and sends text/result only through reply-content while retaining document/repository metadata. Check wrong reference fields, nonce/target/types, content type, oversized/duplicate JSON, redirects, staging collisions and symlinks; request GET must not consume callback. Reject legacy reply-content fields and wrong complete proof before network. Verify uppercase recipient mapping, automatic KAT, unchanged original file and failed/blocked reply behavior. Record the actual resulting test count after execution.
