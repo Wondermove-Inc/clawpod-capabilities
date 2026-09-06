@@ -1095,38 +1095,6 @@
       ]
     },
     {
-      "id": "clawpod-agent-wake-bridge",
-      "type": "harness",
-      "version": "0.1.1",
-      "description": "Validate correlated bridge rounds, send authorized wakes, stage authenticated Markdown, and await one bounded callback.",
-      "path": "harnesses/clawpod-agent-wake-bridge",
-      "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
-      },
-      "safety": {
-        "risk": "externally-visible",
-        "approvalRequired": true
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "172eafcc973ec1b3262bc021b9ab17ff7ee338ddd56ad31503790103decf8dc8"
-        },
-        {
-          "path": "bridge.py",
-          "sha256": "3e35f68b433cf7853bd6249e702edb0dfa3223da2066c935a918628f91192200"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "06be0ecb1a65f33f23b0e110a5a9e1f37ffe43c37b2c1f60f3ddbb4db5edd984"
-        }
-      ]
-    },
-    {
       "id": "clawpod-capability-registry",
       "type": "harness",
       "version": "0.3.5",
