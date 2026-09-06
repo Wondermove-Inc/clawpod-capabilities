@@ -90,12 +90,12 @@ class EndToEndTests(unittest.TestCase):
             harness_args=parser.parse_args(["install","--id","synology-smb-storage","--version",self.SYNOLOGY_VERSION,"--type","harness","--target-root",str(harness_root)])
             harness_result=cap.run(harness_args)["unit"][0]
             self.assertEqual(harness_result["type"],"harness")
-            self.assertEqual(Path(harness_result["destination"]),harness_root/"synology-smb-storage")
+            self.assertEqual(Path(harness_result["destination"]).resolve(),(harness_root/"synology-smb-storage").resolve())
             harness_provenance=json.loads((Path(harness_result["destination"])/cap.PROVENANCE_FILE).read_text())
             self.assertEqual(harness_provenance["type"],"harness")
             harness_validation=cap.run(parser.parse_args(["validate","--id","synology-smb-storage","--version",self.SYNOLOGY_VERSION,"--type","harness","--target-root",str(harness_root)]))["unit"][0]
             self.assertEqual(harness_validation["type"],"harness")
-            self.assertEqual(Path(harness_validation["destination"]),harness_root/"synology-smb-storage")
+            self.assertEqual(Path(harness_validation["destination"]).resolve(),(harness_root/"synology-smb-storage").resolve())
 
             skill_root=base/"skills";linked_harness_root=base/"linked-harnesses"
             installed_harness=Path(harness_result["destination"])
@@ -117,8 +117,8 @@ class EndToEndTests(unittest.TestCase):
             skill_result=cap.run(skill_args)
             self.assertEqual({item["type"] for item in skill_result["unit"]},{"skill","harness"})
             destinations={item["type"]:Path(item["destination"]) for item in skill_result["unit"]}
-            self.assertEqual(destinations["skill"],skill_root/"synology-smb-storage")
-            self.assertEqual(destinations["harness"],linked_harness_root/"synology-smb-storage")
+            self.assertEqual(destinations["skill"].resolve(),(skill_root/"synology-smb-storage").resolve())
+            self.assertEqual(destinations["harness"].resolve(),(linked_harness_root/"synology-smb-storage").resolve())
             skill_validation=cap.run(parser.parse_args(["validate","--id","synology-smb-storage","--version",self.SYNOLOGY_VERSION,"--type","skill","--skills-root",str(skill_root),"--harnesses-root",str(linked_harness_root)]))
             self.assertEqual({item["type"] for item in skill_validation["unit"]},{"skill","harness"})
 
