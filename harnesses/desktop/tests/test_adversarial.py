@@ -13,7 +13,7 @@ def backend(tmp_path, body):
 
 def run(command, payload=None, *, env=None, extra=()):
     argv = [str(CLI), command, "--input", json.dumps(payload or {})] + list(extra)
-    result = subprocess.run(argv, text=True, capture_output=True, env={**os.environ, **(env or {})})
+    result = subprocess.run(argv, text=True, capture_output=True, env={**os.environ, "DESKTOP_RUNS_ROOT":str(RUNS), **(env or {})})
     return result, json.loads(result.stdout)
 
 
@@ -54,7 +54,7 @@ def test_coordinate_action_requires_preview_and_never_hits_backend(tmp_path):
     marker = tmp_path / "called"
     mock = backend(tmp_path, f"from pathlib import Path; Path({str(marker)!r}).write_text('unsafe')\n")
     result, output = run("image.click", {"args": ["--allow-coordinate"]}, env={"DESKTOP_SYSTEM_CLI": mock}, extra=("--idempotency-key", "coord"))
-    assert result.returncode == 30 and output["error"]["code"] == "APPROVAL_REQUIRED"
+    assert result.returncode == 31 and output["error"]["code"] == "PRECISION_TARGET_REQUIRED"
     assert not marker.exists()
 
 
