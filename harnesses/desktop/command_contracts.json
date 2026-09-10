@@ -91,7 +91,64 @@
       "timeoutMs": 30000,
       "idempotencyRequired": false,
       "dryRun": false,
-      "evidence": true
+      "evidence": true,
+      "innerInputSchema": {
+        "type": "object",
+        "properties": {
+          "prepareFocusGuard": {
+            "const": true
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "prepareFocusGuard"
+              ]
+            },
+            "then": {
+              "required": [
+                "target"
+              ],
+              "properties": {
+                "target": {
+                  "type": "object",
+                  "required": [
+                    "windowId",
+                    "kind",
+                    "visualRegion"
+                  ],
+                  "properties": {
+                    "windowId": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^(?:[0-9]+|0[xX][0-9a-fA-F]+)$"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      ]
+                    },
+                    "kind": {
+                      "enum": [
+                        "coordinate",
+                        "image"
+                      ]
+                    }
+                  }
+                },
+                "args": {
+                  "type": "array",
+                  "maxItems": 0
+                }
+              }
+            }
+          }
+        ]
+      },
+      "focusGuardPreparation": "Requires exact existing DISPLAY=:99; aliases/missing/other displays fail before backend I/O, without changing the environment. prepareFocusGuard:true requires a known exact windowId and supported visual target. Returns target and focusGuard from the same new observation and bounded identity readback. No focus repair. Copy both unchanged into Return; reobserve after typing or focus changes."
     },
     "ui.find": {
       "safetyClass": "S0",
@@ -252,7 +309,192 @@
       "timeoutMs": 30000,
       "idempotencyRequired": true,
       "dryRun": true,
-      "evidence": true
+      "evidence": true,
+      "innerInputSchema": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_]+(?:\\+[A-Za-z0-9_]+)*$"
+            }
+          },
+          "postCapture": {
+            "type": "boolean"
+          },
+          "focusGuard": {
+            "type": "object",
+            "required": [
+              "windowId",
+              "pid",
+              "observation"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "windowId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^(?:[0-9]+|0[xX][0-9a-fA-F]+)$"
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                ]
+              },
+              "pid": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "observation": {
+                "type": "object",
+                "required": [
+                  "revision",
+                  "digest",
+                  "display"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "revision": {
+                    "type": "integer"
+                  },
+                  "digest": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "display": {
+                    "type": "object",
+                    "required": [
+                      "display",
+                      "width",
+                      "height",
+                      "dpiX",
+                      "dpiY"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "display": {
+                        "type": "string",
+                        "minLength": 1,
+                        "const": ":99"
+                      },
+                      "width": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "height": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "dpiX": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "dpiY": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "args"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "postCapture"
+              ],
+              "properties": {
+                "postCapture": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "focusGuard"
+              ]
+            }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {
+                  "required": [
+                    "focusGuard"
+                  ]
+                },
+                {
+                  "required": [
+                    "postCapture"
+                  ]
+                }
+              ]
+            },
+            "then": {
+              "properties": {
+                "args": {
+                  "const": [
+                    "Return"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "focusGuard"
+              ]
+            },
+            "then": {
+              "required": [
+                "target",
+                "postcondition"
+              ],
+              "properties": {
+                "target": {
+                  "type": "object"
+                },
+                "postcondition": {
+                  "const": {
+                    "activeWindowMatch": true,
+                    "windowBoundsUnchanged": true
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "focusGuardContract": {
+        "postCaptureRequiresGuard": true,
+        "plainReturnGuard": "opt-in; legacy plain Return remains unguarded",
+        "targetOnlyIsGuarded": false,
+        "autoFocus": false,
+        "unknownCheckpoint": "retain even after post-checkpoint pre-dispatch rejection; never automatically replay",
+        "temporalFreshness": "one new observation per actual run; revision/digest are not timestamps",
+        "binding": "exact original target/guard windowId, revision, digest; fresh PID, focused X window and full display snapshot",
+        "postcondition": "structural only; not semantic success",
+        "budget": "one monotonic remaining subprocess budget; not hard realtime",
+        "limitations": [
+          "final-read-to-key TOCTOU",
+          "window-ID/PID ABA",
+          "same-window child-focus race",
+          "PID property is not authenticated"
+        ],
+        "displayRestriction": "Exact existing DISPLAY=:99 only for all guarded Return and guard preparation. Missing, non-:99 and alias values fail before backend I/O. Never rewrite DISPLAY. Legacy unguarded Return unchanged."
+      }
     },
     "keyboard.shortcut": {
       "safetyClass": "S1",

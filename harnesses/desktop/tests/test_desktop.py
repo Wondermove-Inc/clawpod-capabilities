@@ -3,7 +3,7 @@ from PIL import Image
 CLI=pathlib.Path(__file__).parents[1]/'desktop.py'
 METRICS=pathlib.Path(__file__).parent/'fixtures'/'xdpyinfo-static.sh'
 def run(*args,env=None):
- base={'DISPLAY':':disposable-test','DESKTOP_METRICS_CLI':str(METRICS)}
+ base={'DESKTOP_RUNS_ROOT':'/tmp/desktop-runs','DISPLAY':':disposable-test','DESKTOP_METRICS_CLI':str(METRICS)}
  p=subprocess.run([str(CLI),*args],capture_output=True,text=True,env={**os.environ,**base,**(env or {})}); return p,json.loads(p.stdout)
 def test_invalid_input():
  p,o=run('ui.observe','--input','[]'); assert p.returncode==10 and o['error']['code']=='INVALID_INPUT'
@@ -24,8 +24,10 @@ def test_safe_path_symlink_denied():
  with tempfile.TemporaryDirectory(dir='/tmp/desktop-runs') as d:
   link=pathlib.Path(d)/'link'; link.symlink_to('/tmp',target_is_directory=True)
   p=subprocess.run([str(CLI),'task.get','--run-root',str(link)],capture_output=True,text=True); assert p.returncode!=0
-def test_atspi_unavailable_diagnostic():
- p,o=run('environment.preflight',env={'DESKTOP_SYSTEM_CLI':'/missing','DBUS_SESSION_BUS_ADDRESS':''}); assert p.returncode==24 and o['error']['code']=='AT_SPI_UNAVAILABLE' and o['warnings']
+def test_atspi_unavailable_diagnostic(tmp_path):
+ # Never inspect the operator's process/session state in this source-only test.
+ pgrep=tmp_path/'pgrep'; pgrep.write_text('#!/bin/sh\nexit 1\n'); pgrep.chmod(0o700)
+ p,o=run('environment.preflight',env={'DESKTOP_SYSTEM_CLI':'/missing','DBUS_SESSION_BUS_ADDRESS':'','PATH':str(tmp_path)+os.pathsep+os.environ['PATH']}); assert p.returncode==24 and o['error']['code']=='AT_SPI_UNAVAILABLE' and o['warnings']
 def test_image_mismatch_and_window_ambiguity_contracts_present():
  c=json.loads((CLI.parent/'command_contracts.json').read_text())['commands']; assert 'image.locate' in c and 'window.list' in c and c['image.click']['safetyClass']=='S2'
 def test_partial_failure_taxonomy_and_secrets_redacted():
@@ -36,7 +38,7 @@ def test_app_launch_does_not_report_success_without_a_visible_window():
   backend=pathlib.Path(d)/'desktop'
   backend.write_text("#!/bin/sh\necho 'Launched: example'\necho 'WARNING: Window not detected after 10s (app may still be loading)'\n")
   backend.chmod(0o755)
-  p,o=run('app.launch','--input','{"args":["file","/tmp/example.txt"]}','--idempotency-key','launch-no-window',env={'DESKTOP_SYSTEM_CLI':str(backend)})
+  p,o=run('app.launch','--input','{"args":["file","/tmp/example.txt"]}','--idempotency-key','launch-no-window',env={'DESKTOP_SYSTEM_CLI':str(backend),'DESKTOP_RUNS_ROOT':d})
   assert p.returncode==20 and o['status']=='failed' and o['error']['code']=='POSTCONDITION_NOT_CONFIRMED'
 
 def test_ui_observe_emits_real_target_identities_for_fresh_previews():
@@ -48,7 +50,7 @@ def test_ui_observe_emits_real_target_identities_for_fresh_previews():
   p,o=run('ui.observe',env={'DESKTOP_SYSTEM_CLI':str(backend)})
   target=o['result']['observation']['targets'][0]
   assert p.returncode==0 and target['windowId']=='42' and target['nodeId']=='node:1'
-  assert target['targetDigest']!='preview-only' and isinstance(target['observedRevision'],int) and target['focused'] is True
+  assert target['targetDigest']!='preview-only' and isinstance(target['observedRevision'],int) and target['focused'] is False
 
 def test_screen_capture_without_path_uses_a_fresh_run_scoped_artifact():
  with tempfile.TemporaryDirectory() as d:
@@ -71,10 +73,9 @@ def test_keyboard_type_requires_a_fresh_target_outside_dry_run():
  with tempfile.TemporaryDirectory() as d:
   backend=pathlib.Path(d)/'desktop'; backend.write_text('#!/bin/sh\nexit 0\n'); backend.chmod(0o755)
   body='{"args":["preview text"],"postcondition":{"textPresent":"preview text"}}'
-  _,preview=run('keyboard.type','--input',body,'--idempotency-key','typed-target','--dry-run',env={'DESKTOP_SYSTEM_CLI':str(backend)})
-  receipt=pathlib.Path(d)/'approval.json'; receipt.write_text(json.dumps({'requestDigest':preview['result']['requestDigest'],'expiresAt':'2999-01-01T00:00:00+00:00'}))
-  p,o=run('keyboard.type','--input',body,'--idempotency-key','typed-target','--approval-file',str(receipt),env={'DESKTOP_SYSTEM_CLI':str(backend)})
-  assert p.returncode==31 and o['error']['code']=='PRECISION_TARGET_REQUIRED'
+  for extra in (('--dry-run',), ()):
+   p,o=run('keyboard.type','--input',body,'--idempotency-key','typed-target',*extra,env={'DESKTOP_SYSTEM_CLI':str(backend)})
+   assert p.returncode==31 and o['error']['code']=='PRECISION_TARGET_REQUIRED'
 
 def test_display_mutations_and_session_replacement_are_rejected_before_dispatch():
  with tempfile.TemporaryDirectory() as d:
@@ -150,14 +151,20 @@ def test_portal_action_blocked_without_dbus():
  p,o=run('file-dialog.open','--idempotency-key','fd',env={'DBUS_SESSION_BUS_ADDRESS':''})
  assert p.returncode==22 and o['error']['code']=='DBUS_SESSION_UNAVAILABLE'
 
-def test_engine_new_commands_not_unknown():
- # Direct engine dispatch: new commands must reach their handler, never the
- # generic "Unknown command" fall-through. Args omitted on purpose -> handler
- # emits its own usage/guard error.
- ENGINE=CLI.parent/'engine'/'desktop'
- for c in ('window-activate','window-resize','window-maximize','clipboard-clear',
-           'process-kill','pointer-move','download-move','dialog-respond',
-           'window-list','window-get','screen-list','app-get',
-           'dialog-inspect','clipboard-inspect','download-inspect'):
-  p=subprocess.run([str(ENGINE),c],capture_output=True,text=True,timeout=15)
-  assert 'Unknown command' not in (p.stdout+p.stderr), f"{c} not dispatched"
+def test_engine_new_commands_not_unknown(monkeypatch):
+ # Exercise real dispatch with inert handler modules, never live X/clipboard/
+ # accessibility handlers (clipboard-clear has a side effect even without args).
+ import runpy, sys, types
+ calls=[]
+ package=types.ModuleType('lib'); package.__path__=[]
+ monkeypatch.setitem(sys.modules,'lib',package)
+ for name,functions in {'window_manager':['activate','resize','maximize','list_windows','get_window','list_screens'],'clipboard_ops':['clear','inspect'],'process_ops':['kill'],'xdotool_engine':['move_pointer'],'download_ops':['move','inspect'],'file_dialog':['respond','inspect'],'atspi_engine':['app_get']}.items():
+  module=types.ModuleType('lib.'+name)
+  for function in functions:
+   setattr(module,function,lambda *args,_name=name,_function=function:calls.append((_name,_function,args)))
+  monkeypatch.setattr(package,name,module,raising=False); monkeypatch.setitem(sys.modules,'lib.'+name,module)
+ monkeypatch.setattr(sys,'path',list(sys.path))
+ dispatch=runpy.run_path(str(CLI.parent/'engine'/'desktop'))['main_dispatch']
+ for command in ('window-activate','window-resize','window-maximize','clipboard-clear','process-kill','pointer-move','download-move','dialog-respond','window-list','window-get','screen-list','app-get','dialog-inspect','clipboard-inspect','download-inspect'):
+  before=len(calls); dispatch([command,'7','8','9'])
+  assert len(calls)==before+1, f'{command} not dispatched'

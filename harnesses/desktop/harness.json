@@ -4,7 +4,7 @@
   "name": "desktop",
   "title": "Desktop",
   "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
-  "version": "3.0.6",
+  "version": "3.1.3",
   "entrypoint": "./desktop.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -61,6 +61,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -154,6 +157,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -193,6 +203,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -286,6 +299,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -325,6 +345,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -418,6 +441,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -457,6 +487,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -550,6 +583,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -589,6 +629,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -682,6 +725,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -721,6 +771,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -814,6 +867,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -853,6 +913,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -946,6 +1009,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -985,6 +1055,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1078,6 +1151,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1117,6 +1197,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1210,6 +1293,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1249,6 +1339,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1342,6 +1435,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1381,6 +1481,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1474,6 +1577,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1513,6 +1623,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1607,11 +1720,18 @@
           "valueType": "path",
           "pathRole": "inout",
           "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "ui.observe": {
-      "description": "ui.observe through the installed system desktop CLI with normalized evidence.",
+      "description": "Guard preparation/guarded Return require exact existing DISPLAY=:99 (no aliases or environment rewrite). JSON object string. With prepareFocusGuard:true and a supported visual target with exact windowId, returns fresh target and focusGuard (PID, revision/digest, display). No positional args or auto-focus. Known-ID lookup remains window.get; no PID discovery. See command_contracts.json innerInputSchema.",
       "baseArgv": [
         "ui.observe"
       ],
@@ -1645,6 +1765,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1738,6 +1861,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1777,6 +1907,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1870,6 +2003,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -1909,6 +2049,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2002,6 +2145,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2041,6 +2191,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2134,6 +2287,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2173,6 +2333,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2266,6 +2429,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2305,6 +2475,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2398,6 +2571,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2437,6 +2617,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2530,6 +2713,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2569,6 +2759,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2662,6 +2855,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2701,6 +2901,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2794,6 +2997,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2833,6 +3043,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2926,6 +3139,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -2965,6 +3185,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3058,6 +3281,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3097,6 +3327,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3190,6 +3423,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3229,6 +3469,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3322,6 +3565,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3363,6 +3613,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3456,6 +3709,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3497,6 +3757,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3590,6 +3853,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3631,6 +3901,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3724,6 +3997,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3765,6 +4045,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3858,6 +4141,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -3899,6 +4189,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3992,6 +4285,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4033,6 +4333,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4126,6 +4429,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4167,6 +4477,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4260,6 +4573,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4301,6 +4621,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4394,6 +4717,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4435,6 +4765,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4528,6 +4861,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4569,6 +4909,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4663,11 +5006,18 @@
           "valueType": "path",
           "pathRole": "inout",
           "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
+          "optional": true
         }
       ]
     },
     "keyboard.key": {
-      "description": "keyboard.key through the installed system desktop CLI with normalized evidence.",
+      "description": "Guard preparation/guarded Return require exact existing DISPLAY=:99 (no aliases or environment rewrite). JSON object string: single args key; focusGuard is opt-in for plain Return and mandatory with postCapture:true. Copy target/focusGuard from prepareFocusGuard ui.observe and require postcondition {activeWindowMatch:true,windowBoundsUnchanged:true}. Guard supports Return only, never repairs focus; target alone is not a guard. See command_contracts.json innerInputSchema. Preserve prepare/run exact input and card binding.",
       "baseArgv": [
         "keyboard.key"
       ],
@@ -4703,6 +5053,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4796,6 +5149,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4837,6 +5197,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4930,6 +5293,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -4972,6 +5342,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5065,6 +5438,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5107,6 +5487,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5200,6 +5583,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5242,6 +5632,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5335,6 +5728,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5377,6 +5777,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5470,6 +5873,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5512,6 +5922,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5605,6 +6018,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5647,6 +6067,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5740,6 +6163,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5782,6 +6212,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5875,6 +6308,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -5917,6 +6357,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6010,6 +6453,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6052,6 +6502,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6145,6 +6598,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6187,6 +6647,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6280,6 +6743,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6322,6 +6792,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6415,6 +6888,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6457,6 +6937,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6550,6 +7033,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6592,6 +7082,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6685,6 +7178,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6727,6 +7227,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6820,6 +7323,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6862,6 +7372,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -6955,6 +7468,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -6997,6 +7517,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7090,6 +7613,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7132,6 +7662,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7225,6 +7758,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7267,6 +7807,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7360,6 +7903,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7402,6 +7952,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7495,6 +8048,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7537,6 +8097,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7630,6 +8193,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7672,6 +8242,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7765,6 +8338,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7805,6 +8385,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -7898,6 +8481,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -7940,6 +8530,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8033,6 +8626,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8075,6 +8675,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8168,6 +8771,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8210,6 +8820,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8303,6 +8916,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8345,6 +8965,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8438,6 +9061,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8478,6 +9108,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8571,6 +9204,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8613,6 +9253,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8706,6 +9349,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8748,6 +9398,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8841,6 +9494,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]
@@ -8883,6 +9543,9 @@
           },
           "runRoot": {
             "type": "string"
+          },
+          "approval": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -8976,6 +9639,13 @@
           "flag": "--run-root",
           "valueType": "path",
           "pathRole": "inout",
+          "optional": true
+        },
+        {
+          "arg": "approval",
+          "type": "option",
+          "flag": "--approval",
+          "valueType": "string",
           "optional": true
         }
       ]

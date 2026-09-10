@@ -28,6 +28,19 @@ elif sys.argv[1:2] == ["verify"] and {verify!r} == "timeout": time.sleep(2)
 '''
     path.write_text(body)
     path.chmod(path.stat().st_mode | stat.S_IXUSR)
+    xdotool = tmp_path / 'xdotool'
+    xdotool.write_text(f"""#!/usr/bin/env python3
+import json,sys,time,pathlib
+args=sys.argv[1:]
+if args[0]=='getactivewindow':print('win-1')
+elif args[0]=='getwindowgeometry':
+ log=pathlib.Path({str(log)!r}); moved=log.exists() and 'mousedown' in log.read_text()
+ print(('X=10\\nY=10' if moved else 'X=0\\nY=0')+'\\nWIDTH=100\\nHEIGHT=100')
+else:
+ with pathlib.Path({str(log)!r}).open('a') as f:f.write(json.dumps(args)+'\\n')
+ if {verify!r}=='timeout':time.sleep(2)
+""")
+    xdotool.chmod(0o755)
     return path, log
 
 
@@ -36,7 +49,7 @@ def invoke(command, payload, backend, run_root, key="precision", extra=()):
             "--run-root", str(run_root), *extra]
     result = subprocess.run(argv, text=True, capture_output=True,
                             env={**os.environ, "DESKTOP_SYSTEM_CLI": str(backend),
-                                 "DESKTOP_RUNS_ROOT": str(run_root.parent)})
+                                 "DESKTOP_RUNS_ROOT": str(run_root.parent), "PATH":str(backend.parent)+os.pathsep+os.environ["PATH"]})
     return result, json.loads(result.stdout)
 
 
@@ -51,13 +64,13 @@ def approve(tmp_path, command, payload, backend, run_root, key="precision"):
     return receipt
 
 
-def payload(kind="accessibility"):
+def payload(kind="coordinate"):
     target = {"kind": kind, "windowId": "win-1", "observedRevision": 7,
               "targetDigest": "target-v7"}
     if kind == "accessibility": target["nodeId"] = "node-9"
     if kind == "image": target.update(templateHash="sha256:template", screenshotDigest="sha256:screen", visualRegion=[0,0,10,10], confidence=.99)
-    if kind == "coordinate": target.update(x=10, y=11, screenshotDigest="sha256:screen", visualRegion=[0,0,10,10], monitor="DP-1", scale=1.25)
-    return {"target": target, "postcondition": {"kind": "state", "equals": "open"}}
+    if kind == "coordinate": target.update(x=10, y=11, screenshotDigest="sha256:screen", visualRegion=[0,0,10,10], monitor=0, scale=1.25)
+    return {"target": target, "postcondition": {"activeWindowMatch": True}}
 
 
 def calls(log):
@@ -68,10 +81,11 @@ def test_accessibility_target_is_observed_and_postcondition_confirmed(tmp_path):
     observed = {"revision": 7, "targetDigest": "target-v7", "windowId": "win-1", "focused": True}
     backend, log = make_backend(tmp_path, [observed])
     run_root = tmp_path / "run"
-    body = payload(); receipt = approve(tmp_path, "pointer.click", body, backend, run_root)
-    result, output = invoke("pointer.click", body, backend, run_root, extra=("--approval-file", str(receipt)))
-    assert result.returncode == 0 and output["result"]["postconditionConfirmed"] is True
-    assert [row[0] for row in calls(log)] == ["observe", "click", "verify"]
+    body = payload('accessibility')
+    for extra in (('--dry-run',), ()):
+        result, output = invoke('pointer.click', body, backend, run_root, extra=extra)
+        assert result.returncode == 31 and output['error']['code'] == 'ACCESSIBILITY_DISPATCH_UNSUPPORTED'
+    assert calls(log) == []
 
 
 def test_stale_target_gets_only_bounded_reobservation_and_no_click(tmp_path):
@@ -89,6 +103,7 @@ def test_visual_fallback_is_explicit_and_loses_to_accessibility(tmp_path):
     backend, log = make_backend(tmp_path, [observed])
     run_root = tmp_path / "run"
     body = payload("image"); body["visionFallbackSupported"] = True
+    body['postcondition'] = {'activeWindowMatch': True}
     receipt = approve(tmp_path, "image.click", body, backend, run_root)
     result, output = invoke("image.click", body, backend, run_root, extra=("--approval-file", str(receipt)))
     assert result.returncode == 31 and output["error"]["code"] == "ACCESSIBILITY_TARGET_AVAILABLE"
@@ -102,7 +117,7 @@ def test_focus_is_reobserved_before_action(tmp_path):
     body = payload(); receipt = approve(tmp_path, "pointer.click", body, backend, run_root)
     result, _ = invoke("pointer.click", body, backend, run_root, extra=("--approval-file", str(receipt)))
     assert result.returncode == 0
-    assert [row[0] for row in calls(log)] == ["observe", "focus", "observe", "click", "verify"]
+    assert [row[0] for row in calls(log)] == ["observe", "focus", "observe", "mousemove"]
 
 
 def test_uncertain_click_is_never_replayed_with_same_idempotency_key(tmp_path):
@@ -110,12 +125,13 @@ def test_uncertain_click_is_never_replayed_with_same_idempotency_key(tmp_path):
     backend, log = make_backend(tmp_path, [observed], verify="timeout")
     run_root = tmp_path / "run"
     body = payload(); receipt = approve(tmp_path, "pointer.click", body, backend, run_root)
-    flags = ("--approval-file", str(receipt), "--timeout-ms", "30")
+    # Allow interpreter startup; the verification fixture sleeps two seconds.
+    flags = ("--approval-file", str(receipt), "--timeout-ms", "250")
     first, output = invoke("pointer.click", body, backend, run_root, extra=flags)
     assert first.returncode == 40 and output["error"]["code"] == "OUTCOME_UNKNOWN"
     second, output = invoke("pointer.click", body, backend, run_root, extra=flags)
     assert second.returncode == 40 and output["error"]["code"] == "OUTCOME_UNKNOWN"
-    assert [row[0] for row in calls(log)].count("click") == 1
+    assert sum("click" in row for row in calls(log)) == 1
 
 
 def test_precision_pointer_actions_do_not_deadlock_at_same_position(monkeypatch):
@@ -146,9 +162,13 @@ def test_coordinate_keyboard_postcondition_uses_bounded_visual_readback(monkeypa
     post = {"searchFieldText": "display", "windowBoundsUnchanged": True}
     target = {"windowId": "win-1"}
     confirmed, proof = DESKTOP.verify_effect(post, target, geometry, before_visual="before", after_visual="after")
-    assert confirmed is True and proof["searchRegionChanged"] is True and proof["typedLiteral"] == "display"
+    assert confirmed is False and proof["literalTextVerified"] is False
+    assert 'typedLiteral' not in proof
+    post = {'visualRegionChanged': True, 'windowBoundsUnchanged': True}
+    confirmed, proof = DESKTOP.verify_effect(post, target, geometry, before_visual="before", after_visual="after")
+    assert confirmed is True and proof['visualRegionChanged'] is True
     confirmed, proof = DESKTOP.verify_effect(post, target, geometry, before_visual="same", after_visual="same")
-    assert confirmed is False and proof["searchRegionChanged"] is False
+    assert confirmed is False and proof["visualRegionChanged"] is False
 
 
 def test_drag_trajectory_is_linear_and_bounded(tmp_path):
@@ -160,5 +180,5 @@ def test_drag_trajectory_is_linear_and_bounded(tmp_path):
     result, output = invoke("pointer.drag-drop", body, backend, run_root, extra=("--approval-file", str(receipt)))
     assert result.returncode == 0
     assert output["result"]["trajectory"]["points"] == [[0.0, 2.0], [5.0, 7.0], [10.0, 12.0]]
-    drag_call = next(row for row in calls(log) if row[0] == "pointer-drag-drop")
-    assert "--trajectory-json" in drag_call
+    drag_call = next(row for row in calls(log) if "mousedown" in row)
+    assert drag_call == ["mousemove", "0.0", "2.0", "mousedown", "1", "mousemove", "5.0", "7.0", "mousemove", "10.0", "12.0", "mouseup", "1"]
