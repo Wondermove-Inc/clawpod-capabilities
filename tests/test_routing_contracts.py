@@ -89,38 +89,6 @@ class RoutingContractTests(unittest.TestCase):
             self.assertIn(phrase, negatives)
         self.assertIn("Use node-connect instead", CLAWPOD_NODE_HOST_DESCRIPTION)
 
-    def test_desktop_routes_only_native_handoffs_and_names_composition_boundaries(self) -> None:
-        description = frontmatter_description(ROOT / "skills" / "desktop" / "SKILL.md")
-        for phrase in (
-            "native apps or OS dialogs",
-            "typed API or DOM",
-            "Observe and operate",
-            "pointer/keyboard",
-            "windows/dialogs",
-            "drag/drop",
-            "QA, verify, recover",
-            "Prefer Browser for DOM",
-            "nodes for remote screens",
-            "provider APIs for services",
-        ):
-            self.assertIn(phrase, description)
-
-        for metadata_path in (
-            ROOT / "skills" / "desktop" / "capability.json",
-            ROOT / "harnesses" / "desktop" / "capability.json",
-        ):
-            self.assertEqual(json.loads(metadata_path.read_text(encoding="utf-8"))["description"], description)
-        desktop_registry_entries = [
-            entry for entry in json.loads((ROOT / "registry" / "index.json").read_text(encoding="utf-8"))["capabilities"]
-            if entry["id"] == "desktop"
-        ]
-        self.assertEqual(len(desktop_registry_entries), 2)
-        self.assertTrue(all(entry["description"] == description for entry in desktop_registry_entries))
-
-        negatives = " ".join(self.contracts["desktop"]["negative"])
-        for collision in ("Browser", "nodes", "provider API"):
-            self.assertIn(collision, negatives)
-
 
 if __name__ == "__main__":
     unittest.main()

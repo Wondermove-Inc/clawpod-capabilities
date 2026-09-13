@@ -82,7 +82,6 @@
     "adjacent": [
       "claude-design",
       "clawpod-video-studio",
-      "desktop",
       "artifact-design"
     ]
   },
@@ -98,7 +97,6 @@
     ],
     "adjacent": [
       "verified-research",
-      "desktop",
       "hwp-desktop"
     ]
   },
@@ -236,7 +234,6 @@
       "Diagnose disk, memory, or failed services on an existing host"
     ],
     "adjacent": [
-      "desktop",
       "ops-troubleshooting"
     ]
   },
@@ -316,27 +313,6 @@
       "verified-research"
     ]
   },
-  "desktop": {
-    "positive": [
-      "Observe and operate a native desktop application when no typed API or DOM fits",
-      "Handle an operating-system dialog or browser chrome outside the web DOM",
-      "Recover and visually verify a bounded native GUI task",
-      "Compose a native file-dialog handoff after Browser DOM automation"
-    ],
-    "negative": [
-      "Inspect and click a normal web-page DOM element with Browser",
-      "Capture or operate an attached remote device screen through nodes",
-      "Read or mutate service state through its provider API",
-      "Extract text from a PDF image with OCR",
-      "Generate a standalone marketing image"
-    ],
-    "adjacent": [
-      "clawpod-ocr",
-      "clawpod-image-studio",
-      "clawpod-node-host",
-      "hwp-desktop"
-    ]
-  },
   "soc-event-correlation": {
     "positive": [
       "Correlate these security alerts into one incident",
@@ -387,7 +363,6 @@
       "Operate an unrelated native desktop application"
     ],
     "adjacent": [
-      "desktop",
       "clawpod-ocr"
     ]
   },
