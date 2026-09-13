@@ -2,13 +2,13 @@
 
 ## Browser-first connection
 
-Run `onboarding.plan`, `onboarding.preflight`, `onboarding.status`, `auth.contract`, and `auth.status`, then open `https://claude.ai/design` with the desktop/browser capability. Readiness means the authenticated Design UI is visible and usable. Reuse the browser session. The human performs only missing sign-in, MFA, or provider consent. Default onboarding does not register an MCP endpoint, initiate Claude Code OAuth, request a setup token, or delegate CLI work.
+Run `onboarding.plan`, `onboarding.preflight`, `onboarding.status`, `auth.contract`, and `auth.status`, then open `https://claude.ai/design` with the browser capability. Readiness means the authenticated Design UI is visible and usable. Reuse the browser session. The human performs only missing sign-in, MFA, or provider consent. Default onboarding does not register an MCP endpoint, initiate Claude Code OAuth, request a setup token, or delegate CLI work.
 
 ## Typed 61-command surface
 
 The Harness preserves 61 commands. It plans and guards browser work rather than pretending to execute provider mutations. Projects: list/get/search/create/update/iterate/comment/edit/present/share/export planning/diagnosis/verification/handoff/delete. Design systems: list/get/create/update/remix/publish/set-default/delete. Templates: list/get/create/update/delete. Code: browser login handoff and bidirectional sync. Destinations: list/handoff. Admin: status/permissions/usage/enable/role-update. System, onboarding, auth, browser input planning/verification/diagnosis, and optional MCP diagnostics complete the surface.
 
-Read and mutation commands return `HUMAN_VERIFICATION` with the browser URL and reconciliation source. Perform the action through desktop/browser, preserve IDs/revisions, then verify list/detail, ACL, artifact, git, or organization state. Never convert the handoff itself into success.
+Read and mutation commands return `HUMAN_VERIFICATION` with the browser URL and reconciliation source. Perform the action through the browser (or the Compute tool for native surfaces), preserve IDs/revisions, then verify list/detail, ACL, artifact, git, or organization state. Never convert the handoff itself into success.
 
 ## Exact browser input and long prompts
 

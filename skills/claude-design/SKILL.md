@@ -1,17 +1,17 @@
 ---
 name: "claude-design"
-description: "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs."
+description: "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs."
 ---
 
 # Claude Design
 
-Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.2) for deterministic planning, exact-digest approvals, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with Desktop only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use Desktop instead of Browser for ordinary Claude Design DOM work.
+Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.3) for deterministic planning, exact-digest approvals, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with the Compute tool only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use the Compute tool instead of Browser for ordinary Claude Design DOM work.
 
 Immediately after installation, state that the capability is installed and browser-first. Open Claude Design and verify the authenticated Design UI. Reuse the existing browser session. Ask the user only for sign-in, MFA, or provider consent when browser authentication is absent. Do not require MCP endpoint registration, Claude Code OAuth, setup tokens, or CLI work.
 
 ## The deliverable is the link, not the file
 
-A finished deck is delivered as a **verified Claude Design link** (project URL + exact `.dc.html` file URL) with a short handoff card that tells the recipient how to export PPTX/PDF/HTML themselves. Exporting from their own account takes seconds and always reflects the latest version; agent-driven native export takes minutes of Browser/Desktop automation, cannot be delivered through room artifacts (which carry only markdown/html text), and is the single largest source of delay and failed delivery. Run the native export path in [native-export.md](references/native-export.md) only when the user explicitly asks for a file, and even then send the link card first.
+A finished deck is delivered as a **verified Claude Design link** (project URL + exact `.dc.html` file URL) with a short handoff card that tells the recipient how to export PPTX/PDF/HTML themselves. Exporting from their own account takes seconds and always reflects the latest version; agent-driven native export takes minutes of Browser/Compute automation, cannot be delivered through room artifacts (which carry only markdown/html text), and is the single largest source of delay and failed delivery. Run the native export path in [native-export.md](references/native-export.md) only when the user explicitly asks for a file, and even then send the link card first.
 
 ## Ground the deliverable
 
@@ -48,7 +48,7 @@ A finished deck is delivered as a **verified Claude Design link** (project URL +
 
 ## File mode (only when explicitly requested)
 
-16. When the user asks for PPTX/PDF/HTML files, first send the link card, then follow [native-export.md](references/native-export.md) exactly: independent bounded export per format, `projects.export.plan` before native PDF, Desktop only for the native GTK Save File dialog, `projects.export.verify` for MIME/bytes/SHA-256/page count, and honest `fallback-rendering` provenance when native export genuinely fails. State plainly where the file is and that room artifacts cannot carry it.
+16. When the user asks for PPTX/PDF/HTML files, first send the link card, then follow [native-export.md](references/native-export.md) exactly: independent bounded export per format, `projects.export.plan` before native PDF, the Compute tool only for the native GTK Save File dialog, `projects.export.verify` for MIME/bytes/SHA-256/page count, and honest `fallback-rendering` provenance when native export genuinely fails. State plainly where the file is and that room artifacts cannot carry it.
 
 ## Continuity and completion
 

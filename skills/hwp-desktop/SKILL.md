@@ -1,18 +1,18 @@
 ---
 name: "hwp-desktop"
-description: "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR."
+description: "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR."
 ---
 
 # HWP Desktop
 
-Linux에서 HOP의 전체 실용 기능을 기존 `desktop` 능력으로 조작한다. HOP을 한컴 공식 제품으로 표현하지 않는다.
+Linux에서 HOP의 전체 실용 기능을 ClawPod 기본 Compute 도구로 조작한다. HOP을 한컴 공식 제품으로 표현하지 않는다.
 
 ## 라우팅과 구성
 
 - HWP/HWPX 파일·세션, 편집, 서식, 표, 쪽/구역, 머리말/꼬리말, 삽입/개체, 보기/도구, 저장/내보내기/인쇄에는 이 스킬을 사용한다.
 - 단순 텍스트 추출이나 OCR에는 `clawpod-ocr`을 사용한다.
 - 웹 오피스, 다른 네이티브 앱, 일반 OS 조작에는 이 스킬을 선택하지 않는다.
-- 모든 GUI 동작은 `desktop`의 `prepare → run`으로 실행한다. 이 스킬은 HOP 기능 선택, Desktop recipe, 문서 검증, 앱 수명주기를 제공한다.
+- 모든 GUI 동작은 Compute 도구로 실행한다. 이 스킬은 HOP 기능 선택, Compute recipe, 문서 검증, 앱 수명주기를 제공한다.
 
 ## 필요한 참조
 
@@ -24,9 +24,9 @@ Linux에서 HOP의 전체 실용 기능을 기존 `desktop` 능력으로 조작�
 
 1. 요청을 feature inventory의 기능군과 명령에 매핑한다. 지원되는 실용 표면을 제한 중심으로 축소하지 않는다.
 2. 입력, 출력, 대상 문서/범위/표/개체, 원본 보존, 외부 부수효과를 확인한다.
-3. HOP을 launch, focus, input, close, cleanup하기 전에 Desktop session/display와 HOP instance로 키를 만든 exclusive logical lease를 획득한다. owner/session 또는 Workboard card, 획득 시각, heartbeat/expiry, 문서, PID/window identity를 기록한다. 같은 process의 여러 window는 하나의 소유권 domain이며 경쟁자가 있으면 `HOP_GUI_BUSY`로 fail closed한다.
-4. stale owner를 교체하려면 orchestrator가 worker를 cancel/reclaim하고 attempt 중지를 확인한 뒤 Desktop 입력 소유권이 해제됐음을 재관찰한다. expiry만으로 takeover, close, relaunch, kill하지 않는다.
-5. `desktop environment.preflight`로 display, D-Bus, AT-SPI, backend를 확인한다.
+3. HOP을 launch, focus, input, close, cleanup하기 전에 Compute session/display와 HOP instance로 키를 만든 exclusive logical lease를 획득한다. owner/session 또는 Workboard card, 획득 시각, heartbeat/expiry, 문서, PID/window identity를 기록한다. 같은 process의 여러 window는 하나의 소유권 domain이며 경쟁자가 있으면 `HOP_GUI_BUSY`로 fail closed한다.
+4. stale owner를 교체하려면 orchestrator가 worker를 cancel/reclaim하고 attempt 중지를 확인한 뒤 Compute 입력 소유권이 해제됐음을 재관찰한다. expiry만으로 takeover, close, relaunch, kill하지 않는다.
+5. Compute 도구로 display, D-Bus, AT-SPI, backend 상태를 확인한다.
 6. 모든 read/write/hash/package 전에 기대한 CIFS mount의 source, filesystem, read/write, freshness와 target path를 확인한다. 실패하면 자동 mount/remount나 credential 사용 없이 중지한다.
 7. 원본 path, size, SHA-256을 기록하고 명시적 작업 복사본과 출력 경로를 사용한다. 사용자가 정확히 승인한 경우에만 기존 파일을 덮어쓴다.
 8. `/workspace/application/hop/current`의 AppImage와 provenance를 검증한다. 없거나 손상되었으면 app lifecycle로 bootstrap 또는 repair한다.
@@ -45,12 +45,12 @@ Linux에서 HOP의 전체 실용 기능을 기존 `desktop` 능력으로 조작�
 8. **검증:** 저장 파일을 닫고 재열어 한국어 anchor, 텍스트, 페이지, 표, 개체, 수식, 글꼴, 머리말/꼬리말, 각주/미주, 쪽 설정을 대조하고 PDF page/render/text를 확인한다. 완료 전에 source SHA-256을 재계산해 최초 값과 비교한다.
 9. **종료:** dirty 상태와 복구 대화상자를 처리하고 owned 문서 창과 HOP process 종료를 관찰한다. 안전한 handoff가 아니면 종료 확인 후에만 lease를 release한다.
 
-## Desktop 실행 계약
+## Compute 실행 계약
 
 모든 명령은 `observe → focus/context → action → dialog review → postcondition → recovery` 순서를 따른다.
 
 - lease owner가 아니면 focus, type, paste, close, relaunch, kill을 포함한 모든 GUI/process action을 `HOP_GUI_BUSY`로 거부한다.
-- stale worker replacement는 Workboard cancel/reclaim과 attempt stopped 확인, Desktop/process/window 재관찰 후에만 허용한다.
+- stale worker replacement는 Workboard cancel/reclaim과 attempt stopped 확인, Compute/process/window 재관찰 후에만 허용한다.
 - launch 뒤 fresh revision과 PID/window identity를 lease에 bind하고, 매 action 전에 owner와 identity가 그대로인지 확인한다.
 - 접근성 target과 식별 가능한 메뉴/도구막대/컨텍스트 메뉴를 우선한다.
 - 파일 대화상자는 전체 경로와 확장자를 확인한다. 필요하면 검증된 drag/drop으로 전환한다.

@@ -8,7 +8,7 @@ SKILL = ROOT / "skills" / "claude-design" / "SKILL.md"
 NATIVE_EXPORT = ROOT / "skills" / "claude-design" / "references" / "native-export.md"
 QUALITY_GATES = ROOT / "skills" / "claude-design" / "references" / "quality-gates.md"
 LINK_HANDOFF = ROOT / "skills" / "claude-design" / "references" / "link-handoff.md"
-DESCRIPTION = "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs."
+DESCRIPTION = "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs."
 DESKTOP_COMPOSITION_POSITIVE = (
     "Use the native GTK Save File dialog to save this Claude Design PDF to an exact path",
     "Complete Claude Design export after Chrome print preview opens an OS save dialog",
@@ -56,11 +56,11 @@ def test_claude_design_description_is_exact_on_linked_surfaces() -> None:
 
 def test_desktop_handoff_returns_to_typed_verification() -> None:
     text = SKILL.read_text() + NATIVE_EXPORT.read_text()
-    assert "never use Desktop instead of Browser for ordinary Claude Design DOM work" in text
+    assert "never use the Compute tool instead of Browser for ordinary Claude Design DOM work" in text
     assert "native GTK Save File dialog" in text
     assert "then return to Harness/file verification" in text
-    assert "Do not use Desktop to click ordinary Claude Design web controls" in text
-    assert "compose with Desktop only when visual QA requires rendering in a native viewer" in text
+    assert "Do not use the Compute tool to click ordinary Claude Design web controls" in text
+    assert "use the Compute tool only when visual QA requires rendering in a native viewer" in text
 
 
 def test_stale_version_and_export_recovery_procedure_is_bounded() -> None:
@@ -95,8 +95,8 @@ def test_link_first_delivery_is_the_default_and_file_export_is_opt_in() -> None:
     assert "Share → Export → PowerPoint" in link and "projects.share.preview" in link
     harness = json.loads((ROOT / "harnesses" / "claude-design" / "harness.json").read_text())
     assert harness["commands"]["projects.link.verify"]["safetyClasses"] == ["readOnly"]
-    assert harness["version"] == "0.4.2"
-    assert json.loads((ROOT / "skills" / "claude-design" / "capability.json").read_text())["linkedHarness"]["version"] == "0.4.2"
+    assert harness["version"] == "0.4.3"
+    assert json.loads((ROOT / "skills" / "claude-design" / "capability.json").read_text())["linkedHarness"]["version"] == "0.4.3"
 
 
 def test_quality_gates_are_deterministic_and_feed_a_bounded_revise_loop() -> None:

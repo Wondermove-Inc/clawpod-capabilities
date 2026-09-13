@@ -47,6 +47,6 @@ Default tests and evaluation use fixtures and command recording. Real OS integra
 
 - For a routine command on an already connected node, use first-class `nodes` or `exec host=node`.
 - For QR/bootstrap/pairing/network diagnosis without provisioning, use `node-connect`.
-- Compose with `desktop` for general GUI work and macOS permission prompts; consent is always user-driven.
+- Use the Compute tool for general GUI work and macOS permission prompts; consent is always user-driven.
 - This capability supports only onboarding-scoped Tailscale install and login initiation. Route Serve/Funnel, ACL policy, tailnet administration, logout/removal, and Gateway lifecycle elsewhere.
 - Runtime is Node, never Bun. On 2026.4.11, start uses provider-supported `node restart` and reports that operation.

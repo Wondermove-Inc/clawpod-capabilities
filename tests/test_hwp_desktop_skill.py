@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "hwp-desktop" / "SKILL.md"
-DESCRIPTION = "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR."
+DESCRIPTION = "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR."
 
 
 def test_description_and_skill_only_surface_are_exact() -> None:
@@ -23,9 +23,9 @@ def test_description_and_skill_only_surface_are_exact() -> None:
 def test_routing_composes_desktop_without_colliding_with_ocr_or_web_office() -> None:
     contracts = json.loads((ROOT / "tests" / "fixtures" / "routing_contracts.json").read_text(encoding="utf-8"))
     contract = contracts["hwp-desktop"]
-    assert {"desktop", "clawpod-ocr"} <= set(contract["adjacent"])
+    assert {"clawpod-ocr"} <= set(contract["adjacent"])
     positives = " ".join(contract["positive"])
-    assert all(phrase in positives for phrase in ("HOP", "Desktop", "HWP", "HWPX", "PDF"))
+    assert all(phrase in positives for phrase in ("HOP", "Compute", "HWP", "HWPX", "PDF"))
     negatives = " ".join(contract["negative"])
     assert all(phrase in negatives for phrase in ("OCR only", "browser-based office suite", "unrelated native"))
 

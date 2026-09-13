@@ -99,8 +99,8 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.4.2",
-      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.3",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -116,19 +116,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2bb2b3b4d506336617b05f2514c22d1009517bee22005f004128ea832b514bd7"
+          "sha256": "7aae05138bc5b390a1ba14a7e3063c15e297ee24406c2c93bfa0dac5b0aee1cc"
         },
         {
           "path": "references/link-handoff.md",
-          "sha256": "633205059a8f5e17155dd31a8b894d2f032ba7b457cd54025174a63d6c8059e6"
+          "sha256": "22aac6a0b7694c34c75a201aae9bcb128d03e1261f7b7cb95ac557cf5b8d49e6"
         },
         {
           "path": "references/native-export.md",
-          "sha256": "b214b3a4a4eb9642bb272c7273c017207a9d20edeeca040c6375912a697dd7c0"
+          "sha256": "ed948f1f4f939fd8cc0ce3373a0dc2fb98b8ad1dfbe88746bbc9f5a539995ab4"
         },
         {
           "path": "references/operations.md",
-          "sha256": "46888d992e8ebadc10e7a4579366d2476c68c6a6cfa2f30382868cb6039a7ea1"
+          "sha256": "e7531ddc1aa4b011d6b22981406bf1a1204e19755a648b4526e9d6fce66dd639"
         },
         {
           "path": "references/quality-gates.md",
@@ -137,7 +137,7 @@
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.4.2"
+        "version": "0.4.3"
       }
     },
     {
@@ -247,7 +247,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -264,7 +264,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d41969b5ab9832308ab429d7c1805b72f5b3ea5829969033b7311eb6b274e912"
+          "sha256": "48ae59cec3170ae551cd9d1d7701b70ddb9203d46cb848ba40dda99c4495a4f8"
         },
         {
           "path": "references/onboarding.md",
@@ -375,7 +375,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "skill",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
@@ -408,7 +408,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "aa58e5d803b63cf68db495dec2e885fe5f0e5ae614a8aef337a7db8f2626db28"
+          "sha256": "6c541a678199c8cd1a25d26a05112bc791cf1ad08a7e76f71bb074961b292674"
         },
         {
           "path": "references/pipelines.md",
@@ -449,41 +449,6 @@
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
         "version": "0.1.6"
-      }
-    },
-    {
-      "id": "desktop",
-      "type": "skill",
-      "version": "3.1.3",
-      "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
-      "path": "skills/desktop",
-      "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux"
-        ]
-      },
-      "safety": {
-        "risk": "destructive",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "167e33c7a9c708ee6dc2256f2882250bf9e624a7b0b5eedf9ee5b5d5e4850d7f"
-        },
-        {
-          "path": "references/operations.md",
-          "sha256": "cb6b67480930dd496f2f0315a433fcfed3bf47e1c458a707735c67ae7b72f4e1"
-        },
-        {
-          "path": "references/safety.md",
-          "sha256": "6d4d6ec515c2d20eee27ce9204795cfdb2e29f9f26f25e5608d791a4de52c68e"
-        }
-      ],
-      "linkedHarness": {
-        "id": "desktop",
-        "version": "3.1.3"
       }
     },
     {
@@ -569,7 +534,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -591,7 +556,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "10796d92991101d6e655fe1cc3dfec784e61a5ac529fadef522c225f780c79e3"
+          "sha256": "3c700b4651cb905f1bbea2d6c75d03d574ce82d5b1932dc154c4c58718834397"
         },
         {
           "path": "references/operations.md",
@@ -610,8 +575,8 @@
     {
       "id": "hwp-desktop",
       "type": "skill",
-      "version": "0.1.1",
-      "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR.",
+      "version": "0.1.2",
+      "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR.",
       "path": "skills/hwp-desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -626,19 +591,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ff0c83e9a73390333b409142e9674705fd462af5ff0bd1ae2f2de115ef542f7e"
+          "sha256": "2a8e1046e89b06cbf5009361c9ddb341d6898ab25903aa57efd4149eab10a836"
         },
         {
           "path": "references/app-lifecycle.md",
-          "sha256": "683564219fa251bee1e0a558c37441ecdf76b04a0056800c5a72247e037c972f"
+          "sha256": "ef3de95183d723e135c06e7a7b17a0f516c93ca25d6dff1ede95a12a7f0adfbd"
         },
         {
           "path": "references/document-operations.md",
-          "sha256": "732b30aad0c653baf6aef50c17ee60e6d1ad60c84b16bb9106b553628a27999c"
+          "sha256": "892a3766140e3051cb50e5851345b33e2dbd1c7e93606ffacc69c05738e30fa6"
         },
         {
           "path": "references/feature-inventory.md",
-          "sha256": "d4b80aad6dede6282f0c56717350459da1c83520201bd61b9b0484e7c3bd3691"
+          "sha256": "9a638b2b4ff9c6723d8d73f5de8adf970ce10093a29352fc7b579ded91e97cf7"
         }
       ]
     },
@@ -674,7 +639,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.11",
+      "version": "0.1.12",
       "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
       "path": "skills/notion",
       "compatibility": {
@@ -692,7 +657,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "21a01109f365a4a7a88e3ecc6f055336d9246982060b3cb3ba2c55d7ecdfd6c4"
+          "sha256": "429e4ae67e59d8b433d08b301f356add8238904e089c410ad641509bc04a2358"
         },
         {
           "path": "references/commands.md",
@@ -700,7 +665,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "2734896c01466f84226a805beec526d2c86d1eefc4860878f4b7f97705b752a4"
+          "sha256": "0659de08a485712ef00e5044868abc335621dc92199ceec3d2225b5df80fbb4b"
         }
       ],
       "linkedHarness": {
@@ -1053,8 +1018,8 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.4.2",
-      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.3",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1070,7 +1035,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "39059983fa01aa28bc612e8d42064a72321bcf056917698a47c72966d18a2d10"
+          "sha256": "8ee61efc355f595c3d554081ddb26db58e690a0839caf4eb19a8d1a922921760"
         },
         {
           "path": "TEST.md",
@@ -1078,7 +1043,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "093b1412ae21441ba799e6a5de63431cc5979fa6fe966914142cd29ec431e4bb"
+          "sha256": "9b1aa285bd2e67e7d4aed4f9c69d47a557c9e6633e0a51bca07ff0a902f5ba3e"
         },
         {
           "path": "command_contracts.json",
@@ -1086,7 +1051,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "079d00b021ee977b9417ee9f601dab0483b4443a3b1c96a83f311ecd28f7b3ec"
+          "sha256": "a66840a212142b9ae1ef2afc478de1e0f4459d292d4015cd83e11dc7faa8c728"
         },
         {
           "path": "scripts/capture_layout.py",
@@ -1445,217 +1410,6 @@
         {
           "path": "harness.json",
           "sha256": "424a8aa86f1b2b21dc403243ab1820e813d03a2b2ce08cb2af0184718b9cdaca"
-        }
-      ]
-    },
-    {
-      "id": "desktop",
-      "type": "harness",
-      "version": "3.1.3",
-      "description": "Use for native apps or OS dialogs when no typed API or DOM fits. Observe and operate pointer/keyboard, windows/dialogs, or drag/drop; QA, verify, recover. Prefer Browser for DOM, nodes for remote screens, provider APIs for services.",
-      "path": "harnesses/desktop",
-      "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux"
-        ]
-      },
-      "safety": {
-        "risk": "destructive",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "CHANGES-fast-actions.md",
-          "sha256": "822c18f69d6505c879b1f2303617c0bdd5e3580dc030d12f1b80b0d4b19b88df"
-        },
-        {
-          "path": "CHANGES-v3.0.0.md",
-          "sha256": "58f4806da2450c0275c490224e70b997fbfaba7ce58120075471b6c198114660"
-        },
-        {
-          "path": "CHANGES-v3.0.1.md",
-          "sha256": "446fdd79beb69907f3522a8c0acf5dfb42ac7958e0baae7e9319c27a0b59a8fd"
-        },
-        {
-          "path": "CHANGES-v3.0.2.md",
-          "sha256": "361b17fb11fd33f01228d75b923c1f91e780ffd24120b89828579571b0c5c0f2"
-        },
-        {
-          "path": "CHANGES-v3.0.3.md",
-          "sha256": "dd999d5d61f6ac787ba513570a472db2557d1fc345aaf3a00b3249cd432c6d46"
-        },
-        {
-          "path": "CHANGES-v3.0.4.md",
-          "sha256": "e76509333b680a18e5534ffa9fde9e2af6d4008886856faac05b8f3035af5d6b"
-        },
-        {
-          "path": "CHANGES-v3.0.5.md",
-          "sha256": "38345eff0c60eed1f8f54672a632458f1f66ef40a564b6a7f3061f0f2ef09d7f"
-        },
-        {
-          "path": "EVIDENCE-v3.0.0.md",
-          "sha256": "5bdf437a18e03df27c0dcdddaa674ae3c2641a175c87ca725fa527f7f34e1034"
-        },
-        {
-          "path": "EVIDENCE-v3.0.1.md",
-          "sha256": "d0672985c5f865e41d8af75a7f5d3e34ebbad5455725a168d142602bc7d750b0"
-        },
-        {
-          "path": "EVIDENCE-v3.0.2.md",
-          "sha256": "ad07577d20b41bab4d695ec911805de342d4793fa84e6723dc15eae9311b590b"
-        },
-        {
-          "path": "EVIDENCE-v3.0.3.md",
-          "sha256": "ee19ed7af2747f2a1481b5e948d24d74b4efabcc71d92e6f8c5b81663c11e40d"
-        },
-        {
-          "path": "EVIDENCE-v3.0.4.md",
-          "sha256": "a806b4e87c0515a602a19ae306aaff108c56c19599cfea35c9bde48ac5829857"
-        },
-        {
-          "path": "EVIDENCE-v3.0.5.md",
-          "sha256": "06f08ac08f7caae6ab2cbef914a6f9a01e2150edfbce75fcc30cefa8ae91694e"
-        },
-        {
-          "path": "command_contracts.json",
-          "sha256": "496505b09546e1f0d405660e9b60a3a539becae8add8393eadbd5a42c13bedc2"
-        },
-        {
-          "path": "desktop.py",
-          "sha256": "97c974235e8f778dfae7958e6d22f94059f563bc44812f9ece3ef27e8cb0d222"
-        },
-        {
-          "path": "engine/desktop",
-          "sha256": "44a9b58f310616ca413bbea5549659c22dd99e6401a3210428c57fdf09dfaecb"
-        },
-        {
-          "path": "engine/lib/__init__.py",
-          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "path": "engine/lib/actions.py",
-          "sha256": "e243d8ce87efc15e493b7d4bdec476b13a622c9dd1fd4655ef01f56591d1d7cf"
-        },
-        {
-          "path": "engine/lib/app_manager.py",
-          "sha256": "059129e93e656f7006795299f6c52bbb802cb800d1d87a84637f7524ad0c701d"
-        },
-        {
-          "path": "engine/lib/atspi_engine.py",
-          "sha256": "668d20005254fbc99fa6ae36ed9db3757543723eb549a89540927e262d36b297"
-        },
-        {
-          "path": "engine/lib/clipboard_ops.py",
-          "sha256": "870a7454bf9e365689facf268f47a1d082ffa2caa8514d222e00d31d515aa88a"
-        },
-        {
-          "path": "engine/lib/download_ops.py",
-          "sha256": "376b1b7017a5873b347a8246af772be694926f60a430d8c476a1aed953be9e9e"
-        },
-        {
-          "path": "engine/lib/exit_codes.py",
-          "sha256": "3cee0db47b44ae8293f509f028eb559862451ed70e69785b401c357ecd7c429d"
-        },
-        {
-          "path": "engine/lib/file_dialog.py",
-          "sha256": "15481773bf638bb3c40c53e781065a3d5776e6a7f473741e74a22fba047ecdf4"
-        },
-        {
-          "path": "engine/lib/human_input.py",
-          "sha256": "03cea2131464de91133ecd26df0610a06991258a344973f48032d43665ae7dbc"
-        },
-        {
-          "path": "engine/lib/human_verification.py",
-          "sha256": "35d6ba5ba7dfbf1586cbc6300fb776824a20f4e781d895b3ad40295aa3515bf1"
-        },
-        {
-          "path": "engine/lib/image_target.py",
-          "sha256": "51f48b825824457075b96b3580d7d7841644e54ba59c37ceb39f0d0891804c90"
-        },
-        {
-          "path": "engine/lib/loop.py",
-          "sha256": "ef14c28090fa3b432d2bbe49ce2715431aca98b5cf436005b700c1a11510d51b"
-        },
-        {
-          "path": "engine/lib/macro.py",
-          "sha256": "2b9e75bda7356c39bc02a3bc5fa2bb9b5b300fd960a79ce46e30685f89f2d0d4"
-        },
-        {
-          "path": "engine/lib/observation.py",
-          "sha256": "3d3863f2f8bb2d593463e7a8a5cc5cb7d59aa8413d88dd3473f02f5c5cc560f9"
-        },
-        {
-          "path": "engine/lib/power_commands.py",
-          "sha256": "88d9700104428f054c040b50ebdeb4f8017ceaa4bd941f50140afc592591de90"
-        },
-        {
-          "path": "engine/lib/process_ops.py",
-          "sha256": "8a959798cc6b74302e3f5f3cac74f969124f348d458920790fbb80f91fdbc051"
-        },
-        {
-          "path": "engine/lib/recorder.py",
-          "sha256": "0b403b5a9299c6ebf5d27b73587e863ace91962f95b6728df4ec064a6a870248"
-        },
-        {
-          "path": "engine/lib/safety.py",
-          "sha256": "01f42444f5350a3cc6b62300b1d768d54761704eafdfbd4e7000bf47ba2205f4"
-        },
-        {
-          "path": "engine/lib/verify.py",
-          "sha256": "2f2d296122e7104aa1b06a30fd2cc31c49b265025e2d615ea790de349df2ba7b"
-        },
-        {
-          "path": "engine/lib/window_manager.py",
-          "sha256": "f1329b857796a13d30cbe2792eef95a6de3e2dc90a05df922ee56331bb64702b"
-        },
-        {
-          "path": "engine/lib/xdotool_engine.py",
-          "sha256": "988f727ead24bad695fda0bc9df4e858509f9c83b7d5e24b8ab92027ae21e19e"
-        },
-        {
-          "path": "engine/scripts/computer_use_controller_smoke.sh",
-          "sha256": "44da0196faf04ad1f6b70fcafa4fccecc7351dac863396250a06b7910730e92d"
-        },
-        {
-          "path": "engine/scripts/computer_use_human_verification_smoke.sh",
-          "sha256": "8afee5846460e1ec6b58fcbab5e4fee669a615ecd3b712b64891bb2f7f070254"
-        },
-        {
-          "path": "engine/scripts/computer_use_image_target_smoke.sh",
-          "sha256": "54b74defac46f169073ecaf1b47b9e4004b8a137d305464e839ab363e43f39dd"
-        },
-        {
-          "path": "engine/scripts/computer_use_long_workflow_benchmark.sh",
-          "sha256": "dda17fbb4ab4bd1ae576eef7b271029c89c4d1867d4729a02aa7a15f78a11f1b"
-        },
-        {
-          "path": "engine/scripts/computer_use_modal_dialog_benchmark.sh",
-          "sha256": "8ecd5ec7b66d5d736f1aa93b712ff8b14665ee30b0d011ce5f5537c4f07b11a0"
-        },
-        {
-          "path": "engine/scripts/computer_use_smoke.sh",
-          "sha256": "6c2f22bbe615fa1d76144eccbbc0a3c10bdf29a0cc647f24f6444531499fe64f"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "86f4bac1d42a3b79da94650a3106e929d32fb9801ef9b17ba9efeadc87c90f37"
-        },
-        {
-          "path": "precision_lab/README.md",
-          "sha256": "32a90dee10bda7c464816f292ffef7483087ef247d482c1d7285b3faa281c5be"
-        },
-        {
-          "path": "precision_lab/environment-matrix.json",
-          "sha256": "dccbac91d687df950707996436b5bf0b96effa4092b1b64378724f544c76653c"
-        },
-        {
-          "path": "precision_lab/precision_benchmark.py",
-          "sha256": "321167c50ba1b4a4ec31e9ad25838fd2b24eb126caa653977ad2a569c7db3b04"
-        },
-        {
-          "path": "precision_lab/thresholds.json",
-          "sha256": "79ece9400f08064f42c959f9c55c2504fc555fc53db1f7be9dc2824392d6635e"
         }
       ]
     },
