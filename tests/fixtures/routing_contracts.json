@@ -353,9 +353,9 @@
   },
   "hwp-desktop": {
     "positive": [
-      "Open and edit an HWP document on Linux with HOP through Desktop",
-      "Save an HWPX working copy in HOP through Desktop while preserving the original",
-      "Export an HWP file to PDF on Linux with HOP through Desktop"
+      "Open and edit an HWP document on Linux with HOP through the Compute tool",
+      "Save an HWPX working copy in HOP through the Compute tool while preserving the original",
+      "Export an HWP file to PDF on Linux with HOP through the Compute tool"
     ],
     "negative": [
       "Extract text from an HWP scan with OCR only",

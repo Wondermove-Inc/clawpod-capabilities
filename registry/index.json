@@ -99,8 +99,8 @@
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.4.2",
-      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.3",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -116,19 +116,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2bb2b3b4d506336617b05f2514c22d1009517bee22005f004128ea832b514bd7"
+          "sha256": "7aae05138bc5b390a1ba14a7e3063c15e297ee24406c2c93bfa0dac5b0aee1cc"
         },
         {
           "path": "references/link-handoff.md",
-          "sha256": "633205059a8f5e17155dd31a8b894d2f032ba7b457cd54025174a63d6c8059e6"
+          "sha256": "22aac6a0b7694c34c75a201aae9bcb128d03e1261f7b7cb95ac557cf5b8d49e6"
         },
         {
           "path": "references/native-export.md",
-          "sha256": "b214b3a4a4eb9642bb272c7273c017207a9d20edeeca040c6375912a697dd7c0"
+          "sha256": "ed948f1f4f939fd8cc0ce3373a0dc2fb98b8ad1dfbe88746bbc9f5a539995ab4"
         },
         {
           "path": "references/operations.md",
-          "sha256": "46888d992e8ebadc10e7a4579366d2476c68c6a6cfa2f30382868cb6039a7ea1"
+          "sha256": "e7531ddc1aa4b011d6b22981406bf1a1204e19755a648b4526e9d6fce66dd639"
         },
         {
           "path": "references/quality-gates.md",
@@ -137,7 +137,7 @@
       ],
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.4.2"
+        "version": "0.4.3"
       }
     },
     {
@@ -247,7 +247,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -264,7 +264,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d41969b5ab9832308ab429d7c1805b72f5b3ea5829969033b7311eb6b274e912"
+          "sha256": "48ae59cec3170ae551cd9d1d7701b70ddb9203d46cb848ba40dda99c4495a4f8"
         },
         {
           "path": "references/onboarding.md",
@@ -375,7 +375,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "skill",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
@@ -408,7 +408,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "aa58e5d803b63cf68db495dec2e885fe5f0e5ae614a8aef337a7db8f2626db28"
+          "sha256": "6c541a678199c8cd1a25d26a05112bc791cf1ad08a7e76f71bb074961b292674"
         },
         {
           "path": "references/pipelines.md",
@@ -534,7 +534,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -556,7 +556,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "10796d92991101d6e655fe1cc3dfec784e61a5ac529fadef522c225f780c79e3"
+          "sha256": "3c700b4651cb905f1bbea2d6c75d03d574ce82d5b1932dc154c4c58718834397"
         },
         {
           "path": "references/operations.md",
@@ -575,8 +575,8 @@
     {
       "id": "hwp-desktop",
       "type": "skill",
-      "version": "0.1.1",
-      "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through Desktop; use clawpod-ocr only for OCR.",
+      "version": "0.1.2",
+      "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR.",
       "path": "skills/hwp-desktop",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -591,19 +591,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ff0c83e9a73390333b409142e9674705fd462af5ff0bd1ae2f2de115ef542f7e"
+          "sha256": "2a8e1046e89b06cbf5009361c9ddb341d6898ab25903aa57efd4149eab10a836"
         },
         {
           "path": "references/app-lifecycle.md",
-          "sha256": "683564219fa251bee1e0a558c37441ecdf76b04a0056800c5a72247e037c972f"
+          "sha256": "ef3de95183d723e135c06e7a7b17a0f516c93ca25d6dff1ede95a12a7f0adfbd"
         },
         {
           "path": "references/document-operations.md",
-          "sha256": "732b30aad0c653baf6aef50c17ee60e6d1ad60c84b16bb9106b553628a27999c"
+          "sha256": "892a3766140e3051cb50e5851345b33e2dbd1c7e93606ffacc69c05738e30fa6"
         },
         {
           "path": "references/feature-inventory.md",
-          "sha256": "d4b80aad6dede6282f0c56717350459da1c83520201bd61b9b0484e7c3bd3691"
+          "sha256": "9a638b2b4ff9c6723d8d73f5de8adf970ce10093a29352fc7b579ded91e97cf7"
         }
       ]
     },
@@ -639,7 +639,7 @@
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.11",
+      "version": "0.1.12",
       "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
       "path": "skills/notion",
       "compatibility": {
@@ -657,7 +657,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "21a01109f365a4a7a88e3ecc6f055336d9246982060b3cb3ba2c55d7ecdfd6c4"
+          "sha256": "429e4ae67e59d8b433d08b301f356add8238904e089c410ad641509bc04a2358"
         },
         {
           "path": "references/commands.md",
@@ -665,7 +665,7 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "2734896c01466f84226a805beec526d2c86d1eefc4860878f4b7f97705b752a4"
+          "sha256": "0659de08a485712ef00e5044868abc335621dc92199ceec3d2225b5df80fbb4b"
         }
       ],
       "linkedHarness": {
@@ -1018,8 +1018,8 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.4.2",
-      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with Desktop only for native OS dialogs.",
+      "version": "0.4.3",
+      "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
         "openclaw": ">=2026.4.11",
@@ -1035,7 +1035,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "39059983fa01aa28bc612e8d42064a72321bcf056917698a47c72966d18a2d10"
+          "sha256": "8ee61efc355f595c3d554081ddb26db58e690a0839caf4eb19a8d1a922921760"
         },
         {
           "path": "TEST.md",
@@ -1043,7 +1043,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "093b1412ae21441ba799e6a5de63431cc5979fa6fe966914142cd29ec431e4bb"
+          "sha256": "9b1aa285bd2e67e7d4aed4f9c69d47a557c9e6633e0a51bca07ff0a902f5ba3e"
         },
         {
           "path": "command_contracts.json",
@@ -1051,7 +1051,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "079d00b021ee977b9417ee9f601dab0483b4443a3b1c96a83f311ecd28f7b3ec"
+          "sha256": "a66840a212142b9ae1ef2afc478de1e0f4459d292d4015cd83e11dc7faa8c728"
         },
         {
           "path": "scripts/capture_layout.py",

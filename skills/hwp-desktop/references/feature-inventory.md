@@ -30,8 +30,8 @@ rhwp studio `src/command/commands/*.ts`에서 확인한 명령을 기능군별�
 ## 실행 계약
 
 1. 기능 요청을 위 목록의 정확한 군과 명령에 매핑한다.
-2. Desktop으로 현재 메뉴, 도구막대, 컨텍스트 메뉴, 단축키를 관찰한다. 배포 버전에서 노출되지 않은 명령을 추측 실행하지 않는다.
-3. document operations의 공통 Desktop recipe를 적용한다.
+2. Compute 도구로 현재 메뉴, 도구막대, 컨텍스트 메뉴, 단축키를 관찰한다. 배포 버전에서 노출되지 않은 명령을 추측 실행하지 않는다.
+3. document operations의 공통 Compute recipe를 적용한다.
 4. 명령의 can-execute 조건이 문서/선택/표/개체 컨텍스트를 요구하면 먼저 그 컨텍스트를 만든다.
 5. 명령 후 해당 기능군의 postcondition을 확인하고 결과 파일 또는 문서 상태를 검증한다.
 

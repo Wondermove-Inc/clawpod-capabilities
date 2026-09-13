@@ -10,7 +10,7 @@ Tell the owner that the agent will perform every automatable console step. The o
 
 ## 1. Inspect and choose the durable audience path
 
-After approval, use the managed browser and the `desktop` skill to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
+After approval, use the managed browser and the Compute tool to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
 
 First run the local, deterministic `auth.onboarding.decide` command with the observed organization facts, External publishing status, and scope classifications. It performs no OAuth, credential, browser, or network action. Its rule is exact: default to **Internal only when** the selected project belongs to a Google Cloud Organization **and** every intended user is a member of that same organization. Otherwise choose External. Treat its result as a policy check, then verify the rendered console state.
 

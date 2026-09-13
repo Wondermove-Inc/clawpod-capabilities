@@ -16,6 +16,6 @@ Use `stage.prepare/validate/commit` for Skill-produced canonical stage artifacts
 
 Run `qa.run` before completion. It uses real ffprobe metadata for container, duration, streams, frame rate, audio, subtitles, delivery extension, size, and artifact digest. Optional audio/subtitle absence is reported rather than hidden.
 
-Backlot is optional and loopback-only. `backlot.start` owns the exact process identity; `backlot.stop` requires confirmation plus the owner nonce and refuses PID reuse. Browser opening remains delegated to an approved browser/desktop capability.
+Backlot is optional and loopback-only. `backlot.start` owns the exact process identity; `backlot.stop` requires confirmation plus the owner nonce and refuses PID reuse. Browser opening remains delegated to the browser capability or the Compute tool.
 
 `install.plan-update` hashes the complete mutable source surface. `install.apply-update` revalidates unchanged source, stages by byte-copy without `.env` or Git metadata, rejects escaping dependency symlinks, writes a runtime lock, validates before and after activation, rotates the last-known-good backup only after success, and restores the previous runtime if activation fails. `install.rollback` preserves the failed candidate, validates the restored runtime, and restores the prior active runtime if rollback validation fails. These remain separate explicit mutations.

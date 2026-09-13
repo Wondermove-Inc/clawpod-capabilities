@@ -1,10 +1,10 @@
-# 전체 문서 작업과 Desktop recipes
+# 전체 문서 작업과 Compute recipes
 
 실제 HWP/HWPX 작업을 시작하기 전에 읽는다. 지원 표면은 feature inventory를 기준으로 한다.
 
 ## 모든 명령의 공통 recipe
 
-1. Observe: Desktop으로 창 목록과 UI를 다시 관찰하고 최신 revision을 얻는다.
+1. Observe: Compute 도구로 창 목록과 UI를 다시 관찰하고 최신 revision을 얻는다.
 2. Focus: HOP 창 제목, 활성 문서, 포커스 요소를 확인하고 필요한 선택 컨텍스트를 만든다.
 3. Act: 접근성 target, 메뉴, 도구막대, 컨텍스트 메뉴, 관찰된 공식 단축키 순으로 사용한다.
 4. Dialog: 제목, 현재 값, 대상 범위를 읽고 필요한 필드만 바꾼다.
@@ -13,10 +13,10 @@
 
 ## HOP 단일 GUI 소유권과 인계
 
-- HOP launch, focus, input, close, process cleanup 전에 concrete Desktop session/display와 HOP instance를 합친 lease key로 exclusive logical lease를 획득한다. 같은 HOP process의 여러 window는 하나의 ownership domain이다.
+- HOP launch, focus, input, close, process cleanup 전에 concrete Compute session/display와 HOP instance를 합친 lease key로 exclusive logical lease를 획득한다. 같은 HOP process의 여러 window는 하나의 ownership domain이다.
 - lease record에는 owner session 또는 Workboard card, acquired-at, heartbeat/expiry, intended document, observed PID/window identity를 기록한다. lease owner만 해당 instance를 조작한다.
 - 경쟁 owner가 있으면 `HOP_GUI_BUSY`와 current owner/retry condition을 반환하고 fail closed한다. 두 번째 worker는 focus, type, close, relaunch, kill 등 GUI/process action을 하나도 수행하지 않는다.
-- lease heartbeat를 유지하되 expiry만으로 takeover하지 않는다. stale worker는 orchestrator가 cancel/reclaim하고 attempt가 stopped임을 확인하며 Desktop input을 더 이상 소유하지 않음을 재관찰해야 한다.
+- lease heartbeat를 유지하되 expiry만으로 takeover하지 않는다. stale worker는 orchestrator가 cancel/reclaim하고 attempt가 stopped임을 확인하며 Compute input을 더 이상 소유하지 않음을 재관찰해야 한다.
 - stale cancellation confirmation 뒤에만 Forge-owned로 positively identified된 residual HOP/AppImage PID/window를 재관찰하고 정리한다. 다른 owner나 출처가 불명확한 process는 건드리지 않는다.
 - replacement는 clean process/window preflight 후 한 fresh instance를 시작하고 새 PID/window/revision을 lease에 bind한다. 이전 coordinate, screenshot digest, context는 폐기한다.
 - dirty dialog를 처리하고 owned window/process가 닫혔음을 확인한 뒤 release한다. 계속 실행할 때는 owner, document, state가 명시된 documented safe handoff만 허용한다.

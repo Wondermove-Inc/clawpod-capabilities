@@ -4,7 +4,7 @@
 
 | | Link handoff | Agent-driven native export |
 |---|---|---|
-| Time | seconds after the gate passes | minutes: per-format Browser export, download watch, Chrome print preview, GTK dialog via Desktop, file verification |
+| Time | seconds after the gate passes | minutes: per-format Browser export, download watch, Chrome print preview, GTK dialog via the Compute tool, file verification |
 | Freshness | always the latest version | a snapshot that goes stale on the next edit |
 | Delivery | text — fits any room message or markdown artifact | binary — room artifacts carry only markdown/html text, so there is no delivery path |
 | Failure surface | link opens or it does not | download baseline, dialog focus, page-count mismatch, file-route 404 recovery |
