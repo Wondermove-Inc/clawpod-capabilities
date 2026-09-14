@@ -87,7 +87,12 @@ clawpod-node-host --json installer info --platform macos --arch arm64
 ```
 
 The response supplies the selected download, checksum, setup, and management
-instructions. Selection is based on the user's computer, not the agent pod.
+instructions. The agent should also look up and provide the Gateway host's actual
+Tailscale DNS name/IP, the complete reachable WebSocket endpoint, and the actual
+Gateway token separately, then show which app fields to fill. Password-mode
+Gateways need the active password instead. These deployment values are obtained
+with the agent's available tools; they are not part of the public manifest.
+Selection is based on the user's computer, not the agent pod.
 The Harness includes its release manifest, so this lookup requires neither a
 checkout of this repository nor a network request. It does not claim a remote
 download or Gateway connection was tested.

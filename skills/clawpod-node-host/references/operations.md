@@ -10,7 +10,7 @@ Use these controls for the standalone app. Legacy CLI service commands manage a 
 - **Start when I sign in** registers startup for the current user and their logged-in desktop. It is not a pre-login system/root service.
 - A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. **Clear the saved authentication value** stops the node.
 
-Read timestamped local errors, check the saved endpoint/authentication mode without exposing the credential, and compare with Gateway device status. Local **Running** alone does not prove connection. Use `node-connect` for failures to connect or pair after correct setup.
+Read timestamped local errors, check the saved endpoint/authentication mode, and compare with Gateway device status. Keep diagnostic evidence redacted. When the requesting user needs the active credential to reconnect, follow the verified credential handoff in [onboarding](onboarding.md). Local **Running** alone does not prove connection. Use `node-connect` for failures to connect or pair after correct setup.
 
 ## State, upgrade, and removal
 

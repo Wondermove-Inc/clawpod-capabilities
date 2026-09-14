@@ -43,7 +43,7 @@
   },
   "commands": {
     "installer.info": {
-      "description": "Select a standalone ClawPod Node installer from the bundled release manifest and return app setup and operation guidance. Requires the target computer platform and architecture. Does not check remote availability, install software, or change services.",
+      "description": "Select a standalone ClawPod Node installer from the bundled release manifest and return app setup and operation guidance. Requires the target computer platform and architecture. The agent separately obtains and gives the user the verified Gateway Tailscale address, full endpoint, and actual token/password. This command does not read deployment credentials, check remote availability, install software, or change services.",
       "baseArgv": [
         "--json",
         "installer",

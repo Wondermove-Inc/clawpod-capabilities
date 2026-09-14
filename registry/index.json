@@ -265,7 +265,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "1f842a34f901171d46c15c521830e6abb7f07b66a53187a66be239831de0f0ca"
+          "sha256": "8282be15acd7a687b679509553911c685edd4a2a4725080c9d864426f4224ec6"
         },
         {
           "path": "references/legacy.md",
@@ -273,11 +273,11 @@
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "ad051bc684d1df2863783747360074a106e8e24d7e28d3e810e9e7bd701feb1c"
+          "sha256": "b62276817156b10028f90cfd3d5f8ca55daa5928bbf668587a99a78b455c3390"
         },
         {
           "path": "references/operations.md",
-          "sha256": "160df87bc8cc91d91aedd5fe83dc9cf85c0c1605bc8b188919278f54af0179bc"
+          "sha256": "61c57bd79cff995d7a088c07b05984725dc70ed60bcf374dab3d8d1f1ca05990"
         }
       ],
       "linkedHarness": {
@@ -1241,7 +1241,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "279a43f0daf3519b8cac292c8df2a7ad87f5dfc4fb6db00c4db7748f3195ecd4"
+          "sha256": "cbeedc31650b25d29230ec0704dfe58e6603121b83bce12d52d03869c3f33938"
         },
         {
           "path": "TEST.md",
@@ -1261,7 +1261,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "0118df3905aff685083c6f333259afa90d45604213110ab4c1a9c9c76e27e3d9"
+          "sha256": "0dc1a0a1ace50b38bc773188aa1406ccdf4d9589903ce87911677544767f82a3"
         },
         {
           "path": "installer-manifest.json",
@@ -1269,7 +1269,7 @@
         },
         {
           "path": "installer.py",
-          "sha256": "9ce213d68fdc78b5e71bbb7feb465e09286aaee865d913148d86dcc0a1d4b74d"
+          "sha256": "f5cf7263eb19cb5814b9828f9bef2f778f5dd956ba8b475102974036f4888757"
         },
         {
           "path": "schemas/error-exit-codes.json",

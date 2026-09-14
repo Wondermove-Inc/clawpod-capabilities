@@ -114,7 +114,8 @@ def test_skill_enforces_concise_progressive_clawpod_onboarding():
     assert "standalone ClawPod Node installer" in source
     assert "user's target computer" in source and "Ask only for missing information" in source
     assert "installer info" in source and "--platform" in source and "--arch" in source
-    assert "Gateway WebSocket root URL" in source and "separate local authentication field" in source
+    assert "root WebSocket URL with scheme and port" in source and "separate local field" in source
+    assert "actual active Gateway token" in source and "Gateway host's Tailscale DNS name/IP" in source
     assert "A display name alone is not an identity" in source
     assert "do not call legacy `enroll status --node-id` or `enroll approve`" in source
     assert "Do not require Tailscale enrollment" in source

@@ -155,8 +155,8 @@ def guidance(platform: str, filename: str) -> dict:
             "Download the selected installer from its release and compare its SHA-256 with the manifest before opening it. Remote availability has not been checked.",
             install[platform],
             "Open ClawPod Node. Its setup page opens in your default browser.",
-            "Enter the Gateway WebSocket root URL and a display name. A Cloud Portal or Agent dashboard URL with a path is not a node endpoint.",
-            "Select token or password mode and enter the Gateway credential directly in the local app. Keep it out of chat, commands, and download links.",
+            "Give the requesting user the Gateway host's verified Tailscale DNS name or IP, the complete reachable Gateway WebSocket root URL, and a display name. Confirm the actual listener/proxy port; do not infer it from a dashboard URL or the agent pod's address.",
+            "Read the active Gateway authentication source with available authorized tools and give the requesting user the actual Gateway token separately from the URL. config.get and openclaw config get redact secrets; a masked value or SecretRef is not a usable token. If password mode is active, provide the corresponding password instead. Explain which local authentication field to paste it into.",
             "Save settings and select Start node. If using private LAN ws://, explicitly select the app's private connection option.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
         ],
@@ -206,5 +206,5 @@ def installer_info(args) -> tuple[dict, int]:
     out["installer"]["validation"]["desktopStartup"] = manifest["validation"]["desktopLoginStartup"]
     out["gateway"] = gateway
     out["guidance"] = guidance(args.platform_name, artifact["filename"])
-    out["nextAction"] = {"kind": "handoff", "message": "Give the user the matching installer link and app setup steps. Confirm release availability before describing the download as available.", "resumeCommand": None}
+    out["nextAction"] = {"kind": "handoff", "message": "Give the user the matching installer link, verified Gateway Tailscale address, complete connection URL, and actual Gateway token (or active password) in separate fields, followed by app setup steps. Use available tools to obtain connection values; this offline command does not read them. Confirm release availability before describing the download as available.", "resumeCommand": None}
     return out, 0

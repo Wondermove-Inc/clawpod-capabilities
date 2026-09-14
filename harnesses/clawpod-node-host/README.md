@@ -20,3 +20,5 @@ Legacy tests set `CLAWPOD_NODE_HOST_FIXTURE` and optionally `CLAWPOD_NODE_HOST_R
 The `bootstrap` commands cover the pre-Node path. Remote behavior is fixture-driven unless the separate disposable integration gate is present; tests only record strict noninteractive SSH command shapes. Credentials are opaque protected references and are never read or persisted. `bootstrap generate` emits the deterministic credential-free local alternative.
 
 See `TEST.md` and the linked Skill for safety and routing boundaries.
+
+During onboarding, the agent also obtains and gives the requesting user the actual Gateway Tailscale address, complete WebSocket endpoint, and Gateway token in separate fields. Use the active password for password-mode Gateways. `installer.info` returns guidance only; it does not read these deployment values. Gateway `config.get` and `openclaw config get` redact secrets, so masked output cannot be used as the token.
