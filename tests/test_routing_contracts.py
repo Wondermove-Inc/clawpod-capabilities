@@ -8,11 +8,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "routing_contracts.json"
 CLAWPOD_NODE_HOST_DESCRIPTION = (
-    "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow"
-    ": hand the user one complete, credential-free script (Tailscale, openclaw install, gateway"
-    " address baked in), then auto-detect and approve the pairing request. Can also drive SSH-b"
-    "ased provisioning, verification, recovery, and removal. Use node-connect instead when an a"
-    "lready configured node fails to connect or pair."
+    "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a "
+    "computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, "
+    "and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. "
+    "Use node-connect instead when an already configured node fails to connect or pair."
 )
 
 
@@ -83,7 +82,7 @@ class RoutingContractTests(unittest.TestCase):
         contract = self.contracts["clawpod-node-host"]
         positives = " ".join(contract["positive"])
         negatives = " ".join(contract["negative"])
-        for phrase in ("Mac", "Windows 11", "Tailscale", "networking", "SSH", "sign-in", "approve", "recovery", "removal"):
+        for phrase in ("Linux", "Mac", "Apple Silicon", "Intel", "Windows 11", "standalone installer", "Gateway setup", "device pairing", "legacy CLI", "SSH", "recovery", "removal"):
             self.assertIn(phrase, positives)
         for phrase in ("already configured ClawPod node connection failing", "paired node unauthorized", "already configured node fails to pair"):
             self.assertIn(phrase, negatives)

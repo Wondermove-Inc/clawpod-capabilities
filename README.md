@@ -8,11 +8,18 @@
 ![Public registry](https://img.shields.io/badge/registry-public-2ea44f)
 ![Integrity](https://img.shields.io/badge/integrity-SHA--256-blue)
 
-[Quick start](#quick-start-for-agents) · [Bootstrap pair](#bootstrap-pair) · [Harness commands](#harness-commands) · [Contributing](#contributing) · [Security](#security)
+[ClawPod Node downloads](node/README.md) · [Quick start](#quick-start-for-agents) · [Bootstrap pair](#bootstrap-pair) · [Harness commands](#harness-commands) · [Contributing](#contributing) · [Security](#security)
 
 </div>
 
 ---
+
+## Connect your computer
+
+Download the [ClawPod Node installer](node/README.md) for Linux, macOS, or Windows
+to connect your computer to an existing ClawPod Agent. No repository checkout,
+separate Node.js installation, or npm setup is needed. For agent-assisted setup,
+use the `clawpod-node-host` Skill and Harness.
 
 ## Quick start for agents
 

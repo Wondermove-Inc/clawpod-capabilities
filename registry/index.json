@@ -247,12 +247,13 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.2.2",
-      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+      "version": "0.3.0",
+      "description": "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
         "platforms": [
+          "linux",
           "macos",
           "windows"
         ]
@@ -264,20 +265,24 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "48ae59cec3170ae551cd9d1d7701b70ddb9203d46cb848ba40dda99c4495a4f8"
+          "sha256": "8282be15acd7a687b679509553911c685edd4a2a4725080c9d864426f4224ec6"
+        },
+        {
+          "path": "references/legacy.md",
+          "sha256": "861291f6ca6c2d00089dcc2618fcc91d5ddccff0cfd0a67e5c239f12e6cdc189"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "6591712c3551a876dbc98892b2efea9787fcf3b78f4e26b9301d7f7755d7b22e"
+          "sha256": "b62276817156b10028f90cfd3d5f8ca55daa5928bbf668587a99a78b455c3390"
         },
         {
           "path": "references/operations.md",
-          "sha256": "3f6899f376cd138d0e4bca10a7d1e781143276e4dfe7febbbc53d6d7182b1f5a"
+          "sha256": "61c57bd79cff995d7a088c07b05984725dc70ed60bcf374dab3d8d1f1ca05990"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.2.1"
+        "version": "0.3.0"
       }
     },
     {
@@ -1218,12 +1223,13 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.2.1",
-      "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+      "version": "0.3.0",
+      "description": "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. Use node-connect instead when an already configured node fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
         "platforms": [
+          "linux",
           "macos",
           "windows"
         ]
@@ -1235,15 +1241,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "34df741053c603b3e8d13fe7de74a41586fcd4c1cd29250f568af60d1c14ed29"
+          "sha256": "cbeedc31650b25d29230ec0704dfe58e6603121b83bce12d52d03869c3f33938"
         },
         {
           "path": "TEST.md",
-          "sha256": "149ff7902ceb873d63dbc65c2a4727ad5e69064873b129747138eba74a62e24d"
+          "sha256": "004aedffdef613a0c39749ea5d20b95dea98fc29e6b446694dd97c3a90040a7e"
         },
         {
           "path": "clawpod_node_host.py",
-          "sha256": "da8a63a9d15631abcf399505a7715150b0a1b39571046c56cabe9a1fd578f25d"
+          "sha256": "7fd94c8617c148d082332abf1d42a593429e1a6f9f26257c169ef7bf2d2600ac"
         },
         {
           "path": "fixtures/macos-ready.json",
@@ -1255,11 +1261,19 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f9e8cedb91c7a717af265f382ef59adb706b79f6b4471b29993df0b9d967575c"
+          "sha256": "0dc1a0a1ace50b38bc773188aa1406ccdf4d9589903ce87911677544767f82a3"
+        },
+        {
+          "path": "installer-manifest.json",
+          "sha256": "7e890d6cae544f798c700ce27f535c32263f8a762095c021edcd247b275515bc"
+        },
+        {
+          "path": "installer.py",
+          "sha256": "f5cf7263eb19cb5814b9828f9bef2f778f5dd956ba8b475102974036f4888757"
         },
         {
           "path": "schemas/error-exit-codes.json",
-          "sha256": "9d120ae7904b6c6d257d5bb8ee3fa5c7062db29df006a9d8dfbbbf759b5a7306"
+          "sha256": "544ffa55da93b072971ba4965b6d66842165d381e06c81e4b495e105f98d3345"
         },
         {
           "path": "schemas/plan.schema.json",

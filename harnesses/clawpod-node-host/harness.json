@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-node-host",
   "title": "ClawPod Node Host",
-  "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
-  "version": "0.2.1",
+  "description": "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. Use node-connect instead when an already configured node fails to connect or pair.",
+  "version": "0.3.0",
   "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {
@@ -13,15 +13,16 @@
     "requiresJson": true
   },
   "whenToUse": [
-    "Connect this Mac or Windows PC to ClawPod as a node — just give me a script to run",
-    "Connect this Mac to ClawPod as a node without making me configure networking or SSH",
-    "Generate a ready-to-run enrollment script with the gateway address already filled in",
-    "Watch for my PC's pairing request and approve it automatically after I run the script",
-    "Set up a Windows 11 PC as a ClawPod node and guide me through the Tailscale sign-in",
-    "Automate Tailscale, node installation, recovery, or removal for this new ClawPod node",
-    "Check whether a local machine is ready to become a node"
+    "Install ClawPod Node on Linux and connect this computer to ClawPod",
+    "Download the ClawPod Node installer for my Apple Silicon or Intel Mac",
+    "Set up ClawPod Node on a Windows 11 PC with the standalone installer",
+    "Guide Gateway setup and approve the actual pending device pairing request",
+    "Explain ClawPod Node app recovery or removal",
+    "Provision a legacy CLI node over SSH or generate its enrollment script"
   ],
   "capabilities": [
+    "standalone-installer-selection",
+    "app-native-setup-and-operations",
     "self-service-enrollment",
     "exact-version-gate",
     "pre-node-bootstrap",
@@ -41,8 +42,86 @@
     "requiresHumanAccount": true
   },
   "commands": {
+    "installer.info": {
+      "description": "Select a standalone ClawPod Node installer from the bundled release manifest and return app setup and operation guidance. Requires the target computer platform and architecture. The agent separately obtains and gives the user the verified Gateway Tailscale address, full endpoint, and actual token/password. This command does not read deployment credentials, check remote availability, install software, or change services.",
+      "baseArgv": [
+        "--json",
+        "installer",
+        "info"
+      ],
+      "safetyClasses": [
+        "readOnly"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "platform",
+          "arch"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "arch": {
+            "type": "string"
+          },
+          "gatewayUrl": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "command",
+          "safetyClass",
+          "status",
+          "errors",
+          "redactions"
+        ],
+        "properties": {
+          "ok": {},
+          "command": {},
+          "safetyClass": {},
+          "status": {},
+          "installer": {},
+          "gateway": {},
+          "guidance": {},
+          "effects": {},
+          "nextAction": {},
+          "errors": {},
+          "redactions": {}
+        },
+        "additionalProperties": true
+      },
+      "argMap": [
+        {
+          "arg": "platform",
+          "type": "option",
+          "flag": "--platform",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "arch",
+          "type": "option",
+          "flag": "--arch",
+          "valueType": "string",
+          "optional": false
+        },
+        {
+          "arg": "gatewayUrl",
+          "type": "option",
+          "flag": "--gateway-url",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
     "agent.status": {
-      "description": "Check whether the agent runtime's own Tailscale is signed in and connected — the first gate of onboarding.",
+      "description": "Legacy CLI workflow: Check whether the agent runtime's own Tailscale is signed in and connected \u2014 the first gate of onboarding.",
       "baseArgv": [
         "--json",
         "agent",
@@ -87,7 +166,7 @@
       "argMap": []
     },
     "agent.login": {
-      "description": "Start the agent's own Tailscale interactive sign-in and return the login link to hand to the user.",
+      "description": "Legacy CLI workflow: Start the agent's own Tailscale interactive sign-in and return the login link to hand to the user.",
       "baseArgv": [
         "--json",
         "agent",
@@ -133,7 +212,7 @@
       "argMap": []
     },
     "enroll.generate": {
-      "description": "Produce one complete, credential-free per-OS enrollment script (Tailscale, openclaw install, node install with gateway endpoint and node id baked in) for the user to run.",
+      "description": "Legacy CLI workflow: Produce one complete, credential-free per-OS enrollment script (Tailscale, openclaw install, node install with gateway endpoint and node id baked in) for the user to run.",
       "baseArgv": [
         "--json",
         "enroll",
@@ -245,7 +324,7 @@
       ]
     },
     "enroll.status": {
-      "description": "Check whether the pairing request from the user-run enrollment script has arrived for the given node id.",
+      "description": "Legacy CLI workflow: Check whether the pairing request from the user-run enrollment script has arrived for the given node id.",
       "baseArgv": [
         "--json",
         "enroll",
@@ -306,7 +385,7 @@
       ]
     },
     "enroll.approve": {
-      "description": "Approve the single pairing request that carries the enrollment node id, completing the self-service pairing.",
+      "description": "Legacy CLI workflow: Approve the single pairing request that carries the enrollment node id, completing the self-service pairing.",
       "baseArgv": [
         "--json",
         "enroll",
@@ -378,7 +457,7 @@
       ]
     },
     "bootstrap.inspect": {
-      "description": "Inspect a selected pre-node bootstrap transport with strict host-key and protected-credential gates.",
+      "description": "Legacy CLI workflow: Inspect a selected pre-node bootstrap transport with strict host-key and protected-credential gates.",
       "baseArgv": [
         "--json",
         "bootstrap",
@@ -473,7 +552,7 @@
       ]
     },
     "bootstrap.generate": {
-      "description": "Generate a deterministic credential-free bootstrap script for the user to run locally.",
+      "description": "Legacy CLI workflow: Generate a deterministic credential-free bootstrap script for the user to run locally.",
       "baseArgv": [
         "--json",
         "bootstrap",
@@ -520,7 +599,7 @@
       ]
     },
     "bootstrap.plan": {
-      "description": "Create an exact target, account, host-key, transport, and script-bound bootstrap plan.",
+      "description": "Legacy CLI workflow: Create an exact target, account, host-key, transport, and script-bound bootstrap plan.",
       "baseArgv": [
         "--json",
         "bootstrap",
@@ -665,7 +744,7 @@
       ]
     },
     "bootstrap.apply": {
-      "description": "Apply only an exact approved bootstrap plan and resume from its first incomplete idempotent stage.",
+      "description": "Legacy CLI workflow: Apply only an exact approved bootstrap plan and resume from its first incomplete idempotent stage.",
       "baseArgv": [
         "--json",
         "bootstrap",
@@ -835,7 +914,7 @@
       ]
     },
     "system.inspect": {
-      "description": "system.inspect operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: system.inspect operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "system",
@@ -880,7 +959,7 @@
       "argMap": []
     },
     "version.inspect": {
-      "description": "version.inspect operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: version.inspect operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "version",
@@ -925,7 +1004,7 @@
       "argMap": []
     },
     "tailscale.install-status": {
-      "description": "Inspect whether Tailscale is installed and ready on the selected PC.",
+      "description": "Legacy CLI workflow: Inspect whether Tailscale is installed and ready on the selected PC.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -959,7 +1038,7 @@
       ]
     },
     "tailscale.install-plan": {
-      "description": "Create an exact platform-bound plan to install Tailscale.",
+      "description": "Legacy CLI workflow: Create an exact platform-bound plan to install Tailscale.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1003,7 +1082,7 @@
       ]
     },
     "tailscale.install-apply": {
-      "description": "Install Tailscale only from an exact approved resumable plan.",
+      "description": "Legacy CLI workflow: Install Tailscale only from an exact approved resumable plan.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1061,7 +1140,7 @@
       ]
     },
     "tailscale.status": {
-      "description": "Inspect Tailscale login state without changing account state.",
+      "description": "Legacy CLI workflow: Inspect Tailscale login state without changing account state.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1095,7 +1174,7 @@
       ]
     },
     "tailscale.login-plan": {
-      "description": "Create an exact plan to initiate Tailscale account connection without entering credentials, MFA, or consent.",
+      "description": "Legacy CLI workflow: Create an exact plan to initiate Tailscale account connection without entering credentials, MFA, or consent.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1139,7 +1218,7 @@
       ]
     },
     "tailscale.login-apply": {
-      "description": "Initiate approved Tailscale login, then pause for one human browser consent or MFA action.",
+      "description": "Legacy CLI workflow: Initiate approved Tailscale login, then pause for one human browser consent or MFA action.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1198,7 +1277,7 @@
       ]
     },
     "tailscale.address": {
-      "description": "Read the authenticated PC Tailscale IP address.",
+      "description": "Legacy CLI workflow: Read the authenticated PC Tailscale IP address.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1232,7 +1311,7 @@
       ]
     },
     "tailscale.same-tailnet": {
-      "description": "Verify the PC and agent runtime are authenticated to the same tailnet.",
+      "description": "Legacy CLI workflow: Verify the PC and agent runtime are authenticated to the same tailnet.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1266,7 +1345,7 @@
       ]
     },
     "ssh-server.status": {
-      "description": "Inspect macOS Remote Login or Windows OpenSSH Server and Tailscale-only exposure readiness.",
+      "description": "Legacy CLI workflow: Inspect macOS Remote Login or Windows OpenSSH Server and Tailscale-only exposure readiness.",
       "baseArgv": [
         "--json",
         "ssh-server",
@@ -1300,7 +1379,7 @@
       ]
     },
     "ssh-server.plan": {
-      "description": "Create an exact platform-bound plan for Remote Login or OpenSSH Server with Tailscale-only scope.",
+      "description": "Legacy CLI workflow: Create an exact platform-bound plan for Remote Login or OpenSSH Server with Tailscale-only scope.",
       "baseArgv": [
         "--json",
         "ssh-server",
@@ -1344,7 +1423,7 @@
       ]
     },
     "ssh-server.apply": {
-      "description": "Apply approved Remote Login or OpenSSH Server readiness with Tailscale-only network scope.",
+      "description": "Legacy CLI workflow: Apply approved Remote Login or OpenSSH Server readiness with Tailscale-only network scope.",
       "baseArgv": [
         "--json",
         "ssh-server",
@@ -1402,7 +1481,7 @@
       ]
     },
     "tailscale.verify": {
-      "description": "tailscale.verify operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: tailscale.verify operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "tailscale",
@@ -1447,7 +1526,7 @@
       "argMap": []
     },
     "ssh-server.verify": {
-      "description": "Verify TCP port 22 specifically through the selected Tailscale IP before any SSH or node installation.",
+      "description": "Legacy CLI workflow: Verify TCP port 22 specifically through the selected Tailscale IP before any SSH or node installation.",
       "baseArgv": [
         "--json",
         "ssh-server",
@@ -1494,7 +1573,7 @@
       ]
     },
     "service.status": {
-      "description": "service.status operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: service.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "service",
@@ -1539,7 +1618,7 @@
       "argMap": []
     },
     "onboarding.status": {
-      "description": "onboarding.status operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: onboarding.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "onboarding",
@@ -1584,7 +1663,7 @@
       "argMap": []
     },
     "pairing.status": {
-      "description": "pairing.status operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: pairing.status operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "pairing",
@@ -1629,7 +1708,7 @@
       "argMap": []
     },
     "validate.plan": {
-      "description": "validate.plan operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: validate.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "validate",
@@ -1674,7 +1753,7 @@
       "argMap": []
     },
     "validate.run": {
-      "description": "validate.run operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: validate.run operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "validate",
@@ -1719,7 +1798,7 @@
       "argMap": []
     },
     "install.plan": {
-      "description": "install.plan operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: install.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "install",
@@ -1764,7 +1843,7 @@
       "argMap": []
     },
     "repair.plan": {
-      "description": "repair.plan operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: repair.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "repair",
@@ -1809,7 +1888,7 @@
       "argMap": []
     },
     "uninstall.plan": {
-      "description": "uninstall.plan operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: uninstall.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "uninstall",
@@ -1854,7 +1933,7 @@
       "argMap": []
     },
     "rollback.plan": {
-      "description": "rollback.plan operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: rollback.plan operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "rollback",
@@ -1899,7 +1978,7 @@
       "argMap": []
     },
     "install.apply": {
-      "description": "install.apply operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: install.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "install",
@@ -1945,7 +2024,7 @@
       "argMap": []
     },
     "service.start": {
-      "description": "service.start operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: service.start operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "service",
@@ -1991,7 +2070,7 @@
       "argMap": []
     },
     "service.stop": {
-      "description": "service.stop operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: service.stop operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "service",
@@ -2037,7 +2116,7 @@
       "argMap": []
     },
     "service.restart": {
-      "description": "service.restart operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: service.restart operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "service",
@@ -2083,7 +2162,7 @@
       "argMap": []
     },
     "repair.apply": {
-      "description": "repair.apply operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: repair.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "repair",
@@ -2129,7 +2208,7 @@
       "argMap": []
     },
     "uninstall.apply": {
-      "description": "uninstall.apply operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: uninstall.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "uninstall",
@@ -2175,7 +2254,7 @@
       "argMap": []
     },
     "rollback.apply": {
-      "description": "rollback.apply operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: rollback.apply operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "rollback",
@@ -2221,7 +2300,7 @@
       "argMap": []
     },
     "pairing.approve": {
-      "description": "pairing.approve operation for the exact-version guarded node-host lifecycle.",
+      "description": "Legacy CLI workflow: pairing.approve operation for the exact-version guarded node-host lifecycle.",
       "baseArgv": [
         "--json",
         "pairing",
