@@ -1,4 +1,4 @@
-"""App distribution contract: offline selection, valid endpoints, legacy isolation."""
+"""App distribution contract: offline selection, valid endpoints, and sign-in isolation."""
 import json
 import os
 import shutil
@@ -13,7 +13,7 @@ ROOT = Path(__file__).parents[1]
 
 def run_info(tmp_path, *options, package=ROOT):
     env = {**os.environ, "CLAWPOD_NODE_HOST_FIXTURE": str(tmp_path / "missing-fixture.json"), "CLAWPOD_NODE_HOST_RECORD": str(tmp_path / "record.jsonl")}
-    run = subprocess.run([sys.executable, str(package / "clawpod_node_host.py"), "--json", "--state", str(tmp_path / "state.json"), "installer", "info", *options], cwd=tmp_path, env=env, text=True, capture_output=True)
+    run = subprocess.run([sys.executable, str(package / "clawpod_node_host.py"), "--json", "installer", "info", *options], cwd=tmp_path, env=env, text=True, capture_output=True)
     assert run.stdout.count("\n") == 1, run.stderr
     assert not (tmp_path / "state.json").exists()
     assert not (tmp_path / "record.jsonl").exists()
@@ -39,8 +39,8 @@ def test_selects_real_manifest_artifact_without_legacy_preflight(tmp_path, platf
     assert "Start node" in out["guidance"]["operations"]["start"]
     assert "Reconnect" in out["guidance"]["operations"]["restart"]
     assert "Agent Control UI" in out["guidance"]["operations"]["status"]
-    assert "CLI" in out["guidance"]["legacyCompatibility"]
-    assert "Tailscale is optional" in out["guidance"]["network"]
+    assert "~/.openclaw" in out["guidance"]["stateCompatibility"]
+    assert "agent and computer Tailscale sign-in" in out["guidance"]["network"]
 
 
 @pytest.mark.parametrize("options,code", [((), "INSTALLER_TARGET_REQUIRED"), (("--platform", "macos"), "INSTALLER_TARGET_REQUIRED"), (("--platform", "linux", "--arch", "arm64"), "INSTALLER_TARGET_UNSUPPORTED"), (("--platform", "windows", "--arch", "arm64"), "INSTALLER_TARGET_UNSUPPORTED")])

@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("node_release", ROOT / "node/prepare_release.py")
@@ -78,6 +79,33 @@ class NodeDistributionTests(unittest.TestCase):
             file.write_text(json.dumps(data))
             with self.subTest(update=update), self.assertRaises(ValueError):
                 release.load_manifest(file)
+
+    def test_registry_upgrade_removes_retired_files_from_active_packages(self):
+        spec = importlib.util.spec_from_file_location("node_registry_upgrade", ROOT / "harnesses/clawpod-capability-registry/clawpod_capability_registry.py")
+        registry = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(registry)
+        entries = json.loads((ROOT / "registry/index.json").read_text())["capabilities"]
+
+        def fetch(url):
+            relative = url.removeprefix(registry.RAW_BASE + "/")
+            return (ROOT / relative).read_bytes()
+
+        for kind, retired in (("skill", "references/legacy.md"), ("harness", "schemas/plan.schema.json")):
+            entry = next(x for x in entries if x["type"] == kind and x["id"] == "clawpod-node-host")
+            target = self.root / kind
+            old_file = target / entry["id"] / retired
+            old_file.parent.mkdir(parents=True)
+            old_file.write_text("old procedure")
+            with patch.object(registry, "fetch_bytes", side_effect=fetch):
+                result = registry.install_entry(entry, str(target), replace=True, backup=True)
+            self.assertFalse(old_file.exists())
+            self.assertEqual(result["version"], "0.4.0")
+            self.assertEqual((Path(result["backup"]) / retired).read_text(), "old procedure")
+            active = target / entry["id"]
+            if kind == "harness":
+                self.assertTrue((active / "agent_tailscale.py").is_file())
+                self.assertEqual(set(json.loads((active / "harness.json").read_text())["commands"]),
+                                 {"agent.status", "agent.login", "installer.info"})
 
     def test_stage_only_distributes_installers_and_sanitized_metadata(self):
         (self.source / "private-report.json").write_text('{"stage":"/private/build/path"}')

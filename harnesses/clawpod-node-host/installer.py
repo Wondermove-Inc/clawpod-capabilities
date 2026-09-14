@@ -151,14 +151,20 @@ def guidance(platform: str, filename: str) -> dict:
         "windows": "Uninstall ClawPod Node from Windows Installed apps.",
     }
     return {
+        "preparation": [
+            "Step 1: run agent.status; if NeedsLogin, run agent.login, send the link to the user, and recheck Running. Keep an existing connection.",
+            "Step 2: help the user install Tailscale from https://tailscale.com/download and sign in to the same tailnet on their computer; verify communication.",
+            "Steps 3–4: confirm the computer OS/CPU and use installer.info to select its matching Node app. Metadata lookup does not perform sign-in.",
+        ],
         "setup": [
             "Download the selected installer from its release and compare its SHA-256 with the manifest before opening it. Remote availability has not been checked.",
-            install[platform],
-            "Open ClawPod Node. Its setup page opens in your default browser.",
             "Give the requesting user the Gateway host's verified Tailscale DNS name or IP, the complete reachable Gateway WebSocket root URL, and a display name. Confirm the actual listener/proxy port; do not infer it from a dashboard URL or the agent pod's address.",
             "Read the active Gateway authentication source with available authorized tools and give the requesting user the actual Gateway token separately from the URL. config.get and openclaw config get redact secrets; a masked value or SecretRef is not a usable token. If password mode is active, provide the corresponding password instead. Explain which local authentication field to paste it into.",
+            install[platform],
+            "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
             "Save settings and select Start node. If using private LAN ws://, explicitly select the app's private connection option.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
+            "Use the connected computer for requested work through existing nodes tools or exec host=node. Verify a simple capability such as system.which when needed.",
         ],
         "operations": {
             "start": "Select Start node in the ClawPod Node setup page.",
@@ -171,8 +177,8 @@ def guidance(platform: str, filename: str) -> dict:
             "uninstall": removal[platform] + " User settings and device identity remain for reinstall; remove the separate .clawpod-node directory only when you intend to discard them.",
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",
-        "legacyCompatibility": "The app has its own state and startup service. Existing ~/.openclaw state and CLI-installed nodes are preserved. Legacy install/service/repair/uninstall/enroll commands manage the CLI workflow, not this packaged app.",
-        "network": "Use a reachable Gateway WebSocket root endpoint. Tailscale is optional for this installer flow; the app requires wss:// for public/Tailscale endpoints and explicit opt-in for private LAN ws://.",
+        "stateCompatibility": "The app has its own state and startup service. Existing ~/.openclaw state is preserved. Use the app controls and OS package removal for this installation.",
+        "network": "Complete agent and computer Tailscale sign-in and verify communication before connecting the Node app. Verify the Gateway listener/proxy mapping separately; the app requires wss:// for public/Tailscale endpoints and explicit opt-in for private LAN ws://.",
     }
 
 

@@ -1,24 +1,49 @@
 # clawpod-node-host CLI Harness
 
-Select a standalone ClawPod Node installer for Linux x64, macOS arm64/x64, or Windows x64, and guide its setup and daily operation. The entrypoint uses only Python's standard library. Put the package directory on disk and invoke `clawpod_node_host.py`, or run `scripts/install.py --bin-dir <user-bin>` to create the `clawpod-node-host` command without network access or administrator access.
+Guide ClawPod Node app onboarding with three commands. The agent pod already has
+Tailscale installed; this Harness checks its connection and initiates sign-in when
+needed. Tailscale installation instructions apply to the user's computer.
+
+| Command | Behavior |
+| --- | --- |
+| `agent.status` | Read agent Tailscale state. `NeedsLogin` asks for sign-in; `Running` advances to computer Tailscale setup. |
+| `agent.login` | Return the agent's sign-in link, then recheck status. Already connected agents are unchanged. |
+| `installer.info` | Select an offline installer by the user's OS/CPU and return setup/operation guidance. |
+
+Use these commands through `cli_harness`, or invoke the Python entrypoint:
 
 ```sh
-python3 clawpod_node_host.py --json installer info \
-  --platform macos --arch arm64 --gateway-url wss://gateway.example.com:18789
+python3 clawpod_node_host.py --json agent status
+python3 clawpod_node_host.py --json agent login
+python3 clawpod_node_host.py --json installer info --platform macos --arch arm64
 ```
 
-Use the target computer's platform and architecture, which may differ from the agent's host. `--gateway-url` is optional; when supplied it must be a credential-free WebSocket root URL. Dashboard paths, query strings, fragments, and embedded credentials are rejected. The app allows public/Tailscale endpoints over `wss://`, and private LAN `ws://` with explicit opt-in in the app. This installer path does not require Tailscale or a globally installed Node.js/OpenClaw.
+Follow the Skill's eight stages: agent Tailscale sign-in → computer Tailscale
+installation/sign-in → OS/CPU confirmation → installer selection → actual Gateway
+address/token handoff → user installs/starts Node app → exact device approval and
+connection verification → node-tool use. Reuse stages already verified. Device
+pairing uses Gateway tools; this Harness neither generates enrollment IDs nor
+approves a request by a display name.
 
-`installer info` reads the package-local `installer-manifest.json` and returns the selected filename, SHA-256, byte size, pinned download URL, installer/runtime versions, release validation, and app-native instructions. It performs no network call or state mutation. `remoteAvailability: unchecked` means the output alone does not prove a release exists. Check the release before promising a download is available. The manifest is synchronized from `node/release.json` by the repository release tooling and travels with a standalone harness install.
+`installer.info` performs no network access, authentication, installation, or
+state mutation. It reads `installer-manifest.json`, synchronized from
+`node/release.json`, and returns the matching installer URL/hash/size. It can run
+without Tailscale: stage ordering belongs to the Skill, not metadata lookup.
+It reports `remoteAvailability: unchecked`. An optional `--gateway-url` checks the
+app's existing root-WebSocket contract; it does not test endpoint reachability.
+The agent obtains actual Gateway Tailscale addresses, endpoint, and token/password
+with available authorized tools and supplies them separately to the user.
+Gateway `config.get` and `openclaw config get` redact credentials.
 
-Open the installed **ClawPod Node** app, enter the Gateway root URL and credential locally, save settings, and select **Start node**. Approve the matching device in the Agent Control UI and verify the connection there. **Running** in the app indicates the local process only. **Reconnect**, **Stop**, and **Start when I sign in** control this app. Its state lives in `.clawpod-node`; native removal instructions are returned for the selected platform.
+The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
+creates only the local **Harness command wrapper**, for callers wanting a
+`clawpod-node-host` executable. It does not generate a node installation script.
 
-Existing commands remain available for legacy macOS/Windows CLI installations pinned to OpenClaw `2026.4.11`. Their `install`, `service`, `repair`, `uninstall`, and enrollment commands do not manage the standalone app's separate state or startup service.
+Version 0.4.0 removes prior CLI/SSH provisioning, node enrollment generators,
+plan/apply, and CLI service-management commands. The native installers and
+existing computer installations are unchanged. Update both Skill and Harness to
+0.4.0; old command calls are rejected without running installation or service
+operations. App controls and OS package removal manage `.clawpod-node`.
 
-Legacy tests set `CLAWPOD_NODE_HOST_FIXTURE` and optionally `CLAWPOD_NODE_HOST_RECORD`; they never mutate a real service or network. Live service mutation additionally requires `CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION=1` on an explicitly disposable supported host.
-
-The `bootstrap` commands cover the pre-Node path. Remote behavior is fixture-driven unless the separate disposable integration gate is present; tests only record strict noninteractive SSH command shapes. Credentials are opaque protected references and are never read or persisted. `bootstrap generate` emits the deterministic credential-free local alternative.
-
-See `TEST.md` and the linked Skill for safety and routing boundaries.
-
-During onboarding, the agent also obtains and gives the requesting user the actual Gateway Tailscale address, complete WebSocket endpoint, and Gateway token in separate fields. Use the active password for password-mode Gateways. `installer.info` returns guidance only; it does not read these deployment values. Gateway `config.get` and `openclaw config get` redact secrets, so masked output cannot be used as the token.
+See `TEST.md` for fixture and real-process validation. No live Tailscale account
+is changed by the test suite.
