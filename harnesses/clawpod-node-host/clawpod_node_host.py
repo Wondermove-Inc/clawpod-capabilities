@@ -41,6 +41,7 @@ MUTATIONS = {
 PLANNERS = {"install.plan", "repair.plan", "uninstall.plan", "rollback.plan"}
 ONBOARDING_PLANNERS = {"tailscale.install-plan", "tailscale.login-plan", "ssh-server.plan"}
 COMMANDS = {
+    "installer.info",
     "system.inspect", "version.inspect", "tailscale.install-status", "tailscale.status",
     "tailscale.address", "tailscale.same-tailnet", "tailscale.verify", "ssh-server.status", "ssh-server.verify", "service.status",
     "onboarding.status", "pairing.status", "validate.plan", "validate.run",
@@ -1010,7 +1011,8 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--tls", action="store_true"); p.add_argument("--tls-fingerprint"); p.add_argument("--request-id"); p.add_argument("--plan-id"); p.add_argument("--confirm")
     p.add_argument("--display-name"); p.add_argument("--node-id"); p.add_argument("--browser-proxy", choices=("enabled", "disabled"), default="disabled"); p.add_argument("--allow-profile", action="append")
     p.add_argument("--pairing-request-id"); p.add_argument("--lifecycle-action", choices=("start", "stop", "restart")); p.add_argument("--validation-level", choices=("preflight", "service", "connection", "system", "browser"), default="preflight"); p.add_argument("--shell-probe", action="store_true")
-    p.add_argument("--platform", dest="platform_name", choices=("macos", "windows")); p.add_argument("--transport", choices=sorted(BOOTSTRAP_TRANSPORTS))
+    p.add_argument("--platform", dest="platform_name", choices=("linux", "macos", "windows")); p.add_argument("--transport", choices=sorted(BOOTSTRAP_TRANSPORTS))
+    p.add_argument("--arch", choices=("x64", "arm64")); p.add_argument("--gateway-url")
     p.add_argument("--bootstrap-host"); p.add_argument("--bootstrap-account"); p.add_argument("--bootstrap-port", type=int)
     p.add_argument("--expected-host-key"); p.add_argument("--credential-ref")
     p.add_argument("group", choices=sorted({c.split(".")[0] for c in COMMANDS})); p.add_argument("action")
@@ -1022,7 +1024,13 @@ def main() -> int:
         args = parser().parse_args()
         command = f"{args.group}.{args.action}"
         if command not in COMMANDS: raise ValueError(f"unsupported command: {command}")
-        output, code = Harness(args).run()
+        if command == "installer.info":
+            from installer import installer_info
+            output, code = installer_info(args)
+        elif args.platform_name == "linux":
+            raise ValueError("Linux is supported by installer info only; legacy CLI provisioning supports macOS and Windows")
+        else:
+            output, code = Harness(args).run()
     except (ValueError, OSError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
         output = {"ok": False, "command": "unknown", "safetyClass": "S0", "status": "failed", "errors": [{"code": "INVALID_INPUT", "message": sanitize(str(exc))}], "redactions": ["credential", "account-identity", "peer-inventory"]}; code = 2
     print(canonical(sanitize(output)))

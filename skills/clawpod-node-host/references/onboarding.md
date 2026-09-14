@@ -1,37 +1,42 @@
-# Progressive onboarding
+# Standalone installer onboarding
 
-## Self-service enrollment (default)
+Use this flow for a new ClawPod Node app installation. Read [legacy provisioning](legacy.md) only for an explicit CLI, script, or SSH workflow.
 
-The default track has five states and at most two user hand-offs:
+## Choose the user's computer
 
-| State | Automatic work | User-facing gate |
-|---|---|---|
-| `agent` | `agent status`; if not connected, `agent login` to obtain the sign-in link (the pod ships with Tailscale installed but signed out). Poll `agent status` until Running. | Once: send the login link and ask the user to sign in with the ClawPod Tailscale account. Skip entirely when already connected. |
-| `platform` | None | Ask only whether the computer is Mac or Windows 11. |
-| `handoff` | `enroll generate` with the agent's own Gateway endpoint; verify the returned script mentions no placeholder. | Send the complete script and say: run it, and sign in to Tailscale with the same account as ClawPod if asked. Nothing else. |
-| `watch` | Poll `enroll status --node-id <id>` on a relaxed interval; `waiting_user` is normal, not an error. On the single match, `enroll approve` immediately without asking again. | None, unless the user reports an `ACTION:` line — then relay that one action and keep watching. |
-| `verify` | `validate run --validation-level connection`, then report connected. | None. |
+`installer info` requires explicit platform and architecture; it never detects them from the agent runtime.
 
-The script is idempotent: after any `ACTION:` stop (Tailscale install/login, Node.js install) the user simply re-runs it. Ambiguous or absent pairing matches fall back to `pairing status` / `pairing approve <exact-requestId>`.
+| Target computer | Platform | Architecture | Package |
+| --- | --- | --- | --- |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.1.0-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.1.0-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.1.0-darwin-x64.pkg` |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.1.0-win32-x64.exe` |
 
-## Agent-driven SSH provisioning (fallback)
+For example, after establishing that the user's Mac has Apple Silicon:
 
-Advance one state at a time. Persist only the state name and redacted facts so a later turn resumes at the first unmet gate. Ask one question or action per turn, never a checklist.
+```text
+clawpod-node-host --json installer info --platform macos --arch arm64
+```
 
-Supported paths are macOS Remote Login/OpenSSH, Windows OpenSSH Server, Tailscale SSH, and a local command. Password, key, SSH agent, and Tailscale SSH have no product-level preference.
+The Harness uses its bundled manifest, corresponding to public `node/release.json` in `Wondermove-Inc/clawpod-capabilities`. Send the returned download URL and use its SHA-256 value when verifying a downloaded file. A selection result describes the release; it does not prove an asset was downloaded or installed. If an asset cannot be downloaded, check the public release status rather than silently switching to npm or a different build.
 
-| State | Automatic work | User-facing gate |
-|---|---|---|
-| `platform` | None | Ask only whether the computer is Mac or Windows 11. |
-| `transport` | Run typed Tailscale install readiness, approved install, approved login initiation, login status, address, and same-tailnet verification **on the node only** (the agent already runs Tailscale on its tailnet — never reinstall, reconfigure, or log it out); join the node with MagicDNS/accept-dns disabled (`--accept-dns=false`), never enabling Tailscale DNS on the node. Then approved macOS Remote Login or Windows OpenSSH Server readiness with Tailscale-only scope. | Pause once at the browser login gate: give the user the Tailscale login link and ask them to sign in with the **same Tailscale account as ClawPod** (the agent). A different account fails `same-tailnet` — ask them to log out and re-login with the correct account. Then resume inspection. |
-| `credentials` | Accept password, key, SSH agent, or Tailscale SSH without product-level preference. Ask the user to send the password/secret in chat; move it immediately into protected runtime injection and discard plaintext after capture. | Ask for any supported method and, for password, ask the user to send it in chat; the agent must not re-echo or persist secret material after capture. |
-| `inspect` | Require a Tailscale IP, acquire the OpenSSH host key, compare its fingerprint to the locally displayed value, create an ephemeral mode-0600 known_hosts file, and run bounded noninteractive SSH. | Surface one classified blocker. Host-key mismatch always fails closed. |
-| `plan` | Build a fresh target-bound plan with redacted effects and rollback, and apply it with its own confirmation in the same turn. Changed target, transport, endpoint, version, or evidence requires replanning. | None. |
-| `apply` | Upload the deterministic script by content hash and execute it with noninteractive strict-host-key options, or generate the same credential-free script for the user to run locally. Persist completion of `preflight`, `upload`, `execute`, and `verify`; retry only the first incomplete idempotent stage. | Ask only for an unavoidable local OS consent prompt, such as a macOS privacy permission. For partial work, offer one retry action or guidance to remove installed user-scoped artifacts and revoke the bootstrap key/agent authorization. |
-| `pair` | Re-list requests, internally match one exact request ID to the expected fingerprint, and approve it in the same turn. | None; show identifiers only for ambiguity or safety. |
-| `verify` | Validate service, Gateway connection, and requested system/browser capabilities. | If provisioning is correct but connection fails, hand redacted evidence to `node-connect`; otherwise ask one recovery action and resume at the first unmet state. |
-| `complete` | Confirm no pending postcondition and retain rollback evidence. | Report the ClawPod node as connected and state the first useful next action, without implementation details. |
+Open the DEB in the Linux package installer, open the PKG on macOS, or run the EXE as the normal Windows user. The installation can run offline once downloaded. Connecting requires access to the Agent Gateway; browser automation separately requires a compatible installed browser.
 
-The local readiness script substantively enables the user-approved built-in Remote Login or OpenSSH Server path. This bootstrap does not change the node-to-Gateway transport. Remote execution is restricted to the Tailscale IP; it never falls back to public-internet, DNS, or generic LAN SSH, and resume always starts at the first unmet stage.
+## Gateway setup
 
-Store no password, private key, token, protected environment value, full account identity, or peer inventory. Persist only opaque reference kind, hashes, redacted facts, exact plan binding, and stage status. Never place secret plaintext in generated scripts, SSH argv, known-host arguments, command recordings, state, logs, plans, or JSON output.
+Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser.
+
+- Enter the actual Gateway root WebSocket endpoint, for example `wss://gateway.example.com:18789`. An optional trailing slash is allowed; URL credentials, paths, queries, and fragments are not. A Cloud Portal or Agent dashboard address is not this endpoint.
+- Prefer a known endpoint from the current Agent configuration if reachable by the target computer. If it is missing, obtain the real root endpoint from the administrator. Installing the app does not provision a Gateway, public proxy, or network route.
+- Use `wss://` for public endpoints and Tailscale IPv4 endpoints. The explicit private `ws://` setting accepts supported private LAN addresses and `.local` names; it does not make a public address or `100.64.0.0/10` private to the app. Loopback addresses refer to the user's computer, not the remote Agent pod.
+- Enter a display name and select token or password authentication. The user enters the Gateway credential directly in the app's local field. Keep that value separate from endpoint/download links and agent output. TLS certificate SHA-256 pinning is optional when the deployment provides a fingerprint.
+- Select **Save settings**, then **Start node**. Do not introduce Tailscale setup if the endpoint already works.
+
+## Pair and verify the actual device
+
+Inspect pending device pairing in the Agent Control UI or the available device-pairing tool. Match the exact pending request and device identity to the user's computer; display names can collide. Approve the matched request as part of the requested connection. If identity evidence is insufficient or several requests match, resolve that ambiguity before approving.
+
+The installer passes a display name to the bundled node process and uses its independently generated identity under the app state directory. Legacy `enroll generate` creates a synthetic `nodeId`, so its `enroll status --node-id` and `enroll approve` correlation cannot identify an app installation. Do not generate an enrollment script merely to watch app pairing, and do not use `nodes approve` as a substitute for device pairing.
+
+Confirm the exact device appears connected in the Gateway's node status. App **Running** is a local process observation and does not establish successful authentication, pairing, or connection. For a requested capability, use a safe call such as `system.which` after connection. If correct setup still fails, give `node-connect` the redacted endpoint, local state/error timestamps, and device-pairing/connection observations.

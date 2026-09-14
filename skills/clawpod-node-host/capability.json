@@ -1,12 +1,13 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.2.2",
+  "version": "0.3.0",
   "descriptionSource": "skill-frontmatter",
-  "description": "Use when a user wants to connect a Mac or Windows 11 PC to ClawPod as a node. Default flow: hand the user one complete, credential-free script (Tailscale, openclaw install, gateway address baked in), then auto-detect and approve the pairing request. Can also drive SSH-based provisioning, verification, recovery, and removal. Use node-connect instead when an already configured node fails to connect or pair.",
+  "description": "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. Use node-connect instead when an already configured node fails to connect or pair.",
   "compatibility": {
     "openclaw": "2026.4.11",
     "platforms": [
+      "linux",
       "macos",
       "windows"
     ]
@@ -17,6 +18,6 @@
   },
   "linkedHarness": {
     "id": "clawpod-node-host",
-    "version": "0.2.1"
+    "version": "0.3.0"
   }
 }

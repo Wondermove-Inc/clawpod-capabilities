@@ -6,7 +6,9 @@ Real disposable-host integration remains excluded and requires `CLAWPOD_NODE_HOS
 
 ## Adversarial coverage
 
-- macOS and Windows 11 provider selection, explicit Linux rejection
+- Standalone installer selection for Linux x64, macOS arm64/x64, and Windows x64, including execution outside the repository with only the packaged harness files
+- Root Gateway URL validation, credential-free output, public/Tailscale TLS and private LAN opt-in guidance, missing/corrupt manifest failures, and manifest argument-map execution
+- macOS and Windows 11 legacy provider selection, explicit Linux rejection for legacy commands
 - Tailscale human-assisted install/login, same-tailnet and Tailscale-IP gates, stale evidence, and unreachable Gateway
 - Node.js below 22.14, exact OpenClaw pinning, install resolution drift, installed-version drift, and service PATH/version mismatch
 - plan/confirmation binding and expiry, invalid input, interrupted-state resume, idempotent install/rollback, stale pairing, nested redaction

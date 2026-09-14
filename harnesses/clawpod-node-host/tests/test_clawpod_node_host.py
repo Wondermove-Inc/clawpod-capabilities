@@ -111,22 +111,25 @@ def test_shared_description_is_byte_identical():
 
 def test_skill_enforces_concise_progressive_clawpod_onboarding():
     source = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "SKILL.md").read_text()
-    prompt = "ClawPod 노드 연결을 도와드릴게요. 연결할 컴퓨터는 Mac인가요, Windows 11인가요?"
-    assert prompt in source
-    assert "ask exactly one concise user action" in source
-    assert "Before any mutation" in source and "fresh plan" in source
-    assert "request ID and fingerprint as internal verification evidence" in source
-    assert "never use `latest`" in source and "openclaw@2026.4.11" in source
+    assert "standalone ClawPod Node installer" in source
+    assert "user's target computer" in source and "Ask only for missing information" in source
+    assert "installer info" in source and "--platform" in source and "--arch" in source
+    assert "Gateway WebSocket root URL" in source and "separate local authentication field" in source
+    assert "A display name alone is not an identity" in source
+    assert "do not call legacy `enroll status --node-id` or `enroll approve`" in source
+    assert "Do not require Tailscale enrollment" in source
+    assert "references/legacy.md" in source
 
 def test_onboarding_state_machine_covers_remote_bootstrap_and_resume():
-    source = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "references" / "onboarding.md").read_text()
-    for state in ("platform", "transport", "credentials", "inspect", "plan", "apply", "pair", "verify", "complete"):
-        assert f"`{state}`" in source
-    for method in ("macOS Remote Login/OpenSSH", "Windows OpenSSH Server", "Tailscale SSH", "local command"):
+    source = (ROOT.parents[1] / "skills" / "clawpod-node-host" / "references" / "legacy.md").read_text()
+    for state in ("Target", "Transport", "Authentication", "Inspect", "Plan and apply", "Service", "Pair", "Verify"):
+        assert f"| {state} |" in source
+    for method in ("macOS Remote Login", "Windows OpenSSH Server", "Tailscale SSH", "local execution"):
         assert method in source
     assert "Password, key, SSH agent, and Tailscale SSH" in source
-    assert "one question or action per turn" in source
-    assert "first unmet" in source and "does not change the node-to-Gateway transport" in source
+    assert "fresh exact plan" in source and "first unmet" in source
+    assert "request ID and fingerprint as internal verification evidence" in source
+    assert "never substitute `latest`" in source and "openclaw@2026.4.11" in source
     assert "Tailscale-only scope" in source
 
 def test_tailscale_mutations_are_typed_plan_bound_and_human_gated():

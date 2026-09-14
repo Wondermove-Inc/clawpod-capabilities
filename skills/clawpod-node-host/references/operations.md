@@ -1,27 +1,29 @@
-# Operations and recovery
+# App operations and recovery
 
-Self-service enrollment commands take no plan/confirm handshake:
+Use these controls for the standalone app. Legacy CLI service commands manage a different installation; see [legacy provisioning](legacy.md) only when that is the user's target.
 
-```text
-clawpod-node-host --json agent status
-clawpod-node-host --json agent login
-clawpod-node-host --json enroll generate --platform macos --gateway-host <magicdns> --gateway-port 18789 --tls
-clawpod-node-host --json enroll status --node-id <id>
-clawpod-node-host --json enroll approve --node-id <id>
-```
+## Local controls
 
-`enroll status` exits 3 while the user has not yet run the script. `enroll approve` requires exactly one matching pairing request; ambiguity fails closed to the exact-request `pairing` commands. Rollback: re-run the same generated script with `OPENCLAW_NODE_ROLLBACK=1`.
+- Closing the setup browser tab leaves the node running. Reopening the app reuses its setup server.
+- **Reconnect** restarts the node using saved settings.
+- **Stop** persists across reopening the app and signing in again. Select **Start node** to reconnect.
+- **Start when I sign in** registers startup for the current user and their logged-in desktop. It is not a pre-login system/root service.
+- A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. **Clear the saved authentication value** stops the node.
 
-For the SSH fallback, invoke global options before the two-word command, for example:
+Read timestamped local errors, check the saved endpoint/authentication mode without exposing the credential, and compare with Gateway device status. Local **Running** alone does not prove connection. Use `node-connect` for failures to connect or pair after correct setup.
 
-```text
-clawpod-node-host --json --state <owner-state> --openclaw-version 2026.4.11 --gateway-host <magicdns> --gateway-port 18789 --tls install plan
-```
+## State, upgrade, and removal
 
-Apply with the returned plan ID, request ID, and exact confirmation challenge. Plans expire after 15 minutes; Tailscale evidence expires after five minutes. A target, provider, endpoint, version, or identity change requires replanning.
+The app keeps settings, Gateway authentication, device identity, and CLI state under `~/.clawpod-node` (`%USERPROFILE%\.clawpod-node` on Windows). It does not migrate or modify `~/.openclaw` or existing OpenClaw services.
 
-For service lifecycle actions, request an action-bound plan with `service status --lifecycle-action start|stop|restart`; this remains observational until separately confirmed and applied.
+| Platform | Application | Login startup | Removal |
+| --- | --- | --- | --- |
+| Linux | `/opt/clawpod-node` | systemd user unit `clawpod-node.service` | `sudo dpkg -r clawpod-node` |
+| macOS | `/Applications/ClawPod Node.app` | LaunchAgent `cloud.clawpod.node` | Run `Uninstall ClawPod Node.command` in the app's `Contents/Resources`, then move the app to Trash. |
+| Windows | `%LOCALAPPDATA%\ClawPodNode` | Scheduled task `ClawPod Node <account hash>` | Use Installed apps. |
 
-Status reports CLI, service registration/process, transport, pairing/connection, and capabilities separately. If Tailscale is absent, create and approve `tailscale install-plan`, then run `tailscale install-apply`. If logged out, approve `tailscale login-plan`/`login-apply`; the apply initiates login and pauses for the user's browser consent or MFA. Rerun `tailscale status`, `address`, and `same-tailnet` afterward. Never automate credential, MFA, or consent entry.
+On a shared Mac, each configured account must run the unregister command before the shared app is moved to Trash; that command unregisters only the current account.
 
-Uninstall removes only the provider-backed user service and preserves the CLI, `node.json`, pairing information, exec approvals, and browser policy. Rollback uses only a same-target authenticated Harness backup. If provisioning is correct but connection fails, pass the redacted evidence bundle to `node-connect`.
+Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
+
+Installer `0.1.0` contains runtime `2026.4.11`; the Skill and Harness are version `0.3.0`. An app upgrade uses a matching installer, not legacy `npm install` or `openclaw node install`.
