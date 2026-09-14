@@ -216,12 +216,12 @@
   },
   "clawpod-node-host": {
     "positive": [
+      "Sign the agent in to Tailscale and help connect my computer to the same tailnet",
       "Install ClawPod Node on Linux and connect this computer to ClawPod",
       "Download the ClawPod Node installer for my Apple Silicon or Intel Mac",
       "Set up ClawPod Node on a Windows 11 PC with the standalone installer",
       "Guide Gateway setup and approve the actual pending device pairing request",
-      "Explain ClawPod Node app recovery or removal",
-      "Provision a legacy CLI node over SSH or generate its enrollment script"
+      "Explain ClawPod Node app recovery or removal"
     ],
     "negative": [
       "Why is my already configured ClawPod node connection failing?",

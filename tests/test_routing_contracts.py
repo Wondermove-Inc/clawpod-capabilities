@@ -7,12 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "routing_contracts.json"
-CLAWPOD_NODE_HOST_DESCRIPTION = (
-    "Use when a user wants to install ClawPod Node on Linux, macOS, or Windows and connect a "
-    "computer to ClawPod. Select the standalone installer, guide Gateway setup and pairing, "
-    "and explain app recovery or removal. Retain CLI/SSH provisioning for legacy installations. "
-    "Use node-connect instead when an already configured node fails to connect or pair."
-)
+CLAWPOD_NODE_HOST_DESCRIPTION = 'Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.'
 
 
 def frontmatter_description(skill: Path) -> str:
@@ -82,11 +77,11 @@ class RoutingContractTests(unittest.TestCase):
         contract = self.contracts["clawpod-node-host"]
         positives = " ".join(contract["positive"])
         negatives = " ".join(contract["negative"])
-        for phrase in ("Linux", "Mac", "Apple Silicon", "Intel", "Windows 11", "standalone installer", "Gateway setup", "device pairing", "legacy CLI", "SSH", "recovery", "removal"):
+        for phrase in ("Linux", "Mac", "Apple Silicon", "Intel", "Windows 11", "standalone installer", "Gateway setup", "device pairing", "Tailscale", "same tailnet", "recovery", "removal"):
             self.assertIn(phrase, positives)
         for phrase in ("already configured ClawPod node connection failing", "paired node unauthorized", "already configured node fails to pair"):
             self.assertIn(phrase, negatives)
-        self.assertIn("Use node-connect instead", CLAWPOD_NODE_HOST_DESCRIPTION)
+        self.assertIn("Use node-connect when available", CLAWPOD_NODE_HOST_DESCRIPTION)
 
 
 if __name__ == "__main__":

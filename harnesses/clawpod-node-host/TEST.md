@@ -1,21 +1,20 @@
-# Test contract
+# Verification
 
-Run `python3 -m pytest harnesses/clawpod-node-host/tests`. The default suite uses fixtures, command recording, and temporary fake provider executables. It performs no network, Tailscale, real service, pairing, npm, or OpenClaw mutation.
+Run `uv run --with pytest python -m pytest harnesses/clawpod-node-host/tests`.
 
-Real disposable-host integration remains excluded and requires `CLAWPOD_NODE_HOST_DISPOSABLE_INTEGRATION=1` plus separate operator approval. The fake-provider tests exercise the same bounded timeout/retry path without touching a host service.
+- Agent status and sign-in: signed out, sign-in URL handoff, recheck to Running,
+  already-connected no-op, stopped/authorization-pending states, missing CLI,
+  malformed/status failures, login timeout, process cleanup, and failure output.
+- Fake Tailscale executables exercise the real subprocess path; no live account
+  or daemon is used. `CLAWPOD_NODE_HOST_FIXTURE` and command recording are optional
+  local fixtures. Installer lookup ignores them and never initiates sign-in.
+- All three command manifests are invoked through their real CLI mappings.
+  Removed commands and arguments cannot generate scripts or mutate services.
+- Four native installer targets, endpoint validation, independent package lookup,
+  metadata/error handling, and local Harness wrapper registration remain covered.
 
-## Adversarial coverage
-
-- Standalone installer selection for Linux x64, macOS arm64/x64, and Windows x64, including execution outside the repository with only the packaged harness files
-- Root Gateway URL validation, credential-free output, public/Tailscale TLS and private LAN opt-in guidance, missing/corrupt manifest failures, and manifest argument-map execution
-- macOS and Windows 11 legacy provider selection, explicit Linux rejection for legacy commands
-- Tailscale human-assisted install/login, same-tailnet and Tailscale-IP gates, stale evidence, and unreachable Gateway
-- Node.js below 22.14, exact OpenClaw pinning, install resolution drift, installed-version drift, and service PATH/version mismatch
-- plan/confirmation binding and expiry, invalid input, interrupted-state resume, idempotent install/rollback, stale pairing, nested redaction
-- provider failure timeout and bounded retry, supported restart mapping, system/browser probe command selection
-- bootstrap success, missing SSH, authentication failure, strict host-key mismatch, bounded timeout, partial stage resume, permission denial, protected-reference redaction, deterministic local generation, retry/idempotency
-- three positive routing examples, at least two negative examples, and collisions with node-connect, routine connected-node operations, Tailscale installation, Gateway installation, and desktop
-
-## Environment limitations and completion plan
-
-The CI-safe suite does not assert real launchd or Windows Task Scheduler side effects. Those are intentionally deferred to separately approved disposable macOS and Windows 11 hosts. Completion there is: run the exact same plan/apply/validate/rollback flow, capture provider-native status before and after, interrupt once between provider install and state commit, then verify resume and cleanup. Production hosts and real Tailscale state are never test targets.
+Repository checks include Registry package installation, source/file inventories,
+manifest synchronization, routing, and distribution asset integrity. Regenerate
+`registry/index.json` using `python3 scripts/sync_registry.py` after package edits.
+Native installer version 0.1.0 and public release bytes are unchanged. These tests
+are not proof of live Tailscale sign-in, Gateway pairing, or native OS installation.

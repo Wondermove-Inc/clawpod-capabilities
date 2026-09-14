@@ -1,6 +1,6 @@
 # App operations and recovery
 
-Use these controls for the standalone app. Legacy CLI service commands manage a different installation; see [legacy provisioning](legacy.md) only when that is the user's target.
+Use these controls for the standalone ClawPod Node app.
 
 ## Local controls
 
@@ -10,7 +10,7 @@ Use these controls for the standalone app. Legacy CLI service commands manage a 
 - **Start when I sign in** registers startup for the current user and their logged-in desktop. It is not a pre-login system/root service.
 - A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. **Clear the saved authentication value** stops the node.
 
-Read timestamped local errors, check the saved endpoint/authentication mode, and compare with Gateway device status. Keep diagnostic evidence redacted. When the requesting user needs the active credential to reconnect, follow the verified credential handoff in [onboarding](onboarding.md). Local **Running** alone does not prove connection. Use `node-connect` for failures to connect or pair after correct setup.
+Read timestamped local errors, check the saved endpoint/authentication mode, and compare with Gateway device status. Keep diagnostic evidence redacted. When the requesting user needs the active credential to reconnect, follow the verified credential handoff in [onboarding](onboarding.md). Local **Running** alone does not prove connection. Use `node-connect` when available for failures to connect or pair after correct setup.
 
 ## State, upgrade, and removal
 
@@ -26,4 +26,4 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.1.0` contains runtime `2026.4.11`; the Skill and Harness are version `0.3.0`. An app upgrade uses a matching installer, not legacy `npm install` or `openclaw node install`.
+Installer `0.1.0` contains runtime `2026.4.11`; the Skill and Harness are version `0.4.0`. An app upgrade uses a matching installer.

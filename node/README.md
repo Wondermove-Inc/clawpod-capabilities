@@ -25,25 +25,29 @@ a production-validated release.
 
 ## Install and connect
 
-1. Install the downloaded file: open the PKG on macOS, run the EXE as your normal
-   user on Windows, or use your desktop package installer on Debian/Ubuntu.
-   Linux terminal alternative: `sudo dpkg -i ClawPod-Node-0.1.0-linux-x64.deb`.
-2. Open **ClawPod Node** from your applications menu. A local setup page opens in
-   your browser.
-3. Enter the Gateway root WebSocket address, a display name for this computer,
-   and the Gateway token or password supplied by your Agent administrator.
-   Example address: `wss://gateway.example.com:18789`. Put the authentication
-   value in its separate field. A Cloud room or dashboard URL is not a node endpoint.
-4. Save settings and choose **Start node**.
-5. In the Agent Control UI, identify this computer's actual pending device request
-   and approve it. Confirm the device is connected before using it.
+1. The agent checks its own Tailscale sign-in. If signed out, it starts sign-in,
+   gives you the login link, and verifies the connection after you sign in.
+2. Install [Tailscale](https://tailscale.com/download) on your computer if missing,
+   sign in to the same intended tailnet, and verify communication with the agent.
+   Existing installations and active sign-ins are reused.
+3. Confirm your computer's OS and CPU with the agent.
+4. Download the matching ClawPod Node installer listed above.
+5. The agent provides the actual Gateway Tailscale address, complete WebSocket
+   URL, and active Gateway token separately (or the password for password mode).
+6. Install the DEB/PKG/EXE and open **ClawPod Node**. Enter the supplied URL,
+   display name, and token/password in their respective fields. Select
+   **Save settings**, then **Start node**.
+7. The agent identifies and approves your exact pending device request at the
+   Gateway, then verifies that the device is connected.
+8. Ask the agent to perform work on the connected computer through its node tools.
 
 **Running** on the local setup page only means the local process has started.
 It does not prove that the Gateway accepted authentication, approved pairing, or
 connected the device. Use the Control UI's device/connection state for that.
 
-The Gateway must be reachable from the remote computer. Use an existing suitable
-route; Tailscale is an option when needed, not an installation prerequisite.
+The Gateway must be reachable from your computer. This guided connection flow
+prepares Tailscale on both sides before starting the Node app. The Node package
+does not bundle or install Tailscale.
 Use `wss://` for public and Tailscale endpoints. The app also accepts private-LAN
 `ws://` addresses after you explicitly select that option. These are the existing
 installer's connection rules, not a change to Gateway configuration.
@@ -71,9 +75,7 @@ package does not run another AI agent or provision a Gateway.
 On shared Macs, each configured account should run the unregister command before
 the shared application is deleted. Uninstallation retains the separate
 `.clawpod-node` directory in your home folder for reinstall. It does not modify
-your existing `.openclaw` installation. Legacy `openclaw node stop/uninstall`
-commands do not manage this app's wrapper service; use the app and removal steps
-above. Do not run both old and new installations for the same intended node
+your existing `.openclaw` installation. Use the app controls and removal steps above. Do not run both old and new installations for the same intended node
 without checking which one is connected.
 
 ## Agent-assisted setup
