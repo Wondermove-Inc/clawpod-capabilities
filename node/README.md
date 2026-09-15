@@ -5,16 +5,16 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.1.0 preview
+## Download 0.1.1 preview
 
 | Computer | Installer | Size |
 | --- | --- | ---: |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-linux-x64.deb) | 161 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-darwin-arm64.pkg) | 247 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-darwin-x64.pkg) | 214 MiB |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-win32-x64.exe) | 148 MiB |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-linux-x64.deb) | 161 MiB |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-arm64.pkg) | 247 MiB |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-x64.pkg) | 214 MiB |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-win32-x64.exe) | 149 MiB |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.1.0)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.1.1)
 · [Machine-readable versions, hashes, and exact byte sizes](release.json)
 
 These initial installers are unsigned. macOS/Windows native installation and
@@ -22,6 +22,11 @@ desktop login startup have not yet been verified on those operating systems.
 Linux offline installation, upgrade, and removal were verified in a Debian
 container. See [validation scope](VALIDATION.md) before treating this preview as
 a production-validated release.
+
+Version 0.1.1 adds ClawPod icons on macOS, Windows, and Linux and enables private
+and Tailscale IP `ws://` connections without an extra option. Existing settings
+and device identity are preserved when upgrading. If an old saved address uses
+`wss://` against a plain listener, correct the address before starting.
 
 ## Install and connect
 
@@ -48,9 +53,12 @@ connected the device. Use the Control UI's device/connection state for that.
 The Gateway must be reachable from your computer. This guided connection flow
 prepares Tailscale on both sides before starting the Node app. The Node package
 does not bundle or install Tailscale.
-Use `wss://` for public and Tailscale endpoints. The app also accepts private-LAN
-`ws://` addresses after you explicitly select that option. These are the existing
-installer's connection rules, not a change to Gateway configuration.
+For a plain Gateway listener on a private or Tailscale IP, use `ws://IP:PORT`,
+for example `ws://100.64.1.2:18789`. These connections are always enabled, without
+a checkbox. Localhost, `.localhost`, and `.local` names also support `ws://`.
+Use `wss://` when the actual endpoint provides TLS. Other hostnames,
+including Tailscale `.ts.net` names, require TLS in the app; use the Tailscale IP
+for plain WebSocket access. Tailscale sign-in does not add TLS to the Gateway.
 
 Node.js and the node-host runtime are included. A browser is not included: remote
 browser automation needs a compatible browser installed on the computer. This

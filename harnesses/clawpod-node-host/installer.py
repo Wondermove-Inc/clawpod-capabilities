@@ -27,6 +27,11 @@ def release_manifest() -> dict:
     tag = f"node-v{version}"
     if value.get("releaseTag") != tag or value.get("releaseUrl") != f"{REPOSITORY}/releases/tag/{tag}":
         raise ValueError("invalid installer release")
+    if "installerSourceCommit" in value and (
+        not isinstance(value["installerSourceCommit"], str)
+        or not re.fullmatch(r"[a-f0-9]{40}", value["installerSourceCommit"])
+    ):
+        raise ValueError("invalid installer source commit")
     for key in ("runtimeVersion", "nodeVersion"):
         if not isinstance(value.get(key), str) or not re.fullmatch(r"\d+\.\d+\.\d+", value[key]):
             raise ValueError("invalid runtime version")
@@ -126,17 +131,19 @@ def gateway_address(raw: str) -> dict:
             address = None
     except (ValueError, UnicodeError):
         raise ValueError(message) from None
-    loopback = host in {"localhost", "127.0.0.1", "::1"}
     private = host == "localhost" or host.endswith((".localhost", ".local"))
     if address is not None:
-        networks = ("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "::1/128", "fc00::/7", "fe80::/10")
+        if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped:
+            address = address.ipv4_mapped
+        networks = ("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "169.254.0.0/16", "::1/128", "fc00::/7", "fe80::/10")
         private = any(address in ipaddress.ip_network(network) for network in networks)
     if parsed.scheme == "ws" and not private:
-        raise ValueError("The app requires wss:// for public and Tailscale endpoints; ws:// is supported for loopback or an explicitly allowed private LAN address.")
+        raise ValueError("Use ws:// for private or Tailscale IPs, localhost, .localhost, or .local names; use wss:// for other hosts.")
     authority = f"[{host}]" if ":" in host else host
     if port is not None and port != (443 if parsed.scheme == "wss" else 80):
         authority += f":{port}"
-    return {"url": f"{parsed.scheme}://{authority}", "privateWsOptInRequired": parsed.scheme == "ws" and not loopback}
+    # Keep the response field for existing consumers; Node 0.1.1 needs no opt-in.
+    return {"url": f"{parsed.scheme}://{authority}", "privateWsOptInRequired": False}
 
 
 def guidance(platform: str, filename: str) -> dict:
@@ -158,11 +165,11 @@ def guidance(platform: str, filename: str) -> dict:
         ],
         "setup": [
             "Download the selected installer from its release and compare its SHA-256 with the manifest before opening it. Remote availability has not been checked.",
-            "Give the requesting user the Gateway host's verified Tailscale DNS name or IP, the complete reachable Gateway WebSocket root URL, and a display name. Confirm the actual listener/proxy port; do not infer it from a dashboard URL or the agent pod's address.",
+            "Give the requesting user the Gateway host's verified Tailscale IP, complete reachable WebSocket root URL, and a display name. Use ws://IP:PORT for a plain WebSocket listener; use wss:// only for a TLS endpoint. Tailscale sign-in does not add TLS. Confirm the actual listener/proxy port; do not infer it from a dashboard URL.",
             "Read the active Gateway authentication source with available authorized tools and give the requesting user the actual Gateway token separately from the URL. config.get and openclaw config get redact secrets; a masked value or SecretRef is not a usable token. If password mode is active, provide the corresponding password instead. Explain which local authentication field to paste it into.",
             install[platform],
             "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
-            "Save settings and select Start node. If using private LAN ws://, explicitly select the app's private connection option.",
+            "Save settings and select Start node. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
             "Use the connected computer for requested work through existing nodes tools or exec host=node. Verify a simple capability such as system.which when needed.",
         ],
@@ -178,7 +185,7 @@ def guidance(platform: str, filename: str) -> dict:
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",
         "stateCompatibility": "The app has its own state and startup service. Existing ~/.openclaw state is preserved. Use the app controls and OS package removal for this installation.",
-        "network": "Complete agent and computer Tailscale sign-in and verify communication before connecting the Node app. Verify the Gateway listener/proxy mapping separately; the app requires wss:// for public/Tailscale endpoints and explicit opt-in for private LAN ws://.",
+        "network": "Complete agent and computer Tailscale sign-in and verify communication before connecting the Node app. Private and Tailscale IP ws:// connections need no opt-in. Use the Tailscale IP for a plain WebSocket listener. Localhost, .localhost, and .local names also support ws://; other hostnames, including .ts.net DNS names, require a real wss:// endpoint. Match the actual listener/proxy scheme and port.",
     }
 
 

@@ -99,13 +99,27 @@ class NodeDistributionTests(unittest.TestCase):
             with patch.object(registry, "fetch_bytes", side_effect=fetch):
                 result = registry.install_entry(entry, str(target), replace=True, backup=True)
             self.assertFalse(old_file.exists())
-            self.assertEqual(result["version"], "0.4.0")
+            self.assertEqual(result["version"], entry["version"])
             self.assertEqual((Path(result["backup"]) / retired).read_text(), "old procedure")
             active = target / entry["id"]
             if kind == "harness":
                 self.assertTrue((active / "agent_tailscale.py").is_file())
                 self.assertEqual(set(json.loads((active / "harness.json").read_text())["commands"]),
                                  {"agent.status", "agent.login", "installer.info"})
+
+    def test_optional_installer_source_commit_is_validated(self):
+        for value in (None, 123, "not-a-commit", "a" * 39):
+            data = copy.deepcopy(self.manifest)
+            data["installerSourceCommit"] = value
+            file = self.root / "bad-provenance.json"
+            file.write_text(json.dumps(data))
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "installer source commit"):
+                release.load_manifest(file)
+        data = copy.deepcopy(self.manifest)
+        data.pop("installerSourceCommit", None)
+        file = self.root / "legacy-provenance.json"
+        file.write_text(json.dumps(data))
+        self.assertEqual(release.load_manifest(file)["version"], data["version"])
 
     def test_stage_only_distributes_installers_and_sanitized_metadata(self):
         (self.source / "private-report.json").write_text('{"stage":"/private/build/path"}')

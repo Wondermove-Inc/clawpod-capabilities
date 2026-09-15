@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.1.0-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.1.0-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.1.0-darwin-x64.pkg` |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.1.0-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.1.1-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.1.1-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.1.1-darwin-x64.pkg` |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.1.1-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 
@@ -56,7 +56,8 @@ Open the DEB in the Linux package installer, open the PKG on macOS, or run the E
 Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser.
 
 - Copy the supplied complete root WebSocket URL into the Gateway address field. An optional trailing slash is allowed; URL credentials, paths, queries, and fragments are not.
-- Use `wss://` for public and Tailscale endpoints. The explicit private `ws://` setting accepts supported private LAN addresses and `.local` names; it does not make a public address or Tailscale IPv4 `100.64.0.0/10` private to the app. Installing the app does not provision a Gateway, public proxy, or network route.
+- For a plain Gateway listener on a private or Tailscale IP, use `ws://<IP>:<port>` (for example, `ws://100.64.1.2:18789`). This is always enabled; there is no checkbox. All RFC1918 IPv4 ranges, Tailscale CGNAT `100.64.0.0/10`, IPv6 ULA, loopback, link-local, and localhost/`.localhost`/`.local` names are supported.
+- Use `wss://` only for an endpoint that actually provides TLS. Non-local hostnames, including Tailscale `.ts.net` names, require a TLS endpoint in this app; use the Tailscale IP for plain WebSocket access. Tailscale sign-in does not configure Gateway TLS. Do not change `ws://` to `wss://` merely because the address belongs to Tailscale.
 - Enter a display name, select the supplied token/password authentication mode, and copy the actual credential provided by the agent into the separate local authentication field. TLS certificate SHA-256 pinning is optional when the deployment provides a fingerprint.
 - Select **Save settings**, then **Start node**. The two Tailscale setup stages must already be verified.
 

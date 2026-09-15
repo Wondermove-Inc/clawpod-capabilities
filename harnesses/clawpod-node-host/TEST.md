@@ -16,5 +16,6 @@ Run `uv run --with pytest python -m pytest harnesses/clawpod-node-host/tests`.
 Repository checks include Registry package installation, source/file inventories,
 manifest synchronization, routing, and distribution asset integrity. Regenerate
 `registry/index.json` using `python3 scripts/sync_registry.py` after package edits.
-Native installer version 0.1.0 and public release bytes are unchanged. These tests
+Version 0.5.0 points to Node 0.1.1 and tests automatic private/Tailscale IP ws://
+acceptance, CIDR boundaries, and IPv4-mapped IPv6. These tests
 are not proof of live Tailscale sign-in, Gateway pairing, or native OS installation.

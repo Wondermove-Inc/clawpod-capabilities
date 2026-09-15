@@ -10,6 +10,9 @@ Agent runtime version.
 1. Update `release.json` with reviewed build metadata: exact installer version,
    target, filename, byte size, SHA-256, runtime version, and immutable release URL.
    `sourceCommit` describes the bundled Agent source, not wrapper provenance.
+   `installerSourceCommit` identifies the Agent-repository commit containing the
+   installer wrapper and setup app. The public release tag targets the reviewed
+   capabilities-repository commit instead; these are separate histories.
    Record actual signing and native verification status; do not infer it from the
    presence of an installer.
 2. Run `python3 node/prepare_release.py sync` to copy that manifest into the
@@ -49,14 +52,14 @@ changes through the repository's normal PR flow; never push a merge directly to
 `main`. Publish the exact reviewed commit, not a moving default branch:
 
 ```sh
-gh release create node-v0.1.0 node/releases/0.1.0/* \
+gh release create node-v0.1.1 node/releases/0.1.1/* \
   --repo Wondermove-Inc/clawpod-capabilities \
   --target REVIEWED_COMMIT_SHA \
-  --title 'ClawPod Node 0.1.0 preview' \
-  --notes-file node/RELEASE-NOTES-0.1.0.md --prerelease --latest=false
+  --title 'ClawPod Node 0.1.1 preview' \
+  --notes-file node/RELEASE-NOTES-0.1.1.md --prerelease --latest=false
 ```
 
-The 0.1.0 preview is unsigned and does not carry native macOS/Windows validation.
+The 0.1.1 preview is unsigned and does not carry native macOS/Windows validation.
 `--latest=false` prevents this installer release from taking over the capability
 repository's generic latest-release selector. Download links always use the Node
 tag directly. Checksum files use only the installer basename so they can be
