@@ -177,7 +177,7 @@ def guidance(platform: str, filename: str) -> dict:
             "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
             "Save settings and select Start node. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
-            "Identify the connected Node ID with nodes action=status and inspect its capabilities. For GUI work use remote_computer with node: status, acquire, input with the returned frameId as frame_id, then release. Use exec host=node with node for CLI, or browser target=node with node for a compatible installed browser. Local computer remains the pod desktop. The Gateway Agent must also provide remote_computer.",
+            "Identify the connected Node ID with nodes action=status and inspect its capabilities. For GUI work use remote_computer with node: status, acquire, input with the returned frameId as frame_id, then release. Use exec host=node with node for CLI; a running sessionId is used with process for status, logs, input, or cancellation. Managed CLI needs Node 0.2.1 and the updated controlling Agent; no SSH server is needed. Use browser target=node with node for a compatible installed browser. Local computer remains the pod desktop. The Gateway Agent must also provide remote_computer.",
         ],
         "operations": {
             "start": "Select Start node in the ClawPod Node setup page.",

@@ -5,30 +5,27 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.2.0 preview
+## Download 0.2.1 preview
 
 | Computer | Installer | Size |
 | --- | --- | ---: |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-linux-x64.deb) | 168 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-darwin-arm64.pkg) | 253 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-darwin-x64.pkg) | 220 MiB |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-win32-x64.exe) | 194 MiB |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-linux-x64.deb) | 168 MiB |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-darwin-arm64.pkg) | 253 MiB |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-darwin-x64.pkg) | 220 MiB |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-win32-x64.exe) | 194 MiB |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.0)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.1)
 · [Machine-readable versions, hashes, and exact byte sizes](release.json)
 
-Version 0.2.0 integrates remote desktop control and **Desktop setup** into the
-ClawPod Node app on macOS, Windows, and Linux. Screen capture, accessibility
-observations, mouse/keyboard actions, and multilingual paste use the connected
-node; no separate desktop helper installation is needed. System audio and
-microphone capture are not included. The Gateway Agent must also provide the
-`remote_computer` tool; updating this capability alone does not update that Agent.
+Version 0.2.1 improves commands on the connected computer. The Agent can start
+background commands, inspect output, provide terminal input, and cancel the same
+execution through ClawPod Node. No SSH server is needed. Update the controlling
+Agent as well as the Node app; updating this capability alone upgrades neither.
+Existing remote desktop control and Desktop setup remain available.
 
-The macOS application is ad-hoc signed, not Developer ID signed or notarized.
-Windows publisher signing is not included. Actual Mac Apple Silicon desktop
-control and Linux X11 installed-package checks passed. Native Windows/Intel Mac
-GUI, actual Wayland compositor, and full login-startup validation remain pending.
-See [validation scope](VALIDATION.md) for exact evidence and limits.
+The macOS app is ad-hoc signed, without Developer ID signing or notarization.
+Windows publisher signing is not included. See [validation scope](VALIDATION.md)
+for this release's exact execution checks and remaining native-platform limits.
 
 Private/Tailscale IP `ws://` support, app icons, saved settings, and device identity
 are retained. Use `ws://` for a plain listener and `wss://` for an actual TLS endpoint.

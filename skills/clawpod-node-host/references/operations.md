@@ -26,7 +26,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.2.0` contains runtime `2026.4.11`; the Skill and Harness are version `0.6.0`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Installer `0.2.1` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.0`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Use the selected node
@@ -36,7 +36,7 @@ its advertised capabilities; an older Gateway Agent or Node may not provide
 `remote_computer` even though CLI commands work.
 
 - GUI: call `remote_computer` with `action: "status"` and `node`, then `acquire` with the same `node`. Use the returned `frameId` as `frame_id` for input. Choose `display_id` if needed. Keep `node` on every call and `release` when finished or handing the desktop over.
-- CLI: use `exec` with `host: "node"` and the selected `node`.
+- CLI: use `exec` with `host: "node"` and the selected `node`. No SSH server is needed. On macOS/Linux use `/bin/sh` syntax; on Windows use `cmd.exe` syntax or explicitly invoke PowerShell.
 - Browser: use `browser` with `target: "node"` and `node`. The node needs a compatible installed browser and browser proxy capability.
 
 `computer` always targets the agent pod, not the connected computer. Desktop
@@ -52,3 +52,18 @@ X11 needs a clipboard manager to preserve an existing clipboard during paste;
 Wayland paste needs a Clipboard portal. If paste reports unavailable, distinguish
 that from screenshot or other input availability instead of declaring the whole
 desktop unavailable.
+
+## Managed CLI execution
+
+Update both the controlling Agent and ClawPod Node for managed execution. Node
+0.2.1 advertises `system.process`; older nodes retain synchronous commands.
+Use `background: true` for background work or `pty: true` for terminal programs.
+When `exec` returns a running `sessionId`, use `process` with that handle for
+status, logs, input, EOF, or cancellation. The handle keeps the selected node;
+never replace this route with SSH or a command on the agent pod.
+
+Worker completion returns to the worker that started the command, including
+successful commands with no output. Cancellation/reset stops owned remote work.
+A lost connection or restart invalidates process handles; inspect the actual
+result before rerunning a command that may already have changed the computer.
+GUI control and browser routing remain independent of this CLI lifecycle.
