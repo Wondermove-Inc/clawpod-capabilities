@@ -52,14 +52,16 @@ changes through the repository's normal PR flow; never push a merge directly to
 `main`. Publish the exact reviewed commit, not a moving default branch:
 
 ```sh
-gh release create node-v0.1.1 node/releases/0.1.1/* \
+gh release create node-v0.2.0 node/releases/0.2.0/* \
   --repo Wondermove-Inc/clawpod-capabilities \
   --target REVIEWED_COMMIT_SHA \
-  --title 'ClawPod Node 0.1.1 preview' \
-  --notes-file node/RELEASE-NOTES-0.1.1.md --prerelease --latest=false
+  --title 'ClawPod Node 0.2.0 preview' \
+  --notes-file node/RELEASE-NOTES-0.2.0.md --prerelease --latest=false
 ```
 
-The 0.1.1 preview is unsigned and does not carry native macOS/Windows validation.
+The 0.2.0 preview has an ad-hoc signed Mac app, without Developer ID signing or
+notarization, and no Windows publisher signature. Consult `VALIDATION.md` for
+the verified Apple Silicon/Linux coverage and remaining native-platform limits.
 `--latest=false` prevents this installer release from taking over the capability
 repository's generic latest-release selector. Download links always use the Node
 tag directly. Checksum files use only the installer basename so they can be

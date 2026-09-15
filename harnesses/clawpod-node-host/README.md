@@ -39,17 +39,18 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.5.1 selects the Node 0.1.1 installers and matches their automatic
-private/Tailscale IP `ws://` support. There is no private-connection checkbox.
-For a plain listener, provide `ws://<Tailscale-IP>:<port>`; use `wss://` only for
-an actual TLS endpoint. The legacy response field `privateWsOptInRequired`
-remains present and is always false. Token/password handoff and exact device
-approval are still required. Update both Skill and Harness to 0.5.1.
+Version 0.6.0 selects Node 0.2.0 and adds OS-specific Desktop setup guidance.
+All desktop components are included in ClawPod Node. macOS grants belong to
+ClawPod Node; Windows and Linux use their interactive desktop facilities.
+The existing automatic private/Tailscale IP `ws://` behavior, token/password
+handoff, command schemas, and exact device approval remain unchanged.
+Update both Skill and Harness to 0.6.0. Update the Node app separately; the
+Gateway Agent must also provide the new `remote_computer` tool for GUI work.
 
-Version 0.5.1 fixes the 0.5.0 execution-preparation error
-`input.gatewayUrl uses unsupported schema keyword description`. Gateway URL
-guidance is in the command description, which the Agent runner supports.
-The Node 0.1.1 installers and connection behavior are unchanged.
+Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
+`exec host=node` with `node`, and browser uses `target=node` with `node`.
+The Skill explains acquire/frame/release and OS permission recovery. Local
+`computer` remains the agent pod desktop. System audio is not captured.
 
 See `TEST.md` for fixture and real-process validation. No live Tailscale account
 is changed by the test suite.

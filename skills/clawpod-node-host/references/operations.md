@@ -26,4 +26,29 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.1.1` contains runtime `2026.4.11`; the Skill and Harness are version `0.5.1`. An app upgrade uses a matching installer.
+Installer `0.2.0` contains runtime `2026.4.11`; the Skill and Harness are version `0.6.0`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+
+
+## Use the selected node
+
+Use `nodes` with `action: "status"` to identify the connected Node ID. Inspect
+its advertised capabilities; an older Gateway Agent or Node may not provide
+`remote_computer` even though CLI commands work.
+
+- GUI: call `remote_computer` with `action: "status"` and `node`, then `acquire` with the same `node`. Use the returned `frameId` as `frame_id` for input. Choose `display_id` if needed. Keep `node` on every call and `release` when finished or handing the desktop over.
+- CLI: use `exec` with `host: "node"` and the selected `node`.
+- Browser: use `browser` with `target: "node"` and `node`. The node needs a compatible installed browser and browser proxy capability.
+
+`computer` always targets the agent pod, not the connected computer. Desktop
+ownership coordinates `remote_computer` calls; it does not lock unrelated CLI or
+browser work. People and other tools can change the screen, so inspect fresh
+observations before acting. Main agents and workers must use their own acquisition
+and returned frame; release the desktop before another session takes over.
+Use `paste` for literal Korean, English, and other multilingual text. A successful
+input response means input was delivered, not that the app accepted or saved it.
+System audio and microphone capture are not included.
+
+X11 needs a clipboard manager to preserve an existing clipboard during paste;
+Wayland paste needs a Clipboard portal. If paste reports unavailable, distinguish
+that from screenshot or other input availability instead of declaring the whole
+desktop unavailable.

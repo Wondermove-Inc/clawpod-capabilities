@@ -1,49 +1,61 @@
-# ClawPod Node 0.1.1 validation scope
+# ClawPod Node 0.2.0 validation scope
 
-The four installers were built on 2026-09-15 and transferred without rebuilding.
-Their size and SHA-256 are recorded in [release.json](release.json) and checked
-again before staging. `sourceCommit` identifies the bundled **Agent runtime**
-source (`a4fc6c41f2bb6f442ba9182cd55279617649a378`), not the Node installer wrapper.
-`installerSourceCommit` separately identifies the Node installer wrapper source
-(`caace97495e617bf2696f2ef048d83e37e64d2ce`). The original packaging source and
-validation record live under the private Agent repository's `node/` directory.
+This distribution promotes the exact four installers verified in the Agent
+repository. No installer is rebuilt or re-signed here. Both `sourceCommit` and
+`installerSourceCommit` identify `9c1e6b08c72c8e9f024a2570892556febad87676` for this
+build: the bundled Agent source and integrated installer wrapper are from that
+same commit. They remain separate provenance fields. Later Agent commits through
+`9e5c736af2` changed documentation only.
 
-| Check from the installer implementation | Result | Scope |
+The installer sizes and hashes in [release.json](release.json) come from the
+original build reports and are rechecked against all four binary files. Raw build
+reports contain machine-local paths and are not public assets.
+
+## Implementation and installed-package evidence
+
+| Check | Result | Scope |
 | --- | --- | --- |
-| Automated tests | PASS | 36 default tests; two opt-in integration cases executed separately |
-| Bundled CLI protocol | PASS | Actual bundled runtime connected over private IPv4 and IPv4-mapped IPv6; existing protocol checks retained |
-| Setup page | PASS | Chromium render/save/authentication clearing; no saved authentication value in status output |
-| Linux offline installation | PASS | Fresh 0.1.1 DEB installation in a Debian 12 container without network access or preinstalled Node.js |
-| Linux upgrade/removal | PASS | Active upgrade, own-service cleanup, preservation of app state and unrelated Agent state |
-| POSIX crash recovery | PASS | Helper/daemon loss, child process cleanup, bounded restart without duplicate CLI |
-| Four package formats | PASS | DEB, two Apple XAR PKGs, Windows NSIS EXE and target payloads |
-| Native macOS/Windows lifecycle | NOT RUN | Requires machines with these operating systems |
-| Desktop login startup | NOT RUN | Registration contracts tested; actual graphical login not exercised |
-| Signing/notarization | NOT DONE | All four packages are unsigned |
+| Agent full test suite | PASS | 61 shards, 4,369 files, 40,679 tests; one file/16 tests skipped. A first heap-limited run was rerun with sufficient heap. |
+| Agent build, type, and checks | PASS | Final implementation and packaging surfaces, recorded in Agent `node/VALIDATION.md`. |
+| Node app tests | PASS | 46 default tests; seven opt-in cases skipped in that run. |
+| Final setup page | PASS | Four Chromium UI tests against the final payload. |
+| macOS Apple Silicon | PASS | Actual installed app permissions, screenshot, Korean/English/emoji input, 24/24 targeted clicks, drag, cancellation/release cleanup. |
+| Mac upgrade/configuration | PASS | 0.1.1-to-0.2.0 preserved settings, identity, and requested running state; installed IPC setup response verified. |
+| Linux X11 | PASS | Final DEB installed in Debian 12 containers; native input/capture and actual Node protocol fixture. |
+| macOS Intel | PACKAGE VERIFIED | Native compile, PKG extraction, full-app ad-hoc signature and executable/inventory checks; no actual Intel GUI execution. |
+| Windows | PACKAGE VERIFIED | EXE extraction and native payload/inventory checks; no actual Windows GUI execution. |
+| Wayland | FIXTURE VERIFIED | Private D-Bus fixture; no actual compositor session. |
+| Desktop sign-out/sign-in | NOT RUN | Full native graphical login-startup lifecycle is not established. |
+| Production Gateway pairing | NOT ESTABLISHED | Protocol fixtures and app readiness are not proof of a production pairing. |
+| Public signing | NOT DONE | Mac app ad-hoc signing is verified; no Developer ID/notarization or Windows publisher signing. |
 
-The Agent implementation tests cover the new installer behavior. The Linux
-installation, active upgrade, and removal smoke was repeated for these exact
-0.1.1 bytes during distribution preparation. Native macOS/Windows lifecycle
-tests were not repeated. The protocol fixture is not proof of production
-Gateway pairing.
+The compact manifest retains `nativeMacOS: not-run` because complete native Mac
+coverage across both architectures has not run. It does not negate the specific
+Apple Silicon checks above. `nativeWindows` and `desktopLoginStartup` also remain
+`not-run`; Linux offline installation is `passed`. Do not interpret these coarse
+flags as a per-architecture result or label the preview production-validated.
 
-Distribution validation includes:
+The Linux helper needs glibc 2.36+ and an interactive desktop. X11 clipboard
+preservation requires a clipboard manager; Wayland paste requires Clipboard
+portal support. OS setup details are in [the download guide](README.md).
 
-- 184 Node Harness tests, including address boundaries, IPv4-mapped addresses,
-  installer selection, manifest provenance, and legacy compatibility.
-- 65 repository tests (five optional runtime checks skipped), 20 registry core
-  tests, and five registry end-to-end tests.
-- Registry generation and validation, packaged-manifest synchronization, and
-  skill format checks.
-- A 160-URL comparison between the Harness selector and the actual Node app:
-  acceptance and normalized addresses agree for all cases.
-- Complete-before-copy staging of four installers, four checksums, and the
-  public manifest. Raw private build reports are excluded.
+## Distribution checks
 
-Publication verification downloads all nine assets without authentication and
-compares their bytes with the staged release. This checks public reachability
-and artifact integrity; it does not install software on a user's computer.
+Distribution preparation passed 197 scoped Harness/distribution tests (one optional
+runtime test skipped in that run), then the actual Agent-source harness preparation
+and execution checks passed separately (two tests, including 12 successful command
+runs). The repository suite passed 67 tests with six optional checks skipped;
+Registry suites passed 20 unit and five end-to-end tests. The pinned routing
+expectation was updated to match the new desktop-permission description.
+Registry generation, package versions, manifest synchronization, exact four-file
+size/hash/provenance checks, and whitespace checks passed. Independent Astra high
+review returned GO, followed by the author's source and artifact review.
 
-Before promoting to a production release, verify clean native OS installation,
-actual Gateway pairing, sign out/in, stop/start, active upgrade, and removal.
-Complete macOS signing/notarization and Windows signing as separate release work.
+The existing staging tool checks the complete set before copying and verifies
+copied bytes again. Staging contains only four installers, four basename-only SHA-256 files,
+and sanitized `release.json`. It excludes raw private build reports.
+
+After publication, download all nine assets without authentication and verify
+exact bytes against the staged manifest. Public download verification proves
+reachability and artifact integrity, not native installation or Gateway pairing.
+Keep old published versions immutable; new installers use `node-v0.2.0`.
