@@ -39,12 +39,17 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.5.0 selects the Node 0.1.1 installers and matches their automatic
+Version 0.5.1 selects the Node 0.1.1 installers and matches their automatic
 private/Tailscale IP `ws://` support. There is no private-connection checkbox.
 For a plain listener, provide `ws://<Tailscale-IP>:<port>`; use `wss://` only for
 an actual TLS endpoint. The legacy response field `privateWsOptInRequired`
 remains present and is always false. Token/password handoff and exact device
-approval are still required. Update both Skill and Harness to 0.5.0.
+approval are still required. Update both Skill and Harness to 0.5.1.
+
+Version 0.5.1 fixes the 0.5.0 execution-preparation error
+`input.gatewayUrl uses unsupported schema keyword description`. Gateway URL
+guidance is in the command description, which the Agent runner supports.
+The Node 0.1.1 installers and connection behavior are unchanged.
 
 See `TEST.md` for fixture and real-process validation. No live Tailscale account
 is changed by the test suite.
