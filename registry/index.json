@@ -247,8 +247,8 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.5.1",
-      "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+      "version": "0.6.0",
+      "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -265,20 +265,20 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "82c07e2df1089796dfdbe2d35d3233545f38f240e8f679f674ebd44983c79c86"
+          "sha256": "e6d64c817014dfecf30241f20d1ec3806df15d4cc27e66133cc11b29cbcd897a"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "ae4a9a740f28d72f3c89303d057b032362ace89048dc9cb2a5445fd6f03576f2"
+          "sha256": "ea865800ccac96ff181c79669a78523e82a84628ec2908f2e8c11c899b31fc97"
         },
         {
           "path": "references/operations.md",
-          "sha256": "c3e44c2d4a1a6a87580ac4ea81d7595b6ca6e8b4ab53c8da01671137a025bd52"
+          "sha256": "2d27ffb197e7dde2e0d5ee721e5421070e6f4a133d51dbe32e7bd57b7034d63b"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.5.1"
+        "version": "0.6.0"
       }
     },
     {
@@ -1219,8 +1219,8 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.5.1",
-      "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+      "version": "0.6.0",
+      "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
         "openclaw": "2026.4.11",
@@ -1237,11 +1237,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "246d9e12731df67ad477cf1e3de39b3924e55dc4ae68a0fc2912ec6d2acc5fad"
+          "sha256": "6de16ba56f2fabcad2c14fd8fe59fcdbd35563dd8bae526ed674244a795f98d3"
         },
         {
           "path": "TEST.md",
-          "sha256": "0b6b8320a21b1f70982f5c597c2498e180f9609853753d992f44f77f0ced6e32"
+          "sha256": "e2f7e03e59f4d5ed7d9b89f936224b14b55dad7d52a8393343e176bcf25ef092"
         },
         {
           "path": "agent_tailscale.py",
@@ -1253,15 +1253,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "2997d99914655f7b952f3384f9a81d95ec0e5ad2d2f4bde794d5f83e43f6a1b7"
+          "sha256": "c2663c225782841043d540fefa610269b21df9bb957d77daeeb2a021fadf6759"
         },
         {
           "path": "installer-manifest.json",
-          "sha256": "db32e84ee71af987de205414276cd22d7594f979a08c2fefb3a2361e07439096"
+          "sha256": "4dcf54371022892146955221c49bff29e97b590a51de35a101f23b3ffbe1b0c7"
         },
         {
           "path": "installer.py",
-          "sha256": "5eb80fb9dace9234e17aa7a68d0f584c627815ae6c42c9e1b9c562da4f89bbd1"
+          "sha256": "dac043c15da3207f2ad6f6f8e80771b092e080fc53f81e8046bd484b20b42f4e"
         },
         {
           "path": "schemas/error-exit-codes.json",

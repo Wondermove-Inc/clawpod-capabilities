@@ -157,6 +157,11 @@ def guidance(platform: str, filename: str) -> dict:
         "macos": "Run /Applications/ClawPod Node.app/Contents/Resources/Uninstall ClawPod Node.command before moving the app to Trash. Each configured account on a shared Mac must run this command first.",
         "windows": "Uninstall ClawPod Node from Windows Installed apps.",
     }
+    desktop = {
+        "macos": "In Desktop setup, allow ClawPod Node in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). Use Open settings and Check again if needed. An ad-hoc app update may require removing the stale permission entry and adding the current app from Applications. Screen capture only; audio is not collected.",
+        "windows": "Check Desktop setup in your logged-in, unlocked desktop. No macOS-style permission switch is needed; UAC/secure desktops and elevated applications may reject ordinary input.",
+        "linux": "Check Desktop setup in a graphical session (glibc 2.36 or newer). X11 needs a reachable display and XTest. Wayland needs RemoteDesktop/ScreenCast portals and user screen/input sharing consent when control starts.",
+    }
     return {
         "preparation": [
             "Step 1: run agent.status; if NeedsLogin, run agent.login, send the link to the user, and recheck Running. Keep an existing connection.",
@@ -168,10 +173,11 @@ def guidance(platform: str, filename: str) -> dict:
             "Give the requesting user the Gateway host's verified Tailscale IP, complete reachable WebSocket root URL, and a display name. Use ws://IP:PORT for a plain WebSocket listener; use wss:// only for a TLS endpoint. Tailscale sign-in does not add TLS. Confirm the actual listener/proxy port; do not infer it from a dashboard URL.",
             "Read the active Gateway authentication source with available authorized tools and give the requesting user the actual Gateway token separately from the URL. config.get and openclaw config get redact secrets; a masked value or SecretRef is not a usable token. If password mode is active, provide the corresponding password instead. Explain which local authentication field to paste it into.",
             install[platform],
+            desktop[platform] + " Desktop components are inside ClawPod Node; no separate helper installation is needed. Missing GUI permission does not block Gateway connection setup.",
             "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
             "Save settings and select Start node. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
-            "Use the connected computer for requested work through existing nodes tools or exec host=node. Verify a simple capability such as system.which when needed.",
+            "Identify the connected Node ID with nodes action=status and inspect its capabilities. For GUI work use remote_computer with node: status, acquire, input with the returned frameId as frame_id, then release. Use exec host=node with node for CLI, or browser target=node with node for a compatible installed browser. Local computer remains the pod desktop. The Gateway Agent must also provide remote_computer.",
         ],
         "operations": {
             "start": "Select Start node in the ClawPod Node setup page.",

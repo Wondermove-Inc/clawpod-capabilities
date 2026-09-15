@@ -5,28 +5,33 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.1.1 preview
+## Download 0.2.0 preview
 
 | Computer | Installer | Size |
 | --- | --- | ---: |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-linux-x64.deb) | 161 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-arm64.pkg) | 247 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-x64.pkg) | 214 MiB |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-win32-x64.exe) | 149 MiB |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-linux-x64.deb) | 168 MiB |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-darwin-arm64.pkg) | 253 MiB |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-darwin-x64.pkg) | 220 MiB |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.0/ClawPod-Node-0.2.0-win32-x64.exe) | 194 MiB |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.1.1)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.0)
 · [Machine-readable versions, hashes, and exact byte sizes](release.json)
 
-These initial installers are unsigned. macOS/Windows native installation and
-desktop login startup have not yet been verified on those operating systems.
-Linux offline installation, upgrade, and removal were verified in a Debian
-container. See [validation scope](VALIDATION.md) before treating this preview as
-a production-validated release.
+Version 0.2.0 integrates remote desktop control and **Desktop setup** into the
+ClawPod Node app on macOS, Windows, and Linux. Screen capture, accessibility
+observations, mouse/keyboard actions, and multilingual paste use the connected
+node; no separate desktop helper installation is needed. System audio and
+microphone capture are not included. The Gateway Agent must also provide the
+`remote_computer` tool; updating this capability alone does not update that Agent.
 
-Version 0.1.1 adds ClawPod icons on macOS, Windows, and Linux and enables private
-and Tailscale IP `ws://` connections without an extra option. Existing settings
-and device identity are preserved when upgrading. If an old saved address uses
-`wss://` against a plain listener, correct the address before starting.
+The macOS application is ad-hoc signed, not Developer ID signed or notarized.
+Windows publisher signing is not included. Actual Mac Apple Silicon desktop
+control and Linux X11 installed-package checks passed. Native Windows/Intel Mac
+GUI, actual Wayland compositor, and full login-startup validation remain pending.
+See [validation scope](VALIDATION.md) for exact evidence and limits.
+
+Private/Tailscale IP `ws://` support, app icons, saved settings, and device identity
+are retained. Use `ws://` for a plain listener and `wss://` for an actual TLS endpoint.
 
 ## Install and connect
 
@@ -39,12 +44,16 @@ and device identity are preserved when upgrading. If an old saved address uses
 4. Download the matching ClawPod Node installer listed above.
 5. The agent provides the actual Gateway Tailscale address, complete WebSocket
    URL, and active Gateway token separately (or the password for password mode).
-6. Install the DEB/PKG/EXE and open **ClawPod Node**. Enter the supplied URL,
+6. Install the DEB/PKG/EXE and open **ClawPod Node**. Check **Desktop setup**
+   using the OS guidance below. Enter the supplied URL,
    display name, and token/password in their respective fields. Select
    **Save settings**, then **Start node**.
 7. The agent identifies and approves your exact pending device request at the
    Gateway, then verifies that the device is connected.
-8. Ask the agent to perform work on the connected computer through its node tools.
+8. Ask the agent to work on the connected computer. It selects the Node ID and
+   uses `remote_computer` for GUI, `exec host=node` for CLI, or `browser target=node`
+   for a compatible installed browser. Every route selects the intended node;
+   local `computer` still operates the agent pod.
 
 **Running** on the local setup page only means the local process has started.
 It does not prove that the Gateway accepted authentication, approved pairing, or
@@ -63,6 +72,29 @@ for plain WebSocket access. Tailscale sign-in does not add TLS to the Gateway.
 Node.js and the node-host runtime are included. A browser is not included: remote
 browser automation needs a compatible browser installed on the computer. This
 package does not run another AI agent or provision a Gateway.
+
+## Desktop setup
+
+| Platform | Required environment and setup |
+| --- | --- |
+| macOS | Allow **ClawPod Node** in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). These are normal OS permission requests owned by the installed app. |
+| Windows | Use your logged-in, unlocked desktop. No macOS-style permission switch is needed. UAC/secure desktops and elevated windows may reject ordinary input. |
+| Linux X11 | A reachable X display and XTest are required. The native helper requires glibc 2.36 or newer, such as Debian 12 or Ubuntu 24.04. |
+| Linux Wayland | RemoteDesktop/ScreenCast portals are required. When control starts, choose a screen and approve input in the system sharing dialog. Real compositor validation is still pending. |
+
+On macOS, use **Open settings** and **Check again** when a permission prompt does
+not appear. If the switches are enabled but a fresh check still denies access
+after an ad-hoc signed update, remove stale entries and add the current **ClawPod
+Node** from Applications. An existing desktop session may need **Reconnect** after
+grants change; this restarts the node, so coordinate it with active work.
+There is no separate ClawPod Remote Computer app to install or grant permissions.
+Desktop permission and Gateway pairing are separate: missing GUI permission does
+not prevent configuring the CLI connection.
+
+Clipboard paste on X11 needs a clipboard manager to preserve an existing
+clipboard; Wayland paste needs the Clipboard portal. These paste limitations do
+not mean all desktop observation or control is unavailable. The macOS permission
+label mentions audio, but this release captures screens only.
 
 ## Daily use and removal
 

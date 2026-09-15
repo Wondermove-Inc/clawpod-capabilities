@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.1.1-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.1.1-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.1.1-darwin-x64.pkg` |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.1.1-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.2.0-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.2.0-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.2.0-darwin-x64.pkg` |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.2.0-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 
@@ -54,6 +54,25 @@ Send a concise handoff containing the matching **installer link**, **Gateway Tai
 Open the DEB in the Linux package installer, open the PKG on macOS, or run the EXE as the normal Windows user. The installation can run offline once downloaded. Connecting requires access to the Agent Gateway; browser automation separately requires a compatible installed browser.
 
 Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser.
+
+Check **Desktop setup** in this same app; do not install a separate remote-computer helper.
+
+| OS | Desktop setup |
+| --- | --- |
+| macOS | Allow **ClawPod Node** in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). The app requests access; the user grants it in System Settings. The permission label does not mean audio is captured: this release captures screens only. |
+| Windows | Use the logged-in, unlocked interactive desktop. There is no macOS-style permission switch; UAC/secure desktops or elevated windows may be unavailable to ordinary input. |
+| Linux X11 | Use a graphical session with a reachable X display and XTest. This build requires glibc 2.36 or newer. |
+| Linux Wayland | Setup checks portal capabilities. When desktop control starts, approve the system screen/input sharing dialog and choose the monitor. Actual compositor behavior has not been verified for this preview. |
+
+On macOS, use **Open settings** and **Check again** if the prompt does not appear.
+After an ad-hoc signed app update, an enabled switch can refer to an older app
+identity. If a fresh check still reports missing access, remove that stale entry
+and re-add the current **ClawPod Node** from Applications, then check again.
+If an already running desktop session still lacks access, **Reconnect** restarts
+the node with saved settings; coordinate this with any active node work.
+Do not request permission for a separate “ClawPod Remote Computer” app.
+Missing GUI permissions do not prevent entering Gateway connection settings.
+
 
 - Copy the supplied complete root WebSocket URL into the Gateway address field. An optional trailing slash is allowed; URL credentials, paths, queries, and fragments are not.
 - For a plain Gateway listener on a private or Tailscale IP, use `ws://<IP>:<port>` (for example, `ws://100.64.1.2:18789`). This is always enabled; there is no checkbox. All RFC1918 IPv4 ranges, Tailscale CGNAT `100.64.0.0/10`, IPv6 ULA, loopback, link-local, and localhost/`.localhost`/`.local` names are supported.

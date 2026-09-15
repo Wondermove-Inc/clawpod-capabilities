@@ -3,8 +3,8 @@
   "kind": "openclaw.harness.v1",
   "name": "clawpod-node-host",
   "title": "ClawPod Node Host",
-  "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
-  "version": "0.5.1",
+  "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+  "version": "0.6.0",
   "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {
@@ -119,7 +119,7 @@
       "argMap": []
     },
     "installer.info": {
-      "description": "Select a standalone ClawPod Node installer from the bundled release manifest and return app setup and operation guidance. Requires the target computer platform and architecture. The agent separately obtains and gives the user the verified Gateway Tailscale address, full endpoint, and actual token/password. This command does not read deployment credentials, check remote availability, install software, or change services. Optional gatewayUrl: Gateway root URL. Private and Tailscale IP ws:// connections need no enable option. Use wss:// when the endpoint provides TLS.",
+      "description": "Select a standalone ClawPod Node installer from the bundled release manifest and return app connection, OS-specific Desktop setup, and node-tool guidance. Requires the target computer platform and architecture. The agent separately obtains and gives the user the verified Gateway Tailscale address, full endpoint, and actual token/password. This command does not read deployment credentials, check remote availability, install software, or change services. Optional gatewayUrl: Gateway root URL. Private and Tailscale IP ws:// connections need no enable option. Use wss:// when the endpoint provides TLS.",
       "baseArgv": [
         "--json",
         "installer",
