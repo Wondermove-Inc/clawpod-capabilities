@@ -247,7 +247,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -273,12 +273,12 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "383778a0607415ce6df1b70bef6c0925d500cd6259cc94d06e4b7d5ec833e7a4"
+          "sha256": "c3e44c2d4a1a6a87580ac4ea81d7595b6ca6e8b4ab53c8da01671137a025bd52"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.5.0"
+        "version": "0.5.1"
       }
     },
     {
@@ -1219,7 +1219,7 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
@@ -1237,11 +1237,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "7d14f489d2f835c2a78e4d8f01c6692acd6b10f4c8a579c25a4db8ea1deb49e6"
+          "sha256": "246d9e12731df67ad477cf1e3de39b3924e55dc4ae68a0fc2912ec6d2acc5fad"
         },
         {
           "path": "TEST.md",
-          "sha256": "7ad50eb57b8e5d792366e1d198c4d65ef2bf0dec29494d79ab96f610f8eb78c8"
+          "sha256": "0b6b8320a21b1f70982f5c597c2498e180f9609853753d992f44f77f0ced6e32"
         },
         {
           "path": "agent_tailscale.py",
@@ -1253,7 +1253,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "4742b4f990e2584416316d1c77440927cf75853764b7d267b68ef153b47db005"
+          "sha256": "2997d99914655f7b952f3384f9a81d95ec0e5ad2d2f4bde794d5f83e43f6a1b7"
         },
         {
           "path": "installer-manifest.json",

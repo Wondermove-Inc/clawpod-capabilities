@@ -16,6 +16,24 @@ Run `uv run --with pytest python -m pytest harnesses/clawpod-node-host/tests`.
 Repository checks include Registry package installation, source/file inventories,
 manifest synchronization, routing, and distribution asset integrity. Regenerate
 `registry/index.json` using `python3 scripts/sync_registry.py` after package edits.
-Version 0.5.0 points to Node 0.1.1 and tests automatic private/Tailscale IP ws://
+Version 0.5.1 points to Node 0.1.1 and tests automatic private/Tailscale IP ws://
 acceptance, CIDR boundaries, and IPv4-mapped IPv6. These tests
 are not proof of live Tailscale sign-in, Gateway pairing, or native OS installation.
+
+The always-on repository test `tests/test_node_harness_schema.py` recursively
+checks every command's input/output schema against the supported Agent execution
+keywords. Manifest discovery and direct Python execution alone do not prove that
+`cli_harness` can prepare a command.
+
+With a local Agent source checkout and its dependencies installed, also run:
+
+```sh
+CLAWPOD_AGENT_SOURCE=/path/to/clawpod-agent python3 -m unittest discover -s tests -p test_node_harness_schema.py -v
+```
+
+This imports the actual Agent parser and prepare/run/output validator. It uses a
+temporary installed package, prepares all three commands, and executes only the
+read-only installer lookup for four targets with omitted, private ws, and TLS
+URLs. It verifies that the old nested description reproduces the error both with
+and without a URL, while missing inputs, wrong types, and unknown fields remain
+rejected. It does not contact a Gateway, run Tailscale, or modify installed agents.
