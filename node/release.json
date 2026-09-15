@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "runtimeVersion": "2026.4.11",
   "nodeVersion": "24.15.0",
   "sourceCommit": "a4fc6c41f2bb6f442ba9182cd55279617649a378",
-  "releaseTag": "node-v0.1.0",
-  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.1.0",
+  "releaseTag": "node-v0.1.1",
+  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.1.1",
   "channel": "preview",
   "signed": false,
   "validation": {
@@ -18,34 +18,35 @@
     {
       "platform": "linux",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.1.0-linux-x64.deb",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-linux-x64.deb",
-      "sha256": "95b9d5d83de7d92a9f47bdaf3aa938ec00296dd2a4b723f31834cf03652b2426",
-      "bytes": 169222572
+      "filename": "ClawPod-Node-0.1.1-linux-x64.deb",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-linux-x64.deb",
+      "sha256": "31956eccaee750e433de67c596a585cd7a34b35e88db953ca8645a4efcc196ee",
+      "bytes": 169268188
     },
     {
       "platform": "macos",
       "arch": "arm64",
-      "filename": "ClawPod-Node-0.1.0-darwin-arm64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-darwin-arm64.pkg",
-      "sha256": "39308ba1182d5f6e95520a431a417bd2becdd5bdb4e425090007358c2ac46342",
-      "bytes": 258831814
+      "filename": "ClawPod-Node-0.1.1-darwin-arm64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-arm64.pkg",
+      "sha256": "c459703326af5e7aa3206dc26b254d35d58d58c975ea57ee3c8188bc2127f351",
+      "bytes": 258968964
     },
     {
       "platform": "macos",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.1.0-darwin-x64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-darwin-x64.pkg",
-      "sha256": "a7e46da4a283cfe3bbb4a205deee0f98c92d4cb758251f99d9fd80ff8d1c8073",
-      "bytes": 224324118
+      "filename": "ClawPod-Node-0.1.1-darwin-x64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-darwin-x64.pkg",
+      "sha256": "c90a87b90b23369e2c0aee68ac2780a598821097d8b6c321127e493aaf0a6579",
+      "bytes": 224464549
     },
     {
       "platform": "windows",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.1.0-win32-x64.exe",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.0/ClawPod-Node-0.1.0-win32-x64.exe",
-      "sha256": "65ae78c7717eb9cfe834d3ff54d49f3e84e9bbd3c151c92c6c901db17c29ef05",
-      "bytes": 155462089
+      "filename": "ClawPod-Node-0.1.1-win32-x64.exe",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.1.1/ClawPod-Node-0.1.1-win32-x64.exe",
+      "sha256": "9d40287d82a948e27cb739010067965bddf37a0331a4c4f6850297d148c2916e",
+      "bytes": 155829047
     }
-  ]
+  ],
+  "installerSourceCommit": "caace97495e617bf2696f2ef048d83e37e64d2ce"
 }

@@ -52,17 +52,19 @@ def test_target_must_describe_supported_user_computer(tmp_path, options, code):
 @pytest.mark.parametrize("url,normalized,opt_in", [
     ("wss://gateway.example.com:18789/", "wss://gateway.example.com:18789", False),
     ("wss://gateway.tailnet.ts.net", "wss://gateway.tailnet.ts.net", False),
-    ("ws://192.168.1.10:18789", "ws://192.168.1.10:18789", True),
-    ("ws://computer.local:18789", "ws://computer.local:18789", True),
+    ("ws://192.168.1.10:18789", "ws://192.168.1.10:18789", False),
+    ("ws://computer.local:18789", "ws://computer.local:18789", False),
     ("ws://localhost:18789", "ws://localhost:18789", False),
+    ("ws://100.64.0.10", "ws://100.64.0.10", False),
+    ("ws://[::ffff:100.64.1.2]", "ws://[::ffff:6440:102]", False),
     ("wss://[2001:db8::1]:18789", "wss://[2001:db8::1]:18789", False),
-    ("ws://[fd00::1]:18789", "ws://[fd00::1]:18789", True),
+    ("ws://[fd00::1]:18789", "ws://[fd00::1]:18789", False),
     ("ws://127.1", "ws://127.0.0.1", False),
     ("ws://2130706433", "ws://127.0.0.1", False),
     ("ws://0x7f000001", "ws://127.0.0.1", False),
     ("ws://0177.0.0.1", "ws://127.0.0.1", False),
     ("ws://%31%32%37.1", "ws://127.0.0.1", False),
-    ("ws://192.168.257", "ws://192.168.1.1", True),
+    ("ws://192.168.257", "ws://192.168.1.1", False),
     ("ws://127.0.0.1.", "ws://127.0.0.1", False),
     ("wss://gateway_name", "wss://gateway_name", False),
     ("WSS://GATEWAY.EXAMPLE.COM", "wss://gateway.example.com", False),
@@ -82,9 +84,36 @@ def test_gateway_root_matches_app_transport_contract(tmp_path, url, normalized, 
     assert out["gateway"] == {"url": normalized, "privateWsOptInRequired": opt_in}
 
 
+@pytest.mark.parametrize("host,accepted", [
+    ("10.0.0.0", True), ("10.255.255.255", True),
+    ("172.16.0.0", True), ("172.31.255.255", True),
+    ("192.168.0.0", True), ("192.168.255.255", True),
+    ("100.64.0.0", True), ("100.127.255.255", True),
+    ("[fc00::1]", True), ("[fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff]", True),
+    ("[fe80::1]", True), ("[febf::1]", True),
+    ("[::ffff:192.168.1.2]", True), ("[fd7a:115c:a1e0::1]", True),
+    ("9.255.255.255", False), ("11.0.0.0", False),
+    ("172.15.255.255", False), ("172.32.0.0", False),
+    ("192.167.255.255", False), ("192.169.0.0", False),
+    ("100.63.255.255", False), ("100.128.0.0", False),
+    ("[fbff::1]", False), ("[fe00::1]", False), ("[fec0::1]", False),
+    ("[::]", False), ("[ff02::1]", False), ("[::ffff:8.8.8.8]", False),
+])
+def test_private_address_boundaries_need_no_opt_in(tmp_path, host, accepted):
+    run, out = run_info(tmp_path, "--platform", "macos", "--arch", "arm64",
+                        "--gateway-url", f"ws://{host}:18789")
+    assert out["ok"] is accepted
+    if accepted:
+        assert run.returncode == 0
+        assert out["gateway"]["privateWsOptInRequired"] is False
+    else:
+        assert run.returncode == 2
+        assert out["errors"][0]["code"] == "INVALID_GATEWAY_URL"
+
+
 @pytest.mark.parametrize("url", [
     "wss://1.2.3.999", "wss://1.2.3.4.5", "wss://gateway.123", "wss://gateway.09", "wss://1.2.3.08", "wss://4294967296", "wss://256.1", "wss://1..1", "wss://0x100000000", "wss://gateway%2fexample", "wss://gateway%00example", "wss://gateway%zzexample", "wss://[fe80::1%25eth0]", "wss://[fe80::1%eth0]",
-    "https://gateway.example.com", "wss://gateway.example.com/dashboard", "wss://gateway.example.com/a/..", "wss://gateway.example.com/%2e/", "wss://gateway.example.com?token=CANARY-SECRET", "wss://gateway.example.com#CANARY-SECRET", "wss://user:CANARY-SECRET@gateway.example.com", "wss://@gateway.example.com", "wss://gateway.example.com?", "wss://gateway.example.com#", "wss://gateway.example.com:0", "wss://gateway.example.com:65536", "wss://gateway.example.com\\dashboard", "wss://gate\nway.example.com", "ws://gateway.example.com", "ws://100.64.0.10", "ws://gateway.tailnet.ts.net", "", "wss://[broken",
+    "https://gateway.example.com", "wss://gateway.example.com/dashboard", "wss://gateway.example.com/a/..", "wss://gateway.example.com/%2e/", "wss://gateway.example.com?token=CANARY-SECRET", "wss://gateway.example.com#CANARY-SECRET", "wss://user:CANARY-SECRET@gateway.example.com", "wss://@gateway.example.com", "wss://gateway.example.com?", "wss://gateway.example.com#", "wss://gateway.example.com:0", "wss://gateway.example.com:65536", "wss://gateway.example.com\\dashboard", "wss://gate\nway.example.com", "ws://gateway.example.com", "ws://gateway.tailnet.ts.net", "", "wss://[broken",
 ])
 def test_rejects_bad_gateway_without_echoing_credentials(tmp_path, url):
     run, out = run_info(tmp_path, "--platform", "macos", "--arch", "arm64", "--gateway-url", url)
@@ -106,7 +135,7 @@ def test_standalone_package_needs_no_repo_or_cli_runtime(tmp_path):
     assert run.returncode == 0 and out["installer"]["manifestSource"] == "bundled"
 
 
-@pytest.mark.parametrize("damage", ["missing", "json", "download", "checksum", "duplicate", "size", "metadata"])
+@pytest.mark.parametrize("damage", ["missing", "json", "download", "checksum", "duplicate", "size", "metadata", "provenance", "provenance-type"])
 def test_invalid_packaged_manifest_reports_stable_failure(tmp_path, damage):
     package = standalone_package(tmp_path)
     path = package / "installer-manifest.json"
@@ -124,6 +153,10 @@ def test_invalid_packaged_manifest_reports_stable_failure(tmp_path, damage):
             value["artifacts"][0] = value["artifacts"][1]
         elif damage == "size":
             value["artifacts"][0]["bytes"] = True
+        elif damage == "provenance":
+            value["installerSourceCommit"] = "CANARY-SECRET"
+        elif damage == "provenance-type":
+            value["installerSourceCommit"] = None
         else:
             value["validation"]["nativeMacOS"] = "CANARY-SECRET"
         path.write_text(json.dumps(value))

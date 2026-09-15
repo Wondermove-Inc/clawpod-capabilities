@@ -39,11 +39,12 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.4.0 removes prior CLI/SSH provisioning, node enrollment generators,
-plan/apply, and CLI service-management commands. The native installers and
-existing computer installations are unchanged. Update both Skill and Harness to
-0.4.0; old command calls are rejected without running installation or service
-operations. App controls and OS package removal manage `.clawpod-node`.
+Version 0.5.0 selects the Node 0.1.1 installers and matches their automatic
+private/Tailscale IP `ws://` support. There is no private-connection checkbox.
+For a plain listener, provide `ws://<Tailscale-IP>:<port>`; use `wss://` only for
+an actual TLS endpoint. The legacy response field `privateWsOptInRequired`
+remains present and is always false. Token/password handoff and exact device
+approval are still required. Update both Skill and Harness to 0.5.0.
 
 See `TEST.md` for fixture and real-process validation. No live Tailscale account
 is changed by the test suite.

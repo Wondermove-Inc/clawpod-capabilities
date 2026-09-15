@@ -37,6 +37,11 @@ def load_manifest(path: Path = MANIFEST) -> dict:
         raise ValueError("This staging flow is for unsigned preview installers")
     if not re.fullmatch(r"[a-f0-9]{40}", data.get("sourceCommit", "")):
         raise ValueError("Missing bundled Agent source commit")
+    if "installerSourceCommit" in data and (
+        not isinstance(data["installerSourceCommit"], str)
+        or not re.fullmatch(r"[a-f0-9]{40}", data["installerSourceCommit"])
+    ):
+        raise ValueError("Invalid installer source commit")
     for key in ("runtimeVersion", "nodeVersion"):
         if not isinstance(data.get(key), str) or not data[key]:
             raise ValueError(f"Missing {key}")

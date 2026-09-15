@@ -4,7 +4,7 @@
   "name": "clawpod-node-host",
   "title": "ClawPod Node Host",
   "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "entrypoint": "./clawpod_node_host.py",
   "packageRoot": ".",
   "execution": {
@@ -142,7 +142,8 @@
             "type": "string"
           },
           "gatewayUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Gateway root URL. Private and Tailscale IP ws:// connections need no enable option. Use wss:// when the endpoint provides TLS."
           }
         },
         "additionalProperties": false
