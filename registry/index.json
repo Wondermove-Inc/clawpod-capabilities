@@ -247,7 +247,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -265,20 +265,20 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "e6d64c817014dfecf30241f20d1ec3806df15d4cc27e66133cc11b29cbcd897a"
+          "sha256": "0ec12cf0e5b7caf467ae68369c7097a8ff943b97b6b13cf13f6079df7ea01b09"
         },
         {
           "path": "references/onboarding.md",
-          "sha256": "ea865800ccac96ff181c79669a78523e82a84628ec2908f2e8c11c899b31fc97"
+          "sha256": "5f3830f05b98ed8fa28dbd736d2fb193f2768daa3013830ee221d494e3fee32f"
         },
         {
           "path": "references/operations.md",
-          "sha256": "2d27ffb197e7dde2e0d5ee721e5421070e6f4a133d51dbe32e7bd57b7034d63b"
+          "sha256": "ed594e503cad5e7e24eaf4ef676afb43bcd313839f914a87595b5731c1130425"
         }
       ],
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.6.0"
+        "version": "0.7.0"
       }
     },
     {
@@ -1219,7 +1219,7 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
@@ -1237,11 +1237,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "6de16ba56f2fabcad2c14fd8fe59fcdbd35563dd8bae526ed674244a795f98d3"
+          "sha256": "ff5a57a19e3994ccd25d3ebc9c0e87d968d16e59563a93fa1eadc9ffc27fd8a2"
         },
         {
           "path": "TEST.md",
-          "sha256": "e2f7e03e59f4d5ed7d9b89f936224b14b55dad7d52a8393343e176bcf25ef092"
+          "sha256": "9dda20695145b4a375d668e84e6349c04b2e186999152327e452e3cd347c5248"
         },
         {
           "path": "agent_tailscale.py",
@@ -1253,15 +1253,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c2663c225782841043d540fefa610269b21df9bb957d77daeeb2a021fadf6759"
+          "sha256": "68896d6c525c4d36788e98a064ac097a9b2ec738010ca5d0e456671fb36aef4d"
         },
         {
           "path": "installer-manifest.json",
-          "sha256": "4dcf54371022892146955221c49bff29e97b590a51de35a101f23b3ffbe1b0c7"
+          "sha256": "368a369bc11783901fd422fed478334ba7e56acf358988552415ea9a60b0a33a"
         },
         {
           "path": "installer.py",
-          "sha256": "dac043c15da3207f2ad6f6f8e80771b092e080fc53f81e8046bd484b20b42f4e"
+          "sha256": "8bf513a138c9d35811972b2dbe3f8461b06286f4c2af5a00e66c1430733262fe"
         },
         {
           "path": "schemas/error-exit-codes.json",

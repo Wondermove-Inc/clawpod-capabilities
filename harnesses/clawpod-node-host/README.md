@@ -39,12 +39,12 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.6.0 selects Node 0.2.0 and adds OS-specific Desktop setup guidance.
+Version 0.7.0 selects Node 0.2.1 and adds managed CLI guidance while retaining OS-specific Desktop setup guidance.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.6.0. Update the Node app separately; the
+Update both Skill and Harness to 0.7.0. Update the Node app separately; the
 Gateway Agent must also provide the new `remote_computer` tool for GUI work.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
@@ -54,3 +54,7 @@ The Skill explains acquire/frame/release and OS permission recovery. Local
 
 See `TEST.md` for fixture and real-process validation. No live Tailscale account
 is changed by the test suite.
+
+For managed CLI, update the controlling Agent as well as Node. Use `exec` with
+`host: "node"` and the target `node`, then `process` with the returned handle for
+background status, output, terminal input, and cancellation. No SSH is required.
