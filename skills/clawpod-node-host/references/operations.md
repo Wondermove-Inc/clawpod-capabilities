@@ -4,7 +4,7 @@ Use these controls for the standalone ClawPod Node app.
 
 ## Local controls
 
-- Closing the setup browser tab leaves the node running. Reopening the app reuses its setup server.
+- Closing the setup browser tab leaves the node running. On macOS, Windows, and Linux, reopening the app opens the setup page in the default browser and reuses its server, including after a silent installer restart. It does not stop the running node.
 - **Reconnect** restarts the node using saved settings.
 - **Stop** persists across reopening the app and signing in again. Select **Start node** to reconnect.
 - **Start when I sign in** registers startup for the current user and their logged-in desktop. It is not a pre-login system/root service.
@@ -26,7 +26,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.2.1` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.0`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Installer `0.2.2` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.1`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Use the selected node
@@ -56,7 +56,7 @@ desktop unavailable.
 ## Managed CLI execution
 
 Update both the controlling Agent and ClawPod Node for managed execution. Node
-0.2.1 advertises `system.process`; older nodes retain synchronous commands.
+0.2.1 and later advertise `system.process`; older nodes retain synchronous commands.
 Use `background: true` for background work or `pty: true` for terminal programs.
 When `exec` returns a running `sessionId`, use `process` with that handle for
 status, logs, input, EOF, or cancellation. The handle keeps the selected node;
