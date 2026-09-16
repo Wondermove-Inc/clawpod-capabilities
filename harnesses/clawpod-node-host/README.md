@@ -32,20 +32,25 @@ without Tailscale: stage ordering belongs to the Skill, not metadata lookup.
 It reports `remoteAvailability: unchecked`. An optional `--gateway-url` checks the
 app's existing root-WebSocket contract; it does not test endpoint reachability.
 The agent obtains actual Gateway Tailscale addresses, endpoint, and token/password
-with available authorized tools and supplies them separately to the user.
+with available authorized tools. Follow the Skill to store a missing Gateway secret,
+update the same pointer when the active value changes, and reuse it when unchanged.
+The main delivers the value to the requesting user through `room_send.useSecrets`,
+with the pointer and placeholder in tool arguments and plaintext only in the
+delivered room message. Workers report to the main instead of sending to rooms.
 Gateway `config.get` and `openclaw config get` redact credentials.
 
 The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.1 selects Node 0.2.2 and explains how to reopen settings from the app.
+Version 0.7.2 selects Node 0.2.2 and clarifies Gateway secret storage, rotation,
+and room delivery.
 Managed CLI and OS-specific Desktop setup guidance remain available.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.1. Update the Node app separately; the
+Update both Skill and Harness to 0.7.2. Update the Node app separately; the
 Gateway Agent must also provide the new `remote_computer` tool for GUI work.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
