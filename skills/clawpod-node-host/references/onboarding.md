@@ -47,7 +47,38 @@ Use the requesting user's existing authorization to read the Gateway's effective
 3. On the actual Gateway host/service, inspect `tailscale status --json` and verify `Self.DNSName` and `Self.TailscaleIPs`. These must describe the Gateway's route, not the user's node or an arbitrary agent pod. Provide its verified Tailscale DNS name and/or IP. If Tailscale is absent or disconnected, return to stage 1 and resolve the reported condition before continuing this Tailscale workflow.
 4. Check the effective listener and any Tailscale Serve/reverse-proxy mapping before constructing the complete WebSocket endpoint. Use the verified externally reachable scheme and port; do not assume that the listener's port, `18789`, or TLS port `443` is the client endpoint. The root URL must reach this Gateway from the user's computer. A Cloud Portal or Agent dashboard URL is not a node endpoint, and a loopback address refers to the user's computer rather than the remote Agent pod.
 
-Send a concise handoff containing the matching **installer link**, **Gateway Tailscale address**, **Gateway WebSocket URL including scheme and port**, **authentication mode**, and **actual token or password** as separate labeled values. Supply verified values, not an example template. When Tailscale is unavailable, identify the unfinished setup stage rather than silently skipping it. Keep the credential in its separate user-facing authentication value; never append it to the endpoint, download/setup URL, public repository file, or diagnostic log.
+### Keep the Gateway secret current
+
+Use the active Gateway credential verified above as the source of truth. A saved pointer's existence or timestamp alone does not prove its value is still current.
+
+1. Look in the injected secret catalog, then use `memory_secret_search` if needed. Match this Gateway by its actual identity, service, host, account, and authentication kind; preserve an existing pointer even if its older label differs. For a new entry, use a descriptive label such as `<agent name> Gateway node connection token`, `service: clawpod-gateway`, `account: <Gateway identity>`, `host: <verified Gateway host>`, `kind: token` (or `password`), and `purpose: node-connection`. Keep these fields descriptive; the credential belongs only in `value`.
+2. If no matching secret exists, call `memory_secret` with the verified active `value` and these metadata fields. Check `ok` and retain the returned `pointer_id`.
+3. If a matching secret exists, establish whether its value matches the active Gateway source. When a comparison is needed, inject the stored pointer into an authorized local/Gateway-host tool (not `host: node`) with `exec.useSecrets` (`{ name: pointerId, as: "env:STORED_GATEWAY_AUTH" }`); compare against the verified active source inside that tool and return only a match/mismatch result. `memory_secret_get` returns a handle and redacted output, not plaintext suitable for a model-side comparison. If the active value cannot be verified, report that concrete limitation instead of claiming the saved value is current.
+4. Reuse a verified matching pointer without writing its value again. If the active token/password changed, call `memory_secret_update` with the **same `pointerId`** and new active `value`, check success, and verify the match before sending. Do not create a duplicate pointer for rotation. Supplying `value` to update revokes that pointer's previous delegations even when the supplied value is unchanged; avoid unnecessary updates. If an ongoing authorized worker still needs a rotated secret, the main agent re-delegates it through the existing delegation tool.
+
+Apply this check during initial setup, reconnection, and whenever a Gateway credential change is confirmed. Updating the stored secret does not update the user's Node app fields: deliver the new value and tell the user to save it in the app before reconnecting. Synchronize to the running Gateway's credential; this step does not rotate the Gateway configuration itself.
+
+### Deliver through the requesting user's room
+
+The main agent sends a concise handoff containing the matching **installer link**, **Gateway Tailscale address**, **verified WebSocket URL including scheme and port**, **authentication mode**, and **actual token or password** as separate labeled values. Use `room_send` with an explicit room from the user's request context. Workers return the verified connection metadata and pointer to their coordinating main; workers do not send directly to rooms.
+
+Use the existing secret substitution route. Put a literal placeholder in `content` and its stored pointer ID in `useSecrets[].name`; `name` is the pointer ID, not the secret label or service. Example shape only—replace the room, endpoint, and pointer with the verified values for this request:
+
+```json
+{
+  "room": 21,
+  "content": "Gateway URL: <verified WebSocket endpoint>\nAuthentication: token\nGateway token: {{GATEWAY_AUTH}}",
+  "useSecrets": [
+    { "name": "msp_example_gateway", "placeholder": "{{GATEWAY_AUTH}}" }
+  ]
+}
+```
+
+The runtime resolves the secret at send time: the user receives the actual value in the room, while the model's tool arguments contain only the placeholder and pointer and the tool response redacts the delivered content. This is the supported handoff, not an instruction to type plaintext into a normal reply or to bypass redaction. Do not stop at a pointer ID, masked token, unresolved SecretRef, literal placeholder, or instructions to find the token elsewhere. Do not ask again for permission to perform this credential handoff within the user's authorized Node connection request.
+
+`useSecrets` is text-only and cannot be combined with `files`; send any required attachments separately. Confirm `room_send` succeeded before saying the values were delivered. A redacted tool response is expected and does not mean the room received a masked value. If the tool reports an unavailable secret bridge, failed resolution, or failed send, report that specific failure and keep this stage unfinished; do not silently fall back to sending the pointer or plaintext through another path. After successful delivery, follow the room reply convention to avoid duplicate assistant output.
+
+When Tailscale is unavailable, return to its unfinished setup stage. Never append credentials to endpoint/download/setup URLs or put them in public repository files, ordinary memory, or diagnostic logs.
 
 ## 6. Install and enter settings in the app
 
