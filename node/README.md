@@ -5,19 +5,23 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.2.1 preview
+## Download 0.2.2 preview
 
 | Computer | Installer | Size |
 | --- | --- | ---: |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-linux-x64.deb) | 168 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-darwin-arm64.pkg) | 253 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-darwin-x64.pkg) | 220 MiB |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.1/ClawPod-Node-0.2.1-win32-x64.exe) | 194 MiB |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-linux-x64.deb) | 168 MiB |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-arm64.pkg) | 253 MiB |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-x64.pkg) | 220 MiB |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-win32-x64.exe) | 194 MiB |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.1)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.2)
 · [Machine-readable versions, hashes, and exact byte sizes](release.json)
 
-Version 0.2.1 improves commands on the connected computer. The Agent can start
+Version 0.2.2 fixes opening the setup page from the app on macOS, Windows, and
+Linux, including after a silent installer restart. Open the installed app to
+show its settings in the default browser without stopping the existing node.
+
+Version 0.2.1 introduced improvements to commands on the connected computer. The Agent can start
 background commands, inspect output, provide terminal input, and cancel the same
 execution through ClawPod Node. No SSH server is needed. Update the controlling
 Agent as well as the Node app; updating this capability alone upgrades neither.

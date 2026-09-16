@@ -1,63 +1,54 @@
-# ClawPod Node 0.2.1 validation scope
+# ClawPod Node 0.2.2 validation scope
 
-This preview contains the Node CLI lifecycle patch. Both bundled runtime
-`sourceCommit` and installer wrapper `installerSourceCommit` identify
-`f55bbd3bdde877b2be2e66fa4e58ba7ad28f0d33` in the Agent repository.
-The public release tag identifies the separately reviewed capabilities commit.
+The user launchers clear `CLAWPOD_NODE_NO_BROWSER` only when opening settings.
+macOS initial launch and Finder reopen, Windows app shortcut, and Linux desktop
+launch therefore open the default browser. Quiet installer/service startup and
+non-open control commands retain their existing behavior. An existing setup
+server is reused; opening settings does not restart the paired worker.
 
-## Release checks
+Installer/launcher source: `55e6a76857d2391763fc795dfd775cbcf49fe0e2`.
+Bundled Agent runtime source: `f55bbd3bdde877b2be2e66fa4e58ba7ad28f0d33`.
+The unchanged runtime was reused; Mac native launchers were rebuilt for both
+architectures. Build reports keep these two source identities separate.
 
-| Check | Result | Scope |
-| --- | --- | --- |
-| Agent type, lint, source build and Control UI build | PASS | Committed release source; the private build snapshot contains its own dependency copy. |
-| Node app tests | PASS | 48 tests, seven opt-in tests skipped in the default run. Bundled-runtime tests run separately below. |
-| Source lifecycle regression | PASS | Repeated/mixed shutdown signals, pending spawn, process-tree termination, PTY input, output decoding and worker continuation. |
-| Agent full suite | MIXED | 40,711 passed, two failures (Gateway port collision and plugin cache identity). Both failing files passed separate reruns. This is not an all-green full-suite claim. |
-| Release distribution and Harness tests | PASS | Repository suite: 67 tests, six skipped. Harness suite: 184 passed. |
+- `pnpm check` and `pnpm build`: PASS.
+- Capabilities repository suite: 67 tests, six skipped, no failures. Harness
+  suite: 184 passed. Actual Agent parser/prepare/run integration: two passed.
+- Node suite: 49 passed, eight platform/opt-in tests skipped, zero failures.
+- macOS app-delegate regression: old source reproduces inherited quiet mode;
+  patched source passes initial launch, explicit open, repeated Finder reopen,
+  retained native-app PID, and quiet non-open commands. This uses a separate
+  AppKit fixture identity; it is not a production desktop IPC or GUI-input test.
+- Linux final DEB: offline install/reinstall/remove and real bundled CLI fixture
+  PASS. Two installed-launcher calls with inherited quiet mode each invoke the
+  browser shim; both reuse the same authenticated, working setup endpoint.
+- macOS final ARM package: deep/strict signature and bundled CLI fixture PASS.
+  Existing production app, pairing and GUI permission entries were not replaced.
+- Both Mac packages and Windows EXE: extraction, source/version identity and
+  every prepared payload file's contents checked against the extracted package.
+- Windows and Intel Mac native execution, actual Linux graphical browser launch,
+  login-startup and production Gateway pairing are not claimed. Browser invocation
+  on Linux was captured by an `xdg-open` shim.
 
-The packaged-runtime fixture uses the real Node setup server, worker wrapper,
-bundled CLI and a local Gateway protocol fixture. It checks advertised commands,
-stdout/stderr and nonzero exit, Korean/English output, managed stdin/EOF, PTY
-input/output, command timeout, and app Stop while a child and grandchild are
-active. The test verifies that the grandchild cannot write a delayed marker.
-It does not contact a provider or change production pairing/settings.
+Mac signing remains ad-hoc, without Developer ID signing/notarization; Windows
+publisher signing is not included. Gateway token/authentication errors are a
+separate issue and are not fixed by this launcher patch. Installing the updated
+Node app is required; an Agent image rollout alone does not update a user's app.
 
-A release candidate failed the app Stop test: group SIGTERM plus CLI signal
-forwarding delivered a repeated signal that interrupted asynchronous cleanup.
-Persistent signal handlers fixed the race; all installers were rebuilt from the
-corrected commit. The failed candidate is not distributed.
+Artifact hashes:
 
-## Platform scope
+| Target | Bytes | SHA-256 |
+| --- | ---: | --- |
+| darwin-arm64 | 264941340 | `2e0473e0ba0837003a39e1a9eb1c24f28948002d700c83785916e9d2acc46eae` |
+| darwin-x64 | 230473508 | `0be1038284a7c419f85ddf1bf01d45d8034450e9cc91265324e8b14227484276` |
+| linux-x64 | 176241640 | `630fb5c0adbac2fb991ce6a7c14f4cfe415c87b53f9d222c2101d7574f682ee9` |
+| win32-x64 | 203317999 | `6e4ad2b28231dc4dcdc46a9f3750317700b41076b8b0775fc151abb1d6385727` |
 
-| Platform | Result | Scope |
-| --- | --- | --- |
-| Linux x64 | PASS | Final DEB installed in Debian 12 with networking disabled; real bundled Gateway protocol/CLI fixture passed, including active-grandchild cleanup. |
-| macOS Apple Silicon | PASS | Final PKG expanded with pkgutil; full-app deep/strict signature, version and source identity verified. Its bundled runtime passed the CLI fixture on Mac Studio, including PTY input and active-grandchild cleanup. The installed production app/settings were not replaced. |
-| macOS Intel | PACKAGE VERIFIED | Final PKG extraction, deep/strict signature, target/version/provenance and PTY package checked. No native Intel runtime test. |
-| Windows x64 | PACKAGE VERIFIED | Final EXE extracted; every payload file compared to the prepared target, with version/source identity and native PTY inclusion verified. No Windows runtime test. |
+The manifest's broad `nativeMacOS` field remains `not-run`: both architectures
+have not been executed natively. Apple Silicon coverage is reported above.
 
-Exact artifact sizes and SHA-256 hashes are in [release.json](release.json).
-Windows and Intel Mac native execution, GUI/login-startup revalidation, actual
-Wayland compositor behavior, and production Gateway pairing are not claimed.
-The unchanged native helpers are reused only after current source digest,
-architecture, executable and dependency inventory checks for all four targets.
-Previous 0.2.0 GUI verification is historical evidence, not a new 0.2.1 test.
-
-Mac apps are ad-hoc signed. Developer ID signing, notarization and Windows
-publisher signing are not included. The manifest's broad `nativeMacOS` field
-remains `not-run` because both architectures have not been tested natively;
-specific Apple Silicon CLI coverage is reported separately. An ad-hoc app update
-may require refreshing the existing macOS GUI permission entry.
-
-## Compatibility and distribution
-
-Update both the controlling Agent and Node app for managed CLI. Older nodes
-retain synchronous execution; new Node installation alone does not update the
-Agent's tool/runtime behavior. The capability package only provides instructions
-and installer metadata. It does not install either runtime automatically.
-
-The staged release contains exactly four installers, four basename-only SHA-256
-files, and sanitized `release.json`. Raw reports with build-machine paths are
-excluded. All four embedded source identities, versions, runtime dependencies and
-artifact bytes must match the manifest. Public downloads are checked without
-authentication after publication. Existing published releases remain immutable.
+The staged public release contains four installers, four basename-only checksum
+files and sanitized `release.json`. Local build reports are not public assets.
+The public release tag identifies a reviewed capabilities commit, separately
+from the Agent runtime and installer source commits above. Public downloads
+must be checked without authentication after publication.
