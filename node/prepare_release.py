@@ -34,7 +34,7 @@ def load_manifest(path: Path = MANIFEST) -> dict:
     if data.get("releaseTag") != tag or data.get("releaseUrl") != f"{RELEASES}/tag/{tag}":
         raise ValueError("Release tag/URL differs from installer version")
     if data.get("channel") != "preview" or data.get("signed") is not False:
-        raise ValueError("This staging flow is for unsigned preview installers")
+        raise ValueError("This staging flow requires a preview with release-wide signed=false; per-artifact signing is supported")
     if not re.fullmatch(r"[a-f0-9]{40}", data.get("sourceCommit", "")):
         raise ValueError("Missing bundled Agent source commit")
     if "installerSourceCommit" in data and (
@@ -62,6 +62,13 @@ def load_manifest(path: Path = MANIFEST) -> dict:
             raise ValueError("Artifact filename/URL differs from its target")
         if not re.fullmatch(r"[a-f0-9]{64}", item.get("sha256", "")):
             raise ValueError("Missing artifact SHA-256")
+        for flag in ("signed", "notarized", "stapled"):
+            if flag in item and type(item[flag]) is not bool:
+                raise ValueError("Invalid artifact signing flag")
+        if item.get("notarized") is True and item.get("signed", data["signed"]) is not True:
+            raise ValueError("Notarized artifact must be signed")
+        if item.get("stapled") is True and item.get("notarized") is not True:
+            raise ValueError("Stapled artifact must be notarized")
         if type(item.get("bytes")) is not int or item["bytes"] <= 0:
             raise ValueError("Invalid artifact size")
     return data

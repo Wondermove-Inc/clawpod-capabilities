@@ -28,16 +28,22 @@
       "arch": "arm64",
       "filename": "ClawPod-Node-0.2.2-darwin-arm64.pkg",
       "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-arm64.pkg",
-      "sha256": "2e0473e0ba0837003a39e1a9eb1c24f28948002d700c83785916e9d2acc46eae",
-      "bytes": 264941340
+      "sha256": "a6374d3d716fe13405ba290ecd611ed3dbf36899c77e7681e20fe224e2e0d2c4",
+      "bytes": 263428683,
+      "signed": true,
+      "notarized": true,
+      "stapled": true
     },
     {
       "platform": "macos",
       "arch": "x64",
       "filename": "ClawPod-Node-0.2.2-darwin-x64.pkg",
       "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-x64.pkg",
-      "sha256": "0be1038284a7c419f85ddf1bf01d45d8034450e9cc91265324e8b14227484276",
-      "bytes": 230473508
+      "sha256": "7332387d85059aa14ad3c27906df22064ee7e0778fe7122124f6798e70f5591f",
+      "bytes": 231233396,
+      "signed": true,
+      "notarized": true,
+      "stapled": true
     },
     {
       "platform": "windows",

@@ -43,14 +43,14 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.2 selects Node 0.2.2 and clarifies Gateway secret storage, rotation,
-and room delivery.
+Version 0.7.3 selects the signed/notarized Mac Node 0.2.2 installers with updated
+checksums. Gateway secret storage, rotation, and room delivery remain unchanged.
 Managed CLI and OS-specific Desktop setup guidance remain available.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.2. Update the Node app separately; the
+Update both Skill and Harness to 0.7.3. Update the Node app separately; the
 Gateway Agent must also provide the new `remote_computer` tool for GUI work.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses

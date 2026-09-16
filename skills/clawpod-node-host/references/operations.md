@@ -26,7 +26,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.2.2` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.2`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Installer `0.2.2` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.3`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Use the selected node

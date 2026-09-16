@@ -51,6 +51,16 @@ class NodeDistributionTests(unittest.TestCase):
         self.assertEqual(manifest["validation"]["nativeMacOS"], "not-run")
         self.assertEqual(manifest["validation"]["nativeWindows"], "not-run")
 
+    def test_invalid_artifact_signing_metadata(self):
+        for update in ({"signed": "true"}, {"notarized": 1}, {"stapled": None},
+                       {"signed": False, "notarized": True}, {"notarized": False, "stapled": True}):
+            data = copy.deepcopy(self.manifest)
+            data["artifacts"][0].update(update)
+            path = self.root / "invalid-signing.json"
+            path.write_text(json.dumps(data))
+            with self.subTest(update=update), self.assertRaises(ValueError):
+                release.load_manifest(path)
+
     def test_registry_installed_harness_uses_its_own_manifest(self):
         spec = importlib.util.spec_from_file_location("node_bootstrap", ROOT / "scripts/bootstrap.py")
         bootstrap = importlib.util.module_from_spec(spec)
