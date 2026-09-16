@@ -182,3 +182,28 @@ def test_manifest_arg_map_invokes_command_with_app_native_output(tmp_path):
 def test_linux_option_does_not_enable_legacy_enrollment(tmp_path):
     run = subprocess.run([sys.executable, str(ROOT / "clawpod_node_host.py"), "--json", "enroll", "generate", "--platform", "linux", "--gateway-host", "gateway.example.com"], cwd=tmp_path, text=True, capture_output=True)
     assert run.returncode == 2 and "enrollScript" not in json.loads(run.stdout)
+
+
+@pytest.mark.parametrize("update,expected", [({}, False), ({"signed": True}, True), ({"signed": False}, False)])
+def test_selected_artifact_signing_overrides_release_default(tmp_path, update, expected):
+    package = standalone_package(tmp_path)
+    path = package / "installer-manifest.json"
+    value = json.loads(path.read_text())
+    value["signed"] = not expected if update else False
+    value["artifacts"][0].update(update)
+    path.write_text(json.dumps(value))
+    run, out = run_info(tmp_path, "--platform", "linux", "--arch", "x64", package=package)
+    assert run.returncode == 0
+    assert out["installer"]["signed"] is expected
+
+
+@pytest.mark.parametrize("update", [{"signed": "true"}, {"notarized": 1}, {"stapled": None}, {"notarized": True, "signed": False}, {"stapled": True, "notarized": False}])
+def test_invalid_artifact_signing_metadata(tmp_path, update):
+    package = standalone_package(tmp_path)
+    path = package / "installer-manifest.json"
+    value = json.loads(path.read_text())
+    value["artifacts"][0].update(update)
+    path.write_text(json.dumps(value))
+    run, out = run_info(tmp_path, "--platform", "linux", "--arch", "x64", package=package)
+    assert run.returncode == 6
+    assert out["errors"][0]["code"] == "INSTALLER_MANIFEST_INVALID"

@@ -10,8 +10,8 @@ installation. Installation is offline; connecting requires access to your Gatewa
 | Computer | Installer | Size |
 | --- | --- | ---: |
 | Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-linux-x64.deb) | 168 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-arm64.pkg) | 253 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-x64.pkg) | 220 MiB |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-arm64.pkg) | 251 MiB |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-x64.pkg) | 221 MiB |
 | Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-win32-x64.exe) | 194 MiB |
 
 [Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.2)
@@ -27,7 +27,7 @@ execution through ClawPod Node. No SSH server is needed. Update the controlling
 Agent as well as the Node app; updating this capability alone upgrades neither.
 Existing remote desktop control and Desktop setup remain available.
 
-The macOS app is ad-hoc signed, without Developer ID signing or notarization.
+Both macOS installers include Developer ID signing, Apple notarization, and a stapled notarization ticket.
 Windows publisher signing is not included. See [validation scope](VALIDATION.md)
 for this release's exact execution checks and remaining native-platform limits.
 

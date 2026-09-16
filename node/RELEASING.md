@@ -59,8 +59,8 @@ gh release create node-v0.2.2 node/releases/0.2.2/* \
   --notes-file node/RELEASE-NOTES-0.2.2.md --prerelease --latest=false
 ```
 
-The 0.2.2 preview has an ad-hoc signed Mac app, without Developer ID signing or
-notarization, and no Windows publisher signature. Consult `VALIDATION.md` for
+The 0.2.2 preview has Developer ID signed, notarized, stapled Mac installers.
+Windows publisher signing is not included. Consult `VALIDATION.md` for
 the verified Apple Silicon/Linux coverage and remaining native-platform limits.
 `--latest=false` prevents this installer release from taking over the capability
 repository's generic latest-release selector. Download links always use the Node
@@ -71,7 +71,18 @@ After publication, download every asset without authentication into a temporary
 directory and run `verify_stage` or compare each file to `release.json`. Confirm
 the release is publicly readable and all four download links resolve. If a
 version already exists, inspect it; do not replace published installer bytes
-under the same version. Changes require a new version and updated metadata.
+under the same version without explicit operator authorization. Normally changes
+require a new version and updated metadata. The operator-authorized 2026-09-16
+Mac signing replacement keeps 0.2.2: replace only both Mac PKGs, their checksum
+files, and release.json; update the release notes and both bundled manifest
+copies together. Preserve the original artifacts for recovery and verify public
+downloads afterward. Windows/Linux assets and the existing release tag stay unchanged.
+
+The manifest-level `signed` flag means all installers are signed; it stays false
+for this mixed release. Optional artifact `signed`, `notarized`, and `stapled`
+flags describe the selected package. `installer.info` prefers artifact signing
+status. Upgrade existing clawpod-node-host Skill/Harness installs to 0.7.3: older
+bundled manifests contain the superseded Mac checksums.
 
 Source preparation does not imply that these URLs are already live. The Harness
 reports static release metadata without probing availability. Repository `main`

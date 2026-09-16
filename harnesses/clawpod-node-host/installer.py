@@ -57,6 +57,13 @@ def release_manifest() -> dict:
             raise ValueError("invalid installer download URL")
         if not isinstance(artifact.get("sha256"), str) or not re.fullmatch(r"[a-f0-9]{64}", artifact["sha256"]):
             raise ValueError("invalid installer checksum")
+        for flag in ("signed", "notarized", "stapled"):
+            if flag in artifact and type(artifact[flag]) is not bool:
+                raise ValueError("Invalid installer signing flag")
+        if artifact.get("notarized") is True and artifact.get("signed", value["signed"]) is not True:
+            raise ValueError("Notarized artifact must be signed")
+        if artifact.get("stapled") is True and artifact.get("notarized") is not True:
+            raise ValueError("Stapled artifact must be notarized")
         if type(artifact.get("bytes")) is not int or artifact["bytes"] <= 0:
             raise ValueError("invalid installer size")
     return value
@@ -219,6 +226,8 @@ def installer_info(args) -> tuple[dict, int]:
     artifact = next(item for item in manifest["artifacts"] if (item["platform"], item["arch"]) == target)
     out["installer"] = {key: manifest[key] for key in ("version", "runtimeVersion", "nodeVersion", "releaseTag", "releaseUrl", "channel", "signed")}
     out["installer"].update({key: artifact[key] for key in ("platform", "arch", "filename", "url", "sha256", "bytes")})
+    # Release-wide signing may be mixed; report the selected installer's status.
+    out["installer"].update({key: artifact[key] for key in ("signed", "notarized", "stapled") if key in artifact})
     out["installer"].update({"manifestSource": "bundled", "remoteAvailability": "unchecked"})
     out["installer"]["validation"] = {key: manifest["validation"][key] for key in ("linuxOfflineInstall", "nativeMacOS", "nativeWindows")}
     # Keep public test metadata outside the legacy login-identity redaction keyspace.
