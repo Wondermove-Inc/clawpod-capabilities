@@ -3,7 +3,11 @@
 Bundled Agent runtime and installer source:
 `abe6b2e1b218b3ca6f0426e8b545fa90a1c236aa`. Both were rebuilt for this release.
 The manifest records the final installer bytes, including Mac signing and staple
-changes. Public download verification has not yet run.
+changes. Release `node-v0.2.3` was published from capabilities commit `19ef46a`.
+On 2026-09-17, all nine public release files downloaded without authentication:
+four installers, four checksum files, and sanitized `release.json`. `verify_stage`
+confirmed exact installer hashes and byte sizes, metadata contents, and the
+complete file set.
 
 - Fresh Agent and Control UI builds: PASS. Native helpers and installer packages
   built for all four targets; build completion alone is not native execution.
@@ -48,9 +52,9 @@ changes. Public download verification has not yet run.
 
 The broad `nativeMacOS` manifest field remains `not-run`: Intel execution used
 Rosetta on Apple Silicon, not physical Intel hardware. Production Gateway pairing
-and public download verification are not claimed. Windows publisher signing is
-not included; the release-wide `signed` field stays false while both Mac
-artifacts carry their verified signing, notarization, and staple flags.
+is not claimed. Windows publisher signing is not included; the release-wide
+`signed` field stays false while both Mac artifacts carry their verified signing,
+notarization, and staple flags.
 
 Final artifact hashes:
 

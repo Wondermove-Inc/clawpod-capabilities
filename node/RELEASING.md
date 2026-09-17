@@ -63,7 +63,10 @@ Both final 0.2.3 Mac installers passed Developer ID signature, Apple notarizatio
 staple validation, and Gatekeeper assessment. Final artifact metadata is recorded
 in `release.json`; `VALIDATION.md` distinguishes Apple Silicon and Rosetta execution
 from untested physical Intel hardware, Windows, and login-startup. Windows publisher
-signing is not included. Public download verification remains a post-publication step.
+signing is not included. On 2026-09-17, all nine files from the published
+`node-v0.2.3` release downloaded without authentication and passed `verify_stage`
+with exact hashes, byte sizes, metadata, and file inventory. The release tag
+targets reviewed capabilities commit `19ef46a`.
 `--latest=false` prevents this installer release from taking over the capability
 repository's generic latest-release selector. Download links always use the Node
 tag directly. Checksum files use only the installer basename so they can be

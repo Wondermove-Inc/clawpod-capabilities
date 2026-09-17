@@ -19,7 +19,8 @@ installation. Installation is offline; connecting requires access to your Gatewa
 
 Final installer hashes and exact byte sizes are recorded in
 [release.json](release.json). See [validation scope](VALIDATION.md) for execution
-coverage and remaining limits. Public download verification has not yet run.
+coverage and remaining limits. On 2026-09-17, all nine release files downloaded
+without authentication and matched their expected hashes, sizes, and metadata.
 
 Version 0.2.3 fixes switching monitors during remote desktop control and keeps
 text-only and image observations in the same viewport coordinate space. Update
