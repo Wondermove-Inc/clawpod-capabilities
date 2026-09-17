@@ -26,7 +26,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Installer `0.2.2` contains runtime `2026.4.11`; the Skill and Harness are version `0.7.3`. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Use installer `0.2.3` and Skill/Harness `0.7.4` for the monitor-switching update. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Use the selected node
@@ -35,7 +35,7 @@ Use `nodes` with `action: "status"` to identify the connected Node ID. Inspect
 its advertised capabilities; an older Gateway Agent or Node may not provide
 `remote_computer` even though CLI commands work.
 
-- GUI: call `remote_computer` with `action: "status"` and `node`, then `acquire` with the same `node`. Use the returned `frameId` as `frame_id` for input. Choose `display_id` if needed. Keep `node` on every call and `release` when finished or handing the desktop over.
+- GUI: call `remote_computer` with `action: "status"` and `node`, then `acquire` with the same `node`. Use the returned `frameId` as `frame_id` for input. Select the initial `display_id` when acquiring if needed. Keep `node` on every call and `release` when finished or handing the desktop over.
 - CLI: use `exec` with `host: "node"` and the selected `node`. No SSH server is needed. On macOS/Linux use `/bin/sh` syntax; on Windows use `cmd.exe` syntax or explicitly invoke PowerShell.
 - Browser: use `browser` with `target: "node"` and `node`. The node needs a compatible installed browser and browser proxy capability.
 
@@ -44,9 +44,31 @@ ownership coordinates `remote_computer` calls; it does not lock unrelated CLI or
 browser work. People and other tools can change the screen, so inspect fresh
 observations before acting. Main agents and workers must use their own acquisition
 and returned frame; release the desktop before another session takes over.
+
+### Switch monitors and keep coordinates aligned
+
+Update both the Node app to **0.2.3** and the controlling Agent. Updating the
+Skill/Harness alone changes guidance and installer lookup, not either runtime.
+
+1. Keep the explicit `node` on every `remote_computer` call. Use `status` to
+   identify available display IDs, then acquire the intended desktop.
+2. To switch monitors while holding the desktop, request a fresh `screenshot` or
+   `observe` with the target `display_id` and **omit `frame_id`** on that request.
+   Supplying the old monitor's frame still correctly returns `STALE_FRAME`.
+   Use the new response's `frameId` as `frame_id` and its viewport coordinates
+   for subsequent inputs; do not reuse the old monitor's frame or coordinates.
+3. Use coordinates in the returned full viewport. On the same display, text-only
+   and image observations use the same viewport coordinate space with this
+   update. Zoom attachment pixels are not full-viewport coordinates. Refresh the
+   observation after display layout or resolution changes.
+4. Release the desktop before handing it to the user or another session.
+
 Use `paste` for literal Korean, English, and other multilingual text. A successful
 input response means input was delivered, not that the app accepted or saved it.
 System audio and microphone capture are not included.
+
+Linux accessibility `observe` requires a working session D-Bus and AT-SPI.
+Missing accessibility services do not establish that screenshot or input is unavailable.
 
 X11 needs a clipboard manager to preserve an existing clipboard during paste;
 Wayland paste needs a Clipboard portal. If paste reports unavailable, distinguish

@@ -43,19 +43,24 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.3 selects the signed/notarized Mac Node 0.2.2 installers with updated
-checksums. Gateway secret storage, rotation, and room delivery remain unchanged.
+Version 0.7.4 adds Node 0.2.3 monitor-switching and observation-coordinate
+guidance. Installer checksums and signing status come from the bundled manifest.
+Gateway secret storage, rotation, and room delivery remain unchanged.
 Managed CLI and OS-specific Desktop setup guidance remain available.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.3. Update the Node app separately; the
-Gateway Agent must also provide the new `remote_computer` tool for GUI work.
+Update both Skill and Harness to 0.7.4. Update the Node app to 0.2.3 and the
+controlling Agent as well for the corrected `remote_computer` behavior.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
 `exec host=node` with `node`, and browser uses `target=node` with `node`.
-The Skill explains acquire/frame/release and OS permission recovery. Local
+To switch monitors, request a fresh screenshot or observe with `display_id` and
+omit `frame_id`. The old monitor's frame still returns `STALE_FRAME`. Use the new
+response's `frameId` as `frame_id` and its viewport coordinates for input. Text-only and image observations of the
+same display share full-viewport coordinates. Release before handing the desktop
+over. The Skill explains acquisition and OS permission recovery. Local
 `computer` remains the agent pod desktop. System audio is not captured.
 
 See `TEST.md` for fixture and real-process validation. No live Tailscale account

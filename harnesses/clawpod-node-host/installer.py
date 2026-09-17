@@ -184,7 +184,7 @@ def guidance(platform: str, filename: str) -> dict:
             "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
             "Save settings and select Start node. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
-            "Identify the connected Node ID with nodes action=status and inspect its capabilities. For GUI work use remote_computer with node: status, acquire, input with the returned frameId as frame_id, then release. Use exec host=node with node for CLI; a running sessionId is used with process for status, logs, input, or cancellation. Managed CLI needs Node 0.2.1 and the updated controlling Agent; no SSH server is needed. Use browser target=node with node for a compatible installed browser. Local computer remains the pod desktop. The Gateway Agent must also provide remote_computer.",
+            "Identify the connected Node ID with nodes action=status and inspect its capabilities. For GUI work use remote_computer with node: status, acquire, input with the returned frameId as frame_id, then release before handing over. Keep node on every call. To switch monitors, request a fresh screenshot or observe with display_id and omit frame_id. The old monitor's frame still returns STALE_FRAME. Use the new response's frameId as frame_id and its viewport coordinates for input. With Node 0.2.3 and the updated Agent, text-only and image observations of the same display share full-viewport coordinates; zoom attachment pixels are not input coordinates. Use exec host=node with node for CLI; a running sessionId is used with process for status, logs, input, or cancellation. Managed CLI needs Node 0.2.1 and the updated controlling Agent; no SSH server is needed. Use browser target=node with node for a compatible installed browser. Local computer remains the pod desktop. The Gateway Agent must also provide remote_computer.",
         ],
         "operations": {
             "start": "Select Start node in the ClawPod Node setup page.",
@@ -193,7 +193,7 @@ def guidance(platform: str, filename: str) -> dict:
             "startup": "Start when I sign in registers startup for the current user and their logged-in desktop session.",
             "status": "Running reports the local process only. Check the Agent Control UI for authenticated, paired, connected status; inspect timestamped failures in the app.",
             "close": "Closing the setup browser tab leaves the node running. Reopening ClawPod Node reuses its setup server.",
-            "upgrade": "Install the newer matching package. Upgrades preserve settings and identity and attempt to resume previously active users.",
+            "upgrade": "Install the newer matching package. Update both Node to 0.2.3 and the controlling Agent for monitor switching and stable observation coordinates; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
             "uninstall": removal[platform] + " User settings and device identity remain for reinstall; remove the separate .clawpod-node directory only when you intend to discard them.",
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",

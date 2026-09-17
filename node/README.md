@@ -5,19 +5,27 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.2.2 preview
+## Download 0.2.3 preview
 
-| Computer | Installer | Size |
-| --- | --- | ---: |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-linux-x64.deb) | 168 MiB |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-arm64.pkg) | 251 MiB |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-darwin-x64.pkg) | 221 MiB |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.2/ClawPod-Node-0.2.2-win32-x64.exe) | 194 MiB |
+| Computer | Installer |
+| --- | --- |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-linux-x64.deb) |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-darwin-arm64.pkg) |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-darwin-x64.pkg) |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-win32-x64.exe) |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.2)
-· [Machine-readable versions, hashes, and exact byte sizes](release.json)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.3)
+· [Release notes](RELEASE-NOTES-0.2.3.md)
 
-Version 0.2.2 fixes opening the setup page from the app on macOS, Windows, and
+Final installer hashes and exact byte sizes are recorded in
+[release.json](release.json). See [validation scope](VALIDATION.md) for execution
+coverage and remaining limits. Public download verification has not yet run.
+
+Version 0.2.3 fixes switching monitors during remote desktop control and keeps
+text-only and image observations in the same viewport coordinate space. Update
+both the Node app and the controlling Agent to receive the fixes.
+
+Version 0.2.2 fixed opening the setup page from the app on macOS, Windows, and
 Linux, including after a silent installer restart. Open the installed app to
 show its settings in the default browser without stopping the existing node.
 
@@ -27,9 +35,9 @@ execution through ClawPod Node. No SSH server is needed. Update the controlling
 Agent as well as the Node app; updating this capability alone upgrades neither.
 Existing remote desktop control and Desktop setup remain available.
 
-Both macOS installers include Developer ID signing, Apple notarization, and a stapled notarization ticket.
-Windows publisher signing is not included. See [validation scope](VALIDATION.md)
-for this release's exact execution checks and remaining native-platform limits.
+Both Mac installers have verified Developer ID signatures, Apple notarization,
+and stapled tickets, and passed Gatekeeper assessment. Windows publisher signing
+is not included.
 
 Private/Tailscale IP `ws://` support, app icons, saved settings, and device identity
 are retained. Use `ws://` for a plain listener and `wss://` for an actual TLS endpoint.
@@ -83,6 +91,9 @@ package does not run another AI agent or provision a Gateway.
 | Linux X11 | A reachable X display and XTest are required. The native helper requires glibc 2.36 or newer, such as Debian 12 or Ubuntu 24.04. |
 | Linux Wayland | RemoteDesktop/ScreenCast portals are required. When control starts, choose a screen and approve input in the system sharing dialog. Real compositor validation is still pending. |
 
+On Linux, accessibility `observe` requires a working session D-Bus and AT-SPI.
+Missing accessibility services do not establish that screenshot or input is unavailable.
+
 On macOS, use **Open settings** and **Check again** when a permission prompt does
 not appear. If the switches are enabled but a fresh check still denies access
 after an ad-hoc signed update, remove stale entries and add the current **ClawPod
@@ -96,6 +107,19 @@ Clipboard paste on X11 needs a clipboard manager to preserve an existing
 clipboard; Wayland paste needs the Clipboard portal. These paste limitations do
 not mean all desktop observation or control is unavailable. The macOS permission
 label mentions audio, but this release captures screens only.
+
+## Switch monitors during remote desktop work
+
+The agent keeps the explicit Node ID on every `remote_computer` call. After
+acquiring the desktop, it switches monitors with a fresh `screenshot` or `observe`
+request using `display_id` and omitting `frame_id`. Supplying the old monitor's
+frame still returns `STALE_FRAME`. Subsequent inputs use the new response's
+`frameId` as `frame_id` and coordinates from its viewport. Coordinates refer to the full viewport, including when observations
+are text-only; zoom attachment pixels are not input coordinates. Release desktop
+control before handing it to the user or another agent session.
+
+Update both ClawPod Node to **0.2.3** and the controlling Agent. Skill/Harness
+**0.7.4** supplies the updated guidance; installing it alone updates neither app.
 
 ## Daily use and removal
 

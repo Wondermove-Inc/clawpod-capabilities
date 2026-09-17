@@ -52,16 +52,18 @@ changes through the repository's normal PR flow; never push a merge directly to
 `main`. Publish the exact reviewed commit, not a moving default branch:
 
 ```sh
-gh release create node-v0.2.2 node/releases/0.2.2/* \
+gh release create node-v0.2.3 node/releases/0.2.3/* \
   --repo Wondermove-Inc/clawpod-capabilities \
   --target REVIEWED_COMMIT_SHA \
-  --title 'ClawPod Node 0.2.2 preview' \
-  --notes-file node/RELEASE-NOTES-0.2.2.md --prerelease --latest=false
+  --title 'ClawPod Node 0.2.3 preview' \
+  --notes-file node/RELEASE-NOTES-0.2.3.md --prerelease --latest=false
 ```
 
-The 0.2.2 preview has Developer ID signed, notarized, stapled Mac installers.
-Windows publisher signing is not included. Consult `VALIDATION.md` for
-the verified Apple Silicon/Linux coverage and remaining native-platform limits.
+Both final 0.2.3 Mac installers passed Developer ID signature, Apple notarization,
+staple validation, and Gatekeeper assessment. Final artifact metadata is recorded
+in `release.json`; `VALIDATION.md` distinguishes Apple Silicon and Rosetta execution
+from untested physical Intel hardware, Windows, and login-startup. Windows publisher
+signing is not included. Public download verification remains a post-publication step.
 `--latest=false` prevents this installer release from taking over the capability
 repository's generic latest-release selector. Download links always use the Node
 tag directly. Checksum files use only the installer basename so they can be
@@ -81,8 +83,9 @@ downloads afterward. Windows/Linux assets and the existing release tag stay unch
 The manifest-level `signed` flag means all installers are signed; it stays false
 for this mixed release. Optional artifact `signed`, `notarized`, and `stapled`
 flags describe the selected package. `installer.info` prefers artifact signing
-status. Upgrade existing clawpod-node-host Skill/Harness installs to 0.7.3: older
-bundled manifests contain the superseded Mac checksums.
+status. For Node 0.2.3, update the linked clawpod-node-host Skill/Harness to
+0.7.4 and regenerate the Registry after synchronizing the final artifact manifest.
+Update both the installed Node app and controlling Agent for the desktop fixes.
 
 Source preparation does not imply that these URLs are already live. The Harness
 reports static release metadata without probing availability. Repository `main`

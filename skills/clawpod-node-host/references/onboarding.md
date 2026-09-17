@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.2.2-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.2.2-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.2.2-darwin-x64.pkg` |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.2.2-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.2.3-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.2.3-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.2.3-darwin-x64.pkg` |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.2.3-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 
@@ -94,6 +94,9 @@ Check **Desktop setup** in this same app; do not install a separate remote-compu
 | Windows | Use the logged-in, unlocked interactive desktop. There is no macOS-style permission switch; UAC/secure desktops or elevated windows may be unavailable to ordinary input. |
 | Linux X11 | Use a graphical session with a reachable X display and XTest. This build requires glibc 2.36 or newer. |
 | Linux Wayland | Setup checks portal capabilities. When desktop control starts, approve the system screen/input sharing dialog and choose the monitor. Actual compositor behavior has not been verified for this preview. |
+
+On Linux, accessibility `observe` needs a working session D-Bus and AT-SPI.
+Diagnose accessibility separately from screenshot and input availability.
 
 On macOS, use **Open settings** and **Check again** if the prompt does not appear.
 After an ad-hoc signed app update, an enabled switch can refer to an older app
