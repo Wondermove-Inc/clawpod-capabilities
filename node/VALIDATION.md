@@ -1,4 +1,58 @@
-# ClawPod Node 0.2.3 validation scope
+# ClawPod Node 0.2.4 validation scope
+
+Bundled Agent runtime and installer source:
+`4ba5a0fb5301a08c6d94b0202c2aba2a8749f872`. Skill/Harness version: `0.7.5`.
+This section describes prepared artifacts; it does not claim a public release
+has been published or existing installations have been upgraded.
+
+- Scoped Agent source tests: 134 passed across 10 files, including provider
+  schemas, local/remote registration and observation metadata boundaries.
+  Type checking, lint, remaining check gates, fresh Agent and Control UI builds
+  passed. An initial new-test lint error was corrected before the final gates.
+- Node app/packaging tests: 49 passed, eight platform/opt-in skips. Native Swift,
+  C# and C++ fixtures passed deep traversal, limits, queries and partial results.
+- Signed staged Mac apps: Apple Silicon and Intel under Rosetta passed runtime,
+  LaunchServices and packaged CLI → Gateway fixture → native helper → public
+  response checks. Both returned the exact Korean QAAX marker, normalized image
+  coordinates and truthful partial observation metadata. The installed 0.2.3
+  app was not replaced. Physical Intel hardware was not tested.
+- Before/after Mac fixture: the old traversal missed the nested field three out
+  of three times; the patched traversal found it three out of three times.
+  Broader observation took 277–400 ms; a focused single-result query took about
+  0.9 ms. No fixed input delay was added. These are fixture measurements, not a
+  cross-platform performance guarantee.
+- Final Linux DEB: offline Debian 12 installation, bundled runtime and CLI passed.
+  A separate GTK/AT-SPI fixture verified names, Korean values, unnamed fields,
+  protected values and complete/partial reporting. Two installed X11 tests and
+  one packaged CLI test passed, retaining input/screenshot/cleanup coverage.
+- Final Windows EXE: all 59,559 extracted payload files matched the prepared
+  payload and source identity. Compilation and fixtures passed; interactive
+  Windows execution was not available.
+- Capability checks: 68 repository tests with six skipped, 192 Harness tests,
+  and two actual Agent parser/prepare/run integration tests passed.
+- No full Agent suite, real Wayland compositor, physical Intel machine or
+  desktop login-startup pass is claimed. Heavy local jobs ran serially under
+  memory limits and headroom monitoring.
+
+### Final signed installers
+
+Both Mac PKGs passed Developer ID signing, Apple notarization, package/app
+staple validation, Gatekeeper assessment and strict code-signature checks.
+Final extraction verified 62,259 Apple Silicon and 62,257 Intel payload files;
+signed binaries were validated separately from their unsigned originals.
+All four installer hashes and source/version identities match the public release
+manifest and the bundled Harness manifest. Only four installers, four checksum
+files and sanitized `release.json` are prepared for public distribution; private
+build reports and signing material are excluded. Publication is a separate step.
+
+| Target | Bytes | SHA-256 |
+| --- | ---: | --- |
+| linux-x64 | 176230540 | `3ef28ff1aabfe391182a2a8b44154ed22580e67da6c9957b0e057e834d00ff0d` |
+| macos-arm64 | 263483616 | `6982dc5a6e2def90a2fd30d8e798d27528062431eb465a2b27b279425809bcea` |
+| macos-x64 | 231300395 | `cad710824d69e744bbb88cf25fe2aa3ec2c4fb42a32338cd7e641f308839d9e2` |
+| windows-x64 | 203328539 | `514debf0ad7af50e0032e62e319954db61cf1b2090c7ead544b8d6e3437c4ee4` |
+
+## Previous release: ClawPod Node 0.2.3
 
 Bundled Agent runtime and installer source:
 `abe6b2e1b218b3ca6f0426e8b545fa90a1c236aa`. Both were rebuilt for this release.

@@ -26,7 +26,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Use installer `0.2.3` and Skill/Harness `0.7.4` for the monitor-switching update. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Use installer `0.2.4` and Skill/Harness `0.7.5` for the accessibility observation update. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Use the selected node
@@ -47,7 +47,7 @@ and returned frame; release the desktop before another session takes over.
 
 ### Switch monitors and keep coordinates aligned
 
-Update both the Node app to **0.2.3** and the controlling Agent. Updating the
+Update both the Node app to **0.2.4** and the controlling Agent. Updating the
 Skill/Harness alone changes guidance and installer lookup, not either runtime.
 
 1. Keep the explicit `node` on every `remote_computer` call. Use `status` to
@@ -57,7 +57,7 @@ Skill/Harness alone changes guidance and installer lookup, not either runtime.
    Supplying the old monitor's frame still correctly returns `STALE_FRAME`.
    Use the new response's `frameId` as `frame_id` and its viewport coordinates
    for subsequent inputs; do not reuse the old monitor's frame or coordinates.
-3. Use coordinates in the returned full viewport. On the same display, text-only
+3. Use coordinates in the returned image: `viewport.imageWidth` × `viewport.imageHeight`. Do not rescale them to native screen dimensions or add a monitor offset. On the same display, text-only
    and image observations use the same viewport coordinate space with this
    update. Zoom attachment pixels are not full-viewport coordinates. Refresh the
    observation after display layout or resolution changes.
@@ -89,3 +89,28 @@ successful commands with no output. Cancellation/reset stops owned remote work.
 A lost connection or restart invalidates process handles; inspect the actual
 result before rerunning a command that may already have changed the computer.
 GUI control and browser routing remain independent of this CLI lifecycle.
+
+## Read accessibility results correctly
+
+`observe.query` matches an element's name or readable value, ignoring case. It is
+not a role selector: a query such as `textbox` does not find every text field.
+Protected values are excluded. Use an unfiltered observation or a screenshot
+when the app exposes insufficient accessibility information.
+
+With Node 0.2.4 and an updated Agent, check `observation.scope`, `complete`, and
+`reasons`. A complete result covers only the reported application, window, or
+desktop scope. Elements with verified bounds are filtered to the selected display;
+Wayland reports desktop-wide text without coordinates. A partial result can still contain useful
+elements; an empty partial result does not prove there is no matching element.
+Older nodes without this metadata have unknown completeness. Query a known name
+or value, inspect the focused window, or use a screenshot instead of repeating
+an unchanged unsuccessful query.
+
+For key input, use `text`, for example
+`remote_computer({action: "key", node: NODE_ID, frame_id: FRAME_ID, text: "Enter"})`.
+The same field accepts shortcuts such as `meta+a` on macOS or `ctrl+a` on
+Windows/Linux. Use `paste` with `text` for literal multilingual text.
+
+A missing Chrome installation is not a remote desktop failure. Use an installed
+browser through `remote_computer`, or check compatible executable configuration
+before using `browser` with `target: "node"`; do not assume Chrome is installed.

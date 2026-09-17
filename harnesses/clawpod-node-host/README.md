@@ -43,22 +43,22 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.4 adds Node 0.2.3 monitor-switching and observation-coordinate
-guidance. Installer checksums and signing status come from the bundled manifest.
+Version 0.7.5 adds Node 0.2.4 accessibility completeness, image-coordinate,
+and key-input guidance. Installer checksums and signing status come from the bundled manifest.
 Gateway secret storage, rotation, and room delivery remain unchanged.
 Managed CLI and OS-specific Desktop setup guidance remain available.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.4. Update the Node app to 0.2.3 and the
+Update both Skill and Harness to 0.7.5. Update the Node app to 0.2.4 and the
 controlling Agent as well for the corrected `remote_computer` behavior.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
 `exec host=node` with `node`, and browser uses `target=node` with `node`.
 To switch monitors, request a fresh screenshot or observe with `display_id` and
 omit `frame_id`. The old monitor's frame still returns `STALE_FRAME`. Use the new
-response's `frameId` as `frame_id` and its viewport coordinates for input. Text-only and image observations of the
+response's `frameId` as `frame_id` and coordinates within viewport.imageWidth × viewport.imageHeight for input. Text-only and image observations of the
 same display share full-viewport coordinates. Release before handing the desktop
 over. The Skill explains acquisition and OS permission recovery. Local
 `computer` remains the agent pod desktop. System audio is not captured.
@@ -69,3 +69,8 @@ is changed by the test suite.
 For managed CLI, update the controlling Agent as well as Node. Use `exec` with
 `host: "node"` and the target `node`, then `process` with the returned handle for
 background status, output, terminal input, and cancellation. No SSH is required.
+
+Accessibility queries match names or readable values, not roles. Check the
+returned observation scope, completeness, and reasons before treating an empty
+result as absence. See the Skill operations reference for partial results and
+key input through the text field.
