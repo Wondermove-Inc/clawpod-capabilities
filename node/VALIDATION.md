@@ -1,4 +1,73 @@
-# ClawPod Node 0.2.2 validation scope
+# ClawPod Node 0.2.3 validation scope
+
+Bundled Agent runtime and installer source:
+`abe6b2e1b218b3ca6f0426e8b545fa90a1c236aa`. Both were rebuilt for this release.
+The manifest records the final installer bytes, including Mac signing and staple
+changes. Release `node-v0.2.3` was published from capabilities commit `19ef46a`.
+On 2026-09-17, all nine public release files downloaded without authentication:
+four installers, four checksum files, and sanitized `release.json`. `verify_stage`
+confirmed exact installer hashes and byte sizes, metadata contents, and the
+complete file set.
+
+- Fresh Agent and Control UI builds: PASS. Native helpers and installer packages
+  built for all four targets; build completion alone is not native execution.
+- Final scoped source tests: 149 passed. `pnpm check` and format checks: PASS.
+- Node suite: 49 passed, eight platform/opt-in tests skipped.
+- Final capabilities checks: repository unittest ran 68 tests with six skipped;
+  Harness tests passed 192 and actual Agent integration passed two. Manifest
+  checks against installer bytes, Registry synchronization, and validation PASS.
+- Both Mac PKGs: Developer ID signing, Apple notarization, staple validation,
+  and Gatekeeper assessment PASS. Final package inspection passed for 62,259
+  Apple Silicon and 62,257 Intel payload files.
+- Both signed staged Mac apps: LaunchServices launch and setup IPC PASS; screen
+  recording and accessibility permissions reported granted. Apple Silicon runtime
+  checks and Intel runtime checks under Rosetta passed JIT, Wasm, workers, native
+  bindings, and PTY. Bundled Node/native GUI and CLI checks passed for both builds.
+  Existing installed apps and their configurations were not replaced.
+- Mac desktop checks switched with fresh screenshots from display 2 (3008×1692)
+  to display 4 (2560×1440, origin −2560,252) and back on the first attempt.
+  Screenshot and subsequent same-display observe used a 1200×675 viewport;
+  release succeeded. A cross-display stale frame was rejected on the read-only
+  `cursor_position` action. Observe-only switching, stale-frame rejection for
+  input, and exact accessibility element coordinate mapping have source-test
+  coverage; they are not claimed as live desktop checks.
+- Linux final DEB: offline `dpkg` installation with networking disabled PASS.
+  The later GUI fixture installed test dependencies with network access.
+- Linux installed tests: two native GUI tests and one real packaged CLI test
+  passed after providing session D-Bus/AT-SPI. Native tests cover input ownership
+  and cleanup; CLI checks cover Unicode, stderr, exit code 7, and managed process
+  operations. On one 3008×1692 display, screenshot and observe both returned a
+  1200×675 viewport, and release succeeded. This is not a Linux multi-display
+  switch test. Real-application accessibility element bounds remain unverified.
+- Windows EXE extraction: all 59,559 extracted files matched the prepared
+  payload hashes and source identity. Native runtime execution: NOT RUN; no
+  Windows runtime was available.
+- Desktop login-startup: NOT RUN. No full-suite pass is claimed. The full Agent
+  run was interrupted after memory pressure and failures. A serial retry of the
+  20 previously failing files produced 209 passed and two failed tests: 18 files
+  passed and two failed. Both remaining assertions also fail on pristine
+  `74368cf239`: CLI model normalization expects `opus` instead of
+  `claude-opus-4-8`, and the thinking-default assertion expects `low` instead of
+  `adaptive`. These are verified pre-existing failures, not a full-suite pass.
+
+The broad `nativeMacOS` manifest field remains `not-run`: Intel execution used
+Rosetta on Apple Silicon, not physical Intel hardware. Production Gateway pairing
+is not claimed. Windows publisher signing is not included; the release-wide
+`signed` field stays false while both Mac artifacts carry their verified signing,
+notarization, and staple flags.
+
+Final artifact hashes:
+
+| Target | Bytes | SHA-256 |
+| --- | ---: | --- |
+| linux-x64 | 176255260 | `8befa2624528290368f0ded7d30ba487f10e621c8bde1336f0f03fc38e6b380e` |
+| darwin-arm64 | 263476673 | `67eaaf2ec82a766616ac8117cc9a84a18bb6725e0ffc01be8ced150d4b7e15b9` |
+| darwin-x64 | 231255286 | `612c91dcbea3f0b857c56f1837e7d5a54ac3b2bb648f075b9108bce09d152248` |
+| win32-x64 | 203357349 | `3241eb14633736a3b9b83e34c0e7973df1c9935e935d81905e87de71207dce8e` |
+
+## Previous release: ClawPod Node 0.2.2
+
+The following evidence and hashes apply only to 0.2.2.
 
 The user launchers clear `CLAWPOD_NODE_NO_BROWSER` only when opening settings.
 macOS initial launch and Finder reopen, Windows app shortcut, and Linux desktop
@@ -54,7 +123,7 @@ The public release tag identifies a reviewed capabilities commit, separately
 from the Agent runtime and installer source commits above. Public downloads
 must be checked without authentication after publication.
 
-## Mac signing replacement verification (2026-09-16)
+### Mac signing replacement verification (2026-09-16)
 
 - Both PKGs: Apple notarization Accepted with no issues, staple validation PASS,
   and Gatekeeper install assessment accepted as Notarized Developer ID.
@@ -75,5 +144,5 @@ Superseded Mac hashes (retained only as replacement history):
 - arm64: `2e0473e0ba0837003a39e1a9eb1c24f28948002d700c83785916e9d2acc46eae`
 - x64: `0be1038284a7c419f85ddf1bf01d45d8034450e9cc91265324e8b14227484276`
 
-The current hashes are in the table above and release.json. The release tag was
+The final 0.2.2 hashes are in the historical table above. That release tag was
 not moved; this signed asset replacement does not change the original source provenance.
