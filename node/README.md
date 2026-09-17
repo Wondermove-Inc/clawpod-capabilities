@@ -5,26 +5,26 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.2.3 preview
+## Download 0.2.4 preview
 
 | Computer | Installer |
 | --- | --- |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-linux-x64.deb) |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-darwin-arm64.pkg) |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-darwin-x64.pkg) |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.3/ClawPod-Node-0.2.3-win32-x64.exe) |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-linux-x64.deb) |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-arm64.pkg) |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-x64.pkg) |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-win32-x64.exe) |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.3)
-· [Release notes](RELEASE-NOTES-0.2.3.md)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.4)
+· [Release notes](RELEASE-NOTES-0.2.4.md)
 
 Final installer hashes and exact byte sizes are recorded in
 [release.json](release.json). See [validation scope](VALIDATION.md) for execution
-coverage and remaining limits. On 2026-09-17, all nine release files downloaded
-without authentication and matched their expected hashes, sizes, and metadata.
+coverage and remaining limits.
 
-Version 0.2.3 fixes switching monitors during remote desktop control and keeps
-text-only and image observations in the same viewport coordinate space. Update
-both the Node app and the controlling Agent to receive the fixes.
+Version 0.2.4 improves accessibility observation of deeply nested controls and
+reports scope, completeness, and limits instead of silently treating partial
+results as complete. Update both the Node app and the controlling Agent.
+Version 0.2.3 introduced monitor switching and shared image/observation coordinates.
 
 Version 0.2.2 fixed opening the setup page from the app on macOS, Windows, and
 Linux, including after a silent installer restart. Open the installed app to
@@ -115,12 +115,13 @@ The agent keeps the explicit Node ID on every `remote_computer` call. After
 acquiring the desktop, it switches monitors with a fresh `screenshot` or `observe`
 request using `display_id` and omitting `frame_id`. Supplying the old monitor's
 frame still returns `STALE_FRAME`. Subsequent inputs use the new response's
-`frameId` as `frame_id` and coordinates from its viewport. Coordinates refer to the full viewport, including when observations
-are text-only; zoom attachment pixels are not input coordinates. Release desktop
+`frameId` as `frame_id` and coordinates within `viewport.imageWidth` × `viewport.imageHeight`, including
+text-only observations. Do not rescale or add monitor offsets. Zoom attachment
+pixels are not input coordinates. Release desktop
 control before handing it to the user or another agent session.
 
-Update both ClawPod Node to **0.2.3** and the controlling Agent. Skill/Harness
-**0.7.4** supplies the updated guidance; installing it alone updates neither app.
+Update both ClawPod Node to **0.2.4** and the controlling Agent. Skill/Harness
+**0.7.5** supplies the updated guidance; installing it alone updates neither app.
 
 ## Daily use and removal
 
@@ -172,3 +173,16 @@ repository. This public repository carries download metadata, capability guidanc
 and release assets. The installers contain distributable JavaScript runtime code,
 dependencies, and license files; keeping the source repository private does not
 hide the code shipped inside an installer.
+
+## Accessibility observations
+
+An `observe` query matches names or readable values, not element roles. Check
+`observation.scope`, `complete`, and `reasons`; empty partial results do not prove
+absence. Linux Wayland observations remain desktop-wide and coordinate-free.
+Nodes without this metadata have unknown completeness. Use screenshots when an
+application does not expose useful accessibility information.
+
+Key input uses `text`, such as `Enter`, `meta+a`, or `ctrl+a`; literal multilingual
+text uses `paste`. A Chrome installation is not required for remote GUI control.
+Use an installed browser, and check compatible executable configuration before
+using the separate `browser target=node` route.

@@ -16,10 +16,10 @@ Run `uv run --with pytest python -m pytest harnesses/clawpod-node-host/tests`.
 Repository checks include Registry package installation, source/file inventories,
 manifest synchronization, routing, and distribution asset integrity. Regenerate
 `registry/index.json` using `python3 scripts/sync_registry.py` after package edits.
-Version 0.7.4 includes guidance and installer metadata for Node 0.2.3. The suite tests automatic
+Version 0.7.5 includes guidance and installer metadata for Node 0.2.4. The suite tests automatic
 private/Tailscale IP ws:// acceptance, CIDR boundaries, and IPv4-mapped IPv6.
 These tests are not proof of live Tailscale sign-in, Gateway pairing, native OS installation,
-or monitor switching. Native desktop and installer validation belongs in the
+monitor switching, or accessibility coverage. Native desktop and installer validation belongs in the
 Node release validation record after testing the final artifacts.
 
 The always-on repository test `tests/test_node_harness_schema.py` recursively
