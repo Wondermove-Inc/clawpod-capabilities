@@ -295,7 +295,8 @@
       "clawpod-ocr",
       "memory-graph",
       "enterprise-newsletter",
-      "soc-event-correlation"
+      "soc-event-correlation",
+      "typesafe-ai"
     ]
   },
   "youtube-evidence-analysis": {
@@ -401,6 +402,22 @@
     "adjacent": [
       "claude-design",
       "artifact-design"
+    ]
+  },
+  "typesafe-ai": {
+    "positive": [
+      "Classify this inquiry into one of these teams using the evidence I gave you",
+      "Compare these options against the supplied evidence and give me a probability per option",
+      "Choose between these labeled criteria and tell me how the probabilities are distributed",
+      "Route this duplicate-charge complaint to billing, technical, or hold based on the stated facts"
+    ],
+    "negative": [
+      "Answer this general question with the default model",
+      "Cross-check these factual claims against external sources",
+      "Go find new evidence on the web before deciding"
+    ],
+    "adjacent": [
+      "verified-research"
     ]
   }
 }
