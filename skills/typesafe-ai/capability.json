@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use: 근거로 선택·분류할 때 사용. TypeSafe AI 호출·확률 활용 안내. 일반 답변은 기본 모델 사용.",
+  "compatibility": {
+    "openclaw": ">=2026.4.0",
+    "platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ]
+  },
+  "safety": {
+    "risk": "credential-related",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}
