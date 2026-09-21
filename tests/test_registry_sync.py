@@ -45,8 +45,8 @@ class RegistrySyncTests(unittest.TestCase):
                 self.assertEqual(set(linked),{"id","version"})
                 self.assertIn(("harness",linked["id"],linked["version"]),entries)
         registry_skill=next(e for e in skills if e["id"]=="clawpod-capability-registry")
-        self.assertEqual(registry_skill["version"],"0.3.5")
-        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.5")
+        self.assertEqual(registry_skill["version"],"0.3.6")
+        self.assertEqual(registry_skill["linkedHarness"]["version"],"0.3.6")
         atlassian=next(e for e in skills if e["id"]=="atlassian")
         self.assertNotEqual(atlassian["version"],atlassian["linkedHarness"]["version"])
 
@@ -111,6 +111,7 @@ class RegistrySyncTests(unittest.TestCase):
                         "version": "1.0.0",
                         "description": "Example capability used to verify automatic registry package discovery.",
                         "descriptionSource": "skill-frontmatter",
+                        "descriptionI18n": {"ko": "자동 패키지 검색을 검증하는 테스트 능력입니다."},
                         "compatibility": {"openclaw": ">=2026.4.0", "platforms": ["linux"]},
                         "safety": {"risk": "read-only", "approvalRequired": False},
                     }

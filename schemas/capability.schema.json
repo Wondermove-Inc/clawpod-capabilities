@@ -10,6 +10,16 @@
     "type": {"enum": ["skill", "harness"]},
     "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"},
     "description": {"type": "string", "minLength": 10, "maxLength": 500},
+    "descriptionI18n": {
+      "description": "Localized descriptions. en must equal the legacy description string.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "ko"],
+      "properties": {
+        "en": {"type": "string", "minLength": 10, "maxLength": 500, "pattern": "^\\S(?:[\\s\\S]*\\S)?$"},
+        "ko": {"type": "string", "minLength": 10, "maxLength": 500, "pattern": "^\\S(?:[\\s\\S]*\\S)?$"}
+      }
+    },
     "path": {"type": "string", "pattern": "^(skills|harnesses)/[a-z0-9]+(?:-[a-z0-9]+)*$"},
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "linkedHarness": {

@@ -2,6 +2,11 @@
 
 This Harness searches, inspects, installs, updates, validates, and rolls back packages from the canonical `Wondermove-Inc/clawpod-capabilities` registry.
 
+`list`, `search`, and `inspect` preserve the Registry's `descriptionI18n` map
+alongside the legacy English `description`. Search matches IDs and descriptions
+in both English and Korean, returning each matching entry once. Older entries
+without translations remain searchable by ID and the legacy description.
+
 ## Type selection
 
 `inspect`, `install`, `update`, and `validate` accept optional `--type skill|harness`.
