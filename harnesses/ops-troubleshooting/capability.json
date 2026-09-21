@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.1",
   "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+  "descriptionI18n": {
+    "ko": "실행한 모든 명령을 근거로 기록하는 제한된 읽기 전용 진단으로 Linux 호스트·네트워크·Kubernetes·보안 위생 문제를 해결합니다. 이후 계획 자체의 확인을 사용해 계획에 결합된 복구 작업인 서비스 재시작·롤아웃 재시작·관리 대상 Pod 삭제를 즉시 실행합니다. 공격 흐름 분석은 soc-event-correlation, 사고 보고는 org-operations, 노드 연결은 node-host를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.4",
   "description": "Execute guarded OpenMontage tools, pipelines, detached jobs, provider verification, media QA, and transactional runtime lifecycle operations.",
+  "descriptionI18n": {
+    "ko": "보호 절차가 적용된 OpenMontage 도구·파이프라인·분리 실행 작업, 제공업체 검증, 미디어 품질 검증, 트랜잭션 방식의 런타임 수명주기 작업을 실행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

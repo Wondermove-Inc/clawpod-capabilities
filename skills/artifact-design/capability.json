@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.0",
   "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or small interactive tool — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the message artifacts contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
+  "descriptionI18n": {
+    "ko": "보고서, 계획, 명세, 메모, 비교표, 대시보드, 한 페이지 문서, 다이어그램, 참고표처럼 다시 열거나 편집·재사용할 가치가 있는 독립적인 결과물을 만듭니다. 글자 위계·색상·레이아웃을 설계하고, 저장 후 artifact_refs로 연결하는 메시지 계약에 따라 Markdown 또는 HTML을 ClawPod 대화방 아티팩트로 게시합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

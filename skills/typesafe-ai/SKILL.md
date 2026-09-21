@@ -1,6 +1,6 @@
 ---
 name: "typesafe-ai"
-description: "Use: 근거로 선택·분류할 때 사용. TypeSafe AI 호출·확률 활용 안내. 일반 답변은 기본 모델 사용."
+description: "Use for evidence-based selection and classification with TypeSafe AI calls and per-choice probabilities; use the default model for general answers."
 ---
 
 # TypeSafe AI

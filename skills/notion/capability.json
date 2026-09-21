@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.12",
   "description": "Route guarded Notion API work and guide exact PAT/Internal Integration onboarding through the typed notion Harness.",
+  "descriptionI18n": {
+    "ko": "Notion을 연결하고 페이지·블록·데이터 소스·댓글·파일·사용자·웹훅을 보호 절차에 따라 조회하거나 지원되는 쓰기 작업을 수행합니다. Notion 외 문서는 해당 플랫폼을, 출처가 필요한 주장은 Verified Research를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

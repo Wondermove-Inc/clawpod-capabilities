@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.6",
   "description": "Compose bounded, brand-token enterprise newsletters with computed HTML/text parity and bind reviewed content and private recipient sets to deterministic release manifests.",
+  "descriptionI18n": {
+    "ko": "기업용 뉴스레터와 능력 카탈로그를 검증·렌더링·조회하고 배포 대상에 결합하며, 직접 발송하지 않습니다. Verified Research로 근거를 구성하고 승인된 발송은 Resend Email에 전달합니다. 개인용 뉴스 요약에는 사용하지 않습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

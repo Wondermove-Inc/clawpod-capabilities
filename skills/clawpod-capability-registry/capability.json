@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.3.6",
   "description": "Discover, install, validate, and govern capabilities with mandatory registry-first WORKFLOW onboarding.",
+  "descriptionI18n": {
+    "ko": "ClawPod 능력 패키지를 검색·검토·설치·검증·업데이트·롤백하고 레지스트리 우선 WORKFLOW 정책을 활성화합니다. 개별 능력의 업무를 직접 수행하는 대신 패키지를 관리하며, 선택 후 해당 능력으로 작업을 전달합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

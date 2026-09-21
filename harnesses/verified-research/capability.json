@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.7",
   "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
+  "descriptionI18n": {
+    "ko": "범위가 제한된 공개 리서치 근거를 재현 가능한 방식으로 수집·정규화·해시 생성·묶음 구성·조회·검증합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.4.3",
   "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
+  "descriptionI18n": {
+    "ko": "안정적인 JSON 출력과 안전 제어를 갖춘 명세 기반 Gmail·Calendar·Drive 및 에이전트 데스크톱 OAuth 작업을 실행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

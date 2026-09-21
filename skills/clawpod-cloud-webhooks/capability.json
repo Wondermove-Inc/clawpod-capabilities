@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.7",
   "description": "Route ClawPod Cloud Webhooks work through guarded onboarding, tenant checks, routing contracts, and verified operations.",
+  "descriptionI18n": {
+    "ko": "ClawPod Cloud 웹훅의 소스, 플레이북, 규칙, 이벤트를 연결·조회·감사·미리보기·변경·검증합니다. 임의의 웹훅을 호스팅하지 않으며, 임시 로컬 미리보기 공개에는 별도로 Quick Tunnel을 사용할 수 있습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

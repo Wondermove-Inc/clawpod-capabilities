@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.3.5",
   "description": "Bounded local Korean and English OCR with enterprise comparison DOCX reports and optional guarded Ollama correction.",
+  "descriptionI18n": {
+    "ko": "범위가 제한된 로컬 한국어·영어 OCR, 기업용 비교 DOCX 보고서, 선택적인 보호 절차 기반 Ollama 교정을 제공합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

@@ -4,6 +4,9 @@
   "version": "0.7.5",
   "descriptionSource": "skill-frontmatter",
   "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+  "descriptionI18n": {
+    "ko": "Linux·macOS·Windows 컴퓨터를 ClawPod에 연결합니다. 에이전트와 컴퓨터의 Tailscale 로그인, 독립형 ClawPod Node 설치 프로그램 선택, Gateway 연결 정보 제공, 기기 페어링 확인, 데스크톱 권한 설정, 앱 복구·제거를 안내합니다. 이미 설정된 노드가 연결이나 페어링에 실패하면 사용 가능한 경우 node-connect를 사용합니다."
+  },
   "compatibility": {
     "openclaw": "2026.4.11",
     "platforms": [

@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.11",
   "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
+  "descriptionI18n": {
+    "ko": "보호된 비밀 정보 기반 초기 연결, 미리보기, 검증, 안정적인 JSON 출력을 갖춘 명세 기반 Notion REST 작업을 실행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

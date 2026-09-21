@@ -25,6 +25,22 @@ KOREAN = "근거를 확인하고 관련 자료를 검색하는 테스트 능력�
 
 
 class DescriptionI18nTests(unittest.TestCase):
+    def test_all_canonical_packages_have_english_and_korean_descriptions(self) -> None:
+        registry = sync.generate_registry(ROOT)
+        packages = list((ROOT / "skills").glob("*/capability.json"))
+        packages += list((ROOT / "harnesses").glob("*/capability.json"))
+        self.assertEqual(len(registry["capabilities"]), len(packages))
+        for entry in registry["capabilities"]:
+            with self.subTest(type=entry["type"], id=entry["id"]):
+                metadata = json.loads((ROOT / entry["path"] / "capability.json").read_text())
+                self.assertIn("descriptionI18n", metadata, "New packages must include a Korean translation")
+                self.assertEqual(set(metadata["descriptionI18n"]), {"ko"})
+                self.assertEqual(set(entry["descriptionI18n"]), {"en", "ko"})
+                self.assertEqual(entry["descriptionI18n"]["en"], entry["description"])
+                self.assertNotRegex(entry["description"], "[가-힣]", "The default description must be English")
+                self.assertEqual(entry["descriptionI18n"]["ko"], metadata["descriptionI18n"]["ko"])
+                self.assertRegex(entry["descriptionI18n"]["ko"], "[가-힣]", "The Korean translation must contain Korean")
+
     def setUp(self) -> None:
         self.metadata = {
             "schemaVersion": 1,

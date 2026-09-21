@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.8",
   "description": "Guarded Resend email with per-run Gateway memory-secret injection, protected onboarding, verified senders, previews, and retry-safe delivery.",
+  "descriptionI18n": {
+    "ko": "실행별 Gateway 메모리 비밀 정보 주입, 보호된 초기 연결, 검증된 발신자, 미리보기, 안전한 재시도를 갖춘 Resend 이메일 발송을 수행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

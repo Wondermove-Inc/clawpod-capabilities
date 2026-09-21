@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.7",
   "description": "Connect and manually restore Synology SMB 3.1.1 storage with exact mount verification and shared-storage-first policy guidance.",
+  "descriptionI18n": {
+    "ko": "Synology SMB 공유를 연결·탐색·미리보기·마운트·복구·마운트 해제하고 아티팩트 배치나 WORKFLOW 정책을 적용합니다. 클라우드 객체 스토리지나 범용 NAS 관리는 아니며, 능력 패키지의 산출물을 저장할 수 있습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

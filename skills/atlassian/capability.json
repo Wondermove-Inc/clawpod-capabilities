@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.5",
   "description": "Route approved Jira and Confluence work through the typed Atlassian harness.",
+  "descriptionI18n": {
+    "ko": "Jira·Confluence의 이슈, 프로젝트, 페이지, 스페이스, 댓글, 첨부파일을 명세에 따라 조회하거나 보호 절차를 거쳐 변경합니다. 저장소 작업은 GitHub를 사용하며, 해당 자료로 브리핑을 작성할 때는 Enterprise Newsletter와 조합합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

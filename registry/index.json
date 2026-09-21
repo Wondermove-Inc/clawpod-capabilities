@@ -53,7 +53,11 @@
           "path": "references/publishing-contract.md",
           "sha256": "28c91582de238134cf5228b7432a7d906b972ef319e17c8960a15fca37d161f5"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
+        "ko": "보고서, 계획, 명세, 메모, 비교표, 대시보드, 한 페이지 문서, 다이어그램, 참고표처럼 다시 열거나 편집·재사용할 가치가 있는 독립적인 결과물을 만듭니다. 글자 위계·색상·레이아웃을 설계하고, 저장 후 artifact_refs로 연결하는 메시지 계약에 따라 Markdown 또는 HTML을 ClawPod 대화방 아티팩트로 게시합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
+      }
     },
     {
       "id": "atlassian",
@@ -91,6 +95,10 @@
           "sha256": "3b47df3791c43b94608b673c1c6ac6a49fc48bc1b17a224062d48a578d2c7bc8"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
+        "ko": "Jira·Confluence의 이슈, 프로젝트, 페이지, 스페이스, 댓글, 첨부파일을 명세에 따라 조회하거나 보호 절차를 거쳐 변경합니다. 저장소 작업은 GitHub를 사용하며, 해당 자료로 브리핑을 작성할 때는 Enterprise Newsletter와 조합합니다."
+      },
       "linkedHarness": {
         "id": "atlassian",
         "version": "0.3.6"
@@ -135,6 +143,10 @@
           "sha256": "fe56525b263fe6691a5e0278f5ac1e28830aadb10c460d3cbce5a147af01a504"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
+        "ko": "Claude Design의 생성·편집·품질 검증과 검증된 프로젝트 링크 중심의 슬라이드 전달에 사용합니다. 사용자가 PPTX·PDF를 직접 내보낼 수 있도록 링크를 제공하며, 파일을 명시적으로 요청할 때만 기본 파일 내보내기를 실행합니다. 정지 이미지는 Image Studio를 사용하고, 운영체제 기본 대화상자를 다룰 때만 Compute 도구와 조합합니다."
+      },
       "linkedHarness": {
         "id": "claude-design",
         "version": "0.4.3"
@@ -164,6 +176,10 @@
           "sha256": "74eaa0c0253061b4b0bb106b9eb69bbecb5b4123e0a12bd97bd0fcc27ed7499f"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
+        "ko": "ClawPod 능력 패키지를 검색·검토·설치·검증·업데이트·롤백하고 레지스트리 우선 WORKFLOW 정책을 활성화합니다. 개별 능력의 업무를 직접 수행하는 대신 패키지를 관리하며, 선택 후 해당 능력으로 작업을 전달합니다."
+      },
       "linkedHarness": {
         "id": "clawpod-capability-registry",
         "version": "0.3.6"
@@ -195,6 +211,10 @@
           "sha256": "661e85167d55933d5500abb516546aa54c6d5490d3a2d6391e1a11778955c0c4"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
+        "ko": "ClawPod Cloud 웹훅의 소스, 플레이북, 규칙, 이벤트를 연결·조회·감사·미리보기·변경·검증합니다. 임의의 웹훅을 호스팅하지 않으며, 임시 로컬 미리보기 공개에는 별도로 Quick Tunnel을 사용할 수 있습니다."
+      },
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
         "version": "0.2.7"
@@ -239,6 +259,10 @@
           "sha256": "ecd7bcdabd08aaf64bdc0d6754ab61a4dbc25b9aa5fdf88c02852ff6e2007ac7"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here.",
+        "ko": "OpenAI, Vertex, BFL, Recraft로 이미지를 생성·편집·비교·검토·품질 검증하고 작업과 아티팩트를 관리합니다. 슬라이드나 영상은 여기서 제작하지 않고, 자산을 Claude Design 또는 Video Studio로 전달합니다."
+      },
       "linkedHarness": {
         "id": "clawpod-image-studio",
         "version": "0.4.4"
@@ -276,6 +300,10 @@
           "sha256": "ab33bfc2e6f9ec8e7fbcadea9ace6057cdc0c429f0e992bf08dc7ba19e7e756d"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+        "ko": "Linux·macOS·Windows 컴퓨터를 ClawPod에 연결합니다. 에이전트와 컴퓨터의 Tailscale 로그인, 독립형 ClawPod Node 설치 프로그램 선택, Gateway 연결 정보 제공, 기기 페어링 확인, 데스크톱 권한 설정, 앱 복구·제거를 안내합니다. 이미 설정된 노드가 연결이나 페어링에 실패하면 사용 가능한 경우 node-connect를 사용합니다."
+      },
       "linkedHarness": {
         "id": "clawpod-node-host",
         "version": "0.7.5"
@@ -319,6 +347,10 @@
           "sha256": "614db1f0e22c6cd8d6323566fb58fce2ed4213aec07a5f013983ac1f7583ee70"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
+        "ko": "범위가 제한된 PDF·이미지에서 한국어·영어 텍스트를 추출하고 OCR 결과 조회·내보내기, 비교 DOCX 보고서 작성, 승인된 Ollama 교정을 수행합니다. 문서 자체를 편집하지 않으며, 주장의 사실 확인에는 Verified Research를 사용합니다."
+      },
       "linkedHarness": {
         "id": "clawpod-ocr",
         "version": "0.3.5"
@@ -371,7 +403,11 @@
           "path": "references/sre-incident.md",
           "sha256": "eea3cec3f3b2fcbf6cb61f0f3c69a67ca4c7d85202d6989d040bff2015b5fe65"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use the capability registry for package lifecycle.",
+        "ko": "에이전트와 역할 간 인수인계, 위임, 동료 지원, 보고, 검토, 승인, 상위 담당자 이관, 후속 조치, 사고 대응, 업무 종료를 조율합니다. 근거에 따라 공통·Engineering·SOC/CSIRT·SRE 템플릿을 선택하고, 적용되는 WORKFLOW.md가 지정한 작업 서비스로 공동 업무를 전달합니다. Workboard는 에이전트 로컬에서 유지하고 패키지 수명주기 관리는 능력 레지스트리를 사용합니다."
+      }
     },
     {
       "id": "clawpod-video-studio",
@@ -420,6 +456,10 @@
           "sha256": "fcbd16c6ecde468441ee308af6452a794547797e2bffc57275a7e93167d774b1"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
+        "ko": "비용과 점검 지점을 관리하는 보호된 OpenMontage 파이프라인으로 영상을 기획·제작·편집·재활용·현지화·재개·내보내기·품질 검증합니다. 독립적인 정지 이미지 작업이나 원본 이미지 제작에는 Image Studio를 사용합니다."
+      },
       "linkedHarness": {
         "id": "clawpod-video-studio",
         "version": "0.2.4"
@@ -447,6 +487,10 @@
           "sha256": "cb6a5acd0c2ab37976bbdf1b171cb0ed43247767512ae599783d3cd033a0f884"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure.",
+        "ko": "루프백에만 연결된 로컬 미리보기를 위해 계정 없이 유효 시간이 제한된 Cloudflare Quick Tunnel을 사전 점검·시작·조회·종료합니다. 로컬 서버와 함께 사용하며, 운영 서비스 호스팅·명명된 터널·사용자 지정 도메인·상시 공개에는 사용하지 않습니다."
+      },
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
         "version": "0.1.6"
@@ -491,6 +535,10 @@
           "sha256": "f1e95fd2fab727d39a21af2c9f40ea75a63330c6fdfe18ea1a54ac371aa8efca"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
+        "ko": "기업용 뉴스레터와 능력 카탈로그를 검증·렌더링·조회하고 배포 대상에 결합하며, 직접 발송하지 않습니다. Verified Research로 근거를 구성하고 승인된 발송은 Resend Email에 전달합니다. 개인용 뉴스 요약에는 사용하지 않습니다."
+      },
       "linkedHarness": {
         "id": "enterprise-newsletter",
         "version": "0.1.5"
@@ -527,6 +575,10 @@
           "sha256": "d5aa09c1a5863146b6e8018593b89a99386cf9cb4d35288b20607b358fbfd508"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration.",
+        "ko": "gh CLI를 통해 보호 절차가 적용된 GitHub 저장소·이슈·풀 리퀘스트·Actions 실행·릴리스·브랜치 푸시 및 범위가 제한된 API 작업을 수행합니다. Jira는 Atlassian, 지속적인 코딩 에이전트 조율은 Project Development를 사용합니다."
+      },
       "linkedHarness": {
         "id": "github",
         "version": "0.3.4"
@@ -568,6 +620,10 @@
           "sha256": "99d41b15ff93f75ab111a792091c2e1df661c3661c5250fa4d787888cfb99645"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
+        "ko": "Google OAuth를 연결하고 지원되는 Gmail 메일, Calendar 일정·접근 제어, Drive 파일·권한, Docs·Sheets·Slides 콘텐츠 편집을 관리합니다. Outlook이나 범용 웹 자동화에는 사용하지 않으며 Enterprise Newsletter의 자료를 제공할 수 있습니다."
+      },
       "linkedHarness": {
         "id": "google-workspace",
         "version": "0.4.3"
@@ -606,7 +662,11 @@
           "path": "references/feature-inventory.md",
           "sha256": "9a638b2b4ff9c6723d8d73f5de8adf970ce10093a29352fc7b579ded91e97cf7"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR.",
+        "ko": "Linux에서 Compute 도구를 통해 HOP로 HWP·HWPX 파일을 열고 편집·저장·내보내기합니다. OCR 작업에만 clawpod-ocr를 사용합니다."
+      }
     },
     {
       "id": "memory-graph",
@@ -632,6 +692,10 @@
           "sha256": "5d5bf7fa9364a374bab6e1b2330cb21e6cf1c9b7b1cb7fc2fc5d74492a726bd2"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
+        "ko": "의사결정·인물·프로젝트·원인·결과·이벤트에 걸친 연결된 이력이 필요할 때 비공개 근거 그래프를 구축·정합화·조회·검증·내보내기합니다. 단순한 원본 사실 조회에는 이 그래프 대신 Memory Search를 사용합니다."
+      },
       "linkedHarness": {
         "id": "memory-graph",
         "version": "0.11.5"
@@ -669,6 +733,10 @@
           "sha256": "0659de08a485712ef00e5044868abc335621dc92199ceec3d2225b5df80fbb4b"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
+        "ko": "Notion을 연결하고 페이지·블록·데이터 소스·댓글·파일·사용자·웹훅을 보호 절차에 따라 조회하거나 지원되는 쓰기 작업을 수행합니다. Notion 외 문서는 해당 플랫폼을, 출처가 필요한 주장은 Verified Research를 사용합니다."
+      },
       "linkedHarness": {
         "id": "notion",
         "version": "0.1.11"
@@ -705,6 +773,10 @@
           "sha256": "c9c7f6907a181918a4d38de8cfea64ef07c7d0df4c5dd4a42e0c8744a07d0404"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
+        "ko": "팀의 OpenDesign 서버에서 슬라이드, UI 프로토타입, 한 페이지 문서, 대시보드를 제작·공유·반복 수정하고 클릭 가능한 실시간 미리보기 링크로 전달합니다. HTML 작성·업로드, 피드백 반영, HTML·ZIP 내보내기, Claude Design ZIP 가져오기를 지원하며 서버 기본 URL과 토큰으로 연결합니다. claude.ai 캔버스 편집은 claude-design, 대화방 아티팩트는 artifact-design, 정지 이미지는 Image Studio를 사용합니다."
+      },
       "linkedHarness": {
         "id": "open-design",
         "version": "0.2.2"
@@ -764,6 +836,10 @@
           "sha256": "d7622b3ba1843188790bf4a120063c7725bb237af2d121302ac2a89104650bf8"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+        "ko": "실행한 모든 명령을 근거로 기록하는 제한된 읽기 전용 진단으로 Linux 호스트·네트워크·Kubernetes·보안 위생 문제를 해결합니다. 이후 계획 자체의 확인을 사용해 계획에 결합된 복구 작업인 서비스 재시작·롤아웃 재시작·관리 대상 Pod 삭제를 즉시 실행합니다. 공격 흐름 분석은 soc-event-correlation, 사고 보고는 org-operations, 노드 연결은 node-host를 사용합니다."
+      },
       "linkedHarness": {
         "id": "ops-troubleshooting",
         "version": "0.1.1"
@@ -792,6 +868,10 @@
           "sha256": "dacebe13cfc35fbb124641b28f9d4f9c6f7efb845c966f3afe6d8ca27af113b9"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
+        "ko": "Resend 연결, 발신자 검증, 메시지 미리보기, 파일 첨부, 안전한 재시도를 지원하는 트랜잭션 이메일 발송에 사용합니다. 받은편지함 관리는 Google Workspace를, 승인할 콘텐츠 작성은 Enterprise Newsletter를 사용합니다."
+      },
       "linkedHarness": {
         "id": "resend-email",
         "version": "0.1.8"
@@ -848,7 +928,11 @@
           "path": "references/worked-example.md",
           "sha256": "6a82a46b2b062448ba6675dc60e6f21c30a870149ce22ae822f043f5b3e0fcea"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
+        "ko": "여러 기기의 보안 경보와 로그를 하나의 사고로 연관 분석하고 MITRE ATT&CK·Kill Chain 기반 공격 흐름과 격리·제거·복구 권고를 구성합니다. 경보 분류, 더 큰 공격의 일부인지 판단, 여러 경보·기기 간 연관 분석에 사용하며 원시 SIEM 검색이나 탐지 규칙 작성에는 사용하지 않습니다."
+      }
     },
     {
       "id": "synology-smb-storage",
@@ -876,6 +960,10 @@
           "sha256": "c132b8b5e29b601d173da4dd857fc52be76ca470dae970ec005ef6f57f2c47fb"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
+        "ko": "Synology SMB 공유를 연결·탐색·미리보기·마운트·복구·마운트 해제하고 아티팩트 배치나 WORKFLOW 정책을 적용합니다. 클라우드 객체 스토리지나 범용 NAS 관리는 아니며, 능력 패키지의 산출물을 저장할 수 있습니다."
+      },
       "linkedHarness": {
         "id": "synology-smb-storage",
         "version": "0.1.7"
@@ -884,8 +972,8 @@
     {
       "id": "typesafe-ai",
       "type": "skill",
-      "version": "0.1.0",
-      "description": "Use: 근거로 선택·분류할 때 사용. TypeSafe AI 호출·확률 활용 안내. 일반 답변은 기본 모델 사용.",
+      "version": "0.1.1",
+      "description": "Use for evidence-based selection and classification with TypeSafe AI calls and per-choice probabilities; use the default model for general answers.",
       "path": "skills/typesafe-ai",
       "compatibility": {
         "openclaw": ">=2026.4.0",
@@ -902,9 +990,13 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "65bee8ba0a19b5662373f4b0269d08b8dcb91b9a229c3222d404ffc76cee3285"
+          "sha256": "7daa2b5f028a0437a03376c28692b5ad9e3286e56a392dc2a40b8c32402b136d"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use for evidence-based selection and classification with TypeSafe AI calls and per-choice probabilities; use the default model for general answers.",
+        "ko": "근거에 기반한 선택·분류에 사용합니다. TypeSafe AI 호출과 선택지별 확률 활용을 안내하며, 일반 답변은 기본 모델을 사용합니다."
+      }
     },
     {
       "id": "verified-research",
@@ -946,6 +1038,10 @@
           "sha256": "98e70a1839d628f4a62b76ea662553561d75e41e75e47adcaa93a66676a9d1d2"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
+        "ko": "사실 주장에 출처 인용, 교차 검증, 상충 정보 처리, 신뢰도 평가, 근거 묶음이 필요할 때 사용합니다. 근거 없는 탐색, 아이디어 발상, 단순 편집에는 사용하지 않으며 영상은 YouTube Evidence Analysis와 조합합니다."
+      },
       "linkedHarness": {
         "id": "verified-research",
         "version": "0.1.7"
@@ -979,6 +1075,10 @@
           "sha256": "a1a6e633a452076e00ebca47eb653709fc5cbb648ea6ceab2b39460c6352b35b"
         }
       ],
+      "descriptionI18n": {
+        "en": "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims.",
+        "ko": "YouTube 참조를 정규화하고 제공된 대본 가져오기, 설명란 링크 추출, 타임스탬프가 있는 영상 근거 검증에 사용합니다. 영상을 시청하거나 자막을 직접 확보하지 못하므로 외부 주장은 Verified Research로 확인합니다."
+      },
       "linkedHarness": {
         "id": "youtube-evidence-analysis",
         "version": "0.1.4"
@@ -1039,7 +1139,11 @@
           "path": "test_oauth_async.py",
           "sha256": "0acc9336e82378b168c3b3fe94e9c7ed1dc18ede1a8d2c80b1a8c95e86fc7660"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
+        "ko": "안정적인 JSON 출력, 재시도, 변경 보호 절차를 갖춘 명세 기반 Jira Cloud·Confluence Cloud 작업을 실행합니다."
+      }
     },
     {
       "id": "claude-design",
@@ -1083,7 +1187,11 @@
           "path": "scripts/capture_layout.py",
           "sha256": "301f77e19f5066f640de486f367da992ba0e9af77e7f799a4349e01e405a8e56"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
+        "ko": "Claude Design의 생성·편집·품질 검증과 검증된 프로젝트 링크 중심의 슬라이드 전달에 사용합니다. 사용자가 PPTX·PDF를 직접 내보낼 수 있도록 링크를 제공하며, 파일을 명시적으로 요청할 때만 기본 파일 내보내기를 실행합니다. 정지 이미지는 Image Studio를 사용하고, 운영체제 기본 대화상자를 다룰 때만 Compute 도구와 조합합니다."
+      }
     },
     {
       "id": "clawpod-capability-registry",
@@ -1116,7 +1224,11 @@
           "path": "harness.json",
           "sha256": "4b8ba9b6722f9df671fb97931fcc605b5b2c0415d5e68a766af25b87919327d1"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
+        "ko": "해시 검증과 트랜잭션 방식의 레지스트리 우선 WORKFLOW 초기 설정을 통해 공식 능력 레지스트리의 패키지 수명주기를 관리합니다."
+      }
     },
     {
       "id": "clawpod-cloud-webhooks",
@@ -1195,7 +1307,11 @@
           "path": "setup.py",
           "sha256": "29c30d9e79ba0c386e25c826f0ef33606dff8908624226025f6f3143c2f525ed"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
+        "ko": "보호된 초기 연결, 민감 정보 가림, 미리보기, 변경 결과 재조회 검증을 갖춘 ClawPod Cloud 웹훅 작업을 실행합니다."
+      }
     },
     {
       "id": "clawpod-image-studio",
@@ -1239,7 +1355,11 @@
           "path": "test_detached_jobs.py",
           "sha256": "883366c69d4a8ff4e25bab2e1841eac1c6b2948e656363b0b648d7347ebec640"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
+        "ko": "보호 절차가 적용된 분리 실행 방식의 OpenAI 이미지 작업과 오프라인 전문 제작 기획·검토·마무리·교정·재현 가능한 납품을 수행합니다."
+      }
     },
     {
       "id": "clawpod-node-host",
@@ -1300,7 +1420,11 @@
           "path": "scripts/install.py",
           "sha256": "ccd64200cbf8a6adc90aa0dc659fb1c00a81568cc562f4dbe7b709d282505e7a"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
+        "ko": "Linux·macOS·Windows 컴퓨터를 ClawPod에 연결합니다. 에이전트와 컴퓨터의 Tailscale 로그인, 독립형 ClawPod Node 설치 프로그램 선택, Gateway 연결 정보 제공, 기기 페어링 확인, 데스크톱 권한 설정, 앱 복구·제거를 안내합니다. 이미 설정된 노드가 연결이나 페어링에 실패하면 사용 가능한 경우 node-connect를 사용합니다."
+      }
     },
     {
       "id": "clawpod-ocr",
@@ -1351,7 +1475,11 @@
           "path": "test_clawpod_ocr.py",
           "sha256": "73c7ae931b9cc724a8b016b581a7b28008553a65ca44aae4c2d2088b54f46fba"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Bounded local Korean and English OCR with enterprise comparison DOCX reports and optional guarded Ollama correction.",
+        "ko": "범위가 제한된 로컬 한국어·영어 OCR, 기업용 비교 DOCX 보고서, 선택적인 보호 절차 기반 Ollama 교정을 제공합니다."
+      }
     },
     {
       "id": "clawpod-video-studio",
@@ -1407,7 +1535,11 @@
           "path": "upstream.lock.json",
           "sha256": "4298a5eb08c3efcedb440f8c3141a65b6fe98d1a46095b7884bd143c3589a9f2"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute guarded OpenMontage tools, pipelines, detached jobs, provider verification, media QA, and transactional runtime lifecycle operations.",
+        "ko": "보호 절차가 적용된 OpenMontage 도구·파이프라인·분리 실행 작업, 제공업체 검증, 미디어 품질 검증, 트랜잭션 방식의 런타임 수명주기 작업을 실행합니다."
+      }
     },
     {
       "id": "cloudflare-quick-tunnel-preview",
@@ -1434,7 +1566,11 @@
           "path": "harness.json",
           "sha256": "424a8aa86f1b2b21dc403243ab1820e813d03a2b2ce08cb2af0184718b9cdaca"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
+        "ko": "루프백에만 연결된 로컬 서비스를 위해 계정 없이 유효 시간이 제한된 Cloudflare Quick Tunnel 미리보기를 생성합니다."
+      }
     },
     {
       "id": "enterprise-newsletter",
@@ -1462,7 +1598,11 @@
           "path": "harness.json",
           "sha256": "b911f879b97671662893afda5556e16f6fad7649a95d216116722b975e459267"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
+        "ko": "범위가 제한된 완전한 뉴스레터 JSON을 검증하고, HTML·텍스트의 내용 일치를 계산해 브랜드 토큰을 렌더링하며, 로컬에서 조회와 배포 결합을 수행합니다. 자격 증명 사용·Gateway 호출·이메일 발송은 하지 않습니다."
+      }
     },
     {
       "id": "github",
@@ -1506,7 +1646,11 @@
           "path": "scripts/generate_schemas.py",
           "sha256": "ade05891e1d4f24811249283a380417a306415cb0935449e89ce061b3d1b6e1e"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
+        "ko": "실제 gh CLI를 통해 검증된 저장소 초기 구성, 보호 절차가 적용된 기존 저장소 브랜치 푸시, 릴리스 본문만 수정하는 작업 등 GitHub 작업을 실행합니다."
+      }
     },
     {
       "id": "google-workspace",
@@ -1623,7 +1767,11 @@
           "path": "scripts/generate_schemas.py",
           "sha256": "cac05b1699d3c0abc84e1e28746ce32790d372356a16f0b2e4be667217d806a1"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
+        "ko": "안정적인 JSON 출력과 안전 제어를 갖춘 명세 기반 Gmail·Calendar·Drive 및 에이전트 데스크톱 OAuth 작업을 실행합니다."
+      }
     },
     {
       "id": "memory-graph",
@@ -1684,7 +1832,11 @@
           "path": "semantic_v11.py",
           "sha256": "1ef6df8e17745428c08a11a32f1337486504c58c558a81d07c0c01c7f3f87240"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
+        "ko": "검증된 비활성 후보 또는 승인된 인과관계 스냅샷을 완전한 오프라인 대화형 SVG 노드·링크 HTML로 재현 가능하게 내보냅니다."
+      }
     },
     {
       "id": "notion",
@@ -1729,7 +1881,11 @@
           "path": "onboarding.py",
           "sha256": "819b0622d59e3e9106d7e2d1dd2847f3993d789c76331dc5088a43b2123c1e6b"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
+        "ko": "보호된 비밀 정보 기반 초기 연결, 미리보기, 검증, 안정적인 JSON 출력을 갖춘 명세 기반 Notion REST 작업을 실행합니다."
+      }
     },
     {
       "id": "open-design",
@@ -1765,7 +1921,11 @@
           "path": "open_design.py",
           "sha256": "19dec307e6482c089e2cfe8610b78e519fdcd1367c903fb4bb5076d96e879dbe"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
+        "ko": "자체 호스팅 OpenDesign 데몬용 보호 절차 기반 클라이언트입니다. 보호된 토큰 환경 변수로 연결하고 인증 강제 여부를 점검하며, 프로젝트·파일 수명주기 관리, 바이트 단위 업로드 일치 검증, 범위가 제한된 미리보기 링크, HTML·ZIP 내보내기, Claude Design ZIP 가져오기를 제공합니다."
+      }
     },
     {
       "id": "ops-troubleshooting",
@@ -1804,7 +1964,11 @@
           "path": "scripts/generate_manifest.py",
           "sha256": "8fb185e9df06af5b210e799dfb8a44a634b36fe407824fd4941dad222019d1d2"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
+        "ko": "실행한 모든 명령을 근거로 기록하는 제한된 읽기 전용 진단으로 Linux 호스트·네트워크·Kubernetes·보안 위생 문제를 해결합니다. 이후 계획 자체의 확인을 사용해 계획에 결합된 복구 작업인 서비스 재시작·롤아웃 재시작·관리 대상 Pod 삭제를 즉시 실행합니다. 공격 흐름 분석은 soc-event-correlation, 사고 보고는 org-operations, 노드 연결은 node-host를 사용합니다."
+      }
     },
     {
       "id": "resend-email",
@@ -1844,7 +2008,11 @@
           "path": "scripts/generate_manifest.py",
           "sha256": "eec27f87a77828e0c984c34f967ccf6e71a82ec3f8f530a069971f17c45d5fbc"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Guarded Resend email with per-run Gateway memory-secret injection, protected onboarding, verified senders, previews, and retry-safe delivery.",
+        "ko": "실행별 Gateway 메모리 비밀 정보 주입, 보호된 초기 연결, 검증된 발신자, 미리보기, 안전한 재시도를 갖춘 Resend 이메일 발송을 수행합니다."
+      }
     },
     {
       "id": "synology-smb-storage",
@@ -1879,7 +2047,11 @@
           "path": "synology_smb_storage.py",
           "sha256": "32352a9916655a921effc93b2394daef065ab14b2f833d4498a71247e29c072b"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
+        "ko": "Synology NAS 스토리지용 SMB 3.1.1 자격 증명 보호, 탐색, 마운트 수명주기·복구, 상태, 배치, WORKFLOW 정책 작업을 수행합니다."
+      }
     },
     {
       "id": "verified-research",
@@ -1924,7 +2096,11 @@
           "path": "verified_research.py",
           "sha256": "1eb3c7514fd2c32a9d7adbeac137e21023b98514c2f529cad152a956cb451700"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
+        "ko": "범위가 제한된 공개 리서치 근거를 재현 가능한 방식으로 수집·정규화·해시 생성·묶음 구성·조회·검증합니다."
+      }
     },
     {
       "id": "youtube-evidence-analysis",
@@ -1969,7 +2145,11 @@
           "path": "youtube_evidence_analysis.py",
           "sha256": "c948dd106a78b4fc34821e034fd620c33f240355c14c46c33c51ee89dd668f46"
         }
-      ]
+      ],
+      "descriptionI18n": {
+        "en": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
+        "ko": "YouTube 참조 정규화, 명시적으로 제공된 대본 가져오기, 안전한 링크 추출, 타임스탬프가 있는 근거 검증을 재현 가능한 방식으로 수행합니다."
+      }
     }
   ]
 }

@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.2",
   "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
+  "descriptionI18n": {
+    "ko": "팀의 OpenDesign 서버에서 슬라이드, UI 프로토타입, 한 페이지 문서, 대시보드를 제작·공유·반복 수정하고 클릭 가능한 실시간 미리보기 링크로 전달합니다. HTML 작성·업로드, 피드백 반영, HTML·ZIP 내보내기, Claude Design ZIP 가져오기를 지원하며 서버 기본 URL과 토큰으로 연결합니다. claude.ai 캔버스 편집은 claude-design, 대화방 아티팩트는 artifact-design, 정지 이미지는 Image Studio를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

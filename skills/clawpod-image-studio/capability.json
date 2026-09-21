@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.4.4",
   "description": "Route guarded detached image jobs and a complete offline professional photo production procedure.",
+  "descriptionI18n": {
+    "ko": "OpenAI, Vertex, BFL, Recraft로 이미지를 생성·편집·비교·검토·품질 검증하고 작업과 아티팩트를 관리합니다. 슬라이드나 영상은 여기서 제작하지 않고, 자산을 Claude Design 또는 Video Studio로 전달합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

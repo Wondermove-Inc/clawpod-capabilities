@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.5",
   "description": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
+  "descriptionI18n": {
+    "ko": "범위가 제한된 완전한 뉴스레터 JSON을 검증하고, HTML·텍스트의 내용 일치를 계산해 브랜드 토큰을 렌더링하며, 로컬에서 조회와 배포 결합을 수행합니다. 자격 증명 사용·Gateway 호출·이메일 발송은 하지 않습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
