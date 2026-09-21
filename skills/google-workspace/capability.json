@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.4.4",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
+  "descriptionI18n": {
+    "ko": "Google OAuth를 연결하고 지원되는 Gmail 메일, Calendar 일정·접근 제어, Drive 파일·권한, Docs·Sheets·Slides 콘텐츠 편집을 관리합니다. Outlook이나 범용 웹 자동화에는 사용하지 않으며 Enterprise Newsletter의 자료를 제공할 수 있습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

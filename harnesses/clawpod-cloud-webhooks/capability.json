@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.7",
   "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
+  "descriptionI18n": {
+    "ko": "보호된 초기 연결, 민감 정보 가림, 미리보기, 변경 결과 재조회 검증을 갖춘 ClawPod Cloud 웹훅 작업을 실행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

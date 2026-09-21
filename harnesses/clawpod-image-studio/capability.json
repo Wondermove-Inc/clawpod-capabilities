@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.4.4",
   "description": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
+  "descriptionI18n": {
+    "ko": "보호 절차가 적용된 분리 실행 방식의 OpenAI 이미지 작업과 오프라인 전문 제작 기획·검토·마무리·교정·재현 가능한 납품을 수행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

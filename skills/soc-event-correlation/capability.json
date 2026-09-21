@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.1",
   "description": "Correlate multiple security alerts or logs into one incident with a MITRE ATT&CK/Kill Chain attack story and a containment/eradication/recovery recommendation.",
+  "descriptionI18n": {
+    "ko": "여러 기기의 보안 경보와 로그를 하나의 사고로 연관 분석하고 MITRE ATT&CK·Kill Chain 기반 공격 흐름과 격리·제거·복구 권고를 구성합니다. 경보 분류, 더 큰 공격의 일부인지 판단, 여러 경보·기기 간 연관 분석에 사용하며 원시 SIEM 검색이나 탐지 규칙 작성에는 사용하지 않습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

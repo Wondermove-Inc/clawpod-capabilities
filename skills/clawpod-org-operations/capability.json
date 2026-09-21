@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.2",
   "description": "Plan and validate topology-aware organizational operations with safe routing, state transfer, quality gates, and recovery guidance.",
+  "descriptionI18n": {
+    "ko": "에이전트와 역할 간 인수인계, 위임, 동료 지원, 보고, 검토, 승인, 상위 담당자 이관, 후속 조치, 사고 대응, 업무 종료를 조율합니다. 근거에 따라 공통·Engineering·SOC/CSIRT·SRE 템플릿을 선택하고, 적용되는 WORKFLOW.md가 지정한 작업 서비스로 공동 업무를 전달합니다. Workboard는 에이전트 로컬에서 유지하고 패키지 수명주기 관리는 능력 레지스트리를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

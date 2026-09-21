@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "version": "0.4.3",
   "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
+  "descriptionI18n": {
+    "ko": "Claude Design의 생성·편집·품질 검증과 검증된 프로젝트 링크 중심의 슬라이드 전달에 사용합니다. 사용자가 PPTX·PDF를 직접 내보낼 수 있도록 링크를 제공하며, 파일을 명시적으로 요청할 때만 기본 파일 내보내기를 실행합니다. 정지 이미지는 Image Studio를 사용하고, 운영체제 기본 대화상자를 다룰 때만 Compute 도구와 조합합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.11",
     "platforms": [

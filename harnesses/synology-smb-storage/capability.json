@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.7",
   "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
+  "descriptionI18n": {
+    "ko": "Synology NAS 스토리지용 SMB 3.1.1 자격 증명 보호, 탐색, 마운트 수명주기·복구, 상태, 배치, WORKFLOW 정책 작업을 수행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

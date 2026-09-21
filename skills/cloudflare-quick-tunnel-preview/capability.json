@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.6",
   "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
+  "descriptionI18n": {
+    "ko": "루프백에만 연결된 로컬 미리보기를 위해 계정 없이 유효 시간이 제한된 Cloudflare Quick Tunnel을 사전 점검·시작·조회·종료합니다. 로컬 서버와 함께 사용하며, 운영 서비스 호스팅·명명된 터널·사용자 지정 도메인·상시 공개에는 사용하지 않습니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

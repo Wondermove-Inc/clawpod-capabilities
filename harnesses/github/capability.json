@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.3.4",
   "description": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
+  "descriptionI18n": {
+    "ko": "실제 gh CLI를 통해 검증된 저장소 초기 구성, 보호 절차가 적용된 기존 저장소 브랜치 푸시, 릴리스 본문만 수정하는 작업 등 GitHub 작업을 실행합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

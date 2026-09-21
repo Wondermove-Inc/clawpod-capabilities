@@ -127,6 +127,31 @@ tests/                     Registry, policy, and bootstrap tests
 
 Always discover and improve an existing capability before creating a duplicate.
 
+## Localized capability descriptions
+
+Each Registry entry retains its English `description` string and additionally
+provides `descriptionI18n.en` and `descriptionI18n.ko`. The English values are
+identical. Frontends can select the requested language and fall back to English:
+
+```js
+const language = locale.toLowerCase().split("-")[0];
+const description = capability.descriptionI18n?.[language]
+  ?? capability.descriptionI18n?.en
+  ?? capability.description;
+```
+
+For example, `ko-KR` selects `ko`; unsupported languages use English. Clients
+that only read `description` continue to work. Clients validating against an
+older strict schema must adopt the extended schema before consuming this index.
+`schemaVersion` remains 1; existing fields and their types are unchanged.
+The Registry Harness returns both languages from `list`, `search`, and `inspect`,
+and searches IDs and both descriptions. Older installed Harnesses still read the
+index but need an update to search Korean descriptions.
+
+Translations are maintained in package-local `capability.json` files; English is
+generated from the existing description source. See
+[contributing localized descriptions](CONTRIBUTING.md#localized-descriptions).
+
 ## Safety boundary
 
 Installing or trusting a capability does **not** authorize:

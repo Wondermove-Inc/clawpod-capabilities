@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.4",
   "description": "Analyze YouTube claims with timestamped citations, explicit source hierarchy, and verified-research composition.",
+  "descriptionI18n": {
+    "ko": "YouTube 참조를 정규화하고 제공된 대본 가져오기, 설명란 링크 추출, 타임스탬프가 있는 영상 근거 검증에 사용합니다. 영상을 시청하거나 자막을 직접 확보하지 못하므로 외부 주장은 Verified Research로 확인합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

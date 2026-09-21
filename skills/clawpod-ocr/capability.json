@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.3.5",
   "description": "Extract Korean and English text locally and create enterprise comparison DOCX reports with guarded optional review.",
+  "descriptionI18n": {
+    "ko": "범위가 제한된 PDF·이미지에서 한국어·영어 텍스트를 추출하고 OCR 결과 조회·내보내기, 비교 DOCX 보고서 작성, 승인된 Ollama 교정을 수행합니다. 문서 자체를 편집하지 않으며, 주장의 사실 확인에는 Verified Research를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

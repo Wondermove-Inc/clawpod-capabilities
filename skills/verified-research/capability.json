@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.8",
   "description": "Apply source hierarchy, cross-checking, contradiction handling, confidence, and no-fabrication rules to evidence-backed research.",
+  "descriptionI18n": {
+    "ko": "사실 주장에 출처 인용, 교차 검증, 상충 정보 처리, 신뢰도 평가, 근거 묶음이 필요할 때 사용합니다. 근거 없는 탐색, 아이디어 발상, 단순 편집에는 사용하지 않으며 영상은 YouTube Evidence Analysis와 조합합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

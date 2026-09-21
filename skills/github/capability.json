@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.3.4",
   "description": "Route GitHub work through the guarded Harness, including verified local repository bootstrap and existing-repository branch push.",
+  "descriptionI18n": {
+    "ko": "gh CLI를 통해 보호 절차가 적용된 GitHub 저장소·이슈·풀 리퀘스트·Actions 실행·릴리스·브랜치 푸시 및 범위가 제한된 API 작업을 수행합니다. Jira는 Atlassian, 지속적인 코딩 에이전트 조율은 Project Development를 사용합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [

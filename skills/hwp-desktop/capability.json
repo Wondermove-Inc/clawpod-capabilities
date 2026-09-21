@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.1.2",
   "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR.",
+  "descriptionI18n": {
+    "ko": "Linux에서 Compute 도구를 통해 HOP로 HWP·HWPX 파일을 열고 편집·저장·내보내기합니다. OCR 작업에만 clawpod-ocr를 사용합니다."
+  },
   "descriptionSource": "skill-frontmatter",
   "compatibility": {
     "openclaw": ">=2026.4.11",

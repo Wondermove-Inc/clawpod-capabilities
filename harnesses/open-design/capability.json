@@ -3,6 +3,9 @@
   "schemaVersion": 1,
   "version": "0.2.2",
   "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
+  "descriptionI18n": {
+    "ko": "자체 호스팅 OpenDesign 데몬용 보호 절차 기반 클라이언트입니다. 보호된 토큰 환경 변수로 연결하고 인증 강제 여부를 점검하며, 프로젝트·파일 수명주기 관리, 바이트 단위 업로드 일치 검증, 범위가 제한된 미리보기 링크, HTML·ZIP 내보내기, Claude Design ZIP 가져오기를 제공합니다."
+  },
   "compatibility": {
     "openclaw": ">=2026.4.0",
     "platforms": [
