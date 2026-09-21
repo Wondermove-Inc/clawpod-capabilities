@@ -19,6 +19,7 @@ PACKAGE_METADATA_KEYS = {
     "schemaVersion",
     "version",
     "description",
+    "descriptionI18n",
     "descriptionSource",
     "compatibility",
     "safety",
@@ -82,6 +83,13 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
     description = value["description"]
     if not isinstance(description, str) or not 10 <= len(description) <= 500:
         raise SyncError(f"{path} description must contain 10-500 characters")
+    if "descriptionI18n" in value:
+        translations = value["descriptionI18n"]
+        if not isinstance(translations, dict) or set(translations) != {"ko"}:
+            raise SyncError(f"{path} descriptionI18n requires only ko; en is generated from descriptionSource")
+        korean = translations["ko"]
+        if not isinstance(korean, str) or not 10 <= len(korean) <= 500 or korean != korean.strip():
+            raise SyncError(f"{path} descriptionI18n.ko must contain 10-500 characters without surrounding whitespace")
     description_source = value.get("descriptionSource", "package-metadata")
     if description_source not in {"package-metadata", "skill-frontmatter"}:
         raise SyncError(f"{path} descriptionSource must be package-metadata or skill-frontmatter")
@@ -175,6 +183,8 @@ def build_entry(root: Path, capability_type: str, package: Path) -> dict[str, ob
         "safety": metadata["safety"],
         "files": package_files(package),
     }
+    if "descriptionI18n" in metadata:
+        entry["descriptionI18n"] = {"en": description, "ko": metadata["descriptionI18n"]["ko"]}
     if metadata.get("linkedHarness") is not None:
         entry["linkedHarness"] = metadata["linkedHarness"]
     return entry

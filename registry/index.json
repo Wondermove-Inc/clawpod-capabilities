@@ -143,7 +143,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
@@ -166,7 +166,7 @@
       ],
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.3.5"
+        "version": "0.3.6"
       }
     },
     {
@@ -1088,7 +1088,7 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
@@ -1106,15 +1106,15 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "2f7ca8e425b4bc8e7e7872ac87e28da23f3017a2ad09cde52f1bc03257fc1927"
+          "sha256": "a7436eda52a263a81f9aca71219cc8a1e1fda7f2933754fcb2155289d14336b4"
         },
         {
           "path": "clawpod_capability_registry.py",
-          "sha256": "90b06af5ddbc531633eaf2ca7acc766aed7a1471919028e259f879b303ce6986"
+          "sha256": "3a9d672776deb0a4dee3e35f2b1a892ea84cbd9a900f466b06fa4f6890c4e49b"
         },
         {
           "path": "harness.json",
-          "sha256": "78be96dfb5cd4f76d6a9faacff4eeaf9fef763d807ef2033329659492c8533d4"
+          "sha256": "4b8ba9b6722f9df671fb97931fcc605b5b2c0415d5e68a766af25b87919327d1"
         }
       ]
     },

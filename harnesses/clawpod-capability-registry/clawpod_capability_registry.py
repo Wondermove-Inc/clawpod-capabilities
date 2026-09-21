@@ -521,7 +521,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         matches = [
             public_entry(entry)
             for entry in entries()
-            if query in entry["id"].casefold() or query in entry["description"].casefold()
+            if any(
+                query in value.casefold()
+                for value in (entry["id"], entry["description"], *entry.get("descriptionI18n", {}).values())
+            )
         ]
         return {"query": args.query, "count": min(len(matches), args.limit), "capabilities": matches[: args.limit]}
     if args.command == "inspect":

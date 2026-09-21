@@ -18,7 +18,7 @@ RISKS = {"read-only", "write-safe", "externally-visible", "destructive", "creden
 HARNESS_SAFETY_CLASSES = {"readOnly", "writeSafe", "modifiesSource", "destructive", "secretUse", "externalSideEffect", "authReuse", "humanAccountAction"}
 HARNESS_ARG_VALUE_TYPES = {"string", "number", "integer", "boolean", "enum", "path"}
 HARNESS_COMMAND_FIELDS = {"description", "baseArgv", "safetyClasses", "inputSchema", "outputSchema", "argMap"}
-ALLOWED_KEYS = {"id", "type", "version", "description", "path", "sha256", "compatibility", "safety", "files", "linkedHarness"}
+ALLOWED_KEYS = {"id", "type", "version", "description", "descriptionI18n", "path", "sha256", "compatibility", "safety", "files", "linkedHarness"}
 
 
 def fail(message: str) -> None:
@@ -86,6 +86,15 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         fail(f"{label}.version must be semantic version text")
     if not isinstance(description, str) or not 10 <= len(description) <= 500:
         fail(f"{label}.description must contain 10-500 characters")
+    if "descriptionI18n" in entry:
+        translations = entry["descriptionI18n"]
+        if not isinstance(translations, dict) or set(translations) != {"en", "ko"}:
+            fail(f"{label}.descriptionI18n requires only en and ko")
+        for language, translation in translations.items():
+            if not isinstance(translation, str) or not 10 <= len(translation) <= 500 or translation != translation.strip():
+                fail(f"{label}.descriptionI18n.{language} must contain 10-500 characters without surrounding whitespace")
+        if translations["en"] != description:
+            fail(f"{label}.descriptionI18n.en must match description")
 
     expected_path = f"{'skills' if capability_type == 'skill' else 'harnesses'}/{capability_id}"
     if package_path != expected_path:

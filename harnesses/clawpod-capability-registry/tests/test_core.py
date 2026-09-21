@@ -29,6 +29,43 @@ def fixture_entry(version: str, payload: bytes) -> dict:
 
 
 class CoreTests(unittest.TestCase):
+    def test_search_matches_localized_and_legacy_descriptions_without_duplicates(self) -> None:
+        localized = fixture_entry("1.0.0", b"content")
+        localized["descriptionI18n"] = {
+            "en": localized["description"],
+            "ko": "근거를 검색하고 검증하는 테스트 능력입니다.",
+        }
+        legacy = {**fixture_entry("1.0.0", b"legacy"), "id": "legacy-example"}
+        parser = cap.build_parser()
+        with patch.object(cap, "entries", return_value=[localized, legacy]):
+            for query, expected_ids in (
+                ("근거", [localized["id"]]),
+                ("  검증  ", [localized["id"]]),
+                ("CAPABILITY", [localized["id"], legacy["id"]]),
+                ("example-skill", [localized["id"]]),
+                ("no matching text", []),
+            ):
+                with self.subTest(query=query):
+                    result = cap.run(parser.parse_args(["search", "--query", query]))
+                    self.assertEqual([e["id"] for e in result["capabilities"]], expected_ids)
+                    self.assertEqual(result["count"], len(expected_ids))
+            limited = cap.run(parser.parse_args(["search", "--query", "capability", "--limit", "1"]))
+            self.assertEqual(limited["count"], 1)
+            self.assertEqual(len(limited["capabilities"]), 1)
+
+    def test_discovery_outputs_preserve_both_languages(self) -> None:
+        entry = fixture_entry("1.0.0", b"content")
+        entry["descriptionI18n"] = {"en": entry["description"], "ko": "근거를 검색하는 테스트 능력입니다."}
+        parser = cap.build_parser()
+        with patch.object(cap, "entries", return_value=[entry]):
+            for argv in (["list"], ["search", "--query", "근거"], ["inspect", "--id", entry["id"]]):
+                with self.subTest(argv=argv):
+                    result = cap.run(parser.parse_args(argv))
+                    actual = result if argv[0] == "inspect" else result["capabilities"][0]
+                    self.assertEqual(actual["descriptionI18n"], entry["descriptionI18n"])
+                    self.assertEqual(actual["description"], entry["description"])
+                    self.assertNotIn("files", actual)
+
     def test_workflow_empty_existing_file_append_and_idempotence(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             workflow = Path(directory) / "WORKFLOW.md"

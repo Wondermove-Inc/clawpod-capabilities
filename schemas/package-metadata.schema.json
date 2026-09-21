@@ -13,6 +13,16 @@
       "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"
     },
     "description": {"type": "string", "minLength": 10, "maxLength": 500},
+    "descriptionSource": {"enum": ["package-metadata", "skill-frontmatter"]},
+    "descriptionI18n": {
+      "description": "Author the Korean translation here; English is generated from the resolved descriptionSource.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ko"],
+      "properties": {
+        "ko": {"type": "string", "minLength": 10, "maxLength": 500, "pattern": "^\\S(?:[\\s\\S]*\\S)?$"}
+      }
+    },
     "compatibility": {
       "type": "object",
       "additionalProperties": false,
