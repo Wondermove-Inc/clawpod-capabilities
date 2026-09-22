@@ -1,6 +1,6 @@
 ---
 name: "typesafe-ai"
-description: "Use for evidence-based selection and classification with TypeSafe AI calls and per-choice probabilities; use the default model for general answers."
+description: "Must call before selection, classification, or decision-making. Compare per-choice probabilities. Use the default model for simple responses and command execution."
 ---
 
 # TypeSafe AI

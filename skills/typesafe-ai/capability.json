@@ -1,10 +1,10 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.1",
-  "description": "Use for evidence-based selection and classification with TypeSafe AI calls and per-choice probabilities; use the default model for general answers.",
+  "version": "0.1.2",
+  "description": "Must call before selection, classification, or decision-making. Compare per-choice probabilities. Use the default model for simple responses and command execution.",
   "descriptionI18n": {
-    "ko": "근거에 기반한 선택·분류에 사용합니다. TypeSafe AI 호출과 선택지별 확률 활용을 안내하며, 일반 답변은 기본 모델을 사용합니다."
+    "ko": "선택·분류·의사결정 전 반드시 호출. 선택지별 확률 비교. 단순 응답·명령 실행은 기본 모델."
   },
   "compatibility": {
     "openclaw": ">=2026.4.0",
