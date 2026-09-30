@@ -40,12 +40,15 @@ def test_fresh_agent_skill_room_capture_contract_and_no_fake_ui_or_revocation_ru
     assert "room or a message" in lowered and "route it immediately" in lowered and "`memory_secret`" in skill
     assert "ordinary files, normal memory, reports, prompts, or logs" in lowered
     assert "safe pointer metadata" in lowered and "owner-authorized memory-secret pointer" in lowered
+    assert "onboarding@resend.dev" in skill and "delivered@resend.dev" in skill and "test_recipient_restricted" in skill
+    assert "two ways to send" in lowered and "no per-send approval" in lowered
     assert '"secretrefs":{"resend_api_key":"msp_..."}' in lowered
     assert "room delivery alone does not mean the key is compromised" in lowered
     assert "does not require revocation" in lowered and "independent compromise signal" in lowered
     assert "treat it as exposed and require revocation" not in lowered
     assert "protected secret-entry surface" not in lowered
     assert "never as an argument" in lowered and "original message as sensitive" in lowered
+    assert "run `preview`, or the send command with `dryrun`" not in lowered
 
 def test_removed_onboarding_and_policy_flags_are_rejected():
     for args in (["onboarding.configure"],["onboarding","--allowed-recipient-domains","example.com"],["status","--policy","policy.json"],["onboarding","--max-recipients-per-day","1"],["onboarding","--allow-bulk"]):
@@ -188,10 +191,11 @@ def test_manifest_defaults_and_external_effect_metadata():
     manifest=json.loads((P.parent/"harness.json").read_text())
     skill_metadata=json.loads((P.parents[2]/"skills"/"resend-email"/"capability.json").read_text())
     harness_metadata=json.loads((P.parent/"capability.json").read_text())
-    assert manifest["version"]=="0.1.4" and "onboarding.configure" not in manifest["commands"]
+    assert manifest["version"]=="0.1.10" and "onboarding.configure" not in manifest["commands"]
     assert "secretEnv" not in manifest
-    assert skill_metadata["safety"]==harness_metadata["safety"]=={"risk":"externally-visible","approvalRequired":True}
-    assert skill_metadata["linkedHarness"]=={"id":"resend-email","version":"0.1.4"}
+    assert skill_metadata["safety"]==harness_metadata["safety"]=={"risk":"externally-visible","approvalRequired":False}
+    assert skill_metadata["linkedHarness"]=={"id":"resend-email","version":"0.1.10"}
+    assert "resend-dev-test-sender" in manifest["capabilities"]
     for command in manifest["commands"].values():
         args=set(command["inputSchema"]["properties"])
         assert not args & {"policy","allowedRecipientDomains","allowedSenderDomains","maxRecipients","allowAttachments","allowSingle","allowBulk","maxRecipientsPerDay"}
@@ -203,3 +207,53 @@ def test_manifest_defaults_and_external_effect_metadata():
     for name in ("send","bulk.send"):
         assert "humanAccountAction" in manifest["commands"][name]["safetyClasses"]
     assert set(test["inputSchema"]["required"])=={"from","to","state"}
+
+
+class NoDomainClient:
+    calls=[]
+    def __init__(self,*a): pass
+    def request(self,method,path,body=None,idem=None):
+        self.calls.append((method,path,body,idem))
+        if path=="/domains": return ({"data":[]},1,None)
+        return ({"id":"email_test"},1,None)
+
+def test_test_sender_skips_domain_check_and_reports_mode(monkeypatch):
+    NoDomainClient.calls=[]; monkeypatch.setattr(r,"Client",NoDomainClient); monkeypatch.setenv("RESEND_API_KEY","re_fixture_secret")
+    out=r.command(argv("send",from_address="onboarding@resend.dev",to='["delivered@resend.dev"]'))
+    assert out["ok"] and out["data"]["sender_mode"]=="test" and out["data"]["sender_verified"] is False
+    assert [c[1] for c in NoDomainClient.calls]==["/emails"]
+
+def test_domain_sender_still_requires_verified_domain_with_actionable_message(monkeypatch):
+    NoDomainClient.calls=[]; monkeypatch.setattr(r,"Client",NoDomainClient); monkeypatch.setenv("RESEND_API_KEY","re_fixture_secret")
+    with pytest.raises(r.HarnessError) as caught: r.command(argv("send"))
+    assert caught.value.code=="sender_not_ready" and "onboarding@resend.dev" in str(caught.value)
+    assert [c[1] for c in NoDomainClient.calls]==["/domains"]
+
+def test_sender_readiness_reports_both_modes(monkeypatch):
+    monkeypatch.setattr(r,"Client",SuccessClient); monkeypatch.setenv("RESEND_API_KEY","re_fixture_secret")
+    test=r.command(argv("sender.readiness",from_address="onboarding@resend.dev"))["data"]
+    assert test["ready"] and test["mode"]=="test" and test["can_send_to_anyone"] is False and test["verified_domains"]==["sender.test"]
+    real=r.command(argv("sender.readiness"))["data"]
+    assert real["ready"] and real["mode"]=="domain" and real["can_send_to_anyone"] is True
+
+def test_test_mode_recipient_rejection_is_explained(monkeypatch):
+    class Rejecting(NoDomainClient):
+        def request(self,method,path,body=None,idem=None):
+            if path=="/emails": raise r.HarnessError("provider_rejected","Resend API request failed: validation_error - You can only send testing emails to your own email address",status=403)
+            return super().request(method,path,body,idem)
+    monkeypatch.setattr(r,"Client",Rejecting); monkeypatch.setenv("RESEND_API_KEY","re_fixture_secret")
+    with pytest.raises(r.HarnessError) as caught: r.command(argv("send",from_address="onboarding@resend.dev",to='["stranger@example.com"]'))
+    assert caught.value.code=="test_recipient_restricted" and "verify a sending domain" in str(caught.value)
+
+def test_provider_error_body_is_surfaced_redacted():
+    raw=json.dumps({"statusCode":403,"name":"validation_error","message":"key re_abcdefghijkl is not allowed"}).encode()
+    detail=r.provider_error(raw)
+    assert "validation_error" in detail and "abcdefghijkl" not in detail and r.provider_error(b"not json")==""
+
+def test_onboarding_test_in_test_mode_needs_no_domain_and_reports_mode(tmp_path,monkeypatch):
+    NoDomainClient.calls=[]; monkeypatch.setattr(r,"Client",NoDomainClient); monkeypatch.setenv("RESEND_API_KEY","re_fixture_secret")
+    d=tmp_path/"private"; d.mkdir(mode=0o700); state=str(d/"state.json")
+    out=r.command(argv("onboarding.test",from_address="onboarding@resend.dev",to="delivered@resend.dev",state=state))
+    assert out["ok"] and out["data"]["sender_mode"]=="test" and [c[1] for c in NoDomainClient.calls]==["/emails"]
+    status=r.onboarding_status(state)
+    assert status["state"]=="onboarding_complete" and status["sender_mode"]=="test" and status["can_send_to_anyone"] is False
