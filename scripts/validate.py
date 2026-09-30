@@ -205,15 +205,8 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
     compatibility = entry["compatibility"]
     if not isinstance(compatibility, dict) or not isinstance(compatibility.get("openclaw"), str):
         fail(f"{label}.compatibility.openclaw is required")
-    if set(compatibility) - {"openclaw", "platforms"}:
+    if set(compatibility) - {"openclaw"}:
         fail(f"{label}.compatibility has unknown fields")
-    platforms = compatibility.get("platforms")
-    if platforms is not None and (
-        not isinstance(platforms, list)
-        or not all(isinstance(item, str) and item for item in platforms)
-        or len(platforms) != len(set(platforms))
-    ):
-        fail(f"{label}.compatibility.platforms must contain unique non-empty strings")
 
     safety = entry["safety"]
     if not isinstance(safety, dict) or set(safety) != {"risk", "approvalRequired"}:

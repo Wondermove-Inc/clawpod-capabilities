@@ -95,17 +95,10 @@ def validate_package_metadata(path: Path, value: object) -> dict[str, object]:
         raise SyncError(f"{path} descriptionSource must be package-metadata or skill-frontmatter")
 
     compatibility = value["compatibility"]
-    if not isinstance(compatibility, dict) or set(compatibility) - {"openclaw", "platforms"}:
+    if not isinstance(compatibility, dict) or set(compatibility) - {"openclaw"}:
         raise SyncError(f"{path} compatibility has invalid fields")
     if not isinstance(compatibility.get("openclaw"), str) or not compatibility["openclaw"]:
         raise SyncError(f"{path} compatibility.openclaw is required")
-    platforms = compatibility.get("platforms")
-    if platforms is not None and (
-        not isinstance(platforms, list)
-        or not all(isinstance(item, str) and item for item in platforms)
-        or len(platforms) != len(set(platforms))
-    ):
-        raise SyncError(f"{path} compatibility.platforms must contain unique non-empty strings")
 
     safety = value["safety"]
     if not isinstance(safety, dict) or set(safety) != {"risk", "approvalRequired"}:

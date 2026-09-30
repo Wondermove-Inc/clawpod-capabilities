@@ -28,12 +28,7 @@
       "additionalProperties": false,
       "required": ["openclaw"],
       "properties": {
-        "openclaw": {"type": "string", "minLength": 1},
-        "platforms": {
-          "type": "array",
-          "items": {"type": "string", "minLength": 1},
-          "uniqueItems": true
-        }
+        "openclaw": {"type": "string", "minLength": 1}
       }
     },
     "linkedHarness": {

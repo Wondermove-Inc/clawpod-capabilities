@@ -1,6 +1,6 @@
 # Ops Troubleshooting Harness
 
-Canonical `ops-troubleshooting` / **Ops Troubleshooting** Harness. Version 0.1.1.
+Canonical `ops-troubleshooting` / **Ops Troubleshooting** Harness. Version 0.1.2.
 
 Bounded, read-only diagnostics for Linux hosts, networks, Kubernetes clusters, and security hygiene, plus plan-bound remediation for three allowlisted actions. Python 3 standard library only; no shell, no network beyond the tools it wraps.
 

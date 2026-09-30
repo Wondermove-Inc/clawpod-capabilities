@@ -1,17 +1,13 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Route per-run Gateway memory-secret-backed Resend onboarding and verified-sender transactional delivery.",
   "descriptionI18n": {
     "ko": "Resend 연결, 발신자 검증, 메시지 미리보기, 파일 첨부, 안전한 재시도를 지원하는 트랜잭션 이메일 발송에 사용합니다. 받은편지함 관리는 Google Workspace를, 승인할 콘텐츠 작성은 Enterprise Newsletter를 사용합니다."
   },
   "compatibility": {
-    "openclaw": ">=2026.4.0",
-    "platforms": [
-      "linux",
-      "macos"
-    ]
+    "openclaw": ">=2026.4.0"
   },
   "safety": {
     "risk": "externally-visible",
@@ -19,7 +15,7 @@
   },
   "linkedHarness": {
     "id": "resend-email",
-    "version": "0.1.8"
+    "version": "0.1.9"
   },
   "descriptionSource": "skill-frontmatter"
 }
