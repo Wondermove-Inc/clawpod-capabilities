@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-VERSION = "0.1.9"
+VERSION = "0.1.10"
 SCHEMA = "1.0"
 DEFAULT_BASE = "https://api.resend.com"
 MAX_RECIPIENTS = 1000
@@ -18,6 +18,10 @@ SECRET_KEYS = {"authorization", "api_key", "apikey", "token", "secret", "credent
 SECRET_RE = re.compile(r"(?i)(bearer\s+\S+|re_[A-Za-z0-9_-]{8,})")
 EMAIL_RE = re.compile(r"^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$")
 ONBOARDING_STATE_FIELDS = {"provider_accepted", "message_id", "accepted_at", "sender_domain", "test_recipient_sha256"}
+TEST_SENDER_DOMAIN = "resend.dev"
+TEST_SENDER = "onboarding@resend.dev"
+TEST_RECIPIENT = "delivered@resend.dev"
+TEST_MODE_REACH = "the Resend account owner's own email address and resend.dev test addresses (delivered@, bounced@, complained@resend.dev)"
 
 class HarnessError(Exception):
     def __init__(self, code: str, message: str, *, retryable: bool = False, status: int | None = None, retry_after: float | None = None):
@@ -71,16 +75,24 @@ class Client:
                 with urllib.request.urlopen(req,timeout=self.timeout) as response:
                     raw=response.read(); return (json.loads(raw) if raw else {},attempt+1,None)
             except urllib.error.HTTPError as exc:
-                exc.read(); retry_after=parse_retry_after(exc.headers.get("Retry-After"))
-                message="Resend API request failed"
+                detail=provider_error(exc.read()); retry_after=parse_retry_after(exc.headers.get("Retry-After"))
+                message="Resend API request failed"+(f": {detail}" if detail else "")
                 retryable=exc.code==429 or exc.code>=500
                 if retryable and attempt<self.retries:
                     time.sleep(min(retry_after if retry_after is not None else .25*(2**attempt),2)); continue
-                raise HarnessError("rate_limited" if exc.code==429 else "backend_failure",message,retryable=retryable,status=exc.code,retry_after=retry_after)
+                code="rate_limited" if exc.code==429 else "unauthorized" if exc.code==401 else "provider_rejected" if 400<=exc.code<500 else "backend_failure"
+                raise HarnessError(code,message,retryable=retryable,status=exc.code,retry_after=retry_after)
             except (urllib.error.URLError,TimeoutError) as exc:
                 if attempt<self.retries: time.sleep(.1*(2**attempt)); continue
                 raise HarnessError("transport_failure",f"Resend API unavailable: {exc}",retryable=True)
         raise AssertionError
+
+def provider_error(raw: bytes) -> str:
+    try: body=json.loads(raw.decode("utf-8","replace"))
+    except (ValueError,AttributeError): return ""
+    if not isinstance(body,dict): return ""
+    parts=[str(body[k]) for k in ("name","message") if isinstance(body.get(k),str) and body[k]]
+    return SECRET_RE.sub("[REDACTED]"," - ".join(parts))[:300]
 
 def parse_retry_after(value: str | None) -> float | None:
     if value is None: return None
@@ -115,6 +127,9 @@ def message_from_args(a, recipient: str | None = None) -> dict:
     return msg
 
 def domain_of(address: str) -> str: return address.rsplit("@",1)[1].rstrip(">").lower()
+
+def sender_mode(address: str) -> str:
+    return "test" if domain_of(address)==TEST_SENDER_DOMAIN else "domain"
 
 def private_state_path(raw: str, *, may_be_missing: bool) -> Path:
     path=Path(raw).expanduser()
@@ -164,7 +179,8 @@ def onboarding_status(state_path: str | None) -> dict:
     connected=bool(os.environ.get("RESEND_API_KEY"))
     state=read_onboarding_state(state_path)
     complete=connected and state is not None
-    return {"state":"onboarding_complete" if complete else "connected_not_verified" if connected else "installed_but_unconnected","onboarding":"onboarding_complete" if complete else "onboarding_incomplete","credential_available":connected,"provider_test_accepted":bool(state),"delivery_confirmed":False}
+    mode=None if not state else "test" if state["sender_domain"]==TEST_SENDER_DOMAIN else "domain"
+    return {"state":"onboarding_complete" if complete else "connected_not_verified" if connected else "installed_but_unconnected","onboarding":"onboarding_complete" if complete else "onboarding_incomplete","credential_available":connected,"provider_test_accepted":bool(state),"sender_mode":mode,"can_send_to_anyone":mode=="domain","delivery_confirmed":False}
 
 def preview_data(msg: dict, count: int) -> dict:
     safe={k:v for k,v in msg.items() if k not in {"text","html","attachments"}}
@@ -172,17 +188,28 @@ def preview_data(msg: dict, count: int) -> dict:
     return {"authorized":True,"recipient_count":count,"message":safe,"intent_digest":digest(msg)}
 
 def verified_sender(client: Client, msg: dict) -> int:
+    if sender_mode(msg["from"])=="test": return 0
     domains,attempts,_=client.request("GET","/domains")
     items=domains.get("data",domains if isinstance(domains,list) else [])
     sender_domain=domain_of(msg["from"])
     if not any(str(x.get("name","")).lower()==sender_domain and x.get("status")=="verified" for x in items):
-        raise HarnessError("sender_not_ready","sender domain is not verified")
+        raise HarnessError("sender_not_ready",f"sender domain is not verified in this Resend account; verify it in Resend, or use {TEST_SENDER} to test (reaches only {TEST_MODE_REACH})")
     return attempts
+
+def explain_test_rejection(exc: HarnessError, msg: dict) -> HarnessError:
+    if exc.code=="provider_rejected" and sender_mode(msg["from"])=="test":
+        return HarnessError("test_recipient_restricted",f"{TEST_SENDER} can only reach {TEST_MODE_REACH}; verify a sending domain in Resend to email anyone else ({exc})",status=exc.status)
+    return exc
+
+def post_email(client: Client, msg: dict, key: str) -> tuple[dict,int]:
+    try: result,attempts,_=client.request("POST","/emails",msg,key)
+    except HarnessError as exc: raise explain_test_rejection(exc,msg) from None
+    return result,attempts
 
 def command(a) -> dict:
     if a.command=="onboarding":
         data=onboarding_status(a.state)
-        data.update({"next":["capture any supplied key immediately into owner-only memory_secret storage without repeating it","select the authorized Resend pointer from the safe secret catalog","pass the identical secretRefs mapping {RESEND_API_KEY: pointerId} to Gateway prepare and run","run verify, then sender.readiness with the intended sender address","only then ask for one test recipient and run onboarding.test"],"secret_handoff":{"required":not data["credential_available"],"source":"Room, message, or an existing owner-authorized credential","storage":"memory_secret","owner_only":True,"environment":"RESEND_API_KEY","gateway_parameter":"secretRefs","per_run_binding":True,"prepare_run_binding_must_match":True,"environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_requirement":"Live sends fail closed unless the sender domain is verified by Resend."})
+        data.update({"next":["capture any supplied key immediately into owner-only memory_secret storage without repeating it","select the authorized Resend pointer from the safe secret catalog","pass the identical secretRefs mapping {RESEND_API_KEY: pointerId} to Gateway prepare and run","run verify, then sender.readiness with the intended sender address","no verified domain yet: run onboarding.test with --from onboarding@resend.dev --to delivered@resend.dev (no user input needed)","verified domain: run onboarding.test with the real sender and the owner's address"],"secret_handoff":{"required":not data["credential_available"],"source":"Room, message, or an existing owner-authorized credential","storage":"memory_secret","owner_only":True,"environment":"RESEND_API_KEY","gateway_parameter":"secretRefs","per_run_binding":True,"prepare_run_binding_must_match":True,"environment_injection_only":True,"argument_allowed":False,"plaintext_persistence_allowed":False,"plaintext_output_allowed":False,"protected_ui_required":False,"retain":"safe pointer metadata only"},"send_defaults":{"single":True,"bulk":True,"attachments":True,"recipient_domains":"any syntactically valid domain","user_configured_send_limits":False},"sender_modes":{"domain":"any address at a domain verified in this Resend account; reaches anyone","test":f"{TEST_SENDER}; no domain needed; reaches only {TEST_MODE_REACH}"}})
         return output(a.command,True,data=data)
     if a.command=="status":
         data=onboarding_status(a.state); data.update({"persistent_policy_required":False,"version":VERSION})
@@ -197,8 +224,11 @@ def command(a) -> dict:
         data={"domains":ready,"all_ready":bool(ready) and all(x["ready"] for x in ready)}
         if a.command=="sender.readiness":
             sender_domain=domain_of(email(a.from_address.rsplit("<",1)[-1].rstrip(">"),"from"))
-            match=next((x for x in ready if x["name"]==sender_domain),None)
-            data={"sender_domain":sender_domain,"ready":bool(match and match["ready"]),"domain":match}
+            if sender_domain==TEST_SENDER_DOMAIN:
+                data={"sender_domain":sender_domain,"ready":True,"mode":"test","can_send_to_anyone":False,"reach":TEST_MODE_REACH,"verified_domains":[x["name"] for x in ready if x["ready"]]}
+            else:
+                match=next((x for x in ready if x["name"]==sender_domain),None)
+                data={"sender_domain":sender_domain,"ready":bool(match and match["ready"]),"mode":"domain","can_send_to_anyone":bool(match and match["ready"]),"domain":match}
         return output(a.command,True,data=data,retry={"attempts":attempts,"retryable":False,"retry_after_seconds":None})
     if a.command=="onboarding.test":
         sender=email(a.from_address.rsplit("<",1)[-1].rstrip(">"),"from")
@@ -210,20 +240,21 @@ def command(a) -> dict:
         prior=read_onboarding_state(a.state)
         if prior and prior["sender_domain"]==domain_of(sender) and prior["test_recipient_sha256"]==recipient_hash:
             return output(a.command,True,data={"provider_accepted":True,"message_id":prior["message_id"],"accepted_at":prior["accepted_at"],"sender_domain":prior["sender_domain"],"test_recipient_sha256":recipient_hash,"idempotent":True,"delivery_confirmed":False,"meaning":"Resend previously accepted this test submission; inbox delivery is not confirmed."},retry={"attempts":readiness_attempts,"retryable":False,"retry_after_seconds":None})
-        result,attempts,_=client.request("POST","/emails",msg,idem)
+        result,attempts=post_email(client,msg,idem)
         message_id=result.get("id")
         if not isinstance(message_id,str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,200}",message_id): raise HarnessError("backend_failure","Resend did not return a safe message id for the accepted submission")
         accepted_at=datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00","Z")
         state={"provider_accepted":True,"message_id":message_id,"accepted_at":accepted_at,"sender_domain":domain_of(sender),"test_recipient_sha256":recipient_hash}
         write_onboarding_state(a.state,state)
-        return output(a.command,True,data={**state,"idempotent":False,"delivery_confirmed":False,"meaning":"Resend accepted the test message for submission; inbox delivery is not confirmed."},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
+        return output(a.command,True,data={**state,"sender_mode":sender_mode(sender),"idempotent":False,"delivery_confirmed":False,"meaning":"Resend accepted the test message for submission; inbox delivery is not confirmed."},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
     if a.command in {"preview","send"}:
         msg=message_from_args(a); preview=preview_data(msg,len(msg["to"]))
         if a.command=="preview" or a.dry_run: return output(a.command,True,data={"dry_run":True,"preview":preview})
         readiness_attempts=verified_sender(client,msg)
         key=a.idempotency_key or preview["intent_digest"]
-        result,attempts,_=client.request("POST","/emails",msg,key)
-        return output(a.command,True,data={"id":result.get("id"),"idempotency_key":key,"preview":preview,"sender_verified":True},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
+        result,attempts=post_email(client,msg,key)
+        mode=sender_mode(msg["from"])
+        return output(a.command,True,data={"id":result.get("id"),"idempotency_key":key,"preview":preview,"sender_mode":mode,"sender_verified":mode=="domain"},effects="email_submitted",retry={"attempts":readiness_attempts+attempts,"retryable":False,"retry_after_seconds":None})
     if a.command=="bulk.send":
         recipients=list(dict.fromkeys(emails(a.to,"to",MAX_RECIPIENTS)))
         if not recipients: raise HarnessError("invalid_input","at least one recipient is required")
@@ -234,7 +265,7 @@ def command(a) -> dict:
         def deliver(index_address):
             index,address=index_address; msg=message_from_args(a,address); key=f"{base_key}:{digest(address)[:16]}"
             try:
-                result,attempts,_=client.request("POST","/emails",msg,key); return {"recipient":address,"ok":True,"id":result.get("id"),"idempotency_key":key,"attempts":attempts}
+                result,attempts=post_email(client,msg,key); return {"recipient":address,"ok":True,"id":result.get("id"),"idempotency_key":key,"attempts":attempts}
             except HarnessError as exc:
                 return {"recipient":address,"ok":False,"error":{"code":exc.code,"message":str(exc),"http_status":exc.status},"idempotency_key":key,"retry_safe":bool(exc.retryable),"retry_after_seconds":exc.retry_after}
         results=[]
@@ -248,7 +279,7 @@ def command(a) -> dict:
             # Unknown completion state: surface failure and rely on stable idempotency keys.
             raise
         results.sort(key=lambda x:recipients.index(x["recipient"])); failed=[x for x in results if not x["ok"]]
-        data={"submitted":len(results)-len(failed),"failed":len(failed),"partial_failure":bool(failed) and len(failed)<len(results),"retry_safe":all(x.get("retry_safe",True) for x in failed),"idempotency_key":base_key,"results":results}
+        data={"sender_mode":sender_mode(sample["from"]),"submitted":len(results)-len(failed),"failed":len(failed),"partial_failure":bool(failed) and len(failed)<len(results),"retry_safe":all(x.get("retry_safe",True) for x in failed),"idempotency_key":base_key,"results":results}
         return output(a.command,not failed,data=data,effects="partial_email_submission" if failed else "emails_submitted")
     raise HarnessError("invalid_input","unknown command")
 

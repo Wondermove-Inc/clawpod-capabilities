@@ -769,7 +769,7 @@
     {
       "id": "resend-email",
       "type": "skill",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
       "path": "skills/resend-email",
       "compatibility": {
@@ -782,7 +782,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "9ab8fd488fa5b9664a81cbf9951be8756385c09d37c332b1a79937d494e98d3e"
+          "sha256": "0d13c8620344edf2d01a8efc251ebc3f08c92b4fecbd1116f392129cc775c70b"
         }
       ],
       "descriptionI18n": {
@@ -791,7 +791,7 @@
       },
       "linkedHarness": {
         "id": "resend-email",
-        "version": "0.1.9"
+        "version": "0.1.10"
       }
     },
     {
@@ -1801,7 +1801,7 @@
     {
       "id": "resend-email",
       "type": "harness",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "description": "Guarded Resend email with per-run Gateway memory-secret injection, protected onboarding, verified senders, previews, and retry-safe delivery.",
       "path": "harnesses/resend-email",
       "compatibility": {
@@ -1822,15 +1822,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "869586390e03efa924e6c2276f48da2527f075bfebb5cd333551e03f71a45b7e"
+          "sha256": "b1732c4926e6bfd9c0bbe072cc657e9239bfbe9561a2b1a18a9e4e0c4da6aa92"
         },
         {
           "path": "resend_email.py",
-          "sha256": "9da5f1558f8a952112ecb0700251dfc52357e941e3c23e0672ae19a32f265117"
+          "sha256": "af80e23b0c1a2312deb6cfca6328be973c85a62ed51851818f38ad9665c79995"
         },
         {
           "path": "scripts/generate_manifest.py",
-          "sha256": "235b784ebefd9a7c373d623458b0a3662b9c3d7bea8cec19ed62d4e2e5feacbc"
+          "sha256": "d318aa170f2a474bea95ca9589837025f05c6fc6530a51514cffbbed6f36e436"
         }
       ],
       "descriptionI18n": {
