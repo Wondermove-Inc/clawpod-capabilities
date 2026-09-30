@@ -5,16 +5,11 @@
     {
       "id": "artifact-design",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "darwin",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -62,16 +57,11 @@
     {
       "id": "atlassian",
       "type": "skill",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "description": "Use for Jira or Confluence issues, projects, pages, spaces, comments, or attachments that need typed reads or guarded changes; choose GitHub for repository work, and compose with enterprise-newsletter when these sources feed a brief.",
       "path": "skills/atlassian",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -101,21 +91,17 @@
       },
       "linkedHarness": {
         "id": "atlassian",
-        "version": "0.3.6"
+        "version": "0.3.7"
       }
     },
     {
       "id": "claude-design",
       "type": "skill",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "skills/claude-design",
       "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.11"
       },
       "safety": {
         "risk": "credential-related",
@@ -149,22 +135,17 @@
       },
       "linkedHarness": {
         "id": "claude-design",
-        "version": "0.4.3"
+        "version": "0.4.4"
       }
     },
     {
       "id": "clawpod-capability-registry",
       "type": "skill",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "description": "Use to search, inspect, install, validate, update, or roll back ClawPod capabilities and activate registry-first WORKFLOW policy; it manages capability packages rather than performing their domain work, so route onward after selection.",
       "path": "skills/clawpod-capability-registry",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -182,20 +163,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-capability-registry",
-        "version": "0.3.6"
+        "version": "0.3.7"
       }
     },
     {
       "id": "clawpod-cloud-webhooks",
       "type": "skill",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "description": "Use to onboard, inspect, audit, preview, change, or verify ClawPod Cloud webhook sources, playbooks, rules, and events; it does not host arbitrary webhooks, while Quick Tunnel can separately expose a temporary local preview.",
       "path": "skills/clawpod-cloud-webhooks",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -217,21 +195,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-cloud-webhooks",
-        "version": "0.2.7"
+        "version": "0.2.8"
       }
     },
     {
       "id": "clawpod-image-studio",
       "type": "skill",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "description": "Use to generate, edit, compare, inspect, or QA images with OpenAI, Vertex, BFL, or Recraft and manage jobs and artifacts; send assets to Claude Design or Video Studio instead of building decks or videos here.",
       "path": "skills/clawpod-image-studio",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -240,7 +214,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2f87515b60f6eff04d1e51eddbf176fee3eb413d486f4a423c41315bdaee823b"
+          "sha256": "0da1613d4b49ec50590293279cb0f02b3499750ef44b4f5422e89059e76f4fbb"
         },
         {
           "path": "references/onboarding.md",
@@ -265,22 +239,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-image-studio",
-        "version": "0.4.4"
+        "version": "0.4.5"
       }
     },
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.7.5",
+      "version": "0.7.6",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
-        "openclaw": "2026.4.11",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": "2026.4.11"
       },
       "safety": {
         "risk": "credential-related",
@@ -297,7 +266,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "ab33bfc2e6f9ec8e7fbcadea9ace6057cdc0c429f0e992bf08dc7ba19e7e756d"
+          "sha256": "45d15f934aa34bb56999b8fa1abb2ddc53c2ed8a79f61ea6681090db91a61983"
         }
       ],
       "descriptionI18n": {
@@ -306,20 +275,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.7.5"
+        "version": "0.7.6"
       }
     },
     {
       "id": "clawpod-ocr",
       "type": "skill",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Use to extract Korean or English text from bounded PDFs and images, inspect or export OCR results, create comparison DOCX reports, or apply approved Ollama correction; it does not edit documents, and Verified Research verifies claims.",
       "path": "skills/clawpod-ocr",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -353,22 +319,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-ocr",
-        "version": "0.3.5"
+        "version": "0.3.6"
       }
     },
     {
       "id": "clawpod-org-operations",
       "type": "skill",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "description": "Use when coordinating organizational handoffs, delegation, peer help, reports, reviews, approvals, escalations, follow-ups, incidents, or closure across agents and roles. Can select evidence-backed common, Engineering, SOC/CSIRT, or SRE templates and route shared work through the task service designated by the applicable WORKFLOW.md. Keep Workboard agent-local; use the capability registry for package lifecycle.",
       "path": "skills/clawpod-org-operations",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "darwin",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "read-only",
@@ -412,15 +373,11 @@
     {
       "id": "clawpod-video-studio",
       "type": "skill",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -462,20 +419,17 @@
       },
       "linkedHarness": {
         "id": "clawpod-video-studio",
-        "version": "0.2.4"
+        "version": "0.2.5"
       }
     },
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "skill",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Use to preflight, start, inspect, or stop a TTL-bounded accountless Cloudflare Quick Tunnel for a loopback-only local preview; pair it with a local server, never production hosting, named tunnels, custom domains, or persistent exposure.",
       "path": "skills/cloudflare-quick-tunnel-preview",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -493,21 +447,17 @@
       },
       "linkedHarness": {
         "id": "cloudflare-quick-tunnel-preview",
-        "version": "0.1.6"
+        "version": "0.1.7"
       }
     },
     {
       "id": "enterprise-newsletter",
       "type": "skill",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
       "path": "skills/enterprise-newsletter",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -516,7 +466,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "af225c37a9a1ce67e29288586943dcad88d6fee38bc7e2c52c05314198377f0b"
+          "sha256": "7e25ecee89215a7e1289d574d59caa05569a1fce4b792c4d193e37b845c5f4a8"
         },
         {
           "path": "assets/enterprise-dark-v1.html",
@@ -541,21 +491,17 @@
       },
       "linkedHarness": {
         "id": "enterprise-newsletter",
-        "version": "0.1.5"
+        "version": "0.1.6"
       }
     },
     {
       "id": "github",
       "type": "skill",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Use for guarded GitHub repository, issue, pull-request, Actions-run, release, branch-push, or bounded API operations through gh; choose Atlassian for Jira and Project Development for durable coding-agent orchestration.",
       "path": "skills/github",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -564,7 +510,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "31caf2bfbc93c21321874e1f09a68d274ccb740e83e1cd0102a3ac87fe5722f7"
+          "sha256": "3d0c87765848ade58c0309a1994130405027ec977221921882d6c8841bdf6af4"
         },
         {
           "path": "references/onboarding.md",
@@ -581,22 +527,17 @@
       },
       "linkedHarness": {
         "id": "github",
-        "version": "0.3.4"
+        "version": "0.3.5"
       }
     },
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -626,20 +567,17 @@
       },
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.4.3"
+        "version": "0.4.4"
       }
     },
     {
       "id": "hwp-desktop",
       "type": "skill",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "description": "Use for opening, editing, saving, and exporting HWP/HWPX files on Linux with HOP through the Compute tool; use clawpod-ocr only for OCR.",
       "path": "skills/hwp-desktop",
       "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.11"
       },
       "safety": {
         "risk": "destructive",
@@ -671,16 +609,11 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.11.5",
+      "version": "0.11.6",
       "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
       "path": "skills/memory-graph",
       "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.11"
       },
       "safety": {
         "risk": "write-safe",
@@ -698,22 +631,17 @@
       },
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.11.5"
+        "version": "0.11.6"
       }
     },
     {
       "id": "notion",
       "type": "skill",
-      "version": "0.1.12",
+      "version": "0.1.13",
       "description": "Use to onboard or perform guarded reads and supported writes for Notion pages, blocks, data sources, comments, files, users, and webhooks; choose another platform for non-Notion documents and Verified Research for sourced claims.",
       "path": "skills/notion",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -739,21 +667,17 @@
       },
       "linkedHarness": {
         "id": "notion",
-        "version": "0.1.11"
+        "version": "0.1.12"
       }
     },
     {
       "id": "open-design",
       "type": "skill",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Use when the user asks for a designed deliverable to build, share, and iterate on — a deck, UI prototype, one-pager, or dashboard — living on the team's OpenDesign server as a clickable live-preview link: author the HTML, upload it, hand over the link, revise on feedback, and export HTML/ZIP or import Claude Design zips. Onboards with the server's Base URL and token. Use claude-design for claude.ai canvas editing, artifact-design for in-room artifacts, and Image Studio for stills.",
       "path": "skills/open-design",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -779,20 +703,17 @@
       },
       "linkedHarness": {
         "id": "open-design",
-        "version": "0.2.2"
+        "version": "0.2.3"
       }
     },
     {
       "id": "ops-troubleshooting",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
       "path": "skills/ops-troubleshooting",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "destructive",
@@ -842,21 +763,17 @@
       },
       "linkedHarness": {
         "id": "ops-troubleshooting",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
       "id": "resend-email",
       "type": "skill",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Use to onboard Resend, verify senders, preview messages, attach files, or deliver transactional email retry-safely; use Google Workspace for inbox management and Enterprise Newsletter to compose approved content.",
       "path": "skills/resend-email",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -865,7 +782,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "dacebe13cfc35fbb124641b28f9d4f9c6f7efb845c966f3afe6d8ca27af113b9"
+          "sha256": "9ab8fd488fa5b9664a81cbf9951be8756385c09d37c332b1a79937d494e98d3e"
         }
       ],
       "descriptionI18n": {
@@ -874,22 +791,17 @@
       },
       "linkedHarness": {
         "id": "resend-email",
-        "version": "0.1.8"
+        "version": "0.1.9"
       }
     },
     {
       "id": "soc-event-correlation",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
       "path": "skills/soc-event-correlation",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "darwin",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "read-only",
@@ -937,14 +849,11 @@
     {
       "id": "synology-smb-storage",
       "type": "skill",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Use to onboard, discover, preview, mount, restore, or unmount Synology SMB shares and enforce artifact layout or WORKFLOW policy; it is not cloud object storage or general NAS administration, but can store capability outputs.",
       "path": "skills/synology-smb-storage",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -966,22 +875,17 @@
       },
       "linkedHarness": {
         "id": "synology-smb-storage",
-        "version": "0.1.7"
+        "version": "0.1.8"
       }
     },
     {
       "id": "typesafe-ai",
       "type": "skill",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "description": "Must call before selection, classification, or decision-making. Compare per-choice probabilities. Use the default model for simple responses and command execution.",
       "path": "skills/typesafe-ai",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1001,16 +905,11 @@
     {
       "id": "verified-research",
       "type": "skill",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Use when factual claims need citations, cross-checking, contradiction handling, confidence, or evidence bundles; skip unsupported browsing, brainstorming, and pure editing, and compose with YouTube Evidence Analysis for videos.",
       "path": "skills/verified-research",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "read-only",
@@ -1019,7 +918,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "433ba2e3a1448c7173e3b08d01530e10ea0a9d198c6c341691de427f2481895f"
+          "sha256": "586aac25819328b939db543e83a57095b09731ba6a2266c1a8daa4b885811470"
         },
         {
           "path": "references/harness-operations.md",
@@ -1044,22 +943,17 @@
       },
       "linkedHarness": {
         "id": "verified-research",
-        "version": "0.1.7"
+        "version": "0.1.8"
       }
     },
     {
       "id": "youtube-evidence-analysis",
       "type": "skill",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "description": "Use to normalize YouTube references, import supplied transcripts, extract description links, or validate timestamped video evidence; it cannot watch videos or acquire captions, so use Verified Research to check external claims.",
       "path": "skills/youtube-evidence-analysis",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "read-only",
@@ -1068,7 +962,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c8bd83b0b83884d09f34189dd81d2e7a12206b29721d6d21c3f3489f0b4f7bdd"
+          "sha256": "a4b1db2942bdffdc901d5147c175a5b28e1f7c260950b90328bcaf5c44b361e8"
         },
         {
           "path": "references/operations.md",
@@ -1081,22 +975,17 @@
       },
       "linkedHarness": {
         "id": "youtube-evidence-analysis",
-        "version": "0.1.4"
+        "version": "0.1.5"
       }
     },
     {
       "id": "atlassian",
       "type": "harness",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "description": "Execute typed Jira Cloud and Confluence Cloud operations with stable JSON, retries, and guarded mutations.",
       "path": "harnesses/atlassian",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1121,7 +1010,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c91dcf60dc15142a2ab6ffc928aba14ea6b506ef4c2fdc052884a3da15875dfc"
+          "sha256": "455ee74d915f3559aacb54b2f754e495129d53b1bad9e5bcce93c78347a12aca"
         },
         {
           "path": "oauth3lo.py",
@@ -1133,7 +1022,7 @@
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "415a7ffeb3e76b2060fff847882614d819db32037cf847b5e5ad261f3784aa82"
+          "sha256": "54f47e6173003f20a86645ab081f2eba11a862d71860d1a0aafe9670c7b930d2"
         },
         {
           "path": "test_oauth_async.py",
@@ -1148,15 +1037,11 @@
     {
       "id": "claude-design",
       "type": "harness",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Use for Claude Design create/edit/QA and link-first deck handoff: deliver the verified project link so the user exports PPTX/PDF themselves, and run native file export only when a file is explicitly requested. Use Image Studio for stills, and compose with the Compute tool only for native OS dialogs.",
       "path": "harnesses/claude-design",
       "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.11"
       },
       "safety": {
         "risk": "credential-related",
@@ -1165,7 +1050,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "8ee61efc355f595c3d554081ddb26db58e690a0839caf4eb19a8d1a922921760"
+          "sha256": "2b84b16c3cfb3eb927545bd02dc28083bc38909093f9528910ff541f0150c4b5"
         },
         {
           "path": "TEST.md",
@@ -1173,7 +1058,7 @@
         },
         {
           "path": "claude_design.py",
-          "sha256": "9b1aa285bd2e67e7d4aed4f9c69d47a557c9e6633e0a51bca07ff0a902f5ba3e"
+          "sha256": "0b329774440fd1cc5c2a5ab4e14fae0c63150ab1cb5e6492617aff6080b13015"
         },
         {
           "path": "command_contracts.json",
@@ -1181,7 +1066,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "a66840a212142b9ae1ef2afc478de1e0f4459d292d4015cd83e11dc7faa8c728"
+          "sha256": "f6adb88ce6751ceeac4289745a220d239e5dba33cf3cde6e317a435efc736b00"
         },
         {
           "path": "scripts/capture_layout.py",
@@ -1196,16 +1081,11 @@
     {
       "id": "clawpod-capability-registry",
       "type": "harness",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "description": "Canonical capability registry lifecycle with digest verification and transactional registry-first WORKFLOW onboarding.",
       "path": "harnesses/clawpod-capability-registry",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -1222,7 +1102,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "4b8ba9b6722f9df671fb97931fcc605b5b2c0415d5e68a766af25b87919327d1"
+          "sha256": "65986e6c0f33b271fe717c070c644cdbed5925f0af2a5b1484aaf9c6004b8fd4"
         }
       ],
       "descriptionI18n": {
@@ -1233,14 +1113,11 @@
     {
       "id": "clawpod-cloud-webhooks",
       "type": "harness",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "description": "Execute guarded ClawPod Cloud Webhooks operations with protected onboarding, redaction, previews, and verified readback.",
       "path": "harnesses/clawpod-cloud-webhooks",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1249,7 +1126,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "d3810d5644ec25365263299b99aba48426b95711698302efaeea81f4da62731f"
+          "sha256": "96278afdb6cadb9afe2dd92d23d681482db316e879005468c39cc1b9fec9b389"
         },
         {
           "path": "TEST.md",
@@ -1261,7 +1138,7 @@
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__init__.py",
-          "sha256": "5c7ca97c748f7605c52a639da1ec27edccd4ebbd20b7c22784787394fe63fda0"
+          "sha256": "1ba0dbc6adb0b3ed59017c030fcab4296b9e62db28fd8e94cafb63f2c456b0f2"
         },
         {
           "path": "cli_anything/clawpod_cloud_webhooks/__main__.py",
@@ -1301,11 +1178,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "05e4b928c4ccf8996802a349c21dec120b4523521e29fb14a295f9b1954c5ff1"
+          "sha256": "b351e542ddae75beb25aec54d4dea6863b33ac64c9c5e8d6bf588d28954a9615"
         },
         {
           "path": "setup.py",
-          "sha256": "29c30d9e79ba0c386e25c826f0ef33606dff8908624226025f6f3143c2f525ed"
+          "sha256": "795727759bf4c756bace146ae4e69e79639f694164060509133ec4aa96042590"
         }
       ],
       "descriptionI18n": {
@@ -1316,15 +1193,11 @@
     {
       "id": "clawpod-image-studio",
       "type": "harness",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "description": "Guarded detached OpenAI image jobs plus offline professional planning, review, finishing, proofing, and deterministic delivery.",
       "path": "harnesses/clawpod-image-studio",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -1333,11 +1206,11 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "d5925b54e0115767352bb5018c4f8f6802bf13d4655c4253901a3c5d40a276b9"
+          "sha256": "b1309e8ddb20141fbf1fe339ab3f0baf76b2931e966277cf5851ea6573016b0c"
         },
         {
           "path": "clawpod_image_studio.py",
-          "sha256": "1c0a1ca52138e740709f5120b68ae8179847a01376e337d23f1bf5f41405d146"
+          "sha256": "2d09eba5249bba6318c986dcdf27a27317e5ef89cd3bdab9e9f1cf2866f607ca"
         },
         {
           "path": "command_contracts.json",
@@ -1345,7 +1218,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "168b65fa891bc140d8678e7610ad0d930228663545ff40f63abe9774f98d987e"
+          "sha256": "3bbe4484add9e197866bdb8c787956c07356e234e1ffffe1b1f151404fc8fa2c"
         },
         {
           "path": "professional_studio.py",
@@ -1364,16 +1237,11 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.7.5",
+      "version": "0.7.6",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
-        "openclaw": "2026.4.11",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": "2026.4.11"
       },
       "safety": {
         "risk": "credential-related",
@@ -1382,7 +1250,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "c4f293d061e9d94f2578de729cd136d945ba0c9caa72deec8d676933a157a24d"
+          "sha256": "6b1a00c105a0c6c6e60b639380c3a9a53c3afc5b710a4eeca4e32896c407ce12"
         },
         {
           "path": "TEST.md",
@@ -1398,7 +1266,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "b3f3d481c49a375bace36a356c55a609b1dad0f5b45423d7306009b7982b1087"
+          "sha256": "d3d053606886771acb39499edb5a7d01d14d6578a5f16ad390dee4f934dddf91"
         },
         {
           "path": "installer-manifest.json",
@@ -1429,14 +1297,11 @@
     {
       "id": "clawpod-ocr",
       "type": "harness",
-      "version": "0.3.5",
+      "version": "0.3.6",
       "description": "Bounded local Korean and English OCR with enterprise comparison DOCX reports and optional guarded Ollama correction.",
       "path": "harnesses/clawpod-ocr",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1453,7 +1318,7 @@
         },
         {
           "path": "clawpod_ocr.py",
-          "sha256": "58422cf8ebc09142ce34d86d692cc9870c2d8a87d31440e1264811f52b1b9841"
+          "sha256": "3fac146f7709d913b5f3051580ec3e9cdd102f155e03b3a5b17fa364907819c0"
         },
         {
           "path": "command_contracts.json",
@@ -1461,7 +1326,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f29840ee083e7f0b71912b2c69e73c0ea40231dd8ca87b0b4bca6e4e0c316d57"
+          "sha256": "454c9dc0d5b3c7672eae89891b204c683324831cb6a5332f6de8d4e151395f60"
         },
         {
           "path": "templates/enterprise-comparison-template.docx",
@@ -1484,15 +1349,11 @@
     {
       "id": "clawpod-video-studio",
       "type": "harness",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "description": "Execute guarded OpenMontage tools, pipelines, detached jobs, provider verification, media QA, and transactional runtime lifecycle operations.",
       "path": "harnesses/clawpod-video-studio",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1509,7 +1370,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "9eb7bf50ca94a184f55dbb8852236a99f741904cddfab262e65e7468df8a86fc"
+          "sha256": "88350094c6f0d6d54967429546aa0d3106b437bd53a56d554a96ce506ba3b908"
         },
         {
           "path": "command_contracts.json",
@@ -1521,7 +1382,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "153b2d6c3179da1cd2afa86f402c0f79a350fb016e4c1b6ce40258549a81b003"
+          "sha256": "04e94d54864067e88b81f816779c41047580839dc668c68a985953c5769c8415"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",
@@ -1544,14 +1405,11 @@
     {
       "id": "cloudflare-quick-tunnel-preview",
       "type": "harness",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "Create TTL-bounded accountless Cloudflare Quick Tunnel previews for loopback-only local services.",
       "path": "harnesses/cloudflare-quick-tunnel-preview",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -1560,11 +1418,11 @@
       "files": [
         {
           "path": "cloudflare_quick_tunnel_preview.py",
-          "sha256": "9f7c3d38d5a4912f6e276b8cc1572bfd1138b2261b466677c438195b1ee9ee89"
+          "sha256": "403794080af82f4e2dfeffd62c25509d0004e4256a5eaeded167fab875353b95"
         },
         {
           "path": "harness.json",
-          "sha256": "424a8aa86f1b2b21dc403243ab1820e813d03a2b2ce08cb2af0184718b9cdaca"
+          "sha256": "eb6803df6e0b5dce184348921106a37e292cae275832d784f40b19c8012217ed"
         }
       ],
       "descriptionI18n": {
@@ -1575,15 +1433,11 @@
     {
       "id": "enterprise-newsletter",
       "type": "harness",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "Validate complete bounded newsletter JSON, render brand tokens with computed HTML/text parity, inspect, and release-bind locally without credentials, Gateway calls, or email delivery.",
       "path": "harnesses/enterprise-newsletter",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -1592,11 +1446,11 @@
       "files": [
         {
           "path": "enterprise_newsletter.py",
-          "sha256": "0ff70e928a4df8fd4c5a8e2d2d082ccd7295816a3aa814b9991fdbb60318b90e"
+          "sha256": "adacb302b5d20ce1939b4061864065796c30eae79624f99244f4a9a2371c6eb3"
         },
         {
           "path": "harness.json",
-          "sha256": "b911f879b97671662893afda5556e16f6fad7649a95d216116722b975e459267"
+          "sha256": "28fbeaf9cf908711ba83b1ed216a34e49a7c923ae102a32db0b891dcf1a5b80d"
         }
       ],
       "descriptionI18n": {
@@ -1607,15 +1461,11 @@
     {
       "id": "github",
       "type": "harness",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "description": "Execute guarded GitHub operations, including verified repository bootstrap, guarded existing-repository branch push, and release body-only updates, through the real gh CLI.",
       "path": "harnesses/github",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1640,11 +1490,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "05530c6b12b020073943b0f0057bf6f47b96c6977cffd09a629dbae224a2e011"
+          "sha256": "138dca61c2267d1af12988cdada7ac81f01f9784eb32bf34d2a9efe455506474"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "ade05891e1d4f24811249283a380417a306415cb0935449e89ce061b3d1b6e1e"
+          "sha256": "21f89fe3d11b3568f6b75663ebeb7fe0cf7745a3a62e1bf925202aaaba839fdc"
         }
       ],
       "descriptionI18n": {
@@ -1655,16 +1505,11 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1761,7 +1606,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "fa060295e6bfc5476ef6f0de6e4c72c3b9f7a049befd91ce4112d6901b5bf5f5"
+          "sha256": "87de073552563975718bc1eaf6080b9d542d298463557a28b2d3b8afeba63974"
         },
         {
           "path": "scripts/generate_schemas.py",
@@ -1776,16 +1621,11 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.11.5",
+      "version": "0.11.6",
       "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
       "path": "harnesses/memory-graph",
       "compatibility": {
-        "openclaw": ">=2026.4.11",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.11"
       },
       "safety": {
         "risk": "write-safe",
@@ -1794,7 +1634,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "b0d6f346db358331f453521f33e43987d2d483855fbbfacb819d4e44f3caf745"
+          "sha256": "1c69842f1a470417f4ef925eafd1c1b4b572c5003f037857713a1086298c29ca"
         },
         {
           "path": "agent_authoring_driver.py",
@@ -1802,11 +1642,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "5f44f86de138926aa22f5926b34fecdf3a58abf3bdeb38c629a686235fbb6b02"
+          "sha256": "4e6d9d0c82a1b69e3dbedd4bd7b4f9b3063888afd52325a01d03e639ec646e56"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "6ce57f6cc28eb448354b7ba10403923a8525b2283b76c0f9a83de5b6e1391deb"
+          "sha256": "f714b0b6a82756e6f3917d870ec5b25a1c03b1ff135d0e8a4172421060db30ba"
         },
         {
           "path": "ontology.py",
@@ -1841,16 +1681,11 @@
     {
       "id": "notion",
       "type": "harness",
-      "version": "0.1.11",
+      "version": "0.1.12",
       "description": "Execute typed guarded Notion REST operations with protected-secret onboarding, previews, verification, and stable JSON.",
       "path": "harnesses/notion",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -1871,7 +1706,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "1bbd49fc0f2ba1fdc8349c0fd3040db459e40d43e5f423919e04ad85b645b7ac"
+          "sha256": "a2b5a1041034e36f808c1dc5568d7175d012bbe28e95805887fc38b9c5da6110"
         },
         {
           "path": "notion.py",
@@ -1890,15 +1725,11 @@
     {
       "id": "open-design",
       "type": "harness",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Guarded client for a self-hosted OpenDesign daemon: protected token-env onboarding, auth-enforcement health probe, project/file lifecycle with byte-identical upload verification, scoped preview links, HTML/ZIP export, and Claude Design zip import.",
       "path": "harnesses/open-design",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -1907,7 +1738,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "6059864e10f931bda51f78c9e222eece062729798427ea58af3d2e65a8064e46"
+          "sha256": "2654c54c1a3b459c8937ed73ba55af16fed3e2bcba90a63cc7700a851f39183a"
         },
         {
           "path": "TEST.md",
@@ -1915,11 +1746,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "f8e4c49fd7a088642df148d507da6bb50627a1a7e0892c278c5c4b042ac2958f"
+          "sha256": "f8b45ae121ba184e3de3d9e2ad6e96efa4a9822fa2b5660e026b579175f3a1cd"
         },
         {
           "path": "open_design.py",
-          "sha256": "19dec307e6482c089e2cfe8610b78e519fdcd1367c903fb4bb5076d96e879dbe"
+          "sha256": "a97235d18f42b8321d9b5db0be3aab2c60ff7fc6a9c9da2ebcdb7ebcb35d7c6e"
         }
       ],
       "descriptionI18n": {
@@ -1930,14 +1761,11 @@
     {
       "id": "ops-troubleshooting",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Use to troubleshoot Linux host, network, Kubernetes, and security-hygiene problems with bounded read-only diagnostics that record every command as evidence, then run plan-bound remediation (service restart, rollout restart, managed-pod delete) immediately with the plan's own confirmation. Use soc-event-correlation for attack-story analysis, org-operations for incident reporting, and node-host for node onboarding.",
       "path": "harnesses/ops-troubleshooting",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "destructive",
@@ -1946,7 +1774,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "c242cd0f54a77a482a33435094d89acb818d7a75d5db56cc9295e9e11b43373b"
+          "sha256": "ff462a517df3615309f02ff3db7e804f6d171c03b44a0c0e8b1b976df2286f1b"
         },
         {
           "path": "TEST.md",
@@ -1954,11 +1782,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "804f614ffb4a742a832a19ebfc077c25bcc36a7022af965df08db264ac7868d8"
+          "sha256": "a62ce73dcaa5e34cd69a855d4dd900580e69ff1feb9a7588c9318fa39545c478"
         },
         {
           "path": "ops_troubleshooting.py",
-          "sha256": "730b8d204c6edcf598a69ed108cfe47c3dc2716555de8a332b4f5d4b1ff51d17"
+          "sha256": "b2c8db44a23875dcf61b987296407a347ff3cff30388e0887e728621ccbf1c79"
         },
         {
           "path": "scripts/generate_manifest.py",
@@ -1973,15 +1801,11 @@
     {
       "id": "resend-email",
       "type": "harness",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "description": "Guarded Resend email with per-run Gateway memory-secret injection, protected onboarding, verified senders, previews, and retry-safe delivery.",
       "path": "harnesses/resend-email",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "externally-visible",
@@ -1998,15 +1822,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "4deffcfcec150ffc8ce22ac8c49d883a3e0ae81c80531759cdf1edb5a178b54c"
+          "sha256": "869586390e03efa924e6c2276f48da2527f075bfebb5cd333551e03f71a45b7e"
         },
         {
           "path": "resend_email.py",
-          "sha256": "891b0e118ce66f7139d1036e7d9cfe9ef8e0ce2ab3f1a8717b73bc591ca30a48"
+          "sha256": "9da5f1558f8a952112ecb0700251dfc52357e941e3c23e0672ae19a32f265117"
         },
         {
           "path": "scripts/generate_manifest.py",
-          "sha256": "eec27f87a77828e0c984c34f967ccf6e71a82ec3f8f530a069971f17c45d5fbc"
+          "sha256": "235b784ebefd9a7c373d623458b0a3662b9c3d7bea8cec19ed62d4e2e5feacbc"
         }
       ],
       "descriptionI18n": {
@@ -2017,14 +1841,11 @@
     {
       "id": "synology-smb-storage",
       "type": "harness",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Guarded SMB 3.1.1 credentials, discovery, mount lifecycle and recovery, status, layout, and WORKFLOW policy operations for Synology NAS storage.",
       "path": "harnesses/synology-smb-storage",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "credential-related",
@@ -2041,7 +1862,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "af43869ed0b7761d7fcd9653da96009ab8fed2cf772b69b253a4fa6e85cd63e6"
+          "sha256": "4ead95e57f4b3171a56b9be9d047f2cc705a885edf158aa1175b394f16b17c0b"
         },
         {
           "path": "synology_smb_storage.py",
@@ -2056,16 +1877,11 @@
     {
       "id": "verified-research",
       "type": "harness",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "description": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
       "path": "harnesses/verified-research",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -2074,7 +1890,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "7747c237132788ec80247f63fd3bec47911de090a3fbbcc5a9a1b8b7dee3c9d2"
+          "sha256": "e7afe3c786fc3bbbeb52d8eba0250b491ae8442210157256d4edc488a5459567"
         },
         {
           "path": "TEST.md",
@@ -2086,15 +1902,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "16307fc307136bf100e3da6ecbffdbbb19fcb4a6ae18259c13788925d4471895"
+          "sha256": "6abb8371eb76762f78bafab043526631ca759118b5a2c50ed8622c7a4ec2ff39"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "4c15540c88e517877d7c1080c468d3e9f5c4d977ae0dd650f7b0f32cb8a2b3d2"
+          "sha256": "ca4bbaa27151d55dc1d97bb84ffcf302335423538a8a036e0e7c23595d592d9a"
         },
         {
           "path": "verified_research.py",
-          "sha256": "1eb3c7514fd2c32a9d7adbeac137e21023b98514c2f529cad152a956cb451700"
+          "sha256": "a02486105ff7821ea4117bce918a146cabe91335116f75583fb1df9f5140391e"
         }
       ],
       "descriptionI18n": {
@@ -2105,16 +1921,11 @@
     {
       "id": "youtube-evidence-analysis",
       "type": "harness",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "description": "Normalize YouTube references, import explicit transcripts, extract safe links, and validate timestamped evidence deterministically.",
       "path": "harnesses/youtube-evidence-analysis",
       "compatibility": {
-        "openclaw": ">=2026.4.0",
-        "platforms": [
-          "linux",
-          "macos",
-          "windows"
-        ]
+        "openclaw": ">=2026.4.0"
       },
       "safety": {
         "risk": "write-safe",
@@ -2135,15 +1946,15 @@
         },
         {
           "path": "harness.json",
-          "sha256": "633e4ed59b101c2428f1ecbd0750aa4974e32b7d7f3ce87cd5145f70d49f2d12"
+          "sha256": "1a6ee8082b77438c34378ce0268379575949646ec26319ae9476f8008ae5f6a3"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "61f536ddb4eb1557b9ed82e943f0f2eb4b71afec614a159100f653f5ddfad030"
+          "sha256": "1bbe5f0ecbdb94b760f9313901a33cd78ee738b6d48f250ca04a606555fae62b"
         },
         {
           "path": "youtube_evidence_analysis.py",
-          "sha256": "c948dd106a78b4fc34821e034fd620c33f240355c14c46c33c51ee89dd668f46"
+          "sha256": "fb1ad2c14ef4c85a6190a258b63c6ad41fc7bca980848250c747ddd0a54683a0"
         }
       ],
       "descriptionI18n": {
