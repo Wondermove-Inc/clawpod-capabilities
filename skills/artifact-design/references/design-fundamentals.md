@@ -29,7 +29,7 @@ When unsure: a well-composed page is never the wrong answer; an over-designed id
 
 **Avoid the AI-generated look.** Generated design currently clusters around a few looks: warm cream `#F4F1EA` with a serif display and terracotta accent; near-black with a lone acid-green or vermilion pop; broadsheet hairline rules with dense columns; a purple-to-blue gradient hero on white; Inter or Space Grotesk as the "safe" face; emoji as section markers; everything centered; `rounded-lg` everywhere; an accent rail on rounded cards. Where the user pins a direction, follow it exactly — including when they ask for one of these. Where nothing is specified, don't spend that freedom on a default.
 
-**Build cleanly.** Watch for overlapping elements, cascade collisions, silent font fallbacks. Close every non-void element, double-quote attributes, give keyboard focus a visible state, respect `prefers-reduced-motion`. Scripts do not run in the artifact frame, so every graphic is static inline SVG or CSS; keep hand-authored path data short and let `viewBox` scaling do the work.
+**Build cleanly.** Watch for overlapping elements, cascade collisions, silent font fallbacks. Close every non-void element, double-quote attributes, give keyboard focus a visible state, respect `prefers-reduced-motion`. Scripts do not run in static artifact frames; live HTML uses the injected SDK. Use inline SVG or CSS for graphics; keep hand-authored path data short and let `viewBox` scaling do the work.
 
 **Mind selector specificity.** It is easy to generate classes that cancel each other — a type-based `.section` fighting an element-based `.cta` over padding. Structure the cascade so it does not silently undo spacing.
 
@@ -60,3 +60,7 @@ Review the plan against the subject before building. If any part reads like the 
 - Use motion deliberately and only in CSS: a load-in keyframe, hover micro-interactions, ambient atmosphere. One orchestrated moment usually lands harder than scattered effects; sometimes less is more, and extra animation reads as generated. Respect `prefers-reduced-motion`.
 - Match complexity to the vision. Maximalist directions need elaborate execution; minimal directions need precision in spacing, type, and detail.
 - Spend boldness in one place; keep everything around it quiet. If the accent fights the ground, shift it toward analogous or drop saturation rather than replacing it.
+
+## Live dashboards
+
+For changing data, use [live view design and motion](live-motion.md). It covers compact information hierarchy, local language/theme settings, stable rows, purposeful transitions, and reduced-motion verification. Live assets are embedded; the static CDN advice above does not apply.

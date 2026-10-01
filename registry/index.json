@@ -5,7 +5,7 @@
     {
       "id": "artifact-design",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "description": "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
@@ -18,11 +18,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c474d79923378a1b2469a3d4f64f9450fbb999907a3424c19f9634b957f6023b"
+          "sha256": "f075af0b7d0d7f712a34669c8dbb03a98f8bfdf6bc18e4f20ddd0c98c8c11337"
         },
         {
           "path": "references/checklist.md",
-          "sha256": "0ff72305396fe06d46dc04e2ded3b88e1b2f50ef06b4631903feba200e40b67d"
+          "sha256": "cae7c503737836489e9dfe743dac7c509d187c7f6db9fdc8d45cf10a93f3024c"
         },
         {
           "path": "references/choosing-the-type.md",
@@ -30,7 +30,7 @@
         },
         {
           "path": "references/design-fundamentals.md",
-          "sha256": "106d92455a4ecc6d2fbfc551c2ab57660e2521bed646f9793edd56bea7c60b2b"
+          "sha256": "5ef0332253ff2453809127856700e710fc6eddbcb35a73765f2a5248fe2b49a2"
         },
         {
           "path": "references/examples.md",
@@ -42,7 +42,7 @@
         },
         {
           "path": "references/live-artifact/guide.md",
-          "sha256": "b0d8fce94356ab31bd87b32f47675caab4fb13fc04828202f8d20c3e32d7e567"
+          "sha256": "5bf769adfcf059f1921c01b81c0b34b6caa3164b95e609d1270e8f91460de0d7"
         },
         {
           "path": "references/live-artifact/references/contract.md",
@@ -63,6 +63,10 @@
         {
           "path": "references/live-artifact/scripts/check-live-artifact.mjs",
           "sha256": "092bdf89f8ff4906b3b963dec9c5aeb757ad16b36ba9f403a474f49dace01c5f"
+        },
+        {
+          "path": "references/live-motion.md",
+          "sha256": "faefe4511948cd3386087f54e65b8451f4c52b50fe8e810de12b0c29e450944c"
         },
         {
           "path": "references/markdown-craft.md",

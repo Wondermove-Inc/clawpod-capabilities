@@ -67,7 +67,7 @@ Before ending the turn, confirm from runtime evidence, not intent:
 
 ## Live views and language
 
-Use [the live-artifact guide](references/live-artifact/guide.md) for the manifest, data schema versions, SDK, examples, and checker. It shares this skill's design and publishing rules. Live HTML embeds all assets; static HTML CDN guidance does not apply. Live display controls may filter received data but do not grant approval or write capabilities.
+Use [the live-artifact guide](references/live-artifact/guide.md) for the manifest, data schema versions, SDK, examples, and checker. It shares this skill's design and publishing rules. For live dashboards and data-change feedback, read [live view design and motion](references/live-motion.md). It covers compact layouts, settings, stable updates, restrained transitions, and reduced motion without installing additional skills. Live HTML embeds all assets; static HTML CDN guidance does not apply. Live display controls may filter received data but do not grant approval or write capabilities.
 
 Write visible labels, titles, and loading/empty/error/stale states in the user's language. Set `html lang` explicitly. Keep protocol identifiers unchanged. The onboarding view supports 한국어/English switching. Use checklist displayTitle/displayText for the selected locale, then English, then source text.
 

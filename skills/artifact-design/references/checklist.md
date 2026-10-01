@@ -56,3 +56,5 @@ Run this before saving the artifact. Every item is checkable from the content or
 - [ ] Follow [live-artifact](live-artifact/guide.md), run its checker, and verify real sandbox behavior when available.
 - [ ] Declare supported data schema versions and render loading/empty/error/stale states in the user language.
 - [ ] Embed assets; use the SDK without external network or per-frame polling.
+
+- [ ] For animated live updates, follow [live view design and motion](live-motion.md): first/identical snapshots are quiet, real changes are scoped, rapid updates reach the latest value, and reduced motion plus focus/disclosure/scroll state are verified.
