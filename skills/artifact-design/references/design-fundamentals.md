@@ -39,7 +39,7 @@ When unsure: a well-composed page is never the wrong answer; an over-designed id
 
 **Structure is information.** Numbering, eyebrows, dividers, and labels should encode something true about the content. Numbered markers (01 / 02 / 03) belong only on real sequences — a process, a typed timeline — not as decoration.
 
-**When it is a dashboard, not a document.** A status page is scanned, not read top to bottom, so craft shifts from typography to information design. Summary before detail; state encoded in form as well as number — a pill, a chip, a severity stripe. Semantic color (good / warning / critical) is separate from the accent hue. Sparklines and charts get the same care as type: an area fill, a faint grid, an emphasized endpoint — all as inline SVG, since nothing scripted runs. Do not draw controls that cannot work; CSS-only affordances (`<details>`, `:target`) are the only interactive ones.
+**When it is a dashboard, not a document.** A status page is scanned, not read top to bottom, so craft shifts from typography to information design. Summary before detail; state encoded in form as well as number — a pill, a chip, a severity stripe. Semantic color (good / warning / critical) is separate from the accent hue. Sparklines and charts get the same care as type: an area fill, a faint grid, an emphasized endpoint — all as inline SVG. Static HTML has no scripts; live snapshots use [the SDK](live-artifact/guide.md). Do not draw controls that cannot work; Static HTML supports CSS-only affordances (`<details>`, `:target`); live HTML can filter already received data locally.
 
 ## Process
 

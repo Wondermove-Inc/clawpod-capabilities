@@ -1,6 +1,8 @@
-# HTML artifact skeleton
+# Static HTML artifact skeleton
 
 The panel renders `html` artifacts as `<iframe sandbox="" srcDoc={content}>` (verified in `generic-artifact-panel.tsx`). That single line dictates the skeleton:
+
+For live HTML, start from [live-artifact](live-artifact/guide.md) instead.
 
 - **No JavaScript runs.** Do not ship `<script>`; nothing depends on it.
 - **No same-origin.** No `localStorage`, cookies, or fetch.

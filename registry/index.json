@@ -5,8 +5,8 @@
     {
       "id": "artifact-design",
       "type": "skill",
-      "version": "0.1.1",
-      "description": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
+      "version": "0.2.0",
+      "description": "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
         "openclaw": ">=2026.4.0"
@@ -18,27 +18,51 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5a9323fbdc1c93ba8e1b1f316f0dd0ac52682a2d8c6b3a8d559158610bb51356"
+          "sha256": "c474d79923378a1b2469a3d4f64f9450fbb999907a3424c19f9634b957f6023b"
         },
         {
           "path": "references/checklist.md",
-          "sha256": "9306f45c4a11cc3869b5916266e40a5afdfefba21c877d2bb6cb382d8d7bc1c8"
+          "sha256": "0ff72305396fe06d46dc04e2ded3b88e1b2f50ef06b4631903feba200e40b67d"
         },
         {
           "path": "references/choosing-the-type.md",
-          "sha256": "cc0ec47569daa38fae8c6b2c0114b37467247930d0eacb9ff57f30b886819f2d"
+          "sha256": "c1e8a1fed89c8c04f08a21300a7f60e4a50c1a21bc0d576a316027f133823dfa"
         },
         {
           "path": "references/design-fundamentals.md",
-          "sha256": "c425fa1d38a3fd691f05d3b913b5b4afd63e03b90d217f0269d5655363e4a58b"
+          "sha256": "106d92455a4ecc6d2fbfc551c2ab57660e2521bed646f9793edd56bea7c60b2b"
         },
         {
           "path": "references/examples.md",
-          "sha256": "2681c709fb5ccd6ae8661c26492a46465682102f31bb89ad00a20c86e13c0871"
+          "sha256": "505903ea493337f70a89b0b45fedcb6c442d7b891c777ec3a73a8c9bc87eaf09"
         },
         {
           "path": "references/html-skeleton.md",
-          "sha256": "ca84efe62b4a69c9e5479a3493d565b636405115495d414464e2913a89d83dfd"
+          "sha256": "f32395af3279f71faf2eac959643980933060d6d02f3d8dffe5cfa8e37a6e47f"
+        },
+        {
+          "path": "references/live-artifact/guide.md",
+          "sha256": "b0d8fce94356ab31bd87b32f47675caab4fb13fc04828202f8d20c3e32d7e567"
+        },
+        {
+          "path": "references/live-artifact/references/contract.md",
+          "sha256": "a2189b686531ff77a35b164c6c55efc224089bad404b4cf37e003e71dd6ef967"
+        },
+        {
+          "path": "references/live-artifact/references/write-data.md",
+          "sha256": "626688e2fc84b10573ecf506d1d17ee214ec20d91145521e4e9c99e4068f1ec9"
+        },
+        {
+          "path": "references/live-artifact/samples/checklist.html",
+          "sha256": "c34b0842538a768bc5a94e5bfb08a8d1dcfd6a7a4c0c96b72af7e7c452335ea9"
+        },
+        {
+          "path": "references/live-artifact/samples/weather.html",
+          "sha256": "ed9aba486ce3e202d996e16f359ef7b350d30e54832e418d7232995989b8af22"
+        },
+        {
+          "path": "references/live-artifact/scripts/check-live-artifact.mjs",
+          "sha256": "092bdf89f8ff4906b3b963dec9c5aeb757ad16b36ba9f403a474f49dace01c5f"
         },
         {
           "path": "references/markdown-craft.md",
@@ -46,12 +70,12 @@
         },
         {
           "path": "references/publishing-contract.md",
-          "sha256": "28c91582de238134cf5228b7432a7d906b972ef319e17c8960a15fca37d161f5"
+          "sha256": "54d994c3a40c3df095bfbba77c16484f6d1336b531c458e82cfb6594ed844208"
         }
       ],
       "descriptionI18n": {
-        "en": "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video.",
-        "ko": "보고서, 계획, 명세, 메모, 비교표, 대시보드, 한 페이지 문서, 다이어그램, 참고표처럼 다시 열거나 편집·재사용할 가치가 있는 독립적인 결과물을 만듭니다. 글자 위계·색상·레이아웃을 설계하고, 저장 후 artifact_refs로 연결하는 메시지 계약에 따라 Markdown 또는 HTML을 ClawPod 대화방 아티팩트로 게시합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
+        "en": "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
+        "ko": "보고서, 계획, 다이어그램, 비교표, 참고 페이지, 실시간 대시보드 등 다시 열어볼 ClawPod 대화방 아티팩트를 설계하고 게시합니다. 반응형 Markdown·HTML, 시각적 위계, 저장 후 artifact_refs 게시, HTML 재게시 없이 갱신되는 SDK 스냅샷에 사용합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
       }
     },
     {

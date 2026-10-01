@@ -1,5 +1,7 @@
 # Choosing between `markdown` and `html`
 
+The table below describes static HTML. For live snapshots, read [live-artifact](live-artifact/guide.md): inline scripts run through the injected SDK; external assets and network remain blocked.
+
 Both types render inside the same side panel (`generic-artifact-panel.tsx`), but through very different renderers. Pick by what the renderer can do, then design for it.
 
 ## How each type renders (verified)
@@ -35,7 +37,7 @@ Choose **`html`** when:
 - A chart or diagram must be precise and mermaid cannot draw it — author it as inline SVG.
 - A specific visual identity was requested.
 
-Do **not** choose `html` for interactivity: nothing scripted will run. CSS-only affordances (`<details>`, `:hover`, `:target`, CSS counters) are all you have.
+Do **not** choose static `html` for scripted interactivity: nothing scripted will run. CSS-only affordances (`<details>`, `:hover`, `:target`, CSS counters) are all you have.
 
 ## Designing for the surface
 

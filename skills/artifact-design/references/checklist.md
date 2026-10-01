@@ -15,7 +15,7 @@ Run this before saving the artifact. Every item is checkable from the content or
 - [ ] Nothing in the plan is the generic default (cream + serif + terracotta; near-black + acid green; purple-blue gradient hero; Inter/Space Grotesk by reflex; emoji markers; everything centered; rounded cards with accent rails) unless the user asked for it.
 - [ ] Any existing project design system was applied before this Skill's own choices.
 
-## HTML build (sandboxed iframe, no scripts)
+## Static HTML build (sandboxed iframe, no scripts)
 
 - [ ] Complete document; **no `<script>`**; nothing depends on JavaScript, `localStorage`, or fetch.
 - [ ] Fonts from system stacks, `data:`, or `cdn.jsdelivr.net` only — no Google Fonts link. Images from `https:` or `data:` only.
@@ -50,3 +50,9 @@ Run this before saving the artifact. Every item is checkable from the content or
 - [ ] Save returned `201` with `artifact.identifier` / `artifact.version`; send returned success.
 - [ ] `content` of the message is one or two sentences about what the artifact is and what changed; the artifact is not duplicated into it.
 - [ ] WebUI final output is exactly `NO_REPLY`.
+
+## Live HTML
+
+- [ ] Follow [live-artifact](live-artifact/guide.md), run its checker, and verify real sandbox behavior when available.
+- [ ] Declare supported data schema versions and render loading/empty/error/stale states in the user language.
+- [ ] Embed assets; use the SDK without external network or per-frame polling.

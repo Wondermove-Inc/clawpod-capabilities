@@ -1,15 +1,15 @@
 ---
 name: artifact-design
-description: "Use when a reply's output is substantive and self-contained — a report, plan, spec, memo, comparison, dashboard, one-pager, diagram page, or reference sheet — and worth reopening, editing, or reusing. Designs it with real typographic hierarchy, palette, and layout, then publishes it as a ClawPod room artifact (markdown or html) through the save-then-artifact_refs message contract. Use Claude Design for multi-artboard canvases, Image Studio for raster images, Video Studio for video."
+description: "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video."
 ---
 
 # Artifact Design
 
-Turn a substantive answer into a designed, self-contained ClawPod room artifact and publish it the way the runtime actually accepts it. This is a prose-only Skill: it supplies the decision rule, the design method, and the verified publishing contract. It adds no command or renderer — the agent publishes through the same `curl` path it already uses for room replies.
+Turn a substantive answer into a designed, self-contained ClawPod room artifact and publish it the way the runtime actually accepts it. It supplies the design method, publishing contract, and live authoring checker. It adds no platform renderer — the agent publishes through the same `curl` path it already uses for room replies.
 
 Two things must both be true for the work to count as done:
 
-1. The artifact is **designed** for the surface it will render on — a 320–670 px wide panel, HTML in a script-less sandboxed iframe, markdown in the portal's own themed renderer.
+1. The artifact is **designed** for the surface it will render on — a 320–670 px wide panel, static HTML in a script-less iframe or live HTML using the injected SDK, markdown in the portal's own themed renderer.
 2. The artifact is **published as an artifact** — saved with `POST /internal/chat-rooms/:roomId/artifacts`, then attached to the room message as `artifact_refs`. Text markers, fenced blocks, file paths, and `[embed ref=...]` never become artifacts; they render as plain text.
 
 ## Prerequisites
@@ -22,9 +22,9 @@ Two things must both be true for the work to count as done:
 
 1. **Decide whether this output is an artifact.** Do not wait for the user to say "artifact". Publish one when the useful output is substantial, self-contained, and likely to be reused, edited, downloaded, or reopened: documents, plans, specs, reports, deliverable tables, comparisons, decision records, dashboards, one-pagers, reference sheets, diagram pages. Keep short answers, status updates, explanations, casual conversation, and anything ambiguous in plain `content`.
 2. **Read the request and calibrate the treatment** (not whether to design). Most artifacts want a utilitarian treatment: polished hierarchy, considered spacing, a proper palette, no giant hero. Reserve the editorial treatment — an opinionated visual identity with one real aesthetic risk — for pitches, landing-style pages, and anything the user will keep or share. When unsure, a well-composed page is never wrong; an over-designed one sometimes is.
-3. **Choose the type by what each renderer can do** — see [choosing-the-type.md](references/choosing-the-type.md). `markdown` follows the portal theme automatically, renders GFM tables, task lists, and ```mermaid diagrams, and is the right default for prose, runbooks, decision records, and most diagrams. `html` gives full typographic and color control but runs with **no JavaScript**, only OS-level dark mode, and a narrow fixed-height frame; choose it for designed layouts, data-dense tables, custom charts drawn as inline SVG, and anything with a specific visual identity. Only these two types exist.
+3. **Choose the type by what each renderer can do** — see [choosing-the-type.md](references/choosing-the-type.md). `markdown` follows the portal theme automatically, renders GFM tables, task lists, and ```mermaid diagrams, and is the right default for prose, runbooks, decision records, and most diagrams. `html` gives full typographic and color control but static HTML runs with **no JavaScript**, only OS-level dark mode, and a narrow fixed-height frame; choose it for designed layouts, data-dense tables, custom charts drawn as inline SVG, and anything with a specific visual identity. Only these two types exist. For snapshots that update independently of HTML, opt into live mode using [the live-artifact guide](references/live-artifact/guide.md); it is still type `html`. Live mode allows inline scripts through the injected SDK, with no external network, storage, forms, or action APIs.
 4. **Pin the subject and write the design plan** before any code: one concrete subject, its audience, the page's single job; then 4–6 named palette values, 2+ typographic roles with fallback stacks, and a one-sentence layout concept for a ~480 px column. Derive every later decision from that plan. For editorial work, revise any part that reads like the generic default before building. Full method: [design-fundamentals.md](references/design-fundamentals.md).
-5. **Build the content.** HTML starts from [html-skeleton.md](references/html-skeleton.md): a complete self-contained document, single-column mobile-first layout, tokens on `:root` plus a `prefers-color-scheme: dark` override, explicit `body` background, `<style>` placed at the **end of `<body>`** so the card preview shows prose instead of CSS, no `<script>` (it will not run), fonts from system stacks or `cdn.jsdelivr.net` only. Markdown follows [markdown-craft.md](references/markdown-craft.md). Real content throughout, never lorem. Stay within 200,000 characters including data URIs.
+5. **Build the content.** Static HTML starts from [html-skeleton.md](references/html-skeleton.md): a complete self-contained document, single-column mobile-first layout, tokens on `:root` plus a `prefers-color-scheme: dark` override, explicit `body` background, `<style>` placed at the **end of `<body>`** so the card preview shows prose instead of CSS, no `<script>` (it will not run), fonts from system stacks or `cdn.jsdelivr.net` only. Markdown follows [markdown-craft.md](references/markdown-craft.md). Real content throughout, never lorem. Stay within 200,000 characters including data URIs.
 6. **Name it like a product.** `title` is the artifact's name on the card and panel: a short, specific noun phrase (typically two to four words, 1–200 chars), no appended explainer after a dash or colon. `identifier` is a stable slug matching `^[A-Za-z0-9][A-Za-z0-9_.-]*$` (1–120 chars), slugged from the subject; reuse it for revisions of the same deliverable and choose a new one for a distinct deliverable.
 7. **Run the checklist** in [checklist.md](references/checklist.md): renderer constraints, theme scan, overflow, preview text, payload limits.
 8. **Save, then attach.** Write the content to a workspace file, `POST` it to `/internal/chat-rooms/$ROOM_ID/artifacts` with `from_agent_id`, read `artifact.version` from the `201` response, and send the room message with `artifact_refs: [{identifier, version}]` and a one- or two-sentence `content`. Exact commands: [publishing-contract.md](references/publishing-contract.md). Worked payloads, including revisions and the interactive-request case: [examples.md](references/examples.md). Never send `artifacts` and `artifact_refs` in the same message; at most 5 refs per message. Do not author a `preview`.
@@ -52,7 +52,7 @@ Before ending the turn, confirm from runtime evidence, not intent:
 
 - The save response was `201` and returned `artifact.identifier` and `artifact.version`; for a revision the version increased (or stayed equal because the content was unchanged).
 - The message send succeeded with `artifact_refs` carrying exactly that identifier and version.
-- HTML: no `<script>` relied on; every color is defined on `:root` and only redefined under `prefers-color-scheme: dark`; `body` sets a token background; nothing forces horizontal scroll at 320 px; `<style>` sits at the end of `<body>`.
+- Static HTML: no `<script>` relied on; every color is defined on `:root` and only redefined under `prefers-color-scheme: dark`; `body` sets a token background; nothing forces horizontal scroll at 320 px; `<style>` sits at the end of `<body>`.
 - Lengths and counts are within the contract; the WebUI final output is `NO_REPLY`.
 
 ## Failure handling
@@ -62,5 +62,15 @@ Before ending the turn, confirm from runtime evidence, not intent:
 - `409` on save → `GET` the current version, rebase the change, save again with `expectedVersion` = that version.
 - Artifact text unreadable in one theme → a color exists only inside the dark media query, or `body` has no background; fix in tokens and republish under the same identifier.
 - Card preview shows CSS → `<style>` is above the first prose; move it to the end of `<body>`.
-- Interactive behaviour missing → the iframe is sandboxed without scripts; rebuild the behaviour as static content or CSS-only (`<details>`, `:target`, `:hover`), or switch to markdown.
+- Interactive behaviour missing → static HTML has no scripts. Use CSS-only display or markdown; when snapshots actually change, follow [live-artifact](references/live-artifact/guide.md). Never weaken the sandbox.
 - Content over 200,000 characters → remove embedded raster data URIs first (use inline SVG or an `https:` image URL), then split by section into at most five artifacts with distinct identifiers.
+
+## Live views and language
+
+Use [the live-artifact guide](references/live-artifact/guide.md) for the manifest, data schema versions, SDK, examples, and checker. It shares this skill's design and publishing rules. Live HTML embeds all assets; static HTML CDN guidance does not apply. Live display controls may filter received data but do not grant approval or write capabilities.
+
+Write visible labels, titles, and loading/empty/error/stale states in the user's language. Set `html lang` explicitly. Keep protocol identifiers unchanged. The onboarding view supports 한국어/English switching. Use checklist displayTitle/displayText for the selected locale, then English, then source text.
+
+The organization installer already publishes the default onboarding-status card. Tell the user to click the card, or open top-right Workspace → Artifacts. Do not publish another copy. Update progress with `/opt/clawpod/bin/checklist save <candidate.json>`; retry failed sync with `/opt/clawpod/bin/checklist sync`. Follow WORKFLOW.md's compatibility instructions when the command is absent. Do not claim the view updated before sync succeeds.
+
+Room cards open the latest stored version, and open viewers follow new publications. Manual history selection lasts until another publication. Incompatible live HTML stays hidden while the viewer selects an available version or shows the disabled fallback. Do not bump HTML versions for data-only updates.

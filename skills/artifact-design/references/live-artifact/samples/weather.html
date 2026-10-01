@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="clawpod-live" content='{"v":1,"keys":["agent.data"],"schemaVersions":{"agent.data":1}}'><title>Weather</title><style>body{font:16px/1.5 system-ui;padding:20px}#notice{color:#555}</style></head><body><h1>Weather</h1><p id="notice" role="status">Waiting for data.</p><div id="value"></div><script>
+(function () {
+  var notice = document.getElementById('notice');
+  var value = document.getElementById('value');
+  if (!window.clawpod || clawpod.apiVersion !== 1) { notice.textContent = 'Unsupported live API.'; return; }
+  clawpod.ready();
+  clawpod.data.subscribe('agent.data', function (payload, meta) {
+    if (meta.error) {
+      if (['forbidden', 'gone', 'too_large', 'schema_mismatch'].includes(meta.error)) value.textContent = '';
+      notice.textContent = 'Data unavailable: ' + meta.error; return;
+    }
+    if (!payload || typeof payload !== 'object') { notice.textContent = 'Waiting for data.'; return; }
+    notice.textContent = meta.stale ? 'Showing the last known value. Updates are delayed.' : 'Current snapshot, revision ' + meta.revision;
+    value.textContent = String(payload.city || 'Unknown city') + ': ' + (typeof payload.temperatureC === 'number' ? payload.temperatureC + ' °C' : 'Temperature unavailable');
+  });
+})();
+</script></body></html>

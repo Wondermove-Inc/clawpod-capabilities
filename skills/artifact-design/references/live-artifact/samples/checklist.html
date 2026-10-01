@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="clawpod-live" content='{"v":1,"keys":["org-package.checklist"],"schemaVersions":{"org-package.checklist":1}}'><title>Onboarding progress</title><style>body{font:16px/1.5 system-ui;padding:20px}#notice{color:#555}</style></head><body><h1>Onboarding progress</h1><p id="notice" role="status">Waiting for data.</p><div id="value"></div><script>
+(function () {
+  // Set lang to the user's requested locale when authoring; do not infer it from identifiers.
+  var locale = document.documentElement.lang.toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  var labels = locale === 'ko'
+    ? { title: '온보딩 진행 현황', waiting: '진행 상황을 불러오고 있어요.', unsupported: '지원하지 않는 라이브 API입니다.', unavailable: '데이터를 불러올 수 없어요.', stale: '마지막 상태를 표시하고 있어요. 업데이트가 지연되고 있습니다.', current: '최신 진행 상황', checklist: '체크리스트를 기다리고 있어요.' }
+    : { title: 'Onboarding progress', waiting: 'Waiting for data.', unsupported: 'Unsupported live API.', unavailable: 'Data unavailable.', stale: 'Showing the last known value. Updates are delayed.', current: 'Current snapshot', checklist: 'Waiting for checklist.' };
+  var statuses = locale === 'ko' ? { pending: '시작 전', in_progress: '진행 중', completed: '완료', blocked: '진행 불가', skipped: '건너뜀' } : {};
+  document.title = document.querySelector('h1').textContent = labels.title;
+  var notice = document.getElementById('notice');
+  var value = document.getElementById('value');
+  if (!window.clawpod || clawpod.apiVersion !== 1) { notice.textContent = labels.unsupported; return; }
+  clawpod.ready();
+  clawpod.data.subscribe('org-package.checklist', function (payload, meta) {
+    if (meta.error) {
+      if (['forbidden', 'gone', 'too_large', 'schema_mismatch'].includes(meta.error)) value.textContent = '';
+      notice.textContent = labels.unavailable; return;
+    }
+    if (!payload || typeof payload !== 'object') { notice.textContent = labels.waiting; return; }
+    notice.textContent = meta.stale ? labels.stale : labels.current;
+    if (!payload.checklist || !payload.checklist.stages) { notice.textContent = labels.checklist; return; }
+    value.textContent = '';
+    Object.entries(payload.checklist.stages).forEach(function (entry) {
+      var id = entry[0], stage = entry[1];
+      var line = document.createElement('p');
+      line.textContent = ((stage.displayTitle && (stage.displayTitle[locale] || stage.displayTitle.en)) || stage.title || id) + ': ' + (statuses[stage.status] || stage.status);
+      value.appendChild(line);
+    });
+  });
+})();
+</script></body></html>

@@ -102,8 +102,8 @@ Plain text only — no card, no panel, no version. And in the WebUI final text: 
 
 User: "필터 되는 대시보드로 만들어줘".
 
-Scripts do not run in the artifact frame. Say so in one sentence, then deliver the best static version: a summary block, state pills, and CSS-only `<details>` sections per filter value. If real interactivity is required, that is a different capability (a served page or a Claude Design canvas), not a room artifact.
+For a fixed report, use CSS-only `<details>` sections. For a dashboard whose snapshots change, follow [live-artifact](live-artifact/guide.md): filter the received snapshot locally and preserve filter selection across updates. Live mode does not grant forms, approval actions, external network, or data-write APIs.
 
 ## 6. Splitting an over-long deliverable
 
-A 320,000-character page exceeds the 200,000 limit. Remove embedded raster data URIs first (inline SVG or an `https:` image URL). If still too long, split by section into at most five artifacts with distinct identifiers (`audit-2026q3-part-1`, `…-part-2`), each a complete self-contained document, save each, and send one message whose `artifact_refs` lists them in reading order with a body that says how they relate.
+A 320,000-character page exceeds the 200,000 limit. Remove embedded raster data URIs first (inline SVG, or an `https:` image URL for static HTML only). If still too long, split by section into at most five artifacts with distinct identifiers (`audit-2026q3-part-1`, `…-part-2`), each a complete self-contained document, save each, and send one message whose `artifact_refs` lists them in reading order with a body that says how they relate.
