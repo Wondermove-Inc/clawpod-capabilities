@@ -18,61 +18,64 @@ Artifacts are published **only** as structured fields on the outgoing `/internal
 
 The built-in agent guidance (migration 233) supersedes the earlier inline example: **artifact content must be saved first, and room messages carry only `artifact_refs` pointers.**
 
-### Step 1 — write the deliverable to a workspace file
+### Save the file, then publish its returned pointer
 
-`/workspace/<slug>.html` or `/workspace/<slug>.md`.
-
-### Step 2 — save it for an exact version pointer
+Set `ROOM_ID`, `ARTIFACT_FILE`, `ARTIFACT_IDENTIFIER`, `ARTIFACT_TITLE`, `ARTIFACT_TYPE` (`html` or `markdown`), and `MESSAGE_CONTENT` (in the user's language) for the current authorized room. Runtime provides `ADMIN_API_URL`, `GATEWAY_TOKEN`, and `AGENT_ID`. Export those task variables so Python sees them. For an update, export `EXPECTED_VERSION` from the last read; omit it for a first save.
 
 ```bash
-python3 - <<'PY' | curl -s -X POST "http://admin-api:3000/internal/chat-rooms/$ROOM_ID/artifacts" \
-  -H "Content-Type: application/json" \
-  -H "X-Gateway-Token: $GATEWAY_TOKEN" \
-  --data-binary @-
+set -euo pipefail
+: "${ADMIN_API_URL:?}" "${GATEWAY_TOKEN:?}" "${AGENT_ID:?}" "${ROOM_ID:?}"
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+python3 - <<'PYTHON' > "$work/save.json"
 import json, os
 payload = {
     "from_agent_id": os.environ["AGENT_ID"],
-    "identifier": "q3-pricing-review",
-    "type": "html",
-    "title": "Q3 Pricing Review",
-    "content": open("/workspace/q3-pricing-review.html", encoding="utf-8").read(),
+    "identifier": os.environ["ARTIFACT_IDENTIFIER"],
+    "type": os.environ["ARTIFACT_TYPE"],
+    "title": os.environ["ARTIFACT_TITLE"],
+    "content": open(os.environ["ARTIFACT_FILE"], encoding="utf-8").read(),
 }
-# First save of a new identifier: omit expectedVersion (or set 0).
-# Later save of the same identifier: set it to the exact version you stored
-# from the previous save response, so a stale write is rejected with 409.
-# payload["expectedVersion"] = 1
+if os.environ.get("EXPECTED_VERSION"):
+    payload["expectedVersion"] = int(os.environ["EXPECTED_VERSION"])
 print(json.dumps(payload, ensure_ascii=False))
-PY
+PYTHON
+curl --fail-with-body --silent --show-error --request POST \
+  "${ADMIN_API_URL}/internal/chat-rooms/${ROOM_ID}/artifacts" \
+  --header "X-Gateway-Token: ${GATEWAY_TOKEN}" \
+  --header 'Content-Type: application/json' \
+  --data-binary @"$work/save.json" > "$work/saved.json"
+python3 - "$work/saved.json" <<'PYTHON' > "$work/message.json"
+import json, os, sys
+artifact = json.load(open(sys.argv[1], encoding="utf-8"))["artifact"]
+if artifact["identifier"] != os.environ["ARTIFACT_IDENTIFIER"] or type(artifact["version"]) is not int or artifact["version"] < 1:
+    raise SystemExit("Invalid artifact save response")
+print(json.dumps({
+    "from_agent_id": os.environ["AGENT_ID"],
+    "room_id": int(os.environ["ROOM_ID"]),
+    "content": os.environ["MESSAGE_CONTENT"],
+    "artifact_refs": [{"identifier": artifact["identifier"], "version": artifact["version"]}],
+}, ensure_ascii=False))
+PYTHON
+curl --fail-with-body --silent --show-error --request POST \
+  "${ADMIN_API_URL}/internal/messages" \
+  --header "X-Gateway-Token: ${GATEWAY_TOKEN}" \
+  --header 'Content-Type: application/json' \
+  --data-binary @"$work/message.json"
 ```
 
-Response `201`:
+The save response is `201 {"artifact": {"identifier": "…", "version": 1, …}}`. After the message succeeds, final output is exactly `NO_REPLY`. Never use a file attachment instead of `artifact_refs`. JSON preparation failures stop before curl. Credentials are used in headers only and never put in payload files or printed.
 
-```json
-{ "artifact": { "identifier": "q3-pricing-review", "version": 1, "type": "html", "title": "Q3 Pricing Review", "preview": "…", "createdAt": "…" } }
-```
-
-Store `version` per identifier. Piping the JSON from Python keeps quotes, newlines, and Korean text intact — never build the body with shell string interpolation.
-
-### Step 3 — send the room message with the pointer
+### Recover the pointer after a failed message
 
 ```bash
-curl -s -X POST http://admin-api:3000/internal/messages \
-  -H "Content-Type: application/json" \
-  -H "X-Gateway-Token: $GATEWAY_TOKEN" \
-  -d "{\"from_agent_id\":\"$AGENT_ID\",\"room_id\":$ROOM_ID,\"content\":\"Q3 가격 검토 보고서를 정리했습니다.\",\"artifact_refs\":[{\"identifier\":\"q3-pricing-review\",\"version\":1}]}"
+curl --fail-with-body --silent --show-error \
+  "${ADMIN_API_URL}/internal/chat-rooms/${ROOM_ID}/artifacts/${ARTIFACT_IDENTIFIER}?from_agent_id=${AGENT_ID}" \
+  --header "X-Gateway-Token: ${GATEWAY_TOKEN}"
+# Add &version=N for an exact older version.
 ```
 
-Then the WebUI final output is exactly `NO_REPLY`.
-
-### Reading a saved artifact back
-
-```bash
-curl -s -X GET "http://admin-api:3000/internal/chat-rooms/$ROOM_ID/artifacts/q3-pricing-review?from_agent_id=$AGENT_ID" \
-  -H "X-Gateway-Token: $GATEWAY_TOKEN"
-# add &version=N for an exact older version
-```
-
-Returns `{"artifact": {identifier, version, type, title, content, …}}`. There is no endpoint that lists every identifier in a room; you must already know the identifier.
+Use that returned version for the room message. Do not resend successfully published messages automatically, since this flow does not introduce a message idempotency key.
 
 ## Legacy mode: inline `artifacts`
 
