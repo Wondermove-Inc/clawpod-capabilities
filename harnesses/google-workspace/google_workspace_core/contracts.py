@@ -48,7 +48,7 @@ def body_schema(command,method):
  if command in EXACT:return EXACT[command]
  p=command.split('.'); action=p[-1]
  if method not in ("POST","PUT","PATCH"):return None
- if action in ("trash","untrash"):return O({"trashed":B()},("trashed",))
+ if action in ("trash","untrash"):return O({"trashed":B()}) if command.startswith("gmail.") else O({"trashed":B()},("trashed",))
  if command.startswith("gmail.messages.") or command.startswith("gmail.drafts."):
   if action in ("send","create","update","insert","import"):
    return O({"raw":S(maxLength=GMAIL_RAW_MAX_CHARS),"compose":COMPOSE,"threadId":S(),"labelIds":A(maxItems=100),"internalDateSource":S(enum=["receivedTime","dateHeader"]),"neverMarkSpam":B(),"processForCalendar":B()},minProperties=1)
@@ -61,9 +61,10 @@ def body_schema(command,method):
   if ".smime.setDefault" in command:return O({})
   return O({"enabled":B(),"emailAddress":EMAIL,"disposition":S(enum=["archive","leaveInInbox","markRead","trash"]),"accessWindow":S(enum=["allMail","fromNowOn"]),"expungeBehavior":S(enum=["archive","deleteForever","trash"]),"language":S(),"responseSubject":S(),"responseBodyPlainText":S(maxLength=10000),"responseBodyHtml":S(maxLength=20000),"restrictToContacts":B(),"startTime":S(pattern="^[0-9]+$"),"endTime":S(pattern="^[0-9]+$")},minProperties=1)
  # One editor request per item: exactly one verb key (insertText, updateCells,
- # createSlide, ...) whose value is that verb's request object. Typed as a
- # closed single-key envelope because the provider unions are per-verb objects.
- EDITOR_REQUESTS=A({"type":"object","minProperties":1,"maxProperties":1,"additionalProperties":{"type":"object"}},minItems=1,maxItems=500)
+ # createSlide, ...) whose value is that verb's request object. The envelope is
+ # closed to a single key; the verb payload follows the provider's per-verb schema,
+ # so its fields stay open via an empty-schema additionalProperties.
+ EDITOR_REQUESTS=A({"type":"object","minProperties":1,"maxProperties":1,"additionalProperties":{"type":"object","additionalProperties":{}}},minItems=1,maxItems=500)
  VALUE_CELL={"type":["string","number","boolean","null"]}
  VALUE_RANGE=O({"range":S(),"majorDimension":S(enum=["ROWS","COLUMNS"]),"values":A(A(VALUE_CELL,maxItems=10000),minItems=1,maxItems=100000)},("values",))
  RENDER=S(enum=["FORMATTED_VALUE","UNFORMATTED_VALUE","FORMULA"]);DATE_RENDER=S(enum=["SERIAL_NUMBER","FORMATTED_STRING"])
@@ -103,5 +104,6 @@ def body_schema(command,method):
  return O({},minProperties=1)
 
 QUERY_TYPES={
+ "userId":S(minLength=1,maxLength=320),"format":S(enum=["minimal","full","raw","metadata"]),"metadataHeaders":A(S(minLength=1,maxLength=256),maxItems=50),
  "q":S(maxLength=20000),"query":S(maxLength=20000),"orderBy":S(maxLength=1024),"timeMin":S(format="date-time"),"timeMax":S(format="date-time"),"syncToken":S(maxLength=4096),"startHistoryId":S(pattern="^[0-9]+$"),"pageToken":S(maxLength=4096),"pageSize":I(minimum=1,maximum=500),"corpora":S(enum=["user","domain","drive","allDrives"]),"spaces":S(pattern="^(drive|appDataFolder|photos)(,(drive|appDataFolder|photos))*$"),"driveId":S(),"includeItemsFromAllDrives":B(),"supportsAllDrives":B(),"sendUpdates":S(enum=["all","externalOnly","none"]),"sendNotificationEmail":B(),"transferOwnership":B(),"useDomainAdminAccess":B(),"moveToNewOwnersRoot":B(),"enforceSingleParent":B(),"removeParents":S(),"addParents":S(),"destination":S(),"text":S(),"showDeleted":B(),"singleEvents":B(),"showHiddenInvitations":B(),"maxAttendees":I(minimum=1),"eventTypes":A(maxItems=20),"iCalUID":S(),"privateExtendedProperty":A(maxItems=100),"sharedExtendedProperty":A(maxItems=100),"conferenceDataVersion":I(enum=[0,1]),"maxResults":I(minimum=1,maximum=500),"mimeType":S(),"requestId":S(),"uploadType":S(enum=["simple","media","multipart","resumable"]),"acknowledgeAbuse":B(),"includePermissionsForView":S(enum=["published"]),"includeLabels":S(),"keepRevisionForever":B(),"ocrLanguage":S(),"ignoreDefaultVisibility":B(),"sendNotifications":B(),"prettyPrint":B(),"valueInputOption":{"type":"string","enum":["RAW","USER_ENTERED"]},"valueRenderOption":{"type":"string","enum":["FORMATTED_VALUE","UNFORMATTED_VALUE","FORMULA"]},"dateTimeRenderOption":{"type":"string","enum":["SERIAL_NUMBER","FORMATTED_STRING"]},"majorDimension":{"type":"string","enum":["ROWS","COLUMNS"]},"insertDataOption":{"type":"string","enum":["OVERWRITE","INSERT_ROWS"]},"includeValuesInResponse":{"type":"boolean"},"responseValueRenderOption":{"type":"string","enum":["FORMATTED_VALUE","UNFORMATTED_VALUE","FORMULA"]},"responseDateTimeRenderOption":{"type":"string","enum":["SERIAL_NUMBER","FORMATTED_STRING"]},"includeGridData":{"type":"boolean"},"ranges":{"type":"array","items":{"type":"string","minLength":1,"maxLength":4096},"maxItems":100},"suggestionsViewMode":{"type":"string","enum":["DEFAULT_FOR_CURRENT_ACCESS","SUGGESTIONS_INLINE","PREVIEW_SUGGESTIONS_ACCEPTED","PREVIEW_WITHOUT_SUGGESTIONS"]},"thumbnailProperties.mimeType":{"type":"string","enum":["PNG"]},"thumbnailProperties.thumbnailSize":{"type":"string","enum":["LARGE","MEDIUM","SMALL"]}
 }

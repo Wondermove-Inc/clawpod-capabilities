@@ -1,5 +1,6 @@
 """Narrow normalization for high-level read-only convenience commands."""
 from __future__ import annotations
+import base64
 
 def _headers(item):
     values={}
@@ -23,14 +24,46 @@ def _gmail_item(item,include_body=False):
     headers=_headers(source)
     out={
       "id":item.get("id") or source.get("id"),"threadId":source.get("threadId") or item.get("id"),
-      "labelIds":source.get("labelIds",[]),"sender":headers.get("from"),"recipients":headers.get("to"),
+      "labelIds":source.get("labelIds",[]),"sender":headers.get("from"),"recipients":headers.get("to"),"cc":headers.get("cc"),
       "date":headers.get("date") or source.get("internalDate"),"subject":headers.get("subject"),
       "snippet":source.get("snippet"),
     }
     if include_body:
-        payload=source.get("payload");body=payload.get("body") if isinstance(payload,dict) else None
-        if isinstance(body,dict):out["body"]={k:body.get(k) for k in ("size","data") if k in body}
+        text,html=_bodies(source.get("payload"))
+        out["body"]={"text":text,"html":html}
     return out
+
+# Korean mail commonly declares EUC-KR / KS C 5601; CP949 is their superset.
+_CHARSET_ALIASES={"euc-kr":"cp949","ks_c_5601-1987":"cp949","ks_c_5601":"cp949","x-windows-949":"cp949"}
+
+def _charset(node):
+    for header in node.get("headers") or []:
+        if isinstance(header,dict) and str(header.get("name","")).lower()=="content-type":
+            for piece in str(header.get("value","")).split(";")[1:]:
+                key,_,value=piece.strip().partition("=")
+                if key.lower()=="charset" and value:return value.strip().strip('"').lower()
+    return "utf-8"
+
+def _decode(data,charset="utf-8"):
+    if not isinstance(data,str) or not data:return ""
+    try:raw=base64.urlsafe_b64decode(data+"="*(-len(data)%4))
+    except (ValueError,TypeError):return ""
+    try:return raw.decode(_CHARSET_ALIASES.get(charset,charset),"replace")
+    except LookupError:return raw.decode("utf-8","replace")
+
+def _bodies(part):
+    """Collect decoded text/plain and text/html parts of a Gmail `format=full` payload."""
+    text=[];html=[]
+    stack=[part] if isinstance(part,dict) else []
+    while stack:
+        node=stack.pop(0)
+        mime=str(node.get("mimeType","")).lower()
+        body=node.get("body") if isinstance(node.get("body"),dict) else {}
+        if not node.get("filename"):
+            if mime=="text/plain":text.append(_decode(body.get("data"),_charset(node)))
+            elif mime=="text/html":html.append(_decode(body.get("data"),_charset(node)))
+        stack.extend(x for x in node.get("parts") or [] if isinstance(x,dict))
+    return "\n".join(x for x in text if x) or None,"\n".join(x for x in html if x) or None
 
 def normalize(command,data,params=None):
     params=params or {}

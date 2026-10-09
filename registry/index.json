@@ -561,7 +561,7 @@
     {
       "id": "google-workspace",
       "type": "skill",
-      "version": "0.4.5",
+      "version": "0.4.6",
       "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
       "path": "skills/google-workspace",
       "compatibility": {
@@ -574,7 +574,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "98528fe9071aabd3b8c8de0379157823db8b9d4e64b189dfaefa9be8f068d7ac"
+          "sha256": "1aae1f03f130945d43addc4aea233d3129530aaee8b678fee409e88f86848c19"
         },
         {
           "path": "references/onboarding.md",
@@ -582,7 +582,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "8addffdd11f6b849998ad484fc52b32c534149053ee14388aef9abae1397fdcc"
+          "sha256": "32f6eb3b6c49cdb93ba89534048c2669a348e3c39fd697440f7e29d602a07c83"
         },
         {
           "path": "references/scopes.md",
@@ -595,7 +595,7 @@
       },
       "linkedHarness": {
         "id": "google-workspace",
-        "version": "0.4.4"
+        "version": "0.4.5"
       }
     },
     {
@@ -1533,7 +1533,7 @@
     {
       "id": "google-workspace",
       "type": "harness",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "description": "Execute typed Gmail, Calendar, Drive, and agent-desktop OAuth operations with stable JSON and safety controls.",
       "path": "harnesses/google-workspace",
       "compatibility": {
@@ -1562,7 +1562,7 @@
         },
         {
           "path": "command_contracts.json",
-          "sha256": "a57afef04a6fdd5a2a840cfe98e0fb29b8362e8620e48c892de81b9cbb9966eb"
+          "sha256": "ae13ac58a8a684bd4ba2ebd9477e7b1462f8f2aab18f69d75f474ceccb776617"
         },
         {
           "path": "google_workspace.py",
@@ -1582,19 +1582,19 @@
         },
         {
           "path": "google_workspace_core/catalog.py",
-          "sha256": "5c243030fb780e2a41604f56dda90c1dbb7970775e7ce0b10527ce4f92ac10f7"
+          "sha256": "0f663bc50673f4d8666f2f83217cb46e11fe9f0228d21fd35740d696c3d6dee2"
         },
         {
           "path": "google_workspace_core/contracts.py",
-          "sha256": "433c11769fc2213bb455c31dfe7a6117049440c02806daf001d459eb77b5bf08"
+          "sha256": "4eb5a84104d55b2e5894293acb520acf73f82ece9ddcfb41e5edc175a4ff498b"
         },
         {
           "path": "google_workspace_core/core.py",
-          "sha256": "5e61f925af63fed7af40d4651adb184e55c215a60772a1efbcc18d17651c1422"
+          "sha256": "c0bc68df7af3bb5ec9048876cc67f20579e4a923225ce6b3b03e86617f31e53f"
         },
         {
           "path": "google_workspace_core/high_level_reads.py",
-          "sha256": "d2eec6c2deee4a6dca75bc96dfccb50c147595f241216feeda2853e1d7dd5ee5"
+          "sha256": "8caa457deeb8e597f042844102d1f254c2ffdd42891493b27d1d1a8b9bc4083a"
         },
         {
           "path": "google_workspace_core/migration.py",
@@ -1622,7 +1622,7 @@
         },
         {
           "path": "google_workspace_core/state.py",
-          "sha256": "d3acbb5d76975b3c629aaf6e394db81013ca0a532956ca37ee66ade865ccad64"
+          "sha256": "7f187f95e5efb7914baca11df87a2dc4b9a353cd50d3cd90b2f9157899ebe3ba"
         },
         {
           "path": "google_workspace_core/transport.py",
@@ -1630,15 +1630,15 @@
         },
         {
           "path": "google_workspace_core/validation.py",
-          "sha256": "7ac23759bdef1d33633e6e2348057c5308f33afb13f7add869084225b7da8a67"
+          "sha256": "d9ab49c60cc6f34eb04648f8872f08ba6f4ac81cb6727be2a6518f88e3c52b69"
         },
         {
           "path": "harness.json",
-          "sha256": "87de073552563975718bc1eaf6080b9d542d298463557a28b2d3b8afeba63974"
+          "sha256": "8d3d838dae7ff05638ecb00a159836a76dc7d662998bd99ec46ec471ef9ed6e9"
         },
         {
           "path": "scripts/generate_schemas.py",
-          "sha256": "cac05b1699d3c0abc84e1e28746ce32790d372356a16f0b2e4be667217d806a1"
+          "sha256": "98e2dea5476ab87ed530847c164bf004320546ee561294470f0ca8fd3b4f1a52"
         }
       ],
       "descriptionI18n": {

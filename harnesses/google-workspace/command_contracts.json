@@ -2296,7 +2296,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -2399,7 +2405,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -2595,20 +2607,15 @@
               "minimum": 1,
               "maximum": 500
             },
-            "orderBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
-            },
             "q": {
               "type": "string",
               "minLength": 1,
               "maxLength": 20000
             },
-            "query": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -2735,20 +2742,15 @@
                     "minimum": 1,
                     "maximum": 500
                   },
-                  "orderBy": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 1024
-                  },
                   "q": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 20000
                   },
-                  "query": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -2929,6 +2931,31 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "minimal",
+                "full",
+                "raw",
+                "metadata"
+              ]
+            },
+            "metadataHeaders": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "maxItems": 50
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -3041,6 +3068,31 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "format": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "enum": [
+                      "minimal",
+                      "full",
+                      "raw",
+                      "metadata"
+                    ]
+                  },
+                  "metadataHeaders": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 50
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -3226,6 +3278,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -3357,6 +3414,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -3556,7 +3618,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -3690,7 +3758,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -3827,9 +3901,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "body"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -3902,6 +3974,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -3915,10 +3992,7 @@
             "trashed": {
               "type": "boolean"
             }
-          },
-          "required": [
-            "trashed"
-          ]
+          }
         },
         "inputPath": {
           "type": "string",
@@ -4021,6 +4095,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -4034,10 +4113,7 @@
                   "trashed": {
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "trashed"
-                ]
+                }
               },
               "inputPath": {
                 "type": "string",
@@ -4138,9 +4214,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "body"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -4213,6 +4287,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -4226,10 +4305,7 @@
             "trashed": {
               "type": "boolean"
             }
-          },
-          "required": [
-            "trashed"
-          ]
+          }
         },
         "inputPath": {
           "type": "string",
@@ -4332,6 +4408,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -4345,10 +4426,7 @@
                   "trashed": {
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "trashed"
-                ]
+                }
               },
               "inputPath": {
                 "type": "string",
@@ -4522,6 +4600,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -4634,6 +4717,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -4814,7 +4902,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -4930,7 +5024,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -5119,7 +5219,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -5373,7 +5479,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -5700,7 +5812,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -5954,7 +6072,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -6281,7 +6405,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -6535,7 +6665,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -6882,20 +7018,15 @@
               "minimum": 1,
               "maximum": 500
             },
-            "orderBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
-            },
             "q": {
               "type": "string",
               "minLength": 1,
               "maxLength": 20000
             },
-            "query": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -7022,20 +7153,15 @@
                     "minimum": 1,
                     "maximum": 500
                   },
-                  "orderBy": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 1024
-                  },
                   "q": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 20000
                   },
-                  "query": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -7216,6 +7342,31 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "minimal",
+                "full",
+                "raw",
+                "metadata"
+              ]
+            },
+            "metadataHeaders": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "maxItems": 50
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -7328,6 +7479,31 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "format": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "enum": [
+                      "minimal",
+                      "full",
+                      "raw",
+                      "metadata"
+                    ]
+                  },
+                  "metadataHeaders": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 50
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -7513,6 +7689,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -7645,6 +7826,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -7775,9 +7961,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "body"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -7850,6 +8034,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -7863,10 +8052,7 @@
             "trashed": {
               "type": "boolean"
             }
-          },
-          "required": [
-            "trashed"
-          ]
+          }
         },
         "inputPath": {
           "type": "string",
@@ -7969,6 +8155,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -7982,10 +8173,7 @@
                   "trashed": {
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "trashed"
-                ]
+                }
               },
               "inputPath": {
                 "type": "string",
@@ -8086,9 +8274,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "body"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -8161,6 +8347,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -8174,10 +8365,7 @@
             "trashed": {
               "type": "boolean"
             }
-          },
-          "required": [
-            "trashed"
-          ]
+          }
         },
         "inputPath": {
           "type": "string",
@@ -8280,6 +8468,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -8293,10 +8486,7 @@
                   "trashed": {
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "trashed"
-                ]
+                }
               },
               "inputPath": {
                 "type": "string",
@@ -8470,6 +8660,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -8582,6 +8777,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -8770,6 +8970,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -8888,6 +9093,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -9068,25 +9278,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -9192,25 +9387,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -9391,6 +9571,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -9503,6 +9688,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -9683,7 +9873,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -9830,7 +10026,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -10055,6 +10257,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -10209,6 +10416,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -10436,6 +10648,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -10592,6 +10809,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -10819,6 +11041,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -10931,6 +11158,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -11115,20 +11347,15 @@
               "minimum": 1,
               "maximum": 500
             },
-            "orderBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
-            },
             "q": {
               "type": "string",
               "minLength": 1,
               "maxLength": 20000
             },
-            "query": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -11239,20 +11466,15 @@
                     "minimum": 1,
                     "maximum": 500
                   },
-                  "orderBy": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 1024
-                  },
                   "q": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 20000
                   },
-                  "query": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -11433,6 +11655,22 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "enum": [
+                "minimal",
+                "full",
+                "raw",
+                "metadata"
+              ]
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -11545,6 +11783,22 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "format": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "enum": [
+                      "minimal",
+                      "full",
+                      "raw",
+                      "metadata"
+                    ]
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -11725,7 +11979,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -11979,7 +12239,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -12311,6 +12577,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -12574,6 +12845,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -12908,6 +13184,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -13020,6 +13301,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -13205,6 +13491,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -13468,6 +13759,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -13819,26 +14115,16 @@
               "minimum": 1,
               "maximum": 500
             },
-            "orderBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
             "startHistoryId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 4096,
               "pattern": "^[0-9]+$"
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           }
         },
@@ -13965,26 +14251,16 @@
                     "minimum": 1,
                     "maximum": 500
                   },
-                  "orderBy": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
                   "startHistoryId": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096,
                     "pattern": "^[0-9]+$"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 }
               },
@@ -14162,7 +14438,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -14293,7 +14575,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -14427,9 +14715,7 @@
     "inputSchema": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "body"
-      ],
+      "required": [],
       "properties": {
         "account": {
           "type": "string",
@@ -14497,7 +14783,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -14600,7 +14892,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -14779,6 +15077,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -14891,6 +15194,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -15076,6 +15384,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -15264,6 +15577,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -15519,25 +15837,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -15643,25 +15946,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -15842,6 +16130,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -15954,6 +16247,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -16134,7 +16432,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -16324,7 +16628,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -16590,6 +16900,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -16702,6 +17017,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -16881,25 +17201,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -17005,25 +17310,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -17204,6 +17494,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -17316,6 +17611,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -17496,7 +17796,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -17613,7 +17919,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -17806,6 +18118,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -17918,6 +18235,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -18097,25 +18419,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -18221,25 +18528,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -18420,6 +18712,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -18532,6 +18829,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -18712,7 +19014,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -18895,7 +19203,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -19156,6 +19470,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -19348,6 +19667,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -19613,6 +19937,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -19805,6 +20134,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -20068,6 +20402,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -20260,6 +20599,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -20519,25 +20863,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           }
         },
@@ -20643,25 +20972,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 }
               },
@@ -20842,6 +21156,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -20954,6 +21273,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -21134,7 +21458,13 @@
         "params": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
+            }
+          }
         },
         "body": {
           "type": "object",
@@ -21251,7 +21581,13 @@
               "params": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
+                  }
+                }
               },
               "body": {
                 "type": "object",
@@ -21444,6 +21780,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -21556,6 +21897,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -21740,25 +22086,10 @@
               "minLength": 1,
               "maxLength": 4096
             },
-            "maxResults": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
-            },
-            "orderBy": {
+            "userId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
-            },
-            "q": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 20000
+              "maxLength": 320
             }
           },
           "required": [
@@ -21872,25 +22203,10 @@
                     "minLength": 1,
                     "maxLength": 4096
                   },
-                  "maxResults": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
-                  },
-                  "orderBy": {
+                  "userId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
-                  },
-                  "q": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
-                  },
-                  "query": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20000
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -22079,6 +22395,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -22197,6 +22518,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -22383,6 +22709,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -22510,6 +22841,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -22713,6 +23049,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -22831,6 +23172,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -23020,6 +23366,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4096
+            },
+            "userId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 320
             }
           },
           "required": [
@@ -23138,6 +23489,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 4096
+                  },
+                  "userId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 320
                   }
                 },
                 "required": [
@@ -60038,7 +60394,7 @@
                 "maxProperties": 1,
                 "additionalProperties": {
                   "type": "object",
-                  "additionalProperties": false
+                  "additionalProperties": {}
                 }
               },
               "minItems": 1,
@@ -60184,7 +60540,7 @@
                       "maxProperties": 1,
                       "additionalProperties": {
                         "type": "object",
-                        "additionalProperties": false
+                        "additionalProperties": {}
                       }
                     },
                     "minItems": 1,
@@ -61921,7 +62277,7 @@
                 "maxProperties": 1,
                 "additionalProperties": {
                   "type": "object",
-                  "additionalProperties": false
+                  "additionalProperties": {}
                 }
               },
               "minItems": 1,
@@ -62066,7 +62422,7 @@
                       "maxProperties": 1,
                       "additionalProperties": {
                         "type": "object",
-                        "additionalProperties": false
+                        "additionalProperties": {}
                       }
                     },
                     "minItems": 1,
@@ -68189,7 +68545,7 @@
                 "maxProperties": 1,
                 "additionalProperties": {
                   "type": "object",
-                  "additionalProperties": false
+                  "additionalProperties": {}
                 }
               },
               "minItems": 1,
@@ -68330,7 +68686,7 @@
                       "maxProperties": 1,
                       "additionalProperties": {
                         "type": "object",
-                        "additionalProperties": false
+                        "additionalProperties": {}
                       }
                     },
                     "minItems": 1,

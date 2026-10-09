@@ -71,8 +71,15 @@ PAGED={'list','search','instances'}
 def allowed_query(cmd,action):
  out=set()
  if action in PAGED:
-  out|={'q','query','orderBy'}
-  out.add('maxResults' if cmd.startswith(('gmail.','calendar.')) else 'pageSize')
+  if cmd.startswith('gmail.'):
+   if cmd in ('gmail.messages.list','gmail.threads.list','gmail.drafts.list'):out.add('q')
+   if cmd in ('gmail.messages.list','gmail.threads.list','gmail.drafts.list','gmail.history.list'):out.add('maxResults')
+  else:
+   out|={'q','query','orderBy'}
+   out.add('maxResults' if cmd.startswith('calendar.') else 'pageSize')
+ if cmd.startswith('gmail.'):out.add('userId')
+ if cmd in ('gmail.messages.get','gmail.threads.get'):out|={'format','metadataHeaders'}
+ if cmd=='gmail.drafts.get':out.add('format')
  if cmd.startswith('gmail.messages.list'):out|={'labelIds','includeSpamTrash'}
  if cmd.startswith('gmail.threads.list'):out|={'labelIds','includeSpamTrash'}
  if cmd=='gmail.history.list':out|={'startHistoryId','labelId','historyTypes'}
@@ -237,9 +244,10 @@ for cmd,c in commands.items():
  bs=body_schema(cmd,op['method'])
  if bs is None:
   props['body']={'type':'object','additionalProperties':False,'properties':{}}
+  s['required']=[k for k in s['required'] if k!='body']
  else:
   props['body']=bs
-  if op['method'] in ('POST','PUT','PATCH') and op['action'] not in ('quickAdd','move','clear','setDefault','verify','hide','unhide') and 'body' not in s['required']:s['required'].append('body')
+  if op['method'] in ('POST','PUT','PATCH') and op['action'] not in ('quickAdd','move','clear','setDefault','verify','hide','unhide') and not (cmd.startswith('gmail.') and op['action'] in ('trash','untrash')) and 'body' not in s['required']:s['required'].append('body')
  if cmd=='drive.files.upload':s['required']=list(dict.fromkeys(s['required']+['inputPath','transferRoot']))
  if cmd in ('drive.files.download','drive.files.export'):s['required']=list(dict.fromkeys(s['required']+['outputPath','transferRoot']))
 

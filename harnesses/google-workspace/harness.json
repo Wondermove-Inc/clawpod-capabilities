@@ -4,7 +4,7 @@
   "name": "google-workspace",
   "title": "Google Workspace",
   "description": "Use to onboard Google OAuth and manage supported Gmail mail, Calendar events and ACLs, Drive files and permissions, and Docs, Sheets, and Slides content edits; it is not Outlook or generic web automation and can feed Enterprise Newsletter.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "entrypoint": "./google_workspace.py",
   "packageRoot": ".",
   "whenToUse": [
@@ -3571,9 +3571,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "body"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -3864,9 +3862,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "body"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -6496,9 +6492,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "body"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -6789,9 +6783,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "body"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"
@@ -11755,9 +11747,7 @@
       ],
       "inputSchema": {
         "type": "object",
-        "required": [
-          "body"
-        ],
+        "required": [],
         "properties": {
           "account": {
             "type": "string"

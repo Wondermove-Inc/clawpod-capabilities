@@ -63,11 +63,21 @@ def transfer_load(key):
 def transfer_store(key,value):
  with locked() as d:d["transfers"][key]=value
 
-def bind_token(raw,command,account,query):
+def bind_token(raw,command,account,query,context=None):
  with locked() as d:
   doc={"raw":raw,"command":command,"account":account,"query":hashlib.sha256(canonical(query).encode()).hexdigest(),"issuedAt":time.time()}
+  if context:doc["context"]=context
   enc=json.dumps(doc,separators=(",",":"),sort_keys=True).encode().hex();sig=hmac.new(bytes.fromhex(d["secret"]),enc.encode(),hashlib.sha256).hexdigest()
  return enc+"."+sig
+def token_context(token):
+ """Signed values a command defaulted on the first page (e.g. calendar.read's window); {} if unusable."""
+ try:
+  enc,sig=token.split(".",1)
+  with locked() as d:expected=hmac.new(bytes.fromhex(d["secret"]),enc.encode(),hashlib.sha256).hexdigest()
+  if not hmac.compare_digest(sig,expected):return {}
+  context=json.loads(bytes.fromhex(enc)).get("context")
+  return context if isinstance(context,dict) else {}
+ except (ValueError,TypeError,KeyError):return {}
 def unbind_token(token,command,account,query):
  try:enc,sig=token.split(".",1)
  except ValueError:raise ValueError("unbound or malformed continuation token")

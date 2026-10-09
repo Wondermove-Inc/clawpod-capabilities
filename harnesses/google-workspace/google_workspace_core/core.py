@@ -1,6 +1,8 @@
 from __future__ import annotations
 import base64, hashlib, json, os, time, uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from urllib.parse import quote
 from pathlib import Path
 from .auth import CredentialProvider,AuthError
 from .catalog import catalog,operation,preflight,service_for,OperationError
@@ -9,7 +11,7 @@ from .security import atomic_write,digest,redact,safe_path,append_audit,canonica
 from .transport import Transport,ScriptedTransport,HTTPError,retry_request
 from .validation import validate,ValidationError
 from .scopes import enforce,required_scopes
-from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,transfer_load,transfer_store
+from .state import issue_preview,consume_preview,idempotency_lookup,idempotency_store,bind_token,unbind_token,token_context,transfer_load,transfer_store
 from .bindings import (BindingError,binding_root,ensure_root,list_bindings,normalize_alias,resolve_binding,
  plan_import,import_binding,plan_rename,rename_binding,plan_remove,remove_binding,
  register_staged_binding)
@@ -154,6 +156,38 @@ def local_auth(command,payload,out):
   required=set(sum((SCOPES.get(x,[]) for x in payload.get("body",{}).get("profiles",[])),[]));safe["missing"]=sorted(required-set(item.get("scopes",[])))
  out["data"]={"resource":safe};return out,0
 
+GMAIL_READ_HEADERS=["From","To","Cc","Subject","Date"]
+
+def alias_resource_id(command,payload):
+ """Accept the provider-native `id` when exactly one resource identifier is required."""
+ params=payload.get("params")
+ if not isinstance(params,dict) or "id" not in params:return payload
+ schema=catalog()[command]["inputSchema"].get("properties",{}).get("params",{})
+ if "id" in schema.get("properties",{}):return payload
+ required=[k for k in schema.get("required",[]) if k.endswith("Id")]
+ if len(required)!=1 or required[0] in params or required[0]=="requestId":return payload
+ # On create/list-style actions the required id is the parent, not the target named by `id`.
+ if command.rsplit(".",1)[-1] in ("insert","import","create","quickAdd","list","watch","instances","send"):return payload
+ renamed=dict(params);renamed[required[0]]=renamed.pop("id")
+ return {**payload,"params":renamed}
+
+def gmail_read_details(transport,op,data,params,headers,timeout):
+ """Fetch each listed message/thread once; the list endpoints return identifiers only."""
+ key="threads" if params.get("mode")=="threads" else "messages"
+ listed=[x for x in data.get(key) or [] if isinstance(x,dict) and x.get("id")]
+ query={"format":"full"} if params.get("includeBody") else {"format":"metadata","metadataHeaders":GMAIL_READ_HEADERS}
+ def fetch(item):
+  try:
+   _,_,full,n=retry_request(transport,"GET",op["url"]+"/"+quote(str(item["id"]),safe=""),headers=headers,query=dict(query),body=None,timeout=timeout,safe=True)
+   return (full if isinstance(full,dict) else item),n
+  except HTTPError as e:
+   if e.status==404:return item,0
+   raise
+ workers=1 if isinstance(transport,ScriptedTransport) else 8
+ with ThreadPoolExecutor(max_workers=workers) as pool:results=list(pool.map(fetch,listed))
+ data[key]=[r[0] for r in results]
+ return sum(r[1] for r in results)
+
 def run(command,payload):
  explicit_account=payload.get("account");explicit_path=payload.get("credentialPath");environment_account=os.environ.get("GOOGLE_WORKSPACE_ACCOUNT")
  # A typed credentialPath is the complete selection boundary. In particular,
@@ -176,14 +210,15 @@ def run(command,payload):
   out["data"]={"items":results,"succeeded":len(results)-failed,"failed":failed,"haltedOn":halted}
   if failed:out["ok"]=False;out["error"]={"code":"PARTIAL_FAILURE","message":f"{failed} of {len(results)} batch items failed","retryable":False,"details":{},"remediation":"Inspect each item result and retry only failed safe items"};return out,9
   return out,0
+ payload=alias_resource_id(command,payload)
  try: validate(payload,catalog()[command]["inputSchema"],command,semantic=False)
  except ValidationError as e:return fail(command,payload,e.code,str(e),account=account)
  except (ValueError,TypeError) as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  if command.startswith("auth."): return local_auth(command,payload,out)
  operation_params=dict(payload.get("params",{}))
  if command=="calendar.read":
-  instant=datetime.now(timezone.utc)
-  operation_params.setdefault("timeMin",instant.isoformat().replace("+00:00","Z"));operation_params.setdefault("timeMax",(instant+timedelta(days=7)).isoformat().replace("+00:00","Z"))
+  instant=datetime.now(timezone.utc);window=token_context(payload["pageToken"]) if payload.get("pageToken") else {}
+  operation_params.setdefault("timeMin",window.get("timeMin") or instant.isoformat().replace("+00:00","Z"));operation_params.setdefault("timeMax",window.get("timeMax") or (instant+timedelta(days=7)).isoformat().replace("+00:00","Z"))
  try: op=operation(command,operation_params)
  except OperationError as e:
   code="UNSUPPORTED_BY_CONTRACT" if "not implemented" in str(e) else "INVALID_ARGUMENT"
@@ -266,17 +301,19 @@ def run(command,payload):
  if payload.get("fields"):params["fields"]=",".join(payload["fields"])
  if effective_page_size is not None:
   params[provider_page_key]=effective_page_size
- elif command in ("gmail.read","calendar.read","drive.read"):
+ elif command in ("gmail.read","calendar.read","drive.read") and not (command=="drive.read" and (payload.get("params") or {}).get("mode")=="get"):
   params["maxResults" if command.startswith(("gmail.","calendar.")) else "pageSize"]=50
  page_size_key=provider_page_key
  if payload.get("allPages") and payload.get("maxItems") is not None:
   params[page_size_key]=min(params.get(page_size_key,500),payload["maxItems"])
  if payload.get("pageToken"):
-  try:params["pageToken"]=unbind_token(payload["pageToken"],command,account,{k:v for k,v in params.items() if k!="pageToken"})
+  try:params["pageToken"]=unbind_token(payload["pageToken"],command,account,{**{k:v for k,v in params.items() if k!="pageToken"},"@url":op["url"]})
   except ValueError as e:return fail(command,payload,"INVALID_ARGUMENT",str(e),account=account)
  safe_retry=not (command in ("gmail.messages.send","gmail.drafts.send") or "destructive" in safety)
  try:
   request_body=payload.get("body") or None
+  if command.startswith("gmail.") and command.rsplit(".",1)[-1] in ("trash","untrash"):
+   request_body=None
   if command in ("drive.files.trash","drive.files.untrash"):
    request_body={"trashed":command.endswith(".trash")}
   if command=="drive.folders.create":
@@ -317,6 +354,8 @@ def run(command,payload):
     remaining=max_items-len(data[key]);q={**params,"pageToken":data["nextPageToken"],page_size_key:min(remaining,effective_page_size or 500)};_,_,nxt,nr=retry_request(transport,op["method"],op["url"],headers=headers,query=q,body=None,timeout=payload.get("timeoutMs",30000)/1000,safe=True);retries+=nr;pages+=1
     if isinstance(nxt.get(key),list):data[key].extend(nxt[key][:remaining]);data["nextPageToken"]=nxt.get("nextPageToken")
     else:break
+  if command=="gmail.read" and isinstance(data,dict):
+   retries+=gmail_read_details(transport,op,data,operation_params,headers,payload.get("timeoutMs",30000)/1000)
  except HTTPError as e:
   code=provider_error(e)
   if command in ("gmail.messages.send","gmail.drafts.send") and e.status>=500:code="AMBIGUOUS_COMMIT"
@@ -338,7 +377,7 @@ def run(command,payload):
  if normalized is not None:data={"items":normalized,"nextPageToken":next_token}
  items=next((data[k] for k in ("messages","threads","labels","drafts","history","items","files","permissions","comments","replies","revisions","drives","changes","events","calendars","rules") if isinstance(data.get(k),list)),None)
  if items is not None:
-  raw_next=data.get("nextPageToken");bound=bind_token(raw_next,command,account,{k:v for k,v in params.items() if k!="pageToken"}) if raw_next else None
+  raw_next=data.get("nextPageToken");bound=bind_token(raw_next,command,account,{**{k:v for k,v in params.items() if k!="pageToken"},"@url":op["url"]},context={"timeMin":operation_params["timeMin"],"timeMax":operation_params["timeMax"]} if command=="calendar.read" else None) if raw_next else None
   out["data"]={"items":items};out["page"]={"nextPageToken":bound,"itemsReturned":len(items),"pagesFetched":locals().get("pages",1),"truncated":bool(raw_next)}
  else:out["data"]={"resource":data};out.pop("page",None)
  if mutating:out["effects"]=[{"kind":"confirmed","resourceIds":[data.get("id")] if data.get("id") else [],"effectDigest":effect,"recoverability":"permanent" if "destructive" in safety else "provider-dependent"}]
