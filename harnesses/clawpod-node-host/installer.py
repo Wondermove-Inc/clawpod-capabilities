@@ -90,7 +90,13 @@ def normalized_host(host: str) -> str:
     if ":" in host:
         if "%" in host:
             raise ValueError("IPv6 zone identifiers are not supported")
-        return str(ipaddress.IPv6Address(host))
+        address = ipaddress.IPv6Address(host)
+        if address.ipv4_mapped is not None:
+            # WHATWG URL (the app's parser) serializes mapped addresses as hex groups;
+            # Python's own str() form differs between 3.12 patch releases.
+            value = int(address.ipv4_mapped)
+            return f"::ffff:{value >> 16:x}:{value & 0xFFFF:x}"
+        return str(address)
     host = unquote_to_bytes(host).decode("utf-8").lower()
     # Leave Unicode domain conversion to the app's WHATWG parser. Python's
     # IDNA2003 codec can silently retarget names (straße -> strasse).

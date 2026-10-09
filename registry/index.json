@@ -273,7 +273,7 @@
     {
       "id": "clawpod-node-host",
       "type": "skill",
-      "version": "0.7.6",
+      "version": "0.7.7",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "skills/clawpod-node-host",
       "compatibility": {
@@ -294,7 +294,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "45d15f934aa34bb56999b8fa1abb2ddc53c2ed8a79f61ea6681090db91a61983"
+          "sha256": "c12f0676e3f59ae6a4e5ab560f9c1dc8fad61f17db75d1e8b02f5e6b52f0fa6a"
         }
       ],
       "descriptionI18n": {
@@ -303,7 +303,7 @@
       },
       "linkedHarness": {
         "id": "clawpod-node-host",
-        "version": "0.7.6"
+        "version": "0.7.7"
       }
     },
     {
@@ -1265,7 +1265,7 @@
     {
       "id": "clawpod-node-host",
       "type": "harness",
-      "version": "0.7.6",
+      "version": "0.7.7",
       "description": "Use when a user wants to connect a Linux, macOS, or Windows computer to ClawPod. Guide agent and computer Tailscale sign-in, select the standalone ClawPod Node installer, provide Gateway connection values, verify device pairing, guide desktop permissions, and explain app recovery or removal. Use node-connect when available for an already configured node that fails to connect or pair.",
       "path": "harnesses/clawpod-node-host",
       "compatibility": {
@@ -1278,7 +1278,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "6b1a00c105a0c6c6e60b639380c3a9a53c3afc5b710a4eeca4e32896c407ce12"
+          "sha256": "b1e524c93c2815ed99b3b6aae968800a76efe6b468d1da9d6bd8a052b3fbd653"
         },
         {
           "path": "TEST.md",
@@ -1294,7 +1294,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "d3d053606886771acb39499edb5a7d01d14d6578a5f16ad390dee4f934dddf91"
+          "sha256": "3e987b253087822e249a0e991e9052b7ecc5958a8084b77a03d2fc97c9c40610"
         },
         {
           "path": "installer-manifest.json",
@@ -1302,7 +1302,7 @@
         },
         {
           "path": "installer.py",
-          "sha256": "f62cd13b8c2ab212fd8016e7333c497f02f7eb16520b336b20d1e419bd6706cf"
+          "sha256": "35021779bc53b143997f228824066c50a3c29fdcdefeca6aa10a5a89f9597867"
         },
         {
           "path": "schemas/error-exit-codes.json",

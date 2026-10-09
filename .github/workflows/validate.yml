@@ -27,7 +27,11 @@ jobs:
       - name: Run CLI Harness end-to-end tests
         run: python3 harnesses/clawpod-capability-registry/tests/test_full_e2e.py
       - name: Install Harness test dependencies
-        run: python3 -m pip install --disable-pip-version-check "pytest>=8" "click>=8.1" "cryptography>=42"
+        run: |
+          python3 -m pip install --disable-pip-version-check "pytest>=8" "click>=8.1" "cryptography>=42"
+          # setup-python installs a group-writable interpreter; cloudflare-quick-tunnel-preview
+          # supervises through sys.executable and rejects writable binaries, as it does on agent pods.
+          chmod go-w "$(python3 -c 'import os, sys; print(os.path.realpath(sys.executable))')"
       - name: Run every Harness test suite
         run: |
           status=0
