@@ -2,7 +2,7 @@
 
 Local OCR is network-free. Remote Ollama review is external data transfer and may use a protected credential.
 
-Before remote review, identify document sensitivity, listed pages, image byte counts/digests, endpoint, model, masking needs, and retention expectations. Send only the exact approved bounded page images. Never send full documents implicitly.
+Before remote review, identify document sensitivity, listed pages, image byte counts/digests, endpoint, model, masking needs, and retention expectations. Send only the exact prepared bounded page images. Never send full documents implicitly.
 
 Reject traversal, symlinks, unsupported or corrupt files, over-limit sizes/pages/pixels, non-loopback HTTP, endpoint credentials in URLs, plaintext tokens in inputs, permissive secret files, oversized responses, and approval-digest mismatch.
 

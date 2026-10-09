@@ -95,7 +95,7 @@ def test_output_name_recipients_and_schema_output(tmp_path):
 def test_gateway_manifest_has_no_unsupported_definitions_or_refs():
     manifest=json.loads((HERE/"harness.json").read_text())
     assert "definitions" not in manifest
-    assert manifest["version"] == "0.1.2"
+    assert manifest["version"] == json.loads((HERE/"capability.json").read_text())["version"]
     assert "$ref" not in json.dumps(manifest)
     for command in manifest["commands"].values():
         assert isinstance(command["inputSchema"],dict)

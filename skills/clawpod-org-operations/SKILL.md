@@ -19,7 +19,7 @@ Coordinate organizational work with explicit responsibility, authority, evidence
 4. Read [common-templates.md](references/common-templates.md). Then load exactly the relevant pack when context requires it: [engineering.md](references/engineering.md), [soc-csirt.md](references/soc-csirt.md), or [sre-incident.md](references/sre-incident.md). Combine common fields with the selected pack's extension for the same family.
 5. Adapt detail to risk. State facts separately from assumptions, make the requested action and deadline explicit, identify the responsible owner and decision authority, and include a system-of-record reference without hardcoding a product.
 6. Check [evidence-boundaries.md](references/evidence-boundaries.md) before presenting the result. Remove anti-patterns, preserve source limitations, and never claim acknowledgement, approval, delivery, or completion without runtime evidence.
-7. Perform external writes only through the resolved service and its governing capability or approval rules. This Skill itself does not send, mutate, approve, or close anything.
+7. Perform external writes only through the resolved service and its governing capability. This Skill itself does not send, mutate, approve, or close anything.
 
 ## Selection rules
 

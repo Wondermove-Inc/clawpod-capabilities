@@ -131,7 +131,7 @@ class CandidateFinalVersionIntegrityTests(unittest.TestCase):
                     with self.subTest(capability_id=capability_id, surface="README.md"):
                         self.assertEqual(match.group(1), expected, f"{capability_id}:README.md current release line")
             skill_text = (ROOT / "skills" / capability_id / "SKILL.md").read_text(encoding="utf-8")
-            match = re.search(r"\bHarness (?:v|(?:\(version |version ))(" + SEMVER + r")\)?", skill_text)
+            match = re.search(r"\bHarness (?:\(v|v|\(version |version )(" + SEMVER + r")\)?", skill_text)
             if match:
                 with self.subTest(capability_id=capability_id, surface="SKILL.md"):
                     self.assertEqual(match.group(1), expected, f"{capability_id}:SKILL.md linked Harness declaration")

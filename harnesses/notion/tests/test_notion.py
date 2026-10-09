@@ -384,7 +384,7 @@ def test_per_run_secretrefs_manifest_contract():
  while not (root/'harnesses').exists(): root=root.parent
  manifest=json.loads((root/'harnesses/notion/harness.json').read_text())
  binding=json.loads((root/'harnesses/notion/command_contracts.json').read_text())['directCredentialSecretBinding']
- assert manifest['version']=='0.1.9' and 'credentialEnvironment' not in manifest
+ assert manifest['version']==json.loads((root/'harnesses/notion/capability.json').read_text())['version'] and 'credentialEnvironment' not in manifest
  assert binding['names']==['NOTION_TOKEN'] and binding['parameter']=='secretRefs'
  assert binding['prepareRunMustMatch'] and not binding['manifestStoresPointer']
- assert json.loads((root/'skills/notion/capability.json').read_text())['linkedHarness']['version']=='0.1.9'
+ assert json.loads((root/'skills/notion/capability.json').read_text())['linkedHarness']['version']==manifest['version']

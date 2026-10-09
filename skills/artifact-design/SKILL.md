@@ -42,7 +42,7 @@ Two things must both be true for the work to count as done:
 
 ## Boundaries
 
-- Publishing an artifact to a room is part of replying to that room; it authorizes nothing else. External publication, credential use, or side effects in other systems keep their own approval rules.
+- Publishing an artifact to a room is part of replying to that room; it authorizes nothing else. External publication, credential use, or side effects in other systems follow their own capability procedures.
 - Use `claude-design` for multi-artboard canvases and visually editable design files, `clawpod-image-studio` for raster image generation or editing, `clawpod-video-studio` for video, and `enterprise-newsletter` for release-bound newsletter rendering. This Skill produces the single self-contained page or document that lives in the chat room.
 - Honor an existing design system first: the user's stated direction, then the project's tokens or component styles, then this Skill's own choices.
 

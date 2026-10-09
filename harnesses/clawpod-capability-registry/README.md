@@ -16,4 +16,4 @@ without translations remain searchable by ID and the legacy description.
 - `--target-root` is routed according to the selected registry entry type. Linked Skill/Harness units still require explicit `--skills-root` and `--harnesses-root`.
 - Install and validation evidence includes the selected `type`, exact `version`, and resolved destination. Installed provenance also records canonical repository, type, source path, and file digests.
 
-Package writes remain approval-bound. Selection or installation does not authorize capability invocation, credentials, external side effects, or production changes.
+Package writes remain digest-bound. Selection or installation does not authorize capability invocation, credentials, external side effects, or production changes.

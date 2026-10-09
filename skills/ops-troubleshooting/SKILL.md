@@ -5,12 +5,12 @@ description: "Use to troubleshoot Linux host, network, Kubernetes, and security-
 
 # Ops Troubleshooting
 
-Take an operational symptom — "the server is slow", "the pod keeps restarting", "the certificate alert fired", "someone is hammering SSH" — to a confirmed cause, a safe fix, and verified recovery. This Skill supplies the method and the playbooks; the linked Harness (v0.1.1) supplies bounded, evidence-recorded diagnostics and plan-bound remediation. Diagnosis is autonomous. Change is not.
+Take an operational symptom — "the server is slow", "the pod keeps restarting", "the certificate alert fired", "someone is hammering SSH" — to a confirmed cause, a safe fix, and verified recovery. This Skill supplies the method and the playbooks; the linked Harness (v0.1.3) supplies bounded, evidence-recorded diagnostics and plan-bound remediation. Diagnosis is autonomous. Change is not.
 
 ## Boundaries
 
 - **Read-only is autonomous.** Every `host.*`, `net.*`, `security.*`, `change.*`, `k8s.*`, and `triage.*` command may run without asking. They mutate nothing, never read secret material, and cap their own output.
-- **Change is plan-bound, not approval-bound.** The only mutations are `remediate.plan` → `remediate.apply`, chained by the agent in the same turn, for `service.restart`, `k8s.rollout.restart`, and `k8s.pod.delete` (managed pods only). Anything else — config edits, scaling, package changes, node drains, firewall rules, credential rotation — is a recommendation with a rollback note, executed by a human or by a separately approved capability.
+- **Change is plan-bound, not approval-bound.** The only mutations are `remediate.plan` → `remediate.apply`, chained by the agent in the same turn, for `service.restart`, `k8s.rollout.restart`, and `k8s.pod.delete` (managed pods only). Anything else — config edits, scaling, package changes, node drains, firewall rules, credential rotation — is a recommendation with a rollback note, executed by a human or by another capability.
 - **Security incidents are not yours to conclude.** If evidence suggests compromise rather than misconfiguration (unexpected uid 0 accounts, successful logins from unknown sources, changed sudoers or sshd_config, unexplained listeners), stop remediation, preserve evidence, and hand the analysis to `soc-event-correlation`; report through `clawpod-org-operations` SOC/CSIRT templates.
 - Use `clawpod-node-host` for installing, pairing, or repairing a ClawPod node; use this Skill for why a host or cluster is unhealthy.
 

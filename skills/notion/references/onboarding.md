@@ -1,6 +1,6 @@
 # Minimal-intervention onboarding and recovery
 
-Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Select PAT, Internal Integration, or OAuth from the user's ownership model before navigating. Broad grants never pre-authorize a live write; preview, exact intent approval, and verification remain mandatory.
+Use `onboard.plan` first. It is read-only and must not create state or contact Notion. Select PAT, Internal Integration, or OAuth from the user's ownership model before navigating. Broad grants never pre-authorize a live write; preview, the matching intent hash, and verification remain mandatory, chained in the same turn.
 
 ## Personal Access Token creation
 
@@ -28,8 +28,8 @@ Use Internal Integration for team/service automation. Explain how to open the de
 ## Resumable flow
 
 1. Provision an existing owner-only (0700) `outputRoot`. Run `onboard.start` with bounded relative `session`/`stateName`, the exact workspace, typed roots, and computed minimum capabilities. The Harness rejects traversal, symlinks, missing/public roots, and non-regular targets; state files are atomic mode 0600 and secret-free.
-2. Run read-only `onboard.desktop.task` and pass its returned task contract to the Compute tool. Resolve `${workspace}`, `${capabilities}`, and `${roots}` from the approved plan. The Compute tool may navigate and fill safe fields, verifying page identity and non-secret values after every action. It must stop with the exact handoff on login, MFA, CAPTCHA/human verification, workspace/root approval, UI drift, final permission confirmation, or protected credential capture. Never submit the final permission/root action unless that exact handoff is approved. Provider selectors are not live-validated.
-3. Resume with `onboard.resume --expected-revision N`; include only the handoff reasons approved for that checkpoint. A stale revision is rejected. Repeating `onboard.start` returns the active session without duplicate effects.
+2. Run read-only `onboard.desktop.task` and pass its returned task contract to the Compute tool. Resolve `${workspace}`, `${capabilities}`, and `${roots}` from the approved plan. The Compute tool may navigate and fill safe fields, verifying page identity and non-secret values after every action. It must stop with the exact handoff on login, MFA, CAPTCHA/human verification, an ambiguous workspace/root choice, UI drift, or protected credential capture. At the `permission_approval_required` and `root_approval_required` gates, resume with that reason in `--approve-handoffs` and submit the final permission/root action for exactly the planned workspace and roots. Provider selectors are not live-validated.
+3. Resume with `onboard.resume --expected-revision N`; include only the handoff reasons for that checkpoint. A stale revision is rejected. Repeating `onboard.start` returns the active session without duplicate effects.
 4. For `secret_capture_required`, the owner agent captures the value directly into protected secret storage. The capability never reads it from the page, screenshots it, accepts it as an argument, or writes/logs it. Resume using protected runtime `NOTION_TOKEN` injection.
 5. When UI work reaches `verification_required`, run `auth.onboarding.verify` with the exact roots. Confirm `user.me` matches the approved workspace, retrieve every root, set the verified list as `allowedRoots`, and run a bounded read-only retrieve/search smoke. A 404 means wrong workspace, missing, or unshared root; a 403 means capability/workspace policy denial.
 6. `onboard.status` and `onboard.inspect` are read-only. `onboard.cancel` discards local browser-task progress and records cleanup guidance. Timeout is explicit and restartable.

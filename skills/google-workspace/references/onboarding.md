@@ -10,7 +10,7 @@ Tell the owner that the agent will perform every automatable console step. The o
 
 ## 1. Inspect and choose the durable audience path
 
-After approval, use the managed browser and the Compute tool to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
+Once the user's sign-in completes, use the managed browser and the Compute tool to open Google Cloud Console, select the exact OAuth project, and inspect **Google Auth Platform → Audience**. Treat the rendered project name, user type, and publishing status as source of truth; capture sanitized evidence without client IDs, tokens, secrets, or user content.
 
 First run the local, deterministic `auth.onboarding.decide` command with the observed organization facts, External publishing status, and scope classifications. It performs no OAuth, credential, browser, or network action. Its rule is exact: default to **Internal only when** the selected project belongs to a Google Cloud Organization **and** every intended user is a member of that same organization. Otherwise choose External. Treat its result as a policy check, then verify the rendered console state.
 
@@ -56,7 +56,7 @@ Use typed `credentialPath` for later calls. Never echo the path. If a previous t
 
 ## Failure and revocation
 
-A sanitized `invalid_grant` refresh failure can mean Testing-mode seven-day expiry, user revocation, password/security changes, long inactivity, token limits, or an invalid/expired refresh token. Inspect Audience and account/admin state, then reauthorize the affected agent; never expose Google's response body. Revocation is available from the Google Account connections page and by removing the protected local bundle through the approved logout flow.
+A sanitized `invalid_grant` refresh failure can mean Testing-mode seven-day expiry, user revocation, password/security changes, long inactivity, token limits, or an invalid/expired refresh token. Inspect Audience and account/admin state, then reauthorize the affected agent; never expose Google's response body. Revocation is available from the Google Account connections page and by removing the protected local bundle through the logout flow.
 
 The browser endpoint may come from `GOOGLE_WORKSPACE_MANAGED_BROWSER_DEVTOOLS_URL` or `OPENCLAW_BROWSER_CDP_URL`; explicit typed input wins. Accept only literal loopback HTTP endpoints. Never ask the owner to copy an OAuth URL, code, token, client secret, or credential file.
 

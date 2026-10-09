@@ -8,7 +8,7 @@ from typing import Any
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import professional_studio
 
-VERSION="0.4.5"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
+VERSION="0.4.6"; SCHEMA="1.0"; MAX_COMPARE=4; MAX_COUNT=8; PRICE_MAX_AGE_DAYS=30
 OPENAI_BASE="https://api.openai.com/v1"; HTTP_TIMEOUT=45; MAX_RESPONSE_BYTES=25*1024*1024
 PROVIDERS={
  "openai":{"env":"OPENAI_API_KEY","auth":"api_key","models":["gpt-image-1"],"features":["generate","edit","mask","multi_image"]},
@@ -43,9 +43,9 @@ def fail(cmd,e):
 def closed(v,allowed,required=()):
  if not isinstance(v,dict): raise E("SCHEMA_VIOLATION","input must be an object")
  unknown=set(v)-set(allowed)
- if unknown: raise E("SCHEMA_VIOLATION","unknown fields",details={"fields":sorted(unknown)})
+ if unknown: raise E("SCHEMA_VIOLATION","unknown fields: "+", ".join(sorted(unknown))+"; accepted: "+", ".join(sorted(allowed)),details={"fields":sorted(unknown),"accepted":sorted(allowed),"required":sorted(required)})
  missing=set(required)-set(v)
- if missing: raise E("SCHEMA_VIOLATION","missing fields",details={"fields":sorted(missing)})
+ if missing: raise E("SCHEMA_VIOLATION","missing fields: "+", ".join(sorted(missing))+"; required: "+", ".join(sorted(required)),details={"fields":sorted(missing),"accepted":sorted(allowed),"required":sorted(required)})
 def root(raw):
  p=Path(raw or os.getenv("CLAWPOD_IMAGE_STUDIO_STATE",str(Path.home()/".clawpod-image-studio"))).expanduser()
  if p.exists() and p.is_symlink(): raise E("PATH_VIOLATION","state root may not be a symlink")

@@ -62,7 +62,7 @@ directly when that is how the site expects the analyst agent to work.
 
 - **Read-only.** Search and fetch only. Never create/modify detection rules,
   connectors, dashboards, or cases through this skill; case/comment writes and any
-  containment are separate, approved actions.
+  containment are separate actions in the capability that owns them.
 - **Always bounded.** Every search carries a time window and a result cap. Widen
   deliberately, never unbounded.
 - **No arbitrary exploration.** Query only for entities/windows the investigation

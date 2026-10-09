@@ -76,10 +76,10 @@ Before dispatch, give `semantic-reconcile` the approved snapshot and a schema-va
 
 ### Fresh-agent inert end-to-end example
 
-Examples confer no approval. Never infer reviewer authority from example JSON, never auto-approve candidates, and never dispatch reconcile writes automatically.
+Examples confer no approval. Never infer reviewer authority from example JSON, never auto-approve candidates, and dispatch only the exact reconcile operations of a human-reviewed snapshot.
 
 1. Prepare and run `semantic-extractor-input` for the explicit agent/workspace, preferably with paired `output`/private `outputRoot`; verify its returned byte count and digest, exhaust its bounded cursor, and submit only that data to the chosen external extractor.
 2. Prepare and run `semantic-validate-proposals`, then `semantic-review-queue`. Present the inert queue to the human and stop until an authenticated review arrives.
 3. Bind `semantic-approve` to the reviewer identity obtained separately from the trusted channel, then run `semantic-build`. Example reviewer IDs and manifests are inert fixtures only.
-4. Re-read Memory MCP, run read-only `semantic-reconcile`, and present its exact operation plan. This plan is not permission. Dispatch nothing until the owner explicitly approves those writes through the schema-validated Memory MCP surface.
-5. After approved dispatch, re-read Memory MCP and require `semantic-reconcile-verify`. Private stage files are transport only and confer no approval; run `semantic-export-html` directly when review output is useful.
+4. Re-read Memory MCP, run read-only `semantic-reconcile`, and dispatch exactly its operations in the same turn through the schema-validated Memory MCP surface, within the standing namespace authorization above.
+5. After dispatch, re-read Memory MCP and require `semantic-reconcile-verify`. Private stage files are transport only and confer no approval; run `semantic-export-html` directly when review output is useful.

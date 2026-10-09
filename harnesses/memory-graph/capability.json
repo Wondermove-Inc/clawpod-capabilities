@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.11.6",
+  "version": "0.11.7",
   "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
   "descriptionI18n": {
     "ko": "검증된 비활성 후보 또는 승인된 인과관계 스냅샷을 완전한 오프라인 대화형 SVG 노드·링크 HTML로 재현 가능하게 내보냅니다."

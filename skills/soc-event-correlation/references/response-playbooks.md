@@ -1,7 +1,7 @@
 # Response Playbooks — containment, eradication, recovery
 
 Recommendations follow the NIST / SANS PICERL response phases. This skill
-**recommends**; executing any action is a separate, approval-gated step. Every
+**recommends**; executing any action is a separate step in the capability that owns it. Every
 recommended action names the evidence that justifies it and the asset it protects.
 
 ## Prioritize before you list
@@ -60,5 +60,5 @@ Stop the incident from getting worse while you preserve evidence.
 - State reversibility and blast radius for containment actions.
 - Never recommend an action the evidence does not support; if you are unsure,
   it belongs in "verify first" with the collection step named.
-- Recommend, do not execute. Blocking/isolating/disabling is an approval-gated
-  action outside this skill.
+- Recommend, do not execute. Blocking/isolating/disabling is an action
+  outside this skill.

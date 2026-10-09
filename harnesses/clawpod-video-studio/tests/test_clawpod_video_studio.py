@@ -5,6 +5,11 @@ ROOT=Path(__file__).resolve().parents[1]
 CLI=ROOT/'clawpod_video_studio.py'
 spec=importlib.util.spec_from_file_location('om',CLI); om=importlib.util.module_from_spec(spec); spec.loader.exec_module(om)
 
+def resolved_runtime():
+ return om.runtime({},required=False)
+NEEDS_RUNTIME=unittest.skipUnless(resolved_runtime(),'pinned OpenMontage runtime is not installed on this host')
+NEEDS_RUNTIME_VENV=unittest.skipUnless(resolved_runtime() and (resolved_runtime()/'.clawpod-venv'/'bin'/'python').exists(),'pinned OpenMontage runtime venv is not installed on this host')
+
 class HarnessTests(unittest.TestCase):
  def setUp(self):
   self.t=tempfile.TemporaryDirectory(); self.root=Path(self.t.name)/'state'
@@ -15,7 +20,9 @@ class HarnessTests(unittest.TestCase):
   for k,v in opts.items(): argv += ['--'+k.replace('_','-'),str(v)]
   p=subprocess.run(argv,text=True,capture_output=True); self.assertTrue(p.stdout,p.stderr); return p,json.loads(p.stdout)
  def create(self,pid='demo',pipeline='animated-explainer'):
-  p,o=self.invoke('project.create',{'projectId':pid,'pipelineId':pipeline,'idempotencyKey':'k'}); self.assertEqual(p.returncode,0); return o
+  p,o=self.invoke('project.create',{'projectId':pid,'pipelineId':pipeline,'idempotencyKey':'k'})
+  if (o.get('error') or {}).get('code')=='RUNTIME_NOT_FOUND':self.skipTest('pinned OpenMontage runtime is not installed on this host')
+  self.assertEqual(p.returncode,0); return o
  def wait_job(self,jid,states=('succeeded','failed','cancelled'),timeout=8):
   deadline=time.time()+timeout; last=None
   while time.time()<deadline:
@@ -27,6 +34,7 @@ class HarnessTests(unittest.TestCase):
   manifest=json.loads((ROOT/'harness.json').read_text()); self.assertEqual(set(manifest['commands']),set(om.COMMANDS)); self.assertEqual(manifest['name'],'clawpod-video-studio'); self.assertEqual(manifest['title'],'ClawPod Video Studio')
  def test_stable_envelope(self):
   p,o=self.invoke('system.version'); self.assertEqual(p.returncode,0); self.assertEqual(o['schemaVersion'],'1.0'); self.assertTrue(o['ok']); self.assertIsNone(o['error'])
+ @NEEDS_RUNTIME
  def test_all_pipelines_and_documentary_patch(self):
   p,o=self.invoke('pipeline.list'); self.assertEqual(len(o['data']['items']),13)
   for item in o['data']['items']:
@@ -121,8 +129,9 @@ class HarnessTests(unittest.TestCase):
   bad=self.root/'projects'/'demo'/'renders'/'invalid.mp4'; bad.write_bytes(b'not-a-real-video')
   p,o=self.invoke('qa.run',{'projectId':'demo','relativePath':'renders/invalid.mp4'}); self.assertEqual(p.returncode,0); self.assertEqual(o['data']['status'],'failed')
   p,o=self.invoke('artifact.list',{'projectId':'demo'}); self.assertGreaterEqual(len(o['data']['items']),3); self.assertTrue(all(i['sha256'].startswith('sha256:') for i in o['data']['items']))
+ @NEEDS_RUNTIME_VENV
  def test_upstream_registry_and_local_tool_execution(self):
-  runtime=Path('/workspace/vendor/openmontage')/om.UPSTREAM_COMMIT
+  runtime=resolved_runtime()
   p=subprocess.run([str(runtime/'.clawpod-venv/bin/python'),str(CLI),'_openmontage_runner'],input=json.dumps({'operation':'list'}),text=True,capture_output=True,env={**os.environ,'OPENMONTAGE_RUNTIME':str(runtime)})
   listing=json.loads(p.stdout); self.assertEqual(p.returncode,0); self.assertGreaterEqual(listing['data']['count'],100); self.assertIn('audio_probe',listing['data']['names'])
   self.create(); wav=self.root/'projects'/'demo'/'assets'/'tone.wav'; subprocess.run(['ffmpeg','-v','error','-f','lavfi','-i','sine=frequency=440:duration=0.2','-y',str(wav)],check=True)
@@ -135,6 +144,7 @@ class HarnessTests(unittest.TestCase):
   payload={'tool':'ffmpeg','projectId':'demo','input':{'args':['-i','/etc/passwd','renders/out.mp4']}}
   p,o=self.invoke('tool.prepare',payload); self.assertEqual(p.returncode,0); payload['toolDigest']=o['data']['toolDigest']
   p,o=self.invoke('tool.run',payload); self.assertEqual(p.returncode,2); self.assertEqual(o['error']['code'],'PATH_VIOLATION')
+ @NEEDS_RUNTIME
  def test_api_tool_requires_ceiling_approval_and_injected_secret(self):
   p,o=self.invoke('tool.prepare',{'tool':'openai_image','input':{'prompt':'x'},'maximumUsd':0}); self.assertEqual(p.returncode,6); self.assertEqual(o['error']['code'],'COST_CEILING_REQUIRED')
   payload={'tool':'openai_image','input':{'prompt':'x'},'maximumUsd':1.0}
