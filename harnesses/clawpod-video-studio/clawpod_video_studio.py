@@ -13,8 +13,12 @@ except ModuleNotFoundError:
 
 VERSION="0.2.6"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
 UPSTREAM_LOCK={"url":"https://github.com/calesthio/OpenMontage","commit":UPSTREAM_COMMIT,"packageVersion":VERSION,"license":"AGPL-3.0-only","licenseSha256":"0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0","treeDigest":"git:fd61711510ef01c3b896bae808ee4ca7c96a391f","patches":[{"id":"openmontage-documentary-category","path":"patches/openmontage-documentary-category.patch","sha256":"sha256:f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"}],"patchedFiles":[{"path":"schemas/pipelines/pipeline_manifest.schema.json","sha256":"sha256:8491027015f0ec1b49da834bd341a00380f9cb34be57afb38c086e577ab95bad"}]}
-DEPENDENCY_LOCK={"pythonEnvironmentDigest":"sha256:1426f614312febda3348de68a45de54c41107a68147317c2265722a7d2d5e4b7","npmLockDigest":"sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed","npmLockPath":"remotion-composer/package-lock.json"}
+DEPENDENCY_LOCK={"pythonLockPath":"requirements.lock","pythonLockDigest":"sha256:e55a16a8933693b05783d46d11e5e7f505e9da3003ee4f63351367d9cc48f1a5","npmLockDigest":"sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed","npmLockPath":"remotion-composer/package-lock.json"}
 MAX_JSON=1_000_000; MAX_LOG=250_000
+PACKAGE_ROOT=Path(__file__).resolve().parent
+# Installer tooling varies with the host Python and is not part of the pinned lock.
+INSTALLER_DISTRIBUTIONS={"pip","setuptools","wheel"}
+PROVISION_TIMEOUT=1800
 PIPELINES=[("animated-explainer","production","education"),("animation","production","animation"),("avatar-spokesperson","production","avatar"),("character-animation","beta","animation"),("cinematic","production","cinematic"),("clip-factory","beta","repurpose"),("documentary-montage","beta","documentary"),("framework-smoke","beta/test","test"),("hybrid","production","hybrid"),("localization-dub","beta","localization"),("podcast-repurpose","beta","repurpose"),("screen-demo","production","screen"),("talking-head","beta","talking-head")]
 PROVIDERS={
  "keyless":{"fields":[],"unlocks":["ffmpeg","ffprobe","piper","local-analysis"]},
@@ -39,7 +43,7 @@ VERIFY_ADAPTERS={
  "elevenlabs":("https://api.elevenlabs.io/v1/user/subscription",lambda s:{"xi-api-key":s["ELEVENLABS_API_KEY"]}),
  "pexels":("https://api.pexels.com/v1/curated?per_page=1",lambda s:{"Authorization":s["PEXELS_API_KEY"]}),
  "unsplash":("https://api.unsplash.com/photos?per_page=1",lambda s:{"Authorization":"Client-ID "+s["UNSPLASH_ACCESS_KEY"]})}
-COMMANDS="system.version system.preflight system.validate pipeline.list pipeline.inspect provider.summary provider.list provider.inspect provider.requirements connection.list connection.configure connection.verify connection.revoke project.create project.list project.inspect project.validate project.plan cost.estimate cost.inspect run.prepare run.start run.status run.inspect run.logs run.resume run.cancel checkpoint.inspect checkpoint.approve checkpoint.request-revision checkpoint.fail stage.prepare stage.validate stage.commit tool.prepare tool.run qa.run qa.inspect artifact.list artifact.inspect artifact.export backlot.status backlot.start backlot.open backlot.stop install.inspect install.plan-update install.apply-update install.rollback".split()
+COMMANDS="install.provision system.version system.preflight system.validate pipeline.list pipeline.inspect provider.summary provider.list provider.inspect provider.requirements connection.list connection.configure connection.verify connection.revoke project.create project.list project.inspect project.validate project.plan cost.estimate cost.inspect run.prepare run.start run.status run.inspect run.logs run.resume run.cancel checkpoint.inspect checkpoint.approve checkpoint.request-revision checkpoint.fail stage.prepare stage.validate stage.commit tool.prepare tool.run qa.run qa.inspect artifact.list artifact.inspect artifact.export backlot.status backlot.start backlot.open backlot.stop install.inspect install.plan-update install.apply-update install.rollback".split()
 SECRET_RE=re.compile(r"(?i)(api[_-]?key|token|secret|password|authorization|credential|bearer|accesskey)")
 
 class E(Exception):
@@ -168,6 +172,19 @@ def source_digest(rt):
   if any(part in excluded for part in rel.parts) or not p.is_file() or p.is_symlink(): continue
   h.update(str(rel).encode()+b"\0"); h.update(hashlib.sha256(p.read_bytes()).digest())
  return "sha256:"+h.hexdigest()
+def normalized_distribution(name): return re.sub(r"[-_.]+","-",name).lower()
+def locked_python_pins():
+ pins={}
+ for line in (PACKAGE_ROOT/DEPENDENCY_LOCK["pythonLockPath"]).read_text().splitlines():
+  m=re.match(r"^([A-Za-z0-9][A-Za-z0-9._-]*)==([^\s;\\]+)",line.strip())
+  if m: pins[normalized_distribution(m.group(1))]=m.group(2)
+ return pins
+def installed_python_distributions(py):
+ script='import importlib.metadata as m,json; print(json.dumps(sorted([d.metadata["Name"],d.version] for d in m.distributions())))'
+ q=subprocess.run([str(py),"-c",script],text=True,capture_output=True,timeout=20)
+ if q.returncode: return None
+ return {normalized_distribution(n):v for n,v in json.loads(q.stdout) if normalized_distribution(n) not in INSTALLER_DISTRIBUTIONS}
+def environment_digest(pins): return "sha256:"+hashlib.sha256("\n".join(f"{n}=={v}" for n,v in sorted(pins.items())).encode()).hexdigest()
 def validate_runtime(x=None):
  rt=runtime(x); lock=UPSTREAM_LOCK; deps=DEPENDENCY_LOCK
  def git(*args):
@@ -189,11 +206,15 @@ def validate_runtime(x=None):
   except Exception: escaping_links.append(str(link.relative_to(rt)))
  checks={"commit":{"expected":UPSTREAM_COMMIT,"actual":commit,"ok":commit==UPSTREAM_COMMIT},"tree":{"expected":lock.get("treeDigest","git:").removeprefix("git:"),"actual":tree,"ok":tree==lock.get("treeDigest","git:").removeprefix("git:")},"plaintextEnv":{"expected":False,"actual":(rt/".env").exists(),"ok":not (rt/".env").exists()},"workingTree":{"expected":[],"actual":dirty,"ok":not dirty},"sourceSymlinks":{"expected":[],"actual":unsafe_links,"ok":not unsafe_links},"escapingDependencySymlinks":{"expected":[],"actual":escaping_links,"ok":not escaping_links}}
  if marker: checks["sourceDigest"]={"expected":marker.get("sourceDigest"),"actual":source_digest(rt),"ok":bool(marker.get("sourceDigest")) and source_digest(rt)==marker.get("sourceDigest")}
- npmlock=rt/deps["npmLockPath"]; py=rt/".clawpod-venv/bin/python"; py_digest=None
- if py.exists():
-  script='import hashlib,importlib.metadata as m; rows=sorted((d.metadata["Name"].lower(),d.version) for d in m.distributions()); print("sha256:"+hashlib.sha256("\\n".join(f"{n}=={v}" for n,v in rows).encode()).hexdigest())'
-  q=subprocess.run([str(py),"-c",script],text=True,capture_output=True,timeout=20); py_digest=q.stdout.strip() if q.returncode==0 else None
- checks["pythonEnvironment"]={"expected":deps["pythonEnvironmentDigest"],"actual":py_digest,"ok":py_digest==deps["pythonEnvironmentDigest"]}
+ npmlock=rt/deps["npmLockPath"]; py=rt/".clawpod-venv/bin/python"
+ pins=locked_python_pins(); installed=installed_python_distributions(py) if py.exists() else None
+ env_check={"expected":environment_digest(pins),"actual":environment_digest(installed) if installed is not None else None,"ok":installed==pins}
+ if installed is not None and installed!=pins:
+  env_check["missing"]=sorted(f"{n}=={v}" for n,v in pins.items() if installed.get(n)!=v)
+  env_check["unexpected"]=sorted(f"{n}=={v}" for n,v in installed.items() if pins.get(n)!=v)
+ checks["pythonEnvironment"]=env_check
+ lockfile=PACKAGE_ROOT/deps["pythonLockPath"]
+ checks["pythonLock"]={"expected":deps["pythonLockDigest"],"actual":file_sha(lockfile) if lockfile.exists() else None,"ok":lockfile.exists() and file_sha(lockfile)==deps["pythonLockDigest"]}
  checks["npmLock"]={"expected":deps["npmLockDigest"],"actual":file_sha(npmlock) if npmlock.exists() else None,"ok":npmlock.exists() and file_sha(npmlock)==deps["npmLockDigest"]}
  checks["pythonRuntime"]={"expected":True,"actual":py.exists(),"ok":py.exists()}
  checks["nodeRuntime"]={"expected":True,"actual":(rt/"remotion-composer/node_modules").is_dir(),"ok":(rt/"remotion-composer/node_modules").is_dir()}
@@ -417,6 +438,72 @@ def worker(r,jid,nonce):
   save(state="cancelled" if e.code=="CANCELLED" else "failed",finishedAt=now(),ownedPid=None,ownerStartIdentity=None,lastError={"code":e.code,"message":e.msg,"details":redact(e.details)}); return e.exit_code
  except Exception as e: save(state="failed",finishedAt=now(),ownedPid=None,ownerStartIdentity=None,lastError={"code":"INTERNAL_ERROR","type":type(e).__name__}); return 12
 
+def provision_environment():
+ env={k:v for k,v in os.environ.items() if k not in ("PIP_USER","PIP_TARGET","PIP_PREFIX","PIP_REQUIRE_VIRTUALENV","PYTHONHOME","PYTHONPATH")}
+ env["PIP_USER"]="0"; env["PIP_DISABLE_PIP_VERSION_CHECK"]="1"; env["PIP_NO_INPUT"]="1"
+ return env
+def provision_run(argv,step,cwd=None,timeout=PROVISION_TIMEOUT):
+ q=subprocess.run(argv,cwd=cwd,env=provision_environment(),text=True,capture_output=True,timeout=timeout)
+ if q.returncode: raise E("PROVISION_FAILED",f"{step} failed",category="prerequisite",exit_code=8,details={"step":step,"exitCode":q.returncode,"stderr":redact(q.stderr[-4000:])})
+ return q.stdout
+def provision_python(stage):
+ lockfile=PACKAGE_ROOT/DEPENDENCY_LOCK["pythonLockPath"]
+ if file_sha(lockfile)!=DEPENDENCY_LOCK["pythonLockDigest"]: raise E("DIGEST_MISMATCH","packaged requirements.lock does not match its pinned digest",exit_code=9)
+ provision_run([sys.executable,"-m","venv",str(stage/".clawpod-venv")],"python venv")
+ provision_run([str(stage/".clawpod-venv/bin/python"),"-m","pip","install","--require-hashes","-r",str(lockfile)],"python dependencies")
+def provision_node(stage):
+ lock=stage/DEPENDENCY_LOCK["npmLockPath"]
+ if not lock.exists() or file_sha(lock)!=DEPENDENCY_LOCK["npmLockDigest"]: raise E("DIGEST_MISMATCH","upstream npm lock does not match its pinned digest",exit_code=9)
+ if not shutil.which("npm"): raise E("PREREQUISITE_MISSING","npm is required to install the pinned Remotion dependencies",category="prerequisite",exit_code=8)
+ provision_run(["npm","ci","--ignore-scripts","--no-audit","--no-fund"],"node dependencies",cwd=str(lock.parent))
+def activate_staged_runtime(r,stage):
+ install=r/"runtime"; backup=r/"runtime.backup"; previous=r/("runtime.previous-"+uuid.uuid4().hex[:8]); moved_current=False
+ if install.exists(): os.replace(install,previous); moved_current=True
+ try:
+  os.replace(stage,install); active=validate_runtime({"runtimePath":str(install)})
+  if not active["valid"]: raise E("DIGEST_MISMATCH","activated runtime failed validation",exit_code=9,details=active)
+  if moved_current:
+   if backup.exists(): shutil.rmtree(backup)
+   os.replace(previous,backup)
+  return active
+ except Exception:
+  if install.exists() and moved_current: os.replace(install,r/("runtime.invalid-"+uuid.uuid4().hex[:8]))
+  if moved_current and previous.exists() and not install.exists(): os.replace(previous,install)
+  raise
+def provision_runtime(r,source_url,status_path):
+ """Fetch the pinned OpenMontage commit, apply the pinned patch, install locked dependencies, validate, activate."""
+ stage=r/("runtime.provision-"+uuid.uuid4().hex[:8]); lock=UPSTREAM_LOCK
+ def step(name): atomic(status_path,{**(readj(status_path,{}) or {}),"step":name,"updatedAt":now()})
+ try:
+  if not shutil.which("git"): raise E("PREREQUISITE_MISSING","git is required to fetch the pinned OpenMontage source",category="prerequisite",exit_code=8)
+  step("fetch"); stage.mkdir(parents=True)
+  provision_run(["git","init","-q",str(stage)],"git init")
+  provision_run(["git","-C",str(stage),"fetch","-q","--depth","1",source_url,UPSTREAM_COMMIT],"git fetch")
+  provision_run(["git","-C",str(stage),"checkout","-q","--detach","FETCH_HEAD"],"git checkout")
+  commit=provision_run(["git","-C",str(stage),"rev-parse","HEAD"],"git rev-parse").strip(); tree=provision_run(["git","-C",str(stage),"rev-parse","HEAD^{tree}"],"git rev-parse").strip()
+  if commit!=UPSTREAM_COMMIT or tree!=lock["treeDigest"].removeprefix("git:"): raise E("DIGEST_MISMATCH","fetched source is not the pinned commit and tree",exit_code=9,details={"commit":commit,"tree":tree})
+  step("patch")
+  for item in lock.get("patches",[]):
+   patch=PACKAGE_ROOT/item["path"]
+   if file_sha(patch)!=item["sha256"]: raise E("DIGEST_MISMATCH","packaged patch does not match its pinned digest",exit_code=9,details={"patch":item["id"]})
+   provision_run(["git","-C",str(stage),"apply",str(patch)],"apply patch "+item["id"])
+  step("python"); provision_python(stage)
+  step("node"); provision_node(stage)
+  step("validate"); v=validate_runtime({"runtimePath":str(stage)})
+  if not v["valid"]: raise E("DIGEST_MISMATCH","provisioned runtime failed validation",exit_code=9,details=v)
+  step("activate"); return activate_staged_runtime(r,stage)
+ finally:
+  if stage.exists(): shutil.rmtree(stage,ignore_errors=True)
+def provision_worker(r,source_url):
+ statusp=r/"provision.json"
+ try:
+  active=provision_runtime(r,source_url,statusp)
+  atomic(statusp,{**(readj(statusp,{}) or {}),"state":"succeeded","step":"done","runtimePath":active["runtimePath"],"finishedAt":now(),"pid":None})
+  return 0
+ except Exception as exc:
+  err={"code":getattr(exc,"code","INTERNAL"),"message":str(getattr(exc,"msg",exc)),"details":getattr(exc,"details",{})}
+  atomic(statusp,{**(readj(statusp,{}) or {}),"state":"failed","error":err,"finishedAt":now(),"pid":None})
+  return 1
 def handler(cmd,a,x):
  r=root(a)
  if not x.get("runtimePath") and (r/"runtime").is_dir(): x={**x,"runtimePath":str(r/"runtime")}
@@ -659,9 +746,18 @@ def handler(cmd,a,x):
   stopped={"running":False,"ownedPid":None,"ownerNonce":None,"ownerStartIdentity":None,"url":None,"stopped":bool(s.get("ownedPid"))}; atomic(sf,stopped); return stopped,[]
  if cmd.startswith("install."):
   lock=UPSTREAM_LOCK; current=runtime(x,False); install=r/"runtime"; backup=r/"runtime.backup"; planp=r/"install-plan.json"
+  if cmd=="install.provision":
+   statusp=r/"provision.json"; st=readj(statusp,{}) or {}
+   if st.get("state")=="running" and st.get("pid") and owned_process_alive(st["pid"],st.get("ownerStartIdentity")): return st,["Provisioning is already running; poll install.inspect."]
+   source=x.get("sourceUrl") or lock["url"]
+   proc=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),"_provision","--root",str(r),"--input-json",json.dumps({"sourceUrl":source})],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)
+   st={"state":"running","step":"starting","sourceUrl":source,"commit":UPSTREAM_COMMIT,"pid":proc.pid,"ownerStartIdentity":process_start_identity(proc.pid),"startedAt":now(),"targetPath":str(install)}; atomic(statusp,st)
+   return st,["Provisioning runs in the background (git fetch, locked pip and npm installs); poll install.inspect until provision.state is succeeded."]
   if cmd=="install.inspect":
    con=readj(r/"connections.json",{}) or {}
-   return {"capabilityVersion":VERSION,"upstream":lock,"discovered":validate_runtime({"runtimePath":str(current)}) if current else None,"managedRuntime":str(install) if install.exists() else None,"onboardingRequired":True,"connected":any(v.get("status")=="connected" for v in con.values())},[]
+   prov=readj(r/"provision.json",None)
+   if prov and prov.get("state")=="running" and prov.get("pid") and not owned_process_alive(prov["pid"],prov.get("ownerStartIdentity")): prov={**prov,"state":"failed","error":{"code":"WORKER_DIED","message":"provisioning worker stopped"}}
+   return {"provision":prov,"capabilityVersion":VERSION,"upstream":lock,"discovered":validate_runtime({"runtimePath":str(current)}) if current else None,"managedRuntime":str(install) if install.exists() else None,"onboardingRequired":True,"connected":any(v.get("status")=="connected" for v in con.values())},[]
   if cmd=="install.plan-update":
    source=Path(x.get("sourcePath",str(current) if current else "" )).resolve(); v=validate_runtime({"runtimePath":str(source)}); plan={"sourcePath":str(source),"sourceDigest":source_digest(source),"validationDigest":sha(v["checks"]),"targetPath":str(install),"valid":v["valid"],"createdAt":now()}; plan["planDigest"]=sha(plan); atomic(planp,plan); return plan,[]
   if x.get("confirm") not in ("apply-update","rollback"): raise E("APPROVAL_REQUIRED","transaction confirmation required",category="approval",exit_code=6)
@@ -736,11 +832,12 @@ def isolated_openmontage_runner():
  except Exception as exc: emit({"ok":False,"error":{"code":"UPSTREAM_EXCEPTION","type":type(exc).__name__}}); return 7
 
 def parser():
- p=argparse.ArgumentParser(); p.add_argument("command",choices=COMMANDS+["_worker","_openmontage_runner"]); p.add_argument("--root"); p.add_argument("--input-json"); p.add_argument("--project-id"); p.add_argument("--pipeline-id"); p.add_argument("--provider"); p.add_argument("--job-id"); p.add_argument("--nonce"); return p
+ p=argparse.ArgumentParser(); p.add_argument("command",choices=COMMANDS+["_worker","_openmontage_runner","_provision"]); p.add_argument("--root"); p.add_argument("--input-json"); p.add_argument("--project-id"); p.add_argument("--pipeline-id"); p.add_argument("--provider"); p.add_argument("--job-id"); p.add_argument("--nonce"); return p
 def main():
  a=parser().parse_args()
  if a.command=="_openmontage_runner": return isolated_openmontage_runner()
  if a.command=="_worker": return worker(root(a),a.job_id,a.nonce)
+ if a.command=="_provision": return provision_worker(root(a),(load_json_arg(a.input_json) or {}).get("sourceUrl") or UPSTREAM_LOCK["url"])
  try: data,w=handler(a.command,a,load_json_arg(a.input_json)); print(stable(envelope(a.command,data=data,warnings=w))); return 0
  except E as e: return fail(a.command,e)
  except Exception as e: return fail(a.command,E("INTERNAL_ERROR","internal adapter failure",category="internal",details={"type":type(e).__name__},exit_code=12))

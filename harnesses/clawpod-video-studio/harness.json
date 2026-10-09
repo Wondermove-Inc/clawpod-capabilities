@@ -5490,6 +5490,128 @@
         }
       ]
     },
+    "install.provision": {
+      "description": "Fetch the pinned OpenMontage commit, apply the pinned patch, install the locked Python and npm dependencies, validate, and activate it as the managed runtime (runs in the background; poll install.inspect).",
+      "baseArgv": [
+        "install.provision"
+      ],
+      "safetyClasses": [
+        "writeSafe",
+        "externalSideEffect"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputJson": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "pipelineId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "schemaVersion",
+          "command",
+          "requestId",
+          "timestamp",
+          "data",
+          "warnings",
+          "artifacts",
+          "page"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "schemaVersion": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "warnings": {
+            "type": "array"
+          },
+          "artifacts": {
+            "type": "array"
+          },
+          "page": {},
+          "error": {}
+        },
+        "additionalProperties": false
+      },
+      "argMap": [
+        {
+          "arg": "inputJson",
+          "type": "option",
+          "flag": "--input-json",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "root",
+          "type": "option",
+          "flag": "--root",
+          "valueType": "path",
+          "pathRole": "output",
+          "optional": true
+        },
+        {
+          "arg": "projectId",
+          "type": "option",
+          "flag": "--project-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "pipelineId",
+          "type": "option",
+          "flag": "--pipeline-id",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "provider",
+          "type": "option",
+          "flag": "--provider",
+          "valueType": "string",
+          "optional": true
+        },
+        {
+          "arg": "jobId",
+          "type": "option",
+          "flag": "--job-id",
+          "valueType": "string",
+          "optional": true
+        }
+      ]
+    },
     "install.inspect": {
       "description": "OpenMontage install.inspect operation.",
       "baseArgv": [

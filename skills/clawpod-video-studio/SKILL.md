@@ -11,6 +11,7 @@ Use the linked `clawpod-video-studio` Harness. Treat the Skill and Harness as on
 
 Immediately after installation, say: **“ClawPod Video Studio is installed but not yet connected.”** Do not claim cloud-provider readiness.
 
+0. **Install the pinned OpenMontage runtime first** — nothing else works without it. Run `install.inspect`; if `managedRuntime` is null or `provision.state` is not `succeeded`, run `install.provision` and poll `install.inspect` (every ~10 s) until `provision.state` is `succeeded`, then confirm `system.validate`. It fetches the pinned commit, applies the pinned patch, installs the locked Python (`--require-hashes`) and npm (`npm ci --ignore-scripts`) dependencies, validates every pin, and activates the runtime under the state root; it needs `git`, `npm`, and network access and takes a few minutes. On `failed`, report `provision.error` (step and stderr tail) and re-run `install.provision` after fixing the cause.
 1. Run `system.preflight`, `provider.summary`, and `provider.requirements`.
 2. Explain local prerequisites, available keyless/local paths, provider categories, data transfer, billing exposure, and revocation.
 3. Ask which provider categories or named providers the user wants to connect. Offer `defer`, keyless/local, stock+voice, or a user-selected profile.
@@ -30,6 +31,8 @@ Read `references/onboarding.md` when connecting providers or recovering authoriz
 Call the Harness through the `cli_harness` tool: `{"action":"harness.run.prepare","name":"clawpod-video-studio","command":"<command>","input":{...}}`, then the identical call with `"action":"harness.run"` and the returned `approvalIntentHash`. Each line below is `<command>  <input>`, where `command` is the manifest key. Most commands read their arguments from `inputJson` (a JSON **string**); `projectId`, `pipelineId`, `provider`, and `jobId` may also be passed as top-level inputs.
 
 ```text
+install.inspect  {}
+install.provision  {}
 system.version  {}
 pipeline.list  {}
 project.create  {"inputJson":"{\"projectId\":\"launch-teaser\",\"pipelineId\":\"animated-explainer\",\"title\":\"Launch teaser\",\"idempotencyKey\":\"launch-teaser-v1\"}"}

@@ -414,7 +414,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "38f7d9ab57fedc8aa99b203e869eee2aba329308ff9dc3bd0b5b6344eb72f6c1"
+          "sha256": "c6cc5f75977f63564ac88748e074f50cbb5a3ffef888b2d8a6bde0dc3b335ec5"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -430,7 +430,7 @@
         },
         {
           "path": "references/operations.md",
-          "sha256": "dbc0567940b7617aee653451f25a1b7b8d8e6864e5f301b7efbc08d297f90949"
+          "sha256": "cc2127cc990168b0b42babfc2916e639972cb365308a30a53c08ae472db84cca"
         },
         {
           "path": "references/pipelines.md",
@@ -1398,11 +1398,11 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "5312dfa5518d0c9dc0af61ef629fb6f25ae00c63e6b81a0b909b2c8bfd8d0dce"
+          "sha256": "f53e2981e739b28616a71d956642c983268a78d9c2c79884b0eb5bc77bf3cd3f"
         },
         {
           "path": "command_contracts.json",
-          "sha256": "490626d4ac80b0f43cfc2b914bf040636c169f525a00fdcaad12f7decd4b8137"
+          "sha256": "b8600250b016ea217019c4e6840f4a4a7e5ddb5ccf4cf89cd70b6a24a36d6fcf"
         },
         {
           "path": "dependencies.lock.json",
@@ -1410,7 +1410,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "c4337884df4e450c9f407831b56f4cc021f9746c2bdee6540949c90908469a8b"
+          "sha256": "656138a22b04699a7f156eb308a224a045fdaf6d388dd5034fa7b88b08438fc4"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",

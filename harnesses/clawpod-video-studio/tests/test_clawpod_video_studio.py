@@ -1,4 +1,4 @@
-import importlib.util, json, os, stat, subprocess, sys, tempfile, time, unittest
+import hashlib, importlib.util, json, os, shutil, stat, subprocess, sys, tempfile, time, unittest
 from pathlib import Path
 from unittest import mock
 ROOT=Path(__file__).resolve().parents[1]
@@ -178,3 +178,52 @@ class HarnessTests(unittest.TestCase):
   p,o=self.invoke('install.inspect'); self.assertTrue(o['data']['onboardingRequired']); self.assertFalse(o['data']['connected'])
 
 if __name__=='__main__': unittest.main()
+
+
+class ProvisionTests(unittest.TestCase):
+ """Offline coverage of install.provision with a local fixture upstream; the real fetch is exercised on agent images."""
+ def setUp(self):
+  self.t=tempfile.TemporaryDirectory(); base=Path(self.t.name); self.state=base/'state'; self.state.mkdir()
+  up=base/'upstream'; (up/'pipeline_defs').mkdir(parents=True); (up/'tools').mkdir(); (up/'remotion-composer').mkdir()
+  (up/'pipeline_defs'/'demo.yaml').write_text('name: demo\nstages: []\n'); (up/'tools'/'README').write_text('tools\n')
+  (up/'remotion-composer'/'package-lock.json').write_text('{"lockfileVersion":3}\n'); (up/'target.txt').write_text('before\n')
+  git=lambda *a:subprocess.run(['git','-C',str(up),*a],check=True,capture_output=True,text=True).stdout.strip()
+  git('init','-q'); git('config','user.email','t@example.invalid'); git('config','user.name','t'); git('add','-A'); git('commit','-qm','fixture')
+  self.commit=git('rev-parse','HEAD'); self.tree=git('rev-parse','HEAD^{tree}'); self.upstream=up
+  self.patch=base/'fix.patch'; self.patch.write_text('--- a/target.txt\n+++ b/target.txt\n@@ -1 +1 @@\n-before\n+after\n')
+  after='sha256:'+hashlib.sha256(b'after\n').hexdigest()
+  self.saved={k:getattr(om,k) for k in ('UPSTREAM_COMMIT','UPSTREAM_LOCK','DEPENDENCY_LOCK','PACKAGE_ROOT','provision_python','provision_node','locked_python_pins','installed_python_distributions')}
+  pkg=base/'pkg'; (pkg/'patches').mkdir(parents=True); shutil.copy(self.patch,pkg/'patches'/'fix.patch'); shutil.copy(ROOT/'requirements.lock',pkg/'requirements.lock')
+  om.PACKAGE_ROOT=pkg; om.UPSTREAM_COMMIT=self.commit
+  om.UPSTREAM_LOCK={**om.UPSTREAM_LOCK,'commit':self.commit,'treeDigest':'git:'+self.tree,'patches':[{'id':'fix','path':'patches/fix.patch','sha256':'sha256:'+hashlib.sha256(self.patch.read_bytes()).hexdigest()}],'patchedFiles':[{'path':'target.txt','sha256':after}]}
+  om.DEPENDENCY_LOCK={**om.DEPENDENCY_LOCK,'npmLockDigest':'sha256:'+hashlib.sha256((up/'remotion-composer'/'package-lock.json').read_bytes()).hexdigest()}
+  def fake_python(stage):
+   b=stage/'.clawpod-venv'/'bin'; b.mkdir(parents=True); (b/'python').symlink_to(Path(sys.executable).resolve())
+  om.provision_python=fake_python; om.provision_node=lambda stage:(stage/'remotion-composer'/'node_modules').mkdir()
+  om.locked_python_pins=lambda:{'demo':'1.0'}; om.installed_python_distributions=lambda py:{'demo':'1.0'}
+ def tearDown(self):
+  for k,v in self.saved.items(): setattr(om,k,v)
+  self.t.cleanup()
+ def test_provision_fetches_patches_validates_and_activates_with_backup(self):
+  status=self.state/'provision.json'
+  active=om.provision_runtime(self.state,str(self.upstream),status)
+  self.assertTrue(active['valid'],active); runtime=self.state/'runtime'
+  self.assertEqual((runtime/'target.txt').read_text(),'after\n'); self.assertTrue((runtime/'remotion-composer'/'node_modules').is_dir())
+  self.assertEqual(json.loads(status.read_text())['step'],'activate')
+  om.provision_runtime(self.state,str(self.upstream),status)
+  self.assertTrue((self.state/'runtime.backup').is_dir()); self.assertFalse(list(self.state.glob('runtime.provision-*')))
+ def test_provision_rejects_wrong_tree_and_activates_nothing(self):
+  om.UPSTREAM_LOCK={**om.UPSTREAM_LOCK,'treeDigest':'git:'+'0'*40}
+  with self.assertRaises(om.E) as caught: om.provision_runtime(self.state,str(self.upstream),self.state/'provision.json')
+  self.assertEqual(caught.exception.code,'DIGEST_MISMATCH'); self.assertFalse((self.state/'runtime').exists()); self.assertFalse(list(self.state.glob('runtime.provision-*')))
+ def test_python_environment_check_names_missing_and_unexpected(self):
+  status=self.state/'provision.json'; om.provision_runtime(self.state,str(self.upstream),status)
+  om.installed_python_distributions=lambda py:{'demo':'2.0','extra':'1'}
+  v=om.validate_runtime({'runtimePath':str(self.state/'runtime')}); check=v['checks']['pythonEnvironment']
+  self.assertFalse(v['valid']); self.assertEqual(check['missing'],['demo==1.0']); self.assertEqual(check['unexpected'],['demo==2.0','extra==1'])
+
+class LockParsingTests(unittest.TestCase):
+ def test_locked_pins_exclude_installer_tooling_and_digest_is_deterministic(self):
+  pins=om.locked_python_pins(); self.assertGreater(len(pins),10); self.assertFalse(om.INSTALLER_DISTRIBUTIONS & set(pins))
+  self.assertEqual(om.environment_digest(pins),om.environment_digest(dict(reversed(list(pins.items())))))
+  self.assertNotIn('pip',om.installed_python_distributions(Path(sys.executable)) or {})
