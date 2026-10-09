@@ -106,10 +106,11 @@ class BrowserInteractionTests(unittest.TestCase):
             M.export_html(bundle, output, API)
             profile = root / "profile"
             cdp = None
-            process = subprocess.Popen([chromium, "--headless=new", "--no-sandbox", "--disable-gpu", "--remote-debugging-port=0",
+            process = subprocess.Popen([chromium, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0",
                                         f"--user-data-dir={profile}", output.as_uri()], stderr=subprocess.PIPE, text=True)
             try:
-                deadline = time.time() + 10
+                # Cold Chromium starts on shared CI runners can take well over 10 s.
+                deadline = time.time() + 30
                 websocket = None
                 while time.time() < deadline:
                     line = process.stderr.readline()
@@ -150,7 +151,11 @@ class BrowserInteractionTests(unittest.TestCase):
                 if cdp is not None:
                     cdp.close()
                 process.terminate()
-                process.wait(timeout=5)
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=10)
                 process.stderr.close()
 
 
