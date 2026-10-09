@@ -222,6 +222,87 @@ class ProvisionTests(unittest.TestCase):
   v=om.validate_runtime({'runtimePath':str(self.state/'runtime')}); check=v['checks']['pythonEnvironment']
   self.assertFalse(v['valid']); self.assertEqual(check['missing'],['demo==1.0']); self.assertEqual(check['unexpected'],['demo==2.0','extra==1'])
 
+class ProvisionStartTests(unittest.TestCase):
+ def test_fast_worker_failure_is_not_overwritten_by_the_starting_status(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir()
+   class FastFailingPopen:
+    def __init__(self,*a,**k):
+     # The worker records its failure before the parent regains control.
+     (r/'provision.json').write_text(json.dumps({"state":"failed","error":{"code":"PREREQUISITE_MISSING","message":"git is required"},"pid":None}))
+     self.pid=os.getpid()
+   from types import SimpleNamespace
+   with mock.patch.object(om.subprocess,'Popen',FastFailingPopen):
+    st,_=om.handler('install.provision',SimpleNamespace(root=str(r),project_id=None,pipeline_id=None,provider=None,job_id=None),{})
+   saved=json.loads((r/'provision.json').read_text())
+   self.assertEqual(saved['state'],'failed'); self.assertEqual(saved['error']['code'],'PREREQUISITE_MISSING'); self.assertEqual(st['state'],'failed')
+
+class ProvisionStatusOwnershipTests(unittest.TestCase):
+ def args(self,r):
+  from types import SimpleNamespace
+  return SimpleNamespace(root=str(r),project_id=None,pipeline_id=None,provider=None,job_id=None)
+ def test_parent_never_writes_after_spawning_so_a_late_worker_result_survives(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir(); statusp=r/'provision.json'
+   real_readj=om.readj
+   class Popen:
+    def __init__(self,*a,**k): self.pid=os.getpid()
+   def worker_finishes_during_parent_read(path,default=None):
+    # The worker's final write lands while the parent is still inside the handler after Popen.
+    if Path(path)==statusp and json.loads(statusp.read_text()).get('state')=='running':
+     statusp.write_text(json.dumps({"state":"failed","error":{"code":"PREREQUISITE_MISSING","message":"git is required"},"pid":None}))
+    return real_readj(path,default)
+   with mock.patch.object(om.subprocess,'Popen',Popen):
+    real_atomic=om.atomic; writes=[]
+    def arm_after_first_write(path,data):
+     writes.append(dict(data)); real_atomic(path,data); om.readj=worker_finishes_during_parent_read
+    with mock.patch.object(om,'atomic',arm_after_first_write):
+     try: st,_=om.handler('install.provision',self.args(r),{})
+     finally: om.readj=real_readj
+   saved=json.loads(statusp.read_text())
+   self.assertEqual(saved['state'],'failed'); self.assertEqual(saved['error']['code'],'PREREQUISITE_MISSING'); self.assertEqual(st['pid'],os.getpid())
+   # Only the pre-spawn record is written by the parent; any later write could clobber a result landing between read and write.
+   self.assertEqual(len(writes),1); self.assertIsNone(writes[0]['pid'])
+ def test_a_failed_spawn_is_recorded_and_a_retry_starts_immediately(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir()
+   with mock.patch.object(om.subprocess,'Popen',side_effect=OSError(11,'Resource temporarily unavailable')):
+    with self.assertRaises(om.E) as e: om.handler('install.provision',self.args(r),{})
+   self.assertEqual(e.exception.code,'SPAWN_FAILED')
+   saved=json.loads((r/'provision.json').read_text()); self.assertEqual(saved['state'],'failed'); self.assertIn('Resource temporarily unavailable',saved['error']['message'])
+   spawned=[]
+   class Popen:
+    def __init__(self,*a,**k): spawned.append(a); self.pid=os.getpid()
+   with mock.patch.object(om.subprocess,'Popen',Popen): st,_=om.handler('install.provision',self.args(r),{})
+   self.assertEqual(len(spawned),1); self.assertEqual(st['state'],'running')
+ def test_a_just_started_record_without_pid_blocks_a_second_start(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir(); (r/'provision.json').write_text(json.dumps({"state":"running","pid":None,"startedAt":om.now()}))
+   with mock.patch.object(om.subprocess,'Popen',side_effect=AssertionError('must not spawn')):
+    st,w=om.handler('install.provision',self.args(r),{})
+   self.assertEqual(st['state'],'running'); self.assertIn('already running',w[0])
+ def test_a_stale_record_without_pid_is_reported_as_a_dead_worker(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir()
+   old=(om.dt.datetime.now(om.dt.timezone.utc)-om.dt.timedelta(minutes=5)).isoformat()
+   (r/'provision.json').write_text(json.dumps({"state":"running","pid":None,"startedAt":old}))
+   st,_=om.handler('install.inspect',self.args(r),{})
+   self.assertEqual(st['provision']['state'],'failed'); self.assertEqual(st['provision']['error']['code'],'WORKER_DIED')
+   (r/'provision.json').write_text(json.dumps({"state":"running","pid":None,"startedAt":om.now()}))
+   st,_=om.handler('install.inspect',self.args(r),{}); self.assertEqual(st['provision']['state'],'running')
+
+class ProvisionWorkerIdentityTests(unittest.TestCase):
+ def test_worker_records_its_own_pid_before_any_step(self):
+  with tempfile.TemporaryDirectory() as d:
+   r=Path(d)/'state'; r.mkdir(); (r/'provision.json').write_text(json.dumps({"state":"running","pid":None}))
+   seen={}
+   def fake_provision(root,source,statusp):
+    seen.update(json.loads(statusp.read_text())); raise om.E("PREREQUISITE_MISSING","git is required")
+   with mock.patch.object(om,'provision_runtime',fake_provision):
+    self.assertEqual(om.provision_worker(r,'https://example.invalid/repo'),1)
+   self.assertEqual(seen['pid'],os.getpid()); self.assertEqual(seen['state'],'running')
+   final=json.loads((r/'provision.json').read_text()); self.assertEqual(final['state'],'failed'); self.assertEqual(final['error']['code'],'PREREQUISITE_MISSING')
+
 class LockParsingTests(unittest.TestCase):
  def test_locked_pins_exclude_installer_tooling_and_digest_is_deterministic(self):
   pins=om.locked_python_pins(); self.assertGreater(len(pins),10); self.assertFalse(om.INSTALLER_DISTRIBUTIONS & set(pins))

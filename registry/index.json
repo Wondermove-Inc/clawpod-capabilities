@@ -401,7 +401,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "skill",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "description": "Use to plan, create, edit, repurpose, localize, resume, export, or quality-check videos through guarded OpenMontage pipelines with costs and checkpoints; use Image Studio for standalone still-image work or source images.",
       "path": "skills/clawpod-video-studio",
       "compatibility": {
@@ -414,7 +414,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "c6cc5f75977f63564ac88748e074f50cbb5a3ffef888b2d8a6bde0dc3b335ec5"
+          "sha256": "e5843f78c4aefafbc78e909a9b40112413a792aa49c34e30a8618a2ccc074c44"
         },
         {
           "path": "references/errors-and-recovery.md",
@@ -447,7 +447,7 @@
       },
       "linkedHarness": {
         "id": "clawpod-video-studio",
-        "version": "0.2.6"
+        "version": "0.2.7"
       }
     },
     {
@@ -1377,7 +1377,7 @@
     {
       "id": "clawpod-video-studio",
       "type": "harness",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "description": "Execute guarded OpenMontage tools, pipelines, detached jobs, provider verification, media QA, and transactional runtime lifecycle operations.",
       "path": "harnesses/clawpod-video-studio",
       "compatibility": {
@@ -1398,7 +1398,7 @@
         },
         {
           "path": "clawpod_video_studio.py",
-          "sha256": "f53e2981e739b28616a71d956642c983268a78d9c2c79884b0eb5bc77bf3cd3f"
+          "sha256": "412e136627085760e60e3256a954c0f6d795115d8a3152dd8bf6e3dd68974d62"
         },
         {
           "path": "command_contracts.json",
@@ -1410,7 +1410,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "656138a22b04699a7f156eb308a224a045fdaf6d388dd5034fa7b88b08438fc4"
+          "sha256": "dc5628e2060c47ff585f415114d8435f4881f2d3c6bd6d2c37ad259a57e7ce0e"
         },
         {
           "path": "patches/openmontage-documentary-category.patch",
