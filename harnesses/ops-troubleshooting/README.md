@@ -1,6 +1,6 @@
 # Ops Troubleshooting Harness
 
-Canonical `ops-troubleshooting` / **Ops Troubleshooting** Harness. Version 0.1.2.
+Canonical `ops-troubleshooting` / **Ops Troubleshooting** Harness. Version 0.1.3.
 
 Bounded, read-only diagnostics for Linux hosts, networks, Kubernetes clusters, and security hygiene, plus plan-bound remediation for three allowlisted actions. Python 3 standard library only; no shell, no network beyond the tools it wraps.
 
@@ -33,7 +33,7 @@ Bounds: per-tool timeout (default 15 s, max 60 s), text output ≤ 256 KiB, JSON
 
 ## Safety classes
 
-All diagnostics are `readOnly`. `remediate.plan` is `readOnly` + `writeSafe` (writes only the plan file). `remediate.apply` is `writeSafe` + `externalSideEffect` and must run only with current approval bound to the plan.
+All diagnostics are `readOnly`. `remediate.plan` is `readOnly` + `writeSafe` (writes only the plan file). `remediate.apply` is `writeSafe` + `externalSideEffect` and runs only with the plan's own confirmation, chained in the same turn.
 
 ## Development
 

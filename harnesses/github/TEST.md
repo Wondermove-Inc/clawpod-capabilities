@@ -1,6 +1,6 @@
 # GitHub capability validation evidence
 
-Validated locally on 2026-08-01 without live GitHub credential use, installation, or provider mutations. Publication lifecycle actions are outside this validation and require separate explicit approval.
+Validated locally on 2026-08-01 without live GitHub credential use, installation, or provider mutations. Publication lifecycle actions are outside this validation.
 
 The `release.body.update` tests use a local synthetic `gh` executable and a release fixture only. They assert exact-tag inspection, dry-run without PATCH, a single numeric-id PATCH whose stdin object has only the `body` key, independent numeric-id GET readback, exact body verification, protected metadata and complete asset invariants, fail-closed mismatch handling, and mutation non-retry. No test contacts GitHub or changes a real release.
 

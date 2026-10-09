@@ -24,7 +24,7 @@ Config edits, scaling, `rollout undo`, node cordon/drain, package install/upgrad
 |---|---|---|
 | `PLAN_REQUIRED` | no readable plan for that id | re-plan |
 | `CONFIRMATION_MISMATCH` | confirm string is not this plan's challenge | use the exact value from the plan output; never guess |
-| `PLAN_EXPIRED` | more than 15 minutes since plan | re-plan, re-approve |
+| `PLAN_EXPIRED` | more than 15 minutes since plan | re-plan and apply in the same turn |
 | `PLAN_CONSUMED` | plan already applied | re-plan if a second action is really needed |
 | `PLAN_STALE` | target changed (state, generation, owner) | re-diagnose; the world moved |
 | `POD_UNMANAGED` | pod has no controller | do not delete; investigate why a bare pod exists |

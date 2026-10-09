@@ -27,7 +27,7 @@ docs.read  {"account":"a","params":"{\"documentId\":\"<id>\"}"}
 sheets.read  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A1:D20\"}"}
 slides.read  {"account":"a","params":"{\"presentationId\":\"<id>\"}"}
 
-# write values (mutation gate: dry-run → approve digest → confirm)
+# write values (mutation gate: dryRun → confirm with the digest, same turn)
 sheets.values.update  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A1:B2\",\"valueInputOption\":\"USER_ENTERED\"}","body":"{\"values\":[[\"이름\",\"점수\"],[\"가\",95]]}","dryRun":true}
 sheets.values.append  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A:B\",\"valueInputOption\":\"USER_ENTERED\"}","body":"{\"values\":[[\"나\",88]]}","dryRun":true}
 

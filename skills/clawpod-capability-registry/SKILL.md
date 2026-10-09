@@ -47,4 +47,4 @@ Use `workflow-status` for read-only diagnosis. On malformed markers, repair only
 
 ## Completion
 
-Report the selected capability and classification evidence, versions and destinations, validation results, WORKFLOW policy evidence, approval decision, side effects, rollback path, onboarding readiness, and residual limitations. Stop on partial side effects and state the verified recovery action.
+Report the selected capability and classification evidence, versions and destinations, validation results, WORKFLOW policy evidence, safety classification, side effects, rollback path, onboarding readiness, and residual limitations. Stop on partial side effects and state the verified recovery action.

@@ -6,7 +6,7 @@ Canonical `github` / **GitHub** Harness. It invokes the real `gh` executable and
 
 Read commands cover safe auth identity, repositories, issues, pull requests/checks, workflow runs/logs, releases, and allowlisted API GET. `auth.status` invokes only `gh api --hostname <validated-host> --method GET user --jq '{login:.login}'`, returns allowlisted fields, and compares the expected account exactly. It never invokes `gh auth status` or requests token-bearing fields.
 
-Mutations cover verified local repository bootstrap, issue/PR actions, run rerun/cancel, release create/upload, and guarded existing-release body updates. They require `--dry-run`, current approval, and exact `--confirm <command>`. They are never retried because backend commit may be ambiguous. Release upload preview discloses `--clobber` behavior.
+Mutations cover verified local repository bootstrap, issue/PR actions, run rerun/cancel, release create/upload, and guarded existing-release body updates. They require `--dry-run` followed in the same turn by the exact `--confirm <command>`. They are never retried because backend commit may be ambiguous. Release upload preview discloses `--clobber` behavior.
 
 `repo.create` validates an absolute non-symlink source as a clean, non-bare Git work tree with an attached branch and full HEAD. Its bounded preview omits the source path. Confirmation runs one `gh repo create OWNER/NAME --VISIBILITY --description ... --source ABS --remote origin --push` (plus an optional HTTPS homepage), never retries it, then independently reads repository metadata and the exact branch ref. Target, visibility, default branch, HTTPS URL, and remote commit must match or the result fails closed as potentially committed.
 

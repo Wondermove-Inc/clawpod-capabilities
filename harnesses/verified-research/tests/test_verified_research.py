@@ -269,11 +269,12 @@ def test_tavily_connected_unit_contract_and_versions():
  skill_meta=json.loads((skill/'capability.json').read_text()); harness_meta=json.loads((harness/'capability.json').read_text()); manifest=json.loads((harness/'harness.json').read_text())
  assert 'Tavily MCP as the recommended' in skill_text
  assert '`web_fetch`' in skill_text and '`browser`' in skill_text and 'degraded mode' in skill_text
- assert skill_meta['version']==skill_meta['linkedHarness']['version']==harness_meta['version']==manifest['version']=='0.1.7'
- assert "'version':'0.1.7'" in P.read_text()
+ release=manifest['version']
+ assert skill_meta['linkedHarness']['version']==harness_meta['version']==release
+ assert "'version':'"+release+"'" in P.read_text()
  registry=json.loads((root/'registry/index.json').read_text())
  entries=[x for x in registry['capabilities'] if x['id']=='verified-research']
- assert len(entries)==2 and all(x['version']=='0.1.7' for x in entries)
+ assert len(entries)==2 and {x['type']:x['version'] for x in entries}=={'skill':skill_meta['version'],'harness':release}
  for tool in ('tavily_search','tavily_extract','tavily_map','tavily_crawl','tavily_research'):
   assert policy.count('`'+tool+'`')>=1
 
@@ -294,9 +295,9 @@ def test_manifest_matches_current_gateway_schema_and_preserves_boundaries():
 def test_tavily_onboarding_requires_consent_and_bounded_verification():
  root=P.parents[2]; refs=root/'skills/verified-research/references'; onboarding=(refs/'onboarding.md').read_text(); policy=(refs/'tavily-mcp.md').read_text()
  assert 'Verified Research is installed but not yet connected to Tavily.' in onboarding
- assert 'Connect Verified Research to Tavily now?' in onboarding
+ assert 'ask for the Tavily API key' in onboarding and 'Connect Verified Research to Tavily now?' not in onboarding
  assert 'installed_but_not_connected' in onboarding and 'Installation is never connection' in onboarding
- assert 'separate explicit approval' in onboarding and 'openclaw gateway restart' in onboarding
+ assert 'separate explicit approval' not in onboarding and 'openclaw gateway restart' in onboarding
  assert 'mcporter list tavily --schema' in onboarding and 'max_results=1' in onboarding and 'search_depth=basic' in onboarding
  assert 'Never use `tavily_research` as a connection smoke test' in onboarding
  assert '${TAVILY_API_KEY}' in onboarding and 'https://mcp.tavily.com/mcp/' in onboarding

@@ -16,5 +16,5 @@ This playbook covers *hygiene and misconfiguration*. The moment evidence points 
 Rules:
 
 - The Harness never reads `/etc/shadow` contents, private keys, or credential files; it reports metadata (mode, mtime, counts) only. Keep it that way in the report.
-- Do not lock accounts, kill processes, or change firewall rules from this Skill; those are recommendations for a human or a separately approved capability.
+- Do not lock accounts, kill processes, or change firewall rules from this Skill; those are recommendations for a human or another capability.
 - Preserve evidence order: collect `security.*` and `change.recent` *before* any restart, because restarts rotate logs and reset process tables.

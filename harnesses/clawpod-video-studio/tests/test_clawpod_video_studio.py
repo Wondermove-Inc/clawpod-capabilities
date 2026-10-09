@@ -1,9 +1,14 @@
-import importlib.util, json, os, stat, subprocess, sys, tempfile, time, unittest
+import hashlib, importlib.util, json, os, shutil, stat, subprocess, sys, tempfile, time, unittest
 from pathlib import Path
 from unittest import mock
 ROOT=Path(__file__).resolve().parents[1]
 CLI=ROOT/'clawpod_video_studio.py'
 spec=importlib.util.spec_from_file_location('om',CLI); om=importlib.util.module_from_spec(spec); spec.loader.exec_module(om)
+
+def resolved_runtime():
+ return om.runtime({},required=False)
+NEEDS_RUNTIME=unittest.skipUnless(resolved_runtime(),'pinned OpenMontage runtime is not installed on this host')
+NEEDS_RUNTIME_VENV=unittest.skipUnless(resolved_runtime() and (resolved_runtime()/'.clawpod-venv'/'bin'/'python').exists(),'pinned OpenMontage runtime venv is not installed on this host')
 
 class HarnessTests(unittest.TestCase):
  def setUp(self):
@@ -15,7 +20,9 @@ class HarnessTests(unittest.TestCase):
   for k,v in opts.items(): argv += ['--'+k.replace('_','-'),str(v)]
   p=subprocess.run(argv,text=True,capture_output=True); self.assertTrue(p.stdout,p.stderr); return p,json.loads(p.stdout)
  def create(self,pid='demo',pipeline='animated-explainer'):
-  p,o=self.invoke('project.create',{'projectId':pid,'pipelineId':pipeline,'idempotencyKey':'k'}); self.assertEqual(p.returncode,0); return o
+  p,o=self.invoke('project.create',{'projectId':pid,'pipelineId':pipeline,'idempotencyKey':'k'})
+  if (o.get('error') or {}).get('code')=='RUNTIME_NOT_FOUND':self.skipTest('pinned OpenMontage runtime is not installed on this host')
+  self.assertEqual(p.returncode,0); return o
  def wait_job(self,jid,states=('succeeded','failed','cancelled'),timeout=8):
   deadline=time.time()+timeout; last=None
   while time.time()<deadline:
@@ -27,6 +34,7 @@ class HarnessTests(unittest.TestCase):
   manifest=json.loads((ROOT/'harness.json').read_text()); self.assertEqual(set(manifest['commands']),set(om.COMMANDS)); self.assertEqual(manifest['name'],'clawpod-video-studio'); self.assertEqual(manifest['title'],'ClawPod Video Studio')
  def test_stable_envelope(self):
   p,o=self.invoke('system.version'); self.assertEqual(p.returncode,0); self.assertEqual(o['schemaVersion'],'1.0'); self.assertTrue(o['ok']); self.assertIsNone(o['error'])
+ @NEEDS_RUNTIME
  def test_all_pipelines_and_documentary_patch(self):
   p,o=self.invoke('pipeline.list'); self.assertEqual(len(o['data']['items']),13)
   for item in o['data']['items']:
@@ -121,8 +129,9 @@ class HarnessTests(unittest.TestCase):
   bad=self.root/'projects'/'demo'/'renders'/'invalid.mp4'; bad.write_bytes(b'not-a-real-video')
   p,o=self.invoke('qa.run',{'projectId':'demo','relativePath':'renders/invalid.mp4'}); self.assertEqual(p.returncode,0); self.assertEqual(o['data']['status'],'failed')
   p,o=self.invoke('artifact.list',{'projectId':'demo'}); self.assertGreaterEqual(len(o['data']['items']),3); self.assertTrue(all(i['sha256'].startswith('sha256:') for i in o['data']['items']))
+ @NEEDS_RUNTIME_VENV
  def test_upstream_registry_and_local_tool_execution(self):
-  runtime=Path('/workspace/vendor/openmontage')/om.UPSTREAM_COMMIT
+  runtime=resolved_runtime()
   p=subprocess.run([str(runtime/'.clawpod-venv/bin/python'),str(CLI),'_openmontage_runner'],input=json.dumps({'operation':'list'}),text=True,capture_output=True,env={**os.environ,'OPENMONTAGE_RUNTIME':str(runtime)})
   listing=json.loads(p.stdout); self.assertEqual(p.returncode,0); self.assertGreaterEqual(listing['data']['count'],100); self.assertIn('audio_probe',listing['data']['names'])
   self.create(); wav=self.root/'projects'/'demo'/'assets'/'tone.wav'; subprocess.run(['ffmpeg','-v','error','-f','lavfi','-i','sine=frequency=440:duration=0.2','-y',str(wav)],check=True)
@@ -135,6 +144,7 @@ class HarnessTests(unittest.TestCase):
   payload={'tool':'ffmpeg','projectId':'demo','input':{'args':['-i','/etc/passwd','renders/out.mp4']}}
   p,o=self.invoke('tool.prepare',payload); self.assertEqual(p.returncode,0); payload['toolDigest']=o['data']['toolDigest']
   p,o=self.invoke('tool.run',payload); self.assertEqual(p.returncode,2); self.assertEqual(o['error']['code'],'PATH_VIOLATION')
+ @NEEDS_RUNTIME
  def test_api_tool_requires_ceiling_approval_and_injected_secret(self):
   p,o=self.invoke('tool.prepare',{'tool':'openai_image','input':{'prompt':'x'},'maximumUsd':0}); self.assertEqual(p.returncode,6); self.assertEqual(o['error']['code'],'COST_CEILING_REQUIRED')
   payload={'tool':'openai_image','input':{'prompt':'x'},'maximumUsd':1.0}
@@ -168,3 +178,52 @@ class HarnessTests(unittest.TestCase):
   p,o=self.invoke('install.inspect'); self.assertTrue(o['data']['onboardingRequired']); self.assertFalse(o['data']['connected'])
 
 if __name__=='__main__': unittest.main()
+
+
+class ProvisionTests(unittest.TestCase):
+ """Offline coverage of install.provision with a local fixture upstream; the real fetch is exercised on agent images."""
+ def setUp(self):
+  self.t=tempfile.TemporaryDirectory(); base=Path(self.t.name); self.state=base/'state'; self.state.mkdir()
+  up=base/'upstream'; (up/'pipeline_defs').mkdir(parents=True); (up/'tools').mkdir(); (up/'remotion-composer').mkdir()
+  (up/'pipeline_defs'/'demo.yaml').write_text('name: demo\nstages: []\n'); (up/'tools'/'README').write_text('tools\n')
+  (up/'remotion-composer'/'package-lock.json').write_text('{"lockfileVersion":3}\n'); (up/'target.txt').write_text('before\n')
+  git=lambda *a:subprocess.run(['git','-C',str(up),*a],check=True,capture_output=True,text=True).stdout.strip()
+  git('init','-q'); git('config','user.email','t@example.invalid'); git('config','user.name','t'); git('add','-A'); git('commit','-qm','fixture')
+  self.commit=git('rev-parse','HEAD'); self.tree=git('rev-parse','HEAD^{tree}'); self.upstream=up
+  self.patch=base/'fix.patch'; self.patch.write_text('--- a/target.txt\n+++ b/target.txt\n@@ -1 +1 @@\n-before\n+after\n')
+  after='sha256:'+hashlib.sha256(b'after\n').hexdigest()
+  self.saved={k:getattr(om,k) for k in ('UPSTREAM_COMMIT','UPSTREAM_LOCK','DEPENDENCY_LOCK','PACKAGE_ROOT','provision_python','provision_node','locked_python_pins','installed_python_distributions')}
+  pkg=base/'pkg'; (pkg/'patches').mkdir(parents=True); shutil.copy(self.patch,pkg/'patches'/'fix.patch'); shutil.copy(ROOT/'requirements.lock',pkg/'requirements.lock')
+  om.PACKAGE_ROOT=pkg; om.UPSTREAM_COMMIT=self.commit
+  om.UPSTREAM_LOCK={**om.UPSTREAM_LOCK,'commit':self.commit,'treeDigest':'git:'+self.tree,'patches':[{'id':'fix','path':'patches/fix.patch','sha256':'sha256:'+hashlib.sha256(self.patch.read_bytes()).hexdigest()}],'patchedFiles':[{'path':'target.txt','sha256':after}]}
+  om.DEPENDENCY_LOCK={**om.DEPENDENCY_LOCK,'npmLockDigest':'sha256:'+hashlib.sha256((up/'remotion-composer'/'package-lock.json').read_bytes()).hexdigest()}
+  def fake_python(stage):
+   b=stage/'.clawpod-venv'/'bin'; b.mkdir(parents=True); (b/'python').symlink_to(Path(sys.executable).resolve())
+  om.provision_python=fake_python; om.provision_node=lambda stage:(stage/'remotion-composer'/'node_modules').mkdir()
+  om.locked_python_pins=lambda:{'demo':'1.0'}; om.installed_python_distributions=lambda py:{'demo':'1.0'}
+ def tearDown(self):
+  for k,v in self.saved.items(): setattr(om,k,v)
+  self.t.cleanup()
+ def test_provision_fetches_patches_validates_and_activates_with_backup(self):
+  status=self.state/'provision.json'
+  active=om.provision_runtime(self.state,str(self.upstream),status)
+  self.assertTrue(active['valid'],active); runtime=self.state/'runtime'
+  self.assertEqual((runtime/'target.txt').read_text(),'after\n'); self.assertTrue((runtime/'remotion-composer'/'node_modules').is_dir())
+  self.assertEqual(json.loads(status.read_text())['step'],'activate')
+  om.provision_runtime(self.state,str(self.upstream),status)
+  self.assertTrue((self.state/'runtime.backup').is_dir()); self.assertFalse(list(self.state.glob('runtime.provision-*')))
+ def test_provision_rejects_wrong_tree_and_activates_nothing(self):
+  om.UPSTREAM_LOCK={**om.UPSTREAM_LOCK,'treeDigest':'git:'+'0'*40}
+  with self.assertRaises(om.E) as caught: om.provision_runtime(self.state,str(self.upstream),self.state/'provision.json')
+  self.assertEqual(caught.exception.code,'DIGEST_MISMATCH'); self.assertFalse((self.state/'runtime').exists()); self.assertFalse(list(self.state.glob('runtime.provision-*')))
+ def test_python_environment_check_names_missing_and_unexpected(self):
+  status=self.state/'provision.json'; om.provision_runtime(self.state,str(self.upstream),status)
+  om.installed_python_distributions=lambda py:{'demo':'2.0','extra':'1'}
+  v=om.validate_runtime({'runtimePath':str(self.state/'runtime')}); check=v['checks']['pythonEnvironment']
+  self.assertFalse(v['valid']); self.assertEqual(check['missing'],['demo==1.0']); self.assertEqual(check['unexpected'],['demo==2.0','extra==1'])
+
+class LockParsingTests(unittest.TestCase):
+ def test_locked_pins_exclude_installer_tooling_and_digest_is_deterministic(self):
+  pins=om.locked_python_pins(); self.assertGreater(len(pins),10); self.assertFalse(om.INSTALLER_DISTRIBUTIONS & set(pins))
+  self.assertEqual(om.environment_digest(pins),om.environment_digest(dict(reversed(list(pins.items())))))
+  self.assertNotIn('pip',om.installed_python_distributions(Path(sys.executable)) or {})

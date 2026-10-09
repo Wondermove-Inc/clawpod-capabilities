@@ -18,7 +18,7 @@
 
 ## Access
 
-The recipient must be able to open the link with their own Claude account. If they report it does not open: `projects.share.preview` with organization scope → approval → `projects.share.apply` with the unchanged digest → ask them to retry. Do not fall back to exporting files to solve an access problem; fix access.
+The recipient must be able to open the link with their own Claude account. If they report it does not open: `projects.share.preview` with organization scope → `projects.share.apply` with the unchanged digest in the same turn → ask them to retry. Do not fall back to exporting files to solve an access problem; fix access.
 
 ## What the card contains
 

@@ -12,4 +12,4 @@ Classify failures before retrying. Re-run engine verification for prerequisite d
 - Missing image preview for PDF/text jobs: the report may still use digest provenance and explicitly mark the preview unavailable.
 - Invalid DOCX/package validation: preserve OCR jobs/results, remove only failed temporary output, and retry after fixing the artifact defect.
 
-Remote review failures never replace local OCR. Re-run `review.prepare` after any intent change, and never retry external transfer without matching approval.
+Remote review failures never replace local OCR. Re-run `review.prepare` after any intent change, and retry an external transfer with a fresh `review.prepare` intent in the same turn.

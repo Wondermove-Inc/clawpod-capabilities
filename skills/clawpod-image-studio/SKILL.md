@@ -5,7 +5,7 @@ description: "Use to generate, edit, compare, inspect, or QA images with OpenAI,
 
 # ClawPod Image Studio
 
-Use the linked `clawpod-image-studio` Harness v0.4.5. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
+Use the linked `clawpod-image-studio` Harness v0.4.6. Treat the Skill and Harness as one installation unit with the canonical title **ClawPod Image Studio**.
 
 ## Immediate post-install onboarding
 
@@ -17,8 +17,23 @@ Immediately after installation, say: **“ClawPod Image Studio is installed but 
 4. Ask which providers to connect now or defer. Recommend only providers that fit the answers.
 5. Capture API keys directly with protected secret tooling — the human step is supplying the key, never a separate approval; never use ordinary chat, prompts, argv, files, logs, fixtures, artifacts, or child prompts.
 6. Store only owner-scoped pointer metadata. Vertex keeps its ADC/OAuth/service-account lifecycle and must not be converted to an API-key flow.
-7. Configure bindings with `connection.bind`. With separate secret-use and network-read approval, use identical per-run `secretRefs` for prepare and run. For OpenAI, inject `OPENAI_API_KEY` only as a protected runtime environment value and use `connection.verify` with the documented non-billable model-readiness read. Never put the key in argv/input/files/logs or generate media merely to test it. Providers without an implemented documented check remain `configured_unverified`.
+7. Configure bindings with `connection.bind`. Through the protected secret-use and network-read lanes, use identical per-run `secretRefs` for prepare and run. For OpenAI, inject `OPENAI_API_KEY` only as a protected runtime environment value and use `connection.verify` with the documented non-billable model-readiness read. Never put the key in argv/input/files/logs or generate media merely to test it. Providers without an implemented documented check remain `configured_unverified`.
 8. Report each provider as `connected`, `configured_unverified`, `deferred`, or `revoked`. State that connection does not authorize paid generation, editing, comparison, publication, or sharing.
+
+## Calling the Harness
+
+Call the Harness through the `cli_harness` tool: `{"action":"harness.run.prepare","name":"clawpod-image-studio","command":"<command>","input":{...}}`, then the identical call with `"action":"harness.run"` and the returned `approvalIntentHash`. Each line below is `<command>  <input>`, where `command` is the manifest key. `inputJson` is a JSON **string** whose fields are exactly those the command accepts; a rejection lists `accepted` and `required`.
+
+```text
+provider.list  {"inputJson":"{}"}
+request.validate  {"inputJson":"{\"prompt\":\"Studio product photo of a ceramic mug on a walnut table\",\"output\":\"mug.png\",\"provider\":\"openai\",\"count\":1,\"safetyPolicy\":\"standard\",\"rightsPolicy\":\"owned-or-licensed\",\"publicationPolicy\":\"internal\"}"}
+request.estimate  {"inputJson":"{\"prompt\":\"Studio product photo of a ceramic mug on a walnut table\",\"output\":\"mug.png\",\"provider\":\"openai\",\"count\":1,\"safetyPolicy\":\"standard\",\"rightsPolicy\":\"owned-or-licensed\",\"publicationPolicy\":\"internal\"}"}
+job.status  {"inputJson":"{\"jobId\":\"job_0123456789abcdef0123456789abcdef\"}"}
+job.collect  {"inputJson":"{\"jobId\":\"job_0123456789abcdef0123456789abcdef\"}"}
+```
+
+- Request fields: `prompt` and `output` (a relative path) are required; `safetyPolicy`, `rightsPolicy`, and `publicationPolicy` are short policy labels and must be present before validation passes. Optional: `provider`, `model`, `count`, `format`, `purpose`, `features`, `options`, `inputs` (edit sources), `mask`.
+- `request.prepare` adds `maxUsd` (at least the estimate) and a future `expiresAt` (`legs` only for a 2–4-way compare) and returns the digests `job.start` needs; pass them through unchanged. `jobId` values look like `job_` followed by 32 hex characters.
 
 ## Provider routing
 
@@ -43,10 +58,10 @@ delivery manifests without weakening the paid provider boundary below.
 3. For multi-provider comparison, use `image.compare` only after validating every leg. Cap provider count and total outputs; show aggregate and per-leg costs.
 4. Call `request.prepare`. Present provider, model, operation, prompt/reference digests, count, dimensions, quality/options, destination, pricing snapshot, estimate range, maximum USD, secret-binding metadata, expiry, and approval digest.
 5. Once a provider passed onboarding, use its credential and run paid external generation without pausing for approval; any material change just needs a fresh preparation in the same turn.
-6. Pass the unchanged prepared digest and identical owner-scoped `secretRefs` to `job.start`. Protected `OPENAI_API_KEY` injection enables only the approved OpenAI generation path. Never put plaintext credentials in Harness input. Use the legacy synchronous `image.generate` only when compatibility is explicitly required.
+6. Pass the unchanged prepared digest and identical owner-scoped `secretRefs` to `job.start`. Protected `OPENAI_API_KEY` injection enables only the prepared OpenAI generation path. Never put plaintext credentials in Harness input. Use the legacy synchronous `image.generate` only when compatibility is explicitly required.
 7. Track the original detached job through `job.status` and `job.collect`; both are local and credential-free. Do not resubmit because polling, timeout, worker exit, or result collection failed. The job timeout is 60–300 seconds (default 300), and the provider receives the remaining deadline minus at least 10 seconds for validation and artifact commit.
 8. Inspect every artifact with `artifact.inspect`. Verify decode, MIME, dimensions, SHA-256, alpha/SVG validity, provider/model provenance, safety metadata, and reconciled cost.
-9. Store durable deliverables only under an approved shared-storage artifact root. Do not claim durable delivery when shared storage is unavailable.
+9. Store durable deliverables only under the configured shared-storage artifact root. Do not claim durable delivery when shared storage is unavailable.
 10. Treat publication or external sharing as its own action with its own digest, chained in the same turn.
 
 ## Safety and paid retries

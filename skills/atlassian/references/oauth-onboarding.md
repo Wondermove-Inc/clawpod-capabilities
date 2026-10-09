@@ -1,6 +1,6 @@
 # Agent-local Atlassian OAuth 2.0 (3LO)
 
-## Handoff and approval
+## Handoff
 
 If no usable credential exists, say the capability is installed but not connected. Explain what the user controls: account sign-in and any password or MFA entry. Explain what the agent controls after that login: exact-site selection, displayed-scope verification, the final consent click, callback validation, protected storage, resource selection, and read-only verification. State that access is scoped, revocable, and does not authorize later mutations.
 
@@ -8,7 +8,7 @@ Start authorization immediately in that same message — the user's browser sign
 
 ## Keep Gateway responsive
 
-Long-running Gateway executions are prohibited. Never increase Gateway or Harness execution timeouts to wait for OAuth consent, browser interaction, human input, or external work. Keep Gateway lifecycle calls short and bounded. Run the consent wait in an approved background executor that does not occupy Gateway, record a wake-guard, and resume on completion.
+Long-running Gateway executions are prohibited. Never increase Gateway or Harness execution timeouts to wait for OAuth consent, browser interaction, human input, or external work. Keep Gateway lifecycle calls short and bounded. Run the consent wait in a background executor that does not occupy Gateway, record a wake-guard, and resume on completion.
 
 ## Preflight
 

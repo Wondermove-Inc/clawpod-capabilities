@@ -2,7 +2,7 @@
 
 Run `triage.host` first; then use the table for the finding code or symptom.
 
-| Finding / symptom | Confirm with | Likely causes | Mitigation (approval class) | Verify |
+| Finding / symptom | Confirm with | Likely causes | Mitigation (safety class) | Verify |
 |---|---|---|---|---|
 | `ROOT_DISK_FULL`, `DISK_USAGE_HIGH` | `host.disk`; `change.recent --root /var/lib --since 1d`; `host.journal --pattern "No space left"` | logs, journal, container images, core dumps, runaway upload dir | Recommendation: rotate/vacuum logs, prune images, move data (human/other capability). No allowlisted action | `host.disk` below `warnPercent` |
 | `INODE_USAGE_HIGH` | `host.disk` (inodes), `change.recent` on the mount | millions of small files (sessions, cache, mail queue) | Recommendation: delete the offending tree after owner confirms | `host.disk` inode percent drops |

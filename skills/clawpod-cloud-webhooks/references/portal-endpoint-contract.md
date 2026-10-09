@@ -15,7 +15,7 @@ Source: `/workspace/artifacts/clawpod-cloud-webhooks-readonly-20260728/report.md
 
 ## Controlled CRUD and cleanup evidence
 
-A separately approved contract test exercised disposable Source, Playbook, and Rule mutations. Cleanup deleted 32/32 Rules, 6/6 Sources, and 6/6 Playbooks, with zero prefixed resources remaining. The same test established that Source `PUT` is a full-object replacement contract: a partial `PUT` changing only `is_active` cleared nullable `playbook_id`. Therefore updates must fresh-GET, preserve the complete returned object, overlay allowed changes, PUT the full object, then verify by exact-item GET.
+A contract test exercised disposable Source, Playbook, and Rule mutations. Cleanup deleted 32/32 Rules, 6/6 Sources, and 6/6 Playbooks, with zero prefixed resources remaining. The same test established that Source `PUT` is a full-object replacement contract: a partial `PUT` changing only `is_active` cleared nullable `playbook_id`. Therefore updates must fresh-GET, preserve the complete returned object, overlay allowed changes, PUT the full object, then verify by exact-item GET.
 
 Source: `/workspace/artifacts/clawpod-cloud-webhooks-contract-tests-20260728/report.md`, summary lines 4–8, full-object PUT finding line 208, cleanup lines 270–273, and recommendation line 283.
 

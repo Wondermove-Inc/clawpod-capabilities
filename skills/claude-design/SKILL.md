@@ -5,7 +5,7 @@ description: "Use for Claude Design create/edit/QA and link-first deck handoff: 
 
 # Claude Design
 
-Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.3) for deterministic planning, exact-digest approvals, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with the Compute tool only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use the Compute tool instead of Browser for ordinary Claude Design DOM work.
+Default to the logged-in `https://claude.ai/design` UI through Browser. Use the paired `claude-design` Harness (v0.4.4) for deterministic planning, exact-digest confirmation, browser/auth readiness contracts, the layout quality gate, link-handoff verification, and — only when a file is explicitly requested — export verification. MCP is acceleration only after a real read-only tool call succeeds; it is never required. Compose with the Compute tool only when the workflow leaves the browser DOM for a native OS dialog, or when native-app visual inspection is required; never use the Compute tool instead of Browser for ordinary Claude Design DOM work.
 
 Immediately after installation, state that the capability is installed and browser-first. Open Claude Design and verify the authenticated Design UI. Reuse the existing browser session. Ask the user only for sign-in, MFA, or provider consent when browser authentication is absent. Do not require MCP endpoint registration, Claude Code OAuth, setup tokens, or CLI work.
 
@@ -29,7 +29,7 @@ A finished deck is delivered as a **verified Claude Design link** (project URL +
 6. Write the brief with the structure rules in [quality-gates.md](references/quality-gates.md) *before* prompting: one message per slide, a title that states the takeaway, a fixed layout family, a diagram grammar (one shape per concept type, one arrow style, a grid), text budgets, and a type scale. A vague prompt produces the misaligned, overflowing, unsystematic decks the quality gate will later reject; the cheapest fix is a precise brief.
 7. Before entering a prompt, inspect the target element from a fresh snapshot and run `browser.input.plan`. Standard `input`/`textarea` fields use `fill`; contenteditable targets use `type` only through 600 characters, and one ref-scoped `evaluate` above that. Run `browser.input.verify` against the exact text read back; submit only on exact equality. On a stale ref, take a fresh snapshot, retry once, verify again.
 
-## Edit and approve side effects
+## Edit and apply side effects
 
 8. Choose chat for broad generation, comments for contextual collaboration, and direct edit for exact layout or text changes. Confirm revision/readback per batch of related mutations, not after each one.
 9. Preview sharing, comments, handoff, sync, publish/default, admin enablement, and role changes; apply the matching exact digest in the same turn — the digest chain is the consistency mechanism, never a pause for approval.

@@ -40,8 +40,8 @@ Procedure (full detail: `references/data-access.md`):
    (`references/correlation-pipeline.md`).
 
 Rules: read-only queries only, always bounded (time window + result cap); never
-change detection rules, connectors, or cases beyond what a separate approved
-action allows; never fabricate events. If you were not given connection info,
+change detection rules, connectors, or cases beyond what the capability that owns
+that action allows; never fabricate events. If you were not given connection info,
 request it and pause — do not guess an endpoint.
 
 ## Investigation loop (start here)
@@ -125,8 +125,8 @@ them:
   recommend the specific data to collect and hand off to a human. Do not force a
   verdict.
 - **No unauthorized action** — this skill recommends; it does not execute
-  containment. Blocking, isolating, or disabling accounts is a separate,
-  approval-gated action.
+  containment. Blocking, isolating, or disabling accounts is a separate
+  action in the capability that owns it.
 
 ## Output
 

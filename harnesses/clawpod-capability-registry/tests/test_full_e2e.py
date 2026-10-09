@@ -16,7 +16,13 @@ cap=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(cap)
 
 
 class EndToEndTests(unittest.TestCase):
-    SYNOLOGY_VERSION="0.1.8"
+    # Read the release from the registry so routine bumps need no edit here; this scenario
+    # requires the synology Skill and Harness to share one release (bump both together).
+    _SYNOLOGY={e["type"]:e["version"] for e in json.loads((REPOSITORY_ROOT/"registry/index.json").read_text(encoding="utf-8"))["capabilities"] if e["id"]=="synology-smb-storage"}
+    SYNOLOGY_VERSION=_SYNOLOGY["harness"]
+
+    def test_synology_skill_and_harness_share_a_release(self) -> None:
+        self.assertEqual(self._SYNOLOGY["skill"],self._SYNOLOGY["harness"],"bump the synology-smb-storage Skill and Harness together; the same-version install scenario depends on it")
 
     def test_fresh_agent_workflow_onboarding_cli(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

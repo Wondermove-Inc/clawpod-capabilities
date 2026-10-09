@@ -46,6 +46,7 @@
     "backlot.start",
     "backlot.open",
     "backlot.stop",
+    "install.provision",
     "install.inspect",
     "install.plan-update",
     "install.apply-update",

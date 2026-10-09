@@ -5,7 +5,7 @@ description: "Use when the user asks for a designed deliverable to build, share,
 
 # Open Design
 
-Use a self-hosted OpenDesign daemon as the shared design workbench: the agent authors the HTML itself, the server stores it, renders a sandboxed preview, and exports it. The paired Harness (v0.2.2) is the only network surface — typed commands, a JSON envelope with a per-request evidence trail, and no response truncation. The API token travels only through the Gateway-injected `OPEN_DESIGN_API_TOKEN` environment; it never appears in arguments, state, chat, or logs.
+Use a self-hosted OpenDesign daemon as the shared design workbench: the agent authors the HTML itself, the server stores it, renders a sandboxed preview, and exports it. The paired Harness (v0.2.4) is the only network surface — typed commands, a JSON envelope with a per-request evidence trail, and no response truncation. The API token travels only through the Gateway-injected `OPEN_DESIGN_API_TOKEN` environment; it never appears in arguments, state, chat, or logs.
 
 ## Onboarding (mandatory, in this order)
 
@@ -29,7 +29,7 @@ Use it to produce and share designs that live on the OpenDesign server: decks, p
 6. Files only on request: `export.html`/`export.archive` write local copies; `export.manifest` lists what the server can produce. Server-side PDF/PPTX are not available on the verified deployment (`slideRenderer:false`; PDF export is desktop-runtime only) — the user prints the preview to PDF, or imports into claude.ai/design. A Claude Design export `.zip` can be brought in with `import.claude-design`.
 7. Details and worked calls: [workflow.md](references/workflow.md).
 
-## Boundaries and approvals
+## Boundaries
 
 - Everything visible on the server is shared: one daemon = one shared workspace with a single token; there is no per-agent isolation. Name projects so owners are obvious, and never delete or overwrite a project this session did not create without explicit user direction.
 - `projects.delete` is destructive: pass the exact displayed name plus `--approve` yourself in the same turn (the name match is the safety mechanism); the Harness verifies absence afterwards.

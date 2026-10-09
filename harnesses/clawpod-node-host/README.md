@@ -43,7 +43,7 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.6 adds Node 0.2.4 accessibility completeness, image-coordinate,
+Version 0.7.7 adds Node 0.2.4 accessibility completeness, image-coordinate,
 and key-input guidance. Installer checksums and signing status come from the bundled manifest.
 Gateway secret storage, rotation, and room delivery remain unchanged.
 Managed CLI and OS-specific Desktop setup guidance remain available.

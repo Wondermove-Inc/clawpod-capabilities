@@ -190,7 +190,7 @@ cli_anything/clawpod_cloud_webhooks/tests/test_full_e2e.py::test_manifest_adapte
 - Repository registry and onboarding suite: **29 passed**.
 - Added approval-before-network, missing protected credential, successful sole-tenant selection, ambiguous tenant, missing permission, no-mutation, redaction, and Gateway adapter mapping coverage.
 - Registry synchronization and validation passed for all 16 capability entries; `git diff --check` passed.
-- Tests used only a local mock portal and synthetic credentials. Live login, MFA, and the documented `exec.useSecrets` runtime lane remain unexercised until the user supplies an authorized account and separately approves credential use.
+- Tests used only a local mock portal and synthetic credentials. Live login, MFA, and the documented `exec.useSecrets` runtime lane remain unexercised until an authorized account is supplied.
 
 ## Internal-network TLS Results (0.1.5)
 
