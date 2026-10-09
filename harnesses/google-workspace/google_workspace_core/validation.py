@@ -8,7 +8,7 @@ class ValidationError(ValueError):
 def _check(v,s,path):
  types=s.get('type');types=[types] if isinstance(types,str) else types
  if types:
-  ok=any((t=='object' and isinstance(v,dict)) or (t=='array' and isinstance(v,list)) or (t=='string' and isinstance(v,str)) or (t=='integer' and isinstance(v,int) and not isinstance(v,bool)) or (t=='boolean' and isinstance(v,bool)) or (t=='null' and v is None) for t in types)
+  ok=any((t=='object' and isinstance(v,dict)) or (t=='array' and isinstance(v,list)) or (t=='string' and isinstance(v,str)) or (t=='integer' and isinstance(v,int) and not isinstance(v,bool)) or (t=='number' and isinstance(v,(int,float)) and not isinstance(v,bool)) or (t=='boolean' and isinstance(v,bool)) or (t=='null' and v is None) for t in types)
   if not ok:raise ValidationError('INVALID_ARGUMENT',f'{path} has invalid type; expected {types}')
  if isinstance(v,str):
   if len(v)<s.get('minLength',0) or len(v)>s.get('maxLength',10**9):raise ValidationError('INVALID_ARGUMENT',f'{path} has invalid length')
@@ -23,12 +23,14 @@ def _check(v,s,path):
   for i,x in enumerate(v):_check(x,s.get('items',{}),f'{path}[{i}]')
  if isinstance(v,dict):
   props=s.get('properties',{});missing=[k for k in s.get('required',[]) if k not in v or v[k] in ('',None)]
-  if missing:raise ValidationError('INVALID_ARGUMENT',f'{path} missing required field(s): '+', '.join(missing))
+  if missing:raise ValidationError('INVALID_ARGUMENT',f'{path} missing required field(s): '+', '.join(missing)+'; accepted: '+(', '.join(sorted(props)) or 'none'))
   if len(v)<s.get('minProperties',0):raise ValidationError('INVALID_ARGUMENT',f'{path} must not be empty')
+  if len(v)>s.get('maxProperties',10**9):raise ValidationError('INVALID_ARGUMENT',f'{path} accepts at most {s["maxProperties"]} field(s); got '+', '.join(sorted(v)))
   additional=s.get('additionalProperties',True);unknown=set(v)-set(props)
   if additional is False and unknown:
    label='unsupported provider query/identifier(s)' if path=='input.params' else f'{path} unknown field(s)'
-   raise ValidationError('INVALID_ARGUMENT',label+': '+', '.join(sorted(unknown)))
+   accepted=', '.join(sorted(props)) or 'none'
+   raise ValidationError('INVALID_ARGUMENT',label+': '+', '.join(sorted(unknown))+f'; accepted: {accepted}')
   for k,x in v.items():
    sub=props.get(k,additional if isinstance(additional,dict) else {})
    _check(x,sub,f'{path}.{k}')

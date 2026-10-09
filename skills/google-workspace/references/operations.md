@@ -7,7 +7,7 @@ The manifest is the command source of truth and declares all practical Gmail v1,
 - Drive: require file/drive IDs; native files use export; sharing and comments are external; ownership transfer and permanent removal are destructive.
 - Watches: this harness creates/stops provider channels but is not a webhook/Pub/Sub receiver. Require a separately protected receiver and channel-token store.
 - OAuth login: a supervising PKCE callback receiver and protected token writer are required. The harness must fail closed if they are absent.
-- Credential selection: provide the protected bundle through typed `credentialPath` / `--credential-path` for authenticated auth, Gmail, Calendar, and Drive commands. Keep `account` as the alias selector. Do not place the path in free-form text or output.
+- Credential selection: provide the protected bundle through the typed `credentialPath` input field for authenticated auth, Gmail, Calendar, and Drive commands. Keep `account` as the alias selector. Do not place the path in free-form text or output.
 
 ## v0.3.0 compatibility migration
 
@@ -19,17 +19,19 @@ The manifest is the command source of truth and declares all practical Gmail v1,
 
 ## Docs, Sheets, Slides examples
 
-```
+Each line is `<command>  <input>` for `cli_harness` (`harness.run.prepare`, then `harness.run` with the returned `approvalIntentHash`).
+
+```text
 # read a doc as text / a range's values / a deck outline
-google-workspace docs.read   --account a --params '{"documentId":"<id>"}'
-google-workspace sheets.read --account a --params '{"spreadsheetId":"<id>","range":"Sheet1!A1:D20"}'
-google-workspace slides.read --account a --params '{"presentationId":"<id>"}'
+docs.read  {"account":"a","params":"{\"documentId\":\"<id>\"}"}
+sheets.read  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A1:D20\"}"}
+slides.read  {"account":"a","params":"{\"presentationId\":\"<id>\"}"}
 
 # write values (mutation gate: dry-run → approve digest → confirm)
-google-workspace sheets.values.update --account a   --params '{"spreadsheetId":"<id>","range":"Sheet1!A1:B2","valueInputOption":"USER_ENTERED"}'   --body '{"values":[["이름","점수"],["가",95]]}' --dry-run
-google-workspace sheets.values.append --account a --params '{"spreadsheetId":"<id>","range":"Sheet1!A:B","valueInputOption":"USER_ENTERED"}' --body '{"values":[["나",88]]}' --dry-run
+sheets.values.update  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A1:B2\",\"valueInputOption\":\"USER_ENTERED\"}","body":"{\"values\":[[\"이름\",\"점수\"],[\"가\",95]]}","dryRun":true}
+sheets.values.append  {"account":"a","params":"{\"spreadsheetId\":\"<id>\",\"range\":\"Sheet1!A:B\",\"valueInputOption\":\"USER_ENTERED\"}","body":"{\"values\":[[\"나\",88]]}","dryRun":true}
 
 # structured edits: one verb per request object
-google-workspace docs.documents.batchUpdate --account a --params '{"documentId":"<id>"}'   --body '{"requests":[{"insertText":{"location":{"index":1},"text":"요약\n"}}]}' --dry-run
-google-workspace slides.presentations.batchUpdate --account a --params '{"presentationId":"<id>"}'   --body '{"requests":[{"createSlide":{}}]}' --dry-run
+docs.documents.batch-update  {"account":"a","params":"{\"documentId\":\"<id>\"}","body":"{\"requests\":[{\"insertText\":{\"location\":{\"index\":1},\"text\":\"요약\\n\"}}]}","dryRun":true}
+slides.presentations.batch-update  {"account":"a","params":"{\"presentationId\":\"<id>\"}","body":"{\"requests\":[{\"createSlide\":{}}]}","dryRun":true}
 ```
