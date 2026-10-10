@@ -11,7 +11,7 @@ try:
 except ModuleNotFoundError:
  yaml = None
 
-VERSION="0.2.6"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
+VERSION="0.2.7"; UPSTREAM_COMMIT="c36e41223e819441748817105635ac4036d41b10"
 UPSTREAM_LOCK={"url":"https://github.com/calesthio/OpenMontage","commit":UPSTREAM_COMMIT,"packageVersion":VERSION,"license":"AGPL-3.0-only","licenseSha256":"0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0","treeDigest":"git:fd61711510ef01c3b896bae808ee4ca7c96a391f","patches":[{"id":"openmontage-documentary-category","path":"patches/openmontage-documentary-category.patch","sha256":"sha256:f6271266cd5d6abd7045b952aac7776416427b92acf1d1de53ba626e20a1a078"}],"patchedFiles":[{"path":"schemas/pipelines/pipeline_manifest.schema.json","sha256":"sha256:8491027015f0ec1b49da834bd341a00380f9cb34be57afb38c086e577ab95bad"}]}
 DEPENDENCY_LOCK={"pythonLockPath":"requirements.lock","pythonLockDigest":"sha256:e55a16a8933693b05783d46d11e5e7f505e9da3003ee4f63351367d9cc48f1a5","npmLockDigest":"sha256:2e449fb813fb655a9115fa14344e1bc1db28d1150af9af0733b127250e5e7eed","npmLockPath":"remotion-composer/package-lock.json"}
 MAX_JSON=1_000_000; MAX_LOG=250_000
@@ -494,8 +494,13 @@ def provision_runtime(r,source_url,status_path):
   step("activate"); return activate_staged_runtime(r,stage)
  finally:
   if stage.exists(): shutil.rmtree(stage,ignore_errors=True)
+def provision_age_seconds(st):
+ try: return (dt.datetime.now(dt.timezone.utc)-dt.datetime.fromisoformat(st["startedAt"])).total_seconds()
+ except (KeyError,TypeError,ValueError): return float("inf")
 def provision_worker(r,source_url):
  statusp=r/"provision.json"
+ # Record our own identity so a concurrent parent merge can never leave pid empty.
+ atomic(statusp,{**(readj(statusp,{}) or {}),"state":"running","pid":os.getpid(),"ownerStartIdentity":process_start_identity(os.getpid())})
  try:
   active=provision_runtime(r,source_url,statusp)
   atomic(statusp,{**(readj(statusp,{}) or {}),"state":"succeeded","step":"done","runtimePath":active["runtimePath"],"finishedAt":now(),"pid":None})
@@ -748,15 +753,23 @@ def handler(cmd,a,x):
   lock=UPSTREAM_LOCK; current=runtime(x,False); install=r/"runtime"; backup=r/"runtime.backup"; planp=r/"install-plan.json"
   if cmd=="install.provision":
    statusp=r/"provision.json"; st=readj(statusp,{}) or {}
-   if st.get("state")=="running" and st.get("pid") and owned_process_alive(st["pid"],st.get("ownerStartIdentity")): return st,["Provisioning is already running; poll install.inspect."]
+   starting=st.get("state")=="running" and not st.get("pid") and provision_age_seconds(st)<120
+   if starting or (st.get("state")=="running" and st.get("pid") and owned_process_alive(st["pid"],st.get("ownerStartIdentity"))): return st,["Provisioning is already running; re-check install.inspect from a wake-guard."]
    source=x.get("sourceUrl") or lock["url"]
-   proc=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),"_provision","--root",str(r),"--input-json",json.dumps({"sourceUrl":source})],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)
-   st={"state":"running","step":"starting","sourceUrl":source,"commit":UPSTREAM_COMMIT,"pid":proc.pid,"ownerStartIdentity":process_start_identity(proc.pid),"startedAt":now(),"targetPath":str(install)}; atomic(statusp,st)
-   return st,["Provisioning runs in the background (git fetch, locked pip and npm installs); poll install.inspect until provision.state is succeeded."]
+   # Record "running" before the worker exists so a fast worker failure can never be overwritten by this write.
+   atomic(statusp,{"state":"running","step":"starting","sourceUrl":source,"commit":UPSTREAM_COMMIT,"pid":None,"startedAt":now(),"targetPath":str(install)})
+   try: proc=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),"_provision","--root",str(r),"--input-json",json.dumps({"sourceUrl":source})],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)
+   except OSError as exc:
+    # No worker exists, so this record is ours alone; release it so a retry can start at once.
+    atomic(statusp,{**(readj(statusp,{}) or {}),"state":"failed","error":{"code":"SPAWN_FAILED","message":str(exc)},"finishedAt":now()})
+    raise E("SPAWN_FAILED",f"could not start the provisioning worker: {exc}",category="runtime",retryable=True,exit_code=5)
+   # Never write after Popen: from here on only the worker writes provision.json, so its result cannot be clobbered.
+   st={**(readj(statusp,{}) or {}),"pid":proc.pid}
+   return st,["Provisioning runs in the background (git fetch, locked pip and npm installs); record a wake-guard and re-check install.inspect when it fires until provision.state is succeeded."]
   if cmd=="install.inspect":
    con=readj(r/"connections.json",{}) or {}
    prov=readj(r/"provision.json",None)
-   if prov and prov.get("state")=="running" and prov.get("pid") and not owned_process_alive(prov["pid"],prov.get("ownerStartIdentity")): prov={**prov,"state":"failed","error":{"code":"WORKER_DIED","message":"provisioning worker stopped"}}
+   if prov and prov.get("state")=="running" and ((prov.get("pid") and not owned_process_alive(prov["pid"],prov.get("ownerStartIdentity"))) or (not prov.get("pid") and provision_age_seconds(prov)>=120)): prov={**prov,"state":"failed","error":{"code":"WORKER_DIED","message":"provisioning worker stopped"}}
    return {"provision":prov,"capabilityVersion":VERSION,"upstream":lock,"discovered":validate_runtime({"runtimePath":str(current)}) if current else None,"managedRuntime":str(install) if install.exists() else None,"onboardingRequired":True,"connected":any(v.get("status")=="connected" for v in con.values())},[]
   if cmd=="install.plan-update":
    source=Path(x.get("sourcePath",str(current) if current else "" )).resolve(); v=validate_runtime({"runtimePath":str(source)}); plan={"sourcePath":str(source),"sourceDigest":source_digest(source),"validationDigest":sha(v["checks"]),"targetPath":str(install),"valid":v["valid"],"createdAt":now()}; plan["planDigest"]=sha(plan); atomic(planp,plan); return plan,[]
