@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.2.3-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.2.3-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.2.3-darwin-x64.pkg` |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.2.3-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.3.3-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.3.3-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.3.3-darwin-x64.pkg` |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.3.3-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 
@@ -84,11 +84,11 @@ When Tailscale is unavailable, return to its unfinished setup stage. Never appen
 
 Open the DEB in the Linux package installer, open the PKG on macOS, or run the EXE as the normal Windows user. The installation can run offline once downloaded. Connecting requires access to the Agent Gateway; browser automation separately requires a compatible installed browser.
 
-Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser.
+Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser, in Korean or English. Connection fields are on the **Connections** tab; login startup and Desktop access are on the **This computer** tab. If the computer is already connected to another Agent, select **Add connection** for this Agent instead of editing the existing one.
 
-Check **Desktop setup** in this same app; do not install a separate remote-computer helper.
+Check **Desktop access** in this same app; do not install a separate remote-computer helper.
 
-| OS | Desktop setup |
+| OS | Desktop access |
 | --- | --- |
 | macOS | Allow **ClawPod Node** in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). The app requests access; the user grants it in System Settings. The permission label does not mean audio is captured: this release captures screens only. |
 | Windows | Use the logged-in, unlocked interactive desktop. There is no macOS-style permission switch; UAC/secure desktops or elevated windows may be unavailable to ordinary input. |
@@ -108,11 +108,11 @@ Do not request permission for a separate “ClawPod Remote Computer” app.
 Missing GUI permissions do not prevent entering Gateway connection settings.
 
 
-- Copy the supplied complete root WebSocket URL into the Gateway address field. An optional trailing slash is allowed; URL credentials, paths, queries, and fragments are not.
+- Copy the supplied complete root WebSocket URL into the **Gateway WebSocket URL** field. An optional trailing slash is allowed; URL credentials, paths, queries, and fragments are not.
 - For a plain Gateway listener on a private or Tailscale IP, use `ws://<IP>:<port>` (for example, `ws://100.64.1.2:18789`). This is always enabled; there is no checkbox. All RFC1918 IPv4 ranges, Tailscale CGNAT `100.64.0.0/10`, IPv6 ULA, loopback, link-local, and localhost/`.localhost`/`.local` names are supported.
 - Use `wss://` only for an endpoint that actually provides TLS. Non-local hostnames, including Tailscale `.ts.net` names, require a TLS endpoint in this app; use the Tailscale IP for plain WebSocket access. Tailscale sign-in does not configure Gateway TLS. Do not change `ws://` to `wss://` merely because the address belongs to Tailscale.
-- Enter a display name, select the supplied token/password authentication mode, and copy the actual credential provided by the agent into the separate local authentication field. TLS certificate SHA-256 pinning is optional when the deployment provides a fingerprint.
-- Select **Save settings**, then **Start node**. The two Tailscale setup stages must already be verified.
+- Enter the **Computer display name** (optionally a **Connection name (optional)**, which only labels it in the app), select the supplied token/password authentication mode, and copy the actual credential provided by the agent into the separate local authentication field. TLS certificate SHA-256 pinning is optional when the deployment provides a fingerprint.
+- Select **Save settings**, then **Start connection**. The two Tailscale setup stages must already be verified.
 
 ## 7–8. Pair, verify, and use the actual device
 

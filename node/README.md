@@ -5,23 +5,32 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.2.4 preview
+## Download 0.3.3 preview
 
 | Computer | Installer |
 | --- | --- |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-linux-x64.deb) |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-arm64.pkg) |
-| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-x64.pkg) |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-win32-x64.exe) |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-linux-x64.deb) |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-arm64.pkg) |
+| macOS Intel | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg) |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-win32-x64.exe) |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.4)
-· [Release notes](RELEASE-NOTES-0.2.4.md)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.3)
+· [Release notes](RELEASE-NOTES-0.3.3.md)
 
 Final installer hashes and exact byte sizes are recorded in
 [release.json](release.json). See [validation scope](VALIDATION.md) for execution
 coverage and remaining limits.
 
-Version 0.2.4 improves accessibility observation of deeply nested controls and
+Version 0.3.3 adds a Korean/English setup UI (browser language by default; a
+manual choice persists) and separates the **Connections** (연결) tab from the
+**This computer** (이 컴퓨터) tab for login startup and desktop permissions. Saving
+computer settings or changing the language no longer restarts a running
+connection. Mac packages ship only the helpers for their CPU.
+Version 0.3.2 added optional connection names, Version 0.3.1 the connection list,
+and Version 0.3.0 connecting one computer to several Agents at once.
+Settings, pairing, authentication, and the bundled Agent runtime are preserved on upgrade.
+
+Version 0.2.4 improved accessibility observation of deeply nested controls and
 reports scope, completeness, and limits instead of silently treating partial
 results as complete. Update both the Node app and the controlling Agent.
 Version 0.2.3 introduced monitor switching and shared image/observation coordinates.
@@ -34,7 +43,7 @@ Version 0.2.1 introduced improvements to commands on the connected computer. The
 background commands, inspect output, provide terminal input, and cancel the same
 execution through ClawPod Node. No SSH server is needed. Update the controlling
 Agent as well as the Node app; updating this capability alone upgrades neither.
-Existing remote desktop control and Desktop setup remain available.
+Existing remote desktop control and Desktop access remain available.
 
 Both Mac installers have verified Developer ID signatures, Apple notarization,
 and stapled tickets, and passed Gatekeeper assessment. Windows publisher signing
@@ -54,10 +63,11 @@ are retained. Use `ws://` for a plain listener and `wss://` for an actual TLS en
 4. Download the matching ClawPod Node installer listed above.
 5. The agent provides the actual Gateway Tailscale address, complete WebSocket
    URL, and active Gateway token separately (or the password for password mode).
-6. Install the DEB/PKG/EXE and open **ClawPod Node**. Check **Desktop setup**
-   using the OS guidance below. Enter the supplied URL,
-   display name, and token/password in their respective fields. Select
-   **Save settings**, then **Start node**.
+6. Install the DEB/PKG/EXE and open **ClawPod Node**. On the **This computer**
+   tab, check **Desktop access** using the OS guidance below. On the **Connections**
+   tab, enter the supplied **Gateway WebSocket URL**, **Computer display name**, and
+   token/password in their respective fields (a connection name is optional). Select **Save settings**,
+   then **Start connection**.
 7. The agent identifies and approves your exact pending device request at the
    Gateway, then verifies that the device is connected.
 8. Ask the agent to work on the connected computer. It selects the Node ID and
@@ -83,7 +93,7 @@ Node.js and the node-host runtime are included. A browser is not included: remot
 browser automation needs a compatible browser installed on the computer. This
 package does not run another AI agent or provision a Gateway.
 
-## Desktop setup
+## Desktop access
 
 | Platform | Required environment and setup |
 | --- | --- |
@@ -120,16 +130,33 @@ text-only observations. Do not rescale or add monitor offsets. Zoom attachment
 pixels are not input coordinates. Release desktop
 control before handing it to the user or another agent session.
 
-Update both ClawPod Node to **0.2.4** and the controlling Agent. Skill/Harness
-**0.7.5** supplies the updated guidance; installing it alone updates neither app.
+Use ClawPod Node **0.2.4 or later** (0.3.3 current) and an updated controlling
+Agent. Skill/Harness **0.7.8** supplies the updated guidance; installing it alone
+updates neither app.
+
+## Connect one computer to several Agents
+
+Node 0.3.0 and later can keep connections to several Agents at the same time.
+Select **+ Add connection**, enter that Agent's Gateway URL and credential, and
+approve the new device request in that Agent's Gateway; each Agent pairs
+separately. Each connection has its own state, authentication, work folder,
+managed browser profile, and local port range, and starts, reconnects, stops, or
+is removed without affecting the others. An optional connection name labels it in
+the app only; the Computer display name sent to the Agent is unchanged.
+Saving a connection restarts only that connection if it is running.
+
+All connections share the physical keyboard, mouse, and screens. The app does
+not sequence desktop input between Agents, so acquire the desktop, act, and
+release it promptly. **Remove connection** stops that connection and removes its
+saved credentials while keeping device identity and browser profile.
 
 ## Daily use and removal
 
 - Closing the setup browser tab leaves the node running.
 - **Reconnect** restarts the node using saved settings.
 - **Stop** stays in effect after reopening the app or signing in again. Choose
-  **Start node** to resume.
-- **Start when I sign in** uses your logged-in user account; it is not a system
+  **Start connection** to resume.
+- **Start ClawPod Node when I sign in** uses your logged-in user account; it is not a system
   service that runs before login.
 - Reinstalling the same app preserves its saved settings and device identity.
 

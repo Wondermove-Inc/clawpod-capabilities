@@ -1,16 +1,18 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.4",
+  "version": "0.3.3",
   "runtimeVersion": "2026.4.11",
   "nodeVersion": "24.15.0",
-  "sourceCommit": "4ba5a0fb5301a08c6d94b0202c2aba2a8749f872",
-  "releaseTag": "node-v0.2.4",
-  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.2.4",
+  "sourceCommit": "5ba295f82b724de46f436178e6a30b1917e35786",
+  "installerSourceCommit": "d4b469b1bc6ca8177ff7c0e9430c92536ebb3dd5",
+  "derivedFromVersion": "0.3.2",
+  "releaseTag": "node-v0.3.3",
+  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.3",
   "channel": "preview",
   "signed": false,
   "validation": {
-    "linuxOfflineInstall": "passed",
-    "nativeMacOS": "not-run",
+    "linuxOfflineUpgrade": "passed",
+    "nativeMacOSInstallLifecycle": "not-run",
     "nativeWindows": "not-run",
     "desktopLoginStartup": "not-run"
   },
@@ -18,19 +20,19 @@
     {
       "platform": "linux",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.2.4-linux-x64.deb",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-linux-x64.deb",
-      "sha256": "3ef28ff1aabfe391182a2a8b44154ed22580e67da6c9957b0e057e834d00ff0d",
-      "bytes": 176230540,
+      "filename": "ClawPod-Node-0.3.3-linux-x64.deb",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-linux-x64.deb",
+      "sha256": "b26c9938eb649dd93a588c0f94d3a35357b981de8eef174d03575a3506a9e031",
+      "bytes": 182284268,
       "signed": false
     },
     {
       "platform": "macos",
       "arch": "arm64",
-      "filename": "ClawPod-Node-0.2.4-darwin-arm64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-arm64.pkg",
-      "sha256": "6982dc5a6e2def90a2fd30d8e798d27528062431eb465a2b27b279425809bcea",
-      "bytes": 263483616,
+      "filename": "ClawPod-Node-0.3.3-darwin-arm64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-arm64.pkg",
+      "sha256": "02478a55bfdc8b55b9a5a24643ff90f311c56b1b83dc012ddc8f528a84163a64",
+      "bytes": 268589482,
       "signed": true,
       "notarized": true,
       "stapled": true
@@ -38,10 +40,10 @@
     {
       "platform": "macos",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.2.4-darwin-x64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-darwin-x64.pkg",
-      "sha256": "cad710824d69e744bbb88cf25fe2aa3ec2c4fb42a32338cd7e641f308839d9e2",
-      "bytes": 231300395,
+      "filename": "ClawPod-Node-0.3.3-darwin-x64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg",
+      "sha256": "449e7cc81cbd7afda4f65ff092fafe01251f2b281b99cf5026670033825ca79a",
+      "bytes": 236866705,
       "signed": true,
       "notarized": true,
       "stapled": true
@@ -49,12 +51,34 @@
     {
       "platform": "windows",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.2.4-win32-x64.exe",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.2.4/ClawPod-Node-0.2.4-win32-x64.exe",
-      "sha256": "514debf0ad7af50e0032e62e319954db61cf1b2090c7ead544b8d6e3437c4ee4",
-      "bytes": 203328539,
+      "filename": "ClawPod-Node-0.3.3-win32-x64.exe",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-win32-x64.exe",
+      "sha256": "17e5fcea76eed524184902c6c0ce1b642424567b87ca650d33008716998a610d",
+      "bytes": 209347520,
       "signed": false
     }
   ],
-  "installerSourceCommit": "4ba5a0fb5301a08c6d94b0202c2aba2a8749f872"
+  "validationDetails": {
+    "nodeTests": 61,
+    "packagedBrowserTests": 7,
+    "linuxUpgradeConfigurationPreservation": "passed",
+    "linuxSingleAndMultipleConnections": "passed",
+    "macOSArm64StagedRuntime": "passed",
+    "macOSX64RosettaStagedRuntime": "passed",
+    "macOSAppIpcReadiness": "passed",
+    "macOSSingleAndMultipleConnections": "passed",
+    "macOSNotarization": "passed",
+    "macOSPackageExtraction": "passed",
+    "windowsPackageExtraction": "passed",
+    "limitations": [
+      "Fresh Mac install/login/upgrade/removal not tested",
+      "Physical Intel Mac not tested; x64 ran via Rosetta",
+      "Mac desktop actions and production Gateway pairing not tested in this release pass",
+      "Windows native execution and publisher signing not performed",
+      "macOS 28 compatibility warning disappearance requires installation verification on the affected Mac"
+    ],
+    "nodeSkippedOptInTests": 11,
+    "macOSArchitectureInventory": "passed",
+    "macOSPiTuiNativeLoader": "passed"
+  }
 }

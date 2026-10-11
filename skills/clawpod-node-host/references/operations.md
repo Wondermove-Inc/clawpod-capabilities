@@ -5,10 +5,12 @@ Use these controls for the standalone ClawPod Node app.
 ## Local controls
 
 - Closing the setup browser tab leaves the node running. On macOS, Windows, and Linux, reopening the app opens the setup page in the default browser and reuses its server, including after a silent installer restart. It does not stop the running node.
+- The setup page has a **Connections** tab (connection list, Gateway settings, Start/Reconnect/Stop, Remove connection) and a **This computer** tab (login startup, Desktop access). It follows the browser language (Korean or English); a language chosen in the app persists.
 - **Reconnect** restarts the node using saved settings.
-- **Stop** persists across reopening the app and signing in again. Select **Start node** to reconnect.
-- **Start when I sign in** registers startup for the current user and their logged-in desktop. It is not a pre-login system/root service.
-- A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. **Clear the saved authentication value** stops the node.
+- Saving connection settings restarts that connection if it is running. **Save computer settings** on **This computer** or changing the language does not restart any connection.
+- **Stop** persists across reopening the app and signing in again. Select **Start connection** to reconnect.
+- **Start ClawPod Node when I sign in** (on **This computer**, then **Save computer settings**) registers startup for the current user and their logged-in desktop; it resumes only connections left running. It is not a pre-login system/root service.
+- A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. Under **Clear saved authentication**, checking **Clear the saved authentication value and stop this connection** and saving stops that connection.
 
 Read timestamped local errors, check the saved endpoint/authentication mode, and compare with Gateway device status. Keep diagnostic evidence redacted. When the requesting user needs the active credential to reconnect, verify that the saved Gateway secret still matches the active credential, update the same pointer if it changed, and deliver it with `room_send.useSecrets` as described in [onboarding](onboarding.md). Tell the user to save the updated value in Node before reconnecting. Local **Running** alone does not prove connection. Use `node-connect` when available for failures to connect or pair after correct setup.
 
@@ -26,8 +28,28 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Use installer `0.2.4` and Skill/Harness `0.7.7` for the accessibility observation update. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Use installer `0.3.3` and Skill/Harness `0.7.8`. Node 0.2.4 or later provides the accessibility observation update; 0.3.0 or later supports several Agent connections. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
+
+## Several Agents on one computer
+
+Node 0.3.0 and later keep connections to several Agents at once. To add this
+Agent to a computer already connected elsewhere, the user selects **Add
+connection** and enters this Agent's Gateway URL and credential, then this Agent
+approves the exact new device request in its own Gateway. Each connection has
+its own state, authentication, work folder, managed browser profile, and local
+port range; start, reconnect, stop, credential changes, and removal affect only
+that connection. An optional **Connection name** labels it in the app only; the
+Computer display name the Agent sees is unchanged and can repeat across
+connections, so pair by device/request identity. On app login startup only
+connections that were running resume.
+
+**Remove connection** stops only the selected connection and removes its saved
+credentials; device identity and browser profile stay. Removing the default
+connection leaves it unconfigured. All connections share the physical keyboard,
+mouse, screens, and any browser session the user explicitly chose. The app does
+not sequence desktop input between Agents: check `status`, acquire, act on fresh
+frames, and release promptly so another Agent can work.
 
 ## Use the selected node
 
@@ -47,7 +69,7 @@ and returned frame; release the desktop before another session takes over.
 
 ### Switch monitors and keep coordinates aligned
 
-Update both the Node app to **0.2.4** and the controlling Agent. Updating the
+Use Node **0.2.4 or later** (0.3.3 current) and an updated controlling Agent. Updating the
 Skill/Harness alone changes guidance and installer lookup, not either runtime.
 
 1. Keep the explicit `node` on every `remote_computer` call. Use `status` to
@@ -97,7 +119,7 @@ not a role selector: a query such as `textbox` does not find every text field.
 Protected values are excluded. Use an unfiltered observation or a screenshot
 when the app exposes insufficient accessibility information.
 
-With Node 0.2.4 and an updated Agent, check `observation.scope`, `complete`, and
+With Node 0.2.4 or later and an updated Agent, check `observation.scope`, `complete`, and
 `reasons`. A complete result covers only the reported application, window, or
 desktop scope. Elements with verified bounds are filtered to the selected display;
 Wayland reports desktop-wide text without coordinates. A partial result can still contain useful

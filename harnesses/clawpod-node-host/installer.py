@@ -38,7 +38,13 @@ def release_manifest() -> dict:
     if value.get("channel") not in {"preview", "stable"} or not isinstance(value.get("signed"), bool):
         raise ValueError("invalid release metadata")
     validation = value.get("validation")
-    if not isinstance(validation, dict) or any(validation.get(key) not in {"passed", "not-run", "failed"} for key in ("linuxOfflineInstall", "nativeMacOS", "nativeWindows", "desktopLoginStartup")):
+    # Release validation keys vary between releases (e.g. linuxOfflineInstall → linuxOfflineUpgrade); accept any
+    # camelCase key with a known status, but always require the Windows and login-startup records.
+    if (
+        not isinstance(validation, dict)
+        or not {"nativeWindows", "desktopLoginStartup"} <= set(validation)
+        or any(not isinstance(key, str) or not re.fullmatch(r"[a-z][A-Za-z0-9]{0,63}", key) or status not in {"passed", "not-run", "failed"} for key, status in validation.items())
+    ):
         raise ValueError("invalid validation metadata")
     artifacts = value.get("artifacts")
     if not isinstance(artifacts, list) or len(artifacts) != len(TARGETS):
@@ -171,9 +177,9 @@ def guidance(platform: str, filename: str) -> dict:
         "windows": "Uninstall ClawPod Node from Windows Installed apps.",
     }
     desktop = {
-        "macos": "In Desktop setup, allow ClawPod Node in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). Use Open settings and Check again if needed. An ad-hoc app update may require removing the stale permission entry and adding the current app from Applications. Screen capture only; audio is not collected.",
-        "windows": "Check Desktop setup in your logged-in, unlocked desktop. No macOS-style permission switch is needed; UAC/secure desktops and elevated applications may reject ordinary input.",
-        "linux": "Check Desktop setup in a graphical session (glibc 2.36 or newer). X11 needs a reachable display and XTest. Wayland needs RemoteDesktop/ScreenCast portals and user screen/input sharing consent when control starts.",
+        "macos": "In Desktop access, allow ClawPod Node in Screen & System Audio Recording and Accessibility (Device Control & Data Access on macOS 27). Use Open settings and Check again if needed. An ad-hoc app update may require removing the stale permission entry and adding the current app from Applications. Screen capture only; audio is not collected.",
+        "windows": "Check Desktop access in your logged-in, unlocked desktop. No macOS-style permission switch is needed; UAC/secure desktops and elevated applications may reject ordinary input.",
+        "linux": "Check Desktop access in a graphical session (glibc 2.36 or newer). X11 needs a reachable display and XTest. Wayland needs RemoteDesktop/ScreenCast portals and user screen/input sharing consent when control starts.",
     }
     return {
         "preparation": [
@@ -187,19 +193,19 @@ def guidance(platform: str, filename: str) -> dict:
             "Verify the active Gateway token/password from its authorized source; config.get and openclaw config get redact secrets. Find the matching stored Gateway pointer with the secret catalog or memory_secret_search. If absent, save it with memory_secret; if the active value changed, update that same pointer with memory_secret_update. Reuse a verified unchanged value to preserve delegations. The main sends the actual value to the requesting user with room_send using the request room, a placeholder in content, and useSecrets [{name: pointerId, placeholder}]. The runtime substitutes the credential in the delivered message; a pointer or masked value is not a completed handoff. Keep the credential separate from the URL, send without files, and confirm success. Workers report the pointer to their main. Explain which Node authentication field to paste it into.",
             install[platform],
             desktop[platform] + " Desktop components are inside ClawPod Node; no separate helper installation is needed. Missing GUI permission does not block Gateway connection setup.",
-            "Open ClawPod Node. Its setup page opens in your default browser. Enter the supplied URL, display name, and credential in their separate fields.",
-            "Save settings and select Start node. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
+            "Open ClawPod Node. Its setup page opens in your default browser (Korean or English). On the Connections tab enter the supplied URL, display name, and credential in their separate fields; Desktop access and login startup are on the This computer tab. If this computer already connects to another Agent, select Add connection instead of editing that connection; each Agent pairs separately.",
+            "Save settings and select Start connection. Private and Tailscale IP ws:// connections are always enabled; there is no checkbox to turn on.",
             "Approve the matching new device in the Agent Control UI using its device/request identity, then confirm the connection there. Existing pairing and command approval rules apply.",
-            "Select the connected Node ID with nodes action=status and check advertised capabilities. GUI: remote_computer with node, status → acquire → input using returned frameId as frame_id → release. Use viewport.imageWidth × imageHeight coordinates without rescaling or monitor offsets; zoom pixels are not input coordinates. To switch displays, take a fresh screenshot/observe with display_id and no frame_id, then use its new frame. Key chords use text. Node 0.2.4 plus an updated Agent report observation scope, complete, and reasons; queries match names/values, not roles. Empty partial results do not prove absence; old nodes have unknown completeness. CLI: exec host=node with node; use process with a returned sessionId for managed work. Browser: browser target=node with node needs a compatible installed browser, not necessarily Chrome. Local computer targets the pod. Updating this capability alone updates neither runtime.",
+            "Select the connected Node ID with nodes action=status and check advertised capabilities. GUI: remote_computer with node, status → acquire → input using returned frameId as frame_id → release. Use viewport.imageWidth × imageHeight coordinates without rescaling or monitor offsets; zoom pixels are not input coordinates. To switch displays, take a fresh screenshot/observe with display_id and no frame_id, then use its new frame. Key chords use text. Node 0.2.4 or later plus an updated Agent report observation scope, complete, and reasons; queries match names/values, not roles. Empty partial results do not prove absence; old nodes have unknown completeness. CLI: exec host=node with node; use process with a returned sessionId for managed work. Browser: browser target=node with node needs a compatible installed browser, not necessarily Chrome. Local computer targets the pod. Several Agents connected to one computer share its desktop without automatic input sequencing: acquire, act, and release promptly. Updating this capability alone updates neither runtime.",
         ],
         "operations": {
-            "start": "Select Start node in the ClawPod Node setup page.",
-            "restart": "Select Reconnect to restart the node with saved settings.",
-            "stop": "Select Stop. The node stays stopped when the app is reopened or you sign in again, until Start node is selected.",
-            "startup": "Start when I sign in registers startup for the current user and their logged-in desktop session.",
+            "start": "Select Start connection in the ClawPod Node setup page.",
+            "restart": "Select Reconnect to restart the node with saved settings. Saving a connection restarts only that connection; saving This computer settings or changing the language restarts nothing.",
+            "stop": "Select Stop. The node stays stopped when the app is reopened or you sign in again, until Start connection is selected.",
+            "startup": "Start ClawPod Node when I sign in (This computer tab, then Save computer settings) registers startup for the current user and their logged-in desktop session.",
             "status": "Running reports the local process only. Check the Agent Control UI for authenticated, paired, connected status; inspect timestamped failures in the app.",
             "close": "Closing the setup browser tab leaves the node running. Reopening ClawPod Node reuses its setup server.",
-            "upgrade": "Install the newer matching package. Update both Node to 0.2.4 and the controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
+            "upgrade": "Install the newer matching package. Use Node 0.2.4 or later (0.3.3 current; 0.3.0 or later for several Agent connections) with an updated controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
             "uninstall": removal[platform] + " User settings and device identity remain for reinstall; remove the separate .clawpod-node directory only when you intend to discard them.",
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",
@@ -235,7 +241,7 @@ def installer_info(args) -> tuple[dict, int]:
     # Release-wide signing may be mixed; report the selected installer's status.
     out["installer"].update({key: artifact[key] for key in ("signed", "notarized", "stapled") if key in artifact})
     out["installer"].update({"manifestSource": "bundled", "remoteAvailability": "unchecked"})
-    out["installer"]["validation"] = {key: manifest["validation"][key] for key in ("linuxOfflineInstall", "nativeMacOS", "nativeWindows")}
+    out["installer"]["validation"] = {key: status for key, status in manifest["validation"].items() if key != "desktopLoginStartup"}
     # Keep public test metadata outside the legacy login-identity redaction keyspace.
     out["installer"]["validation"]["desktopStartup"] = manifest["validation"]["desktopLoginStartup"]
     out["gateway"] = gateway

@@ -43,16 +43,19 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.7 adds Node 0.2.4 accessibility completeness, image-coordinate,
-and key-input guidance. Installer checksums and signing status come from the bundled manifest.
+Version 0.7.8 selects Node 0.3.3 installers and adds guidance for its
+Connections / This computer tabs and for connecting one computer to several Agents
+(Add connection; each Agent pairs separately; the desktop is shared without
+automatic input sequencing). Version 0.7.7 added Node 0.2.4 accessibility
+completeness, image-coordinate, and key-input guidance. Installer checksums and signing status come from the bundled manifest.
 Gateway secret storage, rotation, and room delivery remain unchanged.
-Managed CLI and OS-specific Desktop setup guidance remain available.
+Managed CLI and OS-specific Desktop access guidance remain available.
 All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.5. Update the Node app to 0.2.4 and the
-controlling Agent as well for the corrected `remote_computer` behavior.
+Update both Skill and Harness to 0.7.8. Use Node 0.2.4 or later (0.3.3 current)
+and an updated controlling Agent for the corrected `remote_computer` behavior.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses
 `exec host=node` with `node`, and browser uses `target=node` with `node`.
