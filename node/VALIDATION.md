@@ -1,4 +1,29 @@
-# ClawPod Node 0.2.4 validation scope
+# ClawPod Node 0.3.3 validation scope
+
+Bundled Agent runtime source: `5ba295f82b724de46f436178e6a30b1917e35786`
+(runtime 2026.4.11, Node.js 24.15.0). Installer source:
+`d4b469b1bc6ca8177ff7c0e9430c92536ebb3dd5`. Skill/Harness version: `0.7.8`.
+Recorded from the published `release.json`; on 2026-10-12 all four installers
+downloaded without authentication and matched their published SHA-256 values,
+byte sizes, and `prepare_release.py check`.
+
+- Node tests: 61 passed, 11 opt-in tests classified separately. Browser UI tests
+  on the UI extracted from the real installers: 7 passed.
+- Linux: offline 0.3.2 → 0.3.3 upgrade, configuration and authentication
+  preserved, active app restart, single and multiple connection protocols, and
+  user settings retained after removal.
+- macOS Apple Silicon and Intel (Rosetta): Developer ID signature, Apple
+  notarization, stapling, Gatekeeper, signed runtime, app IPC readiness, single
+  and multiple connections, package extraction, CPU-specific helper inventory and
+  pi-tui native loader.
+- Windows: package extraction only.
+
+Not tested in this release: fresh Mac install, login startup, upgrade and removal;
+physical Intel Mac; Mac desktop actions and production Gateway pairing; native
+Windows execution and publisher signing. Whether the macOS 28 compatibility
+warning disappears needs confirmation on an affected Mac.
+
+# ClawPod Node 0.2.4 validation scope (previous release)
 
 Bundled Agent runtime and installer source:
 `4ba5a0fb5301a08c6d94b0202c2aba2a8749f872`. Skill/Harness version: `0.7.5`.

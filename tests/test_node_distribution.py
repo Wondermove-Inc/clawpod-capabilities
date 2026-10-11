@@ -48,7 +48,9 @@ class NodeDistributionTests(unittest.TestCase):
             self.assertIn("/clawpod-capabilities/releases/download/node-v", item["url"])
             self.assertNotIn("/latest/", item["url"])
         self.assertIs(manifest["signed"], False)
-        self.assertEqual(manifest["validation"]["nativeMacOS"], "not-run")
+        native_macos = {k: v for k, v in manifest["validation"].items() if k.startswith("nativeMacOS")}
+        self.assertTrue(native_macos)
+        self.assertEqual(set(native_macos.values()), {"not-run"})
         self.assertEqual(manifest["validation"]["nativeWindows"], "not-run")
 
     def test_invalid_artifact_signing_metadata(self):

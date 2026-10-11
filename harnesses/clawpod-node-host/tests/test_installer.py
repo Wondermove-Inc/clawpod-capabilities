@@ -36,7 +36,7 @@ def test_selects_real_manifest_artifact_without_legacy_preflight(tmp_path, platf
     assert out["installer"]["remoteAvailability"] == "unchecked"
     assert out["effects"] == [] and out["safetyClass"] == "S0"
     assert not {"tailscale", "service", "pairing", "version"}.intersection(out)
-    assert "Start node" in out["guidance"]["operations"]["start"]
+    assert "Start connection" in out["guidance"]["operations"]["start"]
     assert "Reconnect" in out["guidance"]["operations"]["restart"]
     assert "Agent Control UI" in out["guidance"]["operations"]["status"]
     assert "~/.openclaw" in out["guidance"]["stateCompatibility"]
@@ -135,7 +135,7 @@ def test_standalone_package_needs_no_repo_or_cli_runtime(tmp_path):
     assert run.returncode == 0 and out["installer"]["manifestSource"] == "bundled"
 
 
-@pytest.mark.parametrize("damage", ["missing", "json", "download", "checksum", "duplicate", "size", "metadata", "provenance", "provenance-type"])
+@pytest.mark.parametrize("damage", ["missing", "json", "download", "checksum", "duplicate", "size", "metadata", "provenance", "provenance-type", "validation-missing", "validation-key"])
 def test_invalid_packaged_manifest_reports_stable_failure(tmp_path, damage):
     package = standalone_package(tmp_path)
     path = package / "installer-manifest.json"
@@ -157,8 +157,12 @@ def test_invalid_packaged_manifest_reports_stable_failure(tmp_path, damage):
             value["installerSourceCommit"] = "CANARY-SECRET"
         elif damage == "provenance-type":
             value["installerSourceCommit"] = None
+        elif damage == "validation-missing":
+            del value["validation"]["nativeWindows"]
+        elif damage == "validation-key":
+            value["validation"]["CANARY-SECRET key"] = "passed"
         else:
-            value["validation"]["nativeMacOS"] = "CANARY-SECRET"
+            value["validation"]["nativeMacOSInstallLifecycle"] = "CANARY-SECRET"
         path.write_text(json.dumps(value))
     run, out = run_info(tmp_path, "--platform", "linux", "--arch", "x64", package=package)
     assert run.returncode == 6 and out["errors"][0]["code"] == "INSTALLER_MANIFEST_INVALID"
