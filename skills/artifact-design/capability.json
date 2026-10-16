@@ -1,10 +1,10 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.3.1",
-  "description": "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
+  "version": "0.3.2",
+  "description": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
   "descriptionI18n": {
-    "ko": "보고서, 계획, 다이어그램, 비교표, 참고 페이지, 실시간 대시보드 등 다시 열어볼 ClawPod 대화방 아티팩트를 설계하고 게시합니다. 반응형 Markdown·HTML, 시각적 위계, 저장 후 artifact_refs 게시, HTML 재게시 없이 갱신되는 SDK 스냅샷에 사용합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
+    "ko": "보고서, 계획, 다이어그램, 비교표, 참고 페이지, 실시간 대시보드 등 다시 열어볼 ClawPod 대화방 아티팩트를 설계·게시·조회·수정합니다. 반응형 Markdown·HTML, 저장 후 artifact_refs 게시, 실시간 SDK 스냅샷, 내가 저장한 아티팩트 목록 조회, 아티팩트 내용·버전 확인과 수정에 사용합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
   },
   "compatibility": {
     "openclaw": ">=2026.4.0"
