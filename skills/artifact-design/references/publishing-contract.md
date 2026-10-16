@@ -44,12 +44,20 @@ curl --fail-with-body --silent --show-error --request POST \
   "${ADMIN_API_URL}/internal/chat-rooms/${ROOM_ID}/artifacts" \
   --header "X-Gateway-Token: ${GATEWAY_TOKEN}" \
   --header 'Content-Type: application/json' \
-  --data-binary @"$work/save.json" > "$work/saved.json"
+  --data-binary @"$work/save.json" > "$work/saved.json" \
+  || { cat "$work/saved.json" >&2; echo >&2; exit 1; }  # show the error body, e.g. 409 latestVersion
 python3 - "$work/saved.json" <<'PYTHON' > "$work/message.json"
 import json, os, sys
+from datetime import datetime, timezone
 artifact = json.load(open(sys.argv[1], encoding="utf-8"))["artifact"]
 if artifact["identifier"] != os.environ["ARTIFACT_IDENTIFIER"] or type(artifact["version"]) is not int or artifact["version"] < 1:
     raise SystemExit("Invalid artifact save response")
+ledger = os.environ.get("ARTIFACT_LEDGER", "/workspace/state/artifact-ledger.jsonl")
+os.makedirs(os.path.dirname(ledger), exist_ok=True)
+with open(ledger, "a", encoding="utf-8") as out:  # what you saved, for later listing
+    out.write(json.dumps({"room_id": int(os.environ["ROOM_ID"]), "identifier": artifact["identifier"],
+                          "version": artifact["version"], "type": artifact["type"], "title": artifact["title"],
+                          "saved_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}, ensure_ascii=False) + "\n")
 print(json.dumps({
     "from_agent_id": os.environ["AGENT_ID"],
     "room_id": int(os.environ["ROOM_ID"]),
@@ -64,7 +72,7 @@ curl --fail-with-body --silent --show-error --request POST \
   --data-binary @"$work/message.json"
 ```
 
-The save response is `201 {"artifact": {"identifier": "…", "version": 1, …}}`. After the message succeeds, final output is exactly `NO_REPLY`. Never use a file attachment instead of `artifact_refs`. JSON preparation failures stop before curl. Credentials are used in headers only and never put in payload files or printed.
+The save response is `201 {"artifact": {"identifier": "…", "version": 1, …}}`. The command also appends that identifier, version, title, and room to the save ledger used for listing your artifacts later ([finding-and-revising.md](finding-and-revising.md)). After the message succeeds, final output is exactly `NO_REPLY`. Never use a file attachment instead of `artifact_refs`. JSON preparation failures stop before curl. Credentials are used in headers only and never put in payload files or printed.
 
 ### Recover the pointer after a failed message
 
@@ -75,7 +83,7 @@ curl --fail-with-body --silent --show-error \
 # Add &version=N for an exact older version.
 ```
 
-Use that returned version for the room message. Do not resend successfully published messages automatically, since this flow does not introduce a message idempotency key.
+Use that returned version for the room message. Listing, version history, and revisions: [finding-and-revising.md](finding-and-revising.md). Do not resend successfully published messages automatically, since this flow does not introduce a message idempotency key.
 
 ## Legacy mode: inline `artifacts`
 

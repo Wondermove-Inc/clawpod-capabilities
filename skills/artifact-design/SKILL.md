@@ -1,6 +1,6 @@
 ---
 name: artifact-design
-description: "Design and publish reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, visual hierarchy, save-then-artifact_refs publication, and SDK snapshots that update without republishing HTML. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video."
+description: "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video."
 ---
 
 # Artifact Design
@@ -29,6 +29,15 @@ Two things must both be true for the work to count as done:
 7. **Run the checklist** in [checklist.md](references/checklist.md): renderer constraints, theme scan, overflow, preview text, payload limits.
 8. **Save, then attach.** Write the content to a workspace file, `POST` it to `/internal/chat-rooms/$ROOM_ID/artifacts` with `from_agent_id`, read `artifact.version` from the `201` response, and send the room message with `artifact_refs: [{identifier, version}]` and a one- or two-sentence `content`. Exact commands: [publishing-contract.md](references/publishing-contract.md). Worked payloads, including revisions and the interactive-request case: [examples.md](references/examples.md). Never send `artifacts` and `artifact_refs` in the same message; at most 5 refs per message. Do not author a `preview`.
 9. **End the turn correctly.** After the curl send, the WebUI output is exactly `NO_REPLY`. Never describe or paste the artifact in the WebUI final text, and never claim it is ready there.
+
+## Find, read, and revise existing artifacts
+
+Follow [finding-and-revising.md](references/finding-and-revising.md) and run its commands directly instead of probing other URLs.
+
+- **Current room / rooms you are in / what you wrote:** one command reads the save ledger (`/workspace/state/artifact-ledger.jsonl`, appended by every save) with `SCOPE=room|rooms|mine`. `GET /internal/agent-rooms?agent_slug=$AGENT_ID` lists your rooms. Add `VERIFY=1` to re-read each entry live.
+- **Content and versions:** `GET /internal/chat-rooms/$ROOM_ID/artifacts/<identifier>?from_agent_id=$AGENT_ID` returns the latest full record; `&version=N` returns an exact older one. Versions run 1…latest, so history is read version by version.
+- **Not available to agents:** a list of every artifact in a room, a one-call version list, an author filter, and title/content search. The room list and version list endpoints accept only signed-in people. Responses never say who saved an artifact. For an artifact you did not save, use the identifier from the conversation or ask the user, who can browse all room artifacts in the portal.
+- **Revise:** read the latest, edit, save under the same identifier with `expectedVersion` = that version, handle `409` by rebasing on `latestVersion`, then publish the new version with `artifact_refs`.
 
 ## Publishing rules that fail closed
 
