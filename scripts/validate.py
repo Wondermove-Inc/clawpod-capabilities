@@ -118,6 +118,9 @@ def validate_entry(entry: object, position: int, seen: set[tuple[str, str, str]]
         entrypoint = manifest.get("entrypoint")
         if not isinstance(entrypoint, str) or not (path / entrypoint).is_file():
             fail(f"{label} harness entrypoint is missing")
+        # The Gateway spawns the entrypoint directly; installers that copy file modes need +x.
+        if not (path / entrypoint).stat().st_mode & 0o111:
+            fail(f"{label} harness entrypoint must be executable (git mode 100755)")
         execution = manifest.get("execution")
         if not isinstance(execution, dict):
             fail(f"{label} harness execution must be an object")
