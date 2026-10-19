@@ -981,8 +981,8 @@
     {
       "id": "vulnerability-assessment-report",
       "type": "skill",
-      "version": "0.1.2",
-      "description": "Use to write a vulnerability assessment result report from the standard Korean template: fill the A4 DOCX report and 16:9 PPTX deck from one JSON model, check issue readiness and ID consistency, and render PDFs. Use Verified Research to verify claims and Artifact Design for room pages.",
+      "version": "0.2.0",
+      "description": "Use to write a vulnerability assessment result report with the bundled standard Korean DOCX report and 16:9 PPTX templates and their usage guide. Use Verified Research to verify claims and Artifact Design for room pages.",
       "path": "skills/vulnerability-assessment-report",
       "compatibility": {
         "openclaw": ">=2026.4.0"
@@ -994,28 +994,24 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "5e05b36b88d1c4c2d404710bffbf3e2f47d1781cc14d1913f3643c073f4cfc10"
+          "sha256": "094a559bb7f785fbd6b466c8250ed51189290b0baaaa70f796f980334d8644fd"
         },
         {
-          "path": "references/canonical-template.md",
-          "sha256": "5875e97c01a8c048baec548e1ad1abb0998fbfcd9ce488820f0045d2e18cd52e"
+          "path": "templates/usage-guide.md",
+          "sha256": "38f832664feb2b266d1afcb8d9697a401a4b204cd8e1cb9a5e6559a62f41547c"
         },
         {
-          "path": "references/report-model.md",
-          "sha256": "28524c0cbf7b810afeee6e85e6b09659ef6129852c4a5695e39e672079b225f4"
+          "path": "templates/va-report-template-16x9.pptx",
+          "sha256": "05541de293a65972afe0636e1d0aa7cb06d000338c48b4cd6946b42b5088a37c"
         },
         {
-          "path": "references/writing-guide.md",
-          "sha256": "2fdf994e2dd8b41903a3554370a487218931c41ed27555b448a189357d7f8465"
+          "path": "templates/va-report-template.docx",
+          "sha256": "b65ec87e62156f232d451db91417d1c67f8c9646174571476befb1f83ccddd40"
         }
       ],
       "descriptionI18n": {
-        "en": "Use to write a vulnerability assessment result report from the standard Korean template: fill the A4 DOCX report and 16:9 PPTX deck from one JSON model, check issue readiness and ID consistency, and render PDFs. Use Verified Research to verify claims and Artifact Design for room pages.",
-        "ko": "표준 한국어 템플릿으로 취약점 진단 결과 보고서를 작성합니다. 하나의 JSON 모델로 A4 DOCX 보고서와 16:9 PPTX 발표본을 채우고, 배포 준비 상태와 ID 일관성을 점검하며, PDF로 렌더링합니다. 주장 검증은 Verified Research, 대화방 페이지는 Artifact Design을 사용합니다."
-      },
-      "linkedHarness": {
-        "id": "vulnerability-assessment-report",
-        "version": "0.1.2"
+        "en": "Use to write a vulnerability assessment result report with the bundled standard Korean DOCX report and 16:9 PPTX templates and their usage guide. Use Verified Research to verify claims and Artifact Design for room pages.",
+        "ko": "번들된 표준 한국어 DOCX 보고서·16:9 PPTX 템플릿과 사용안내로 취약점 진단 결과 보고서를 작성합니다. 주장 검증은 Verified Research, 대화방 페이지는 Artifact Design을 사용합니다."
       }
     },
     {
@@ -1988,70 +1984,6 @@
       "descriptionI18n": {
         "en": "Capture, normalize, hash, bundle, inspect, and validate bounded public research evidence deterministically.",
         "ko": "범위가 제한된 공개 리서치 근거를 재현 가능한 방식으로 수집·정규화·해시 생성·묶음 구성·조회·검증합니다."
-      }
-    },
-    {
-      "id": "vulnerability-assessment-report",
-      "type": "harness",
-      "version": "0.1.2",
-      "description": "Fill the standard Korean vulnerability assessment report DOCX and 16:9 PPTX templates from one JSON model, check issue readiness, and render PDFs.",
-      "path": "harnesses/vulnerability-assessment-report",
-      "compatibility": {
-        "openclaw": ">=2026.4.0"
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "README.md",
-          "sha256": "4e2dc458ca4def04d197771ae9bc26cea9bb465156fbcb437269c8eeccba2edc"
-        },
-        {
-          "path": "TEST.md",
-          "sha256": "8c3d8d5818d32c31657f0c0308ca00eca24445e868419fa26423cb8a8d10b909"
-        },
-        {
-          "path": "examples/sample-report.json",
-          "sha256": "9d019a9a41a685da493a9d72c648503037d53aa4424d9bbd00ce97ff5fd007a8"
-        },
-        {
-          "path": "harness.json",
-          "sha256": "664ece18f77d3094e859da393208aeafa7368aeb37bfd7da1ca7a78ae3044351"
-        },
-        {
-          "path": "templates/va-report-template-16x9.pptx",
-          "sha256": "05541de293a65972afe0636e1d0aa7cb06d000338c48b4cd6946b42b5088a37c"
-        },
-        {
-          "path": "templates/va-report-template.docx",
-          "sha256": "b65ec87e62156f232d451db91417d1c67f8c9646174571476befb1f83ccddd40"
-        },
-        {
-          "path": "va_build.py",
-          "sha256": "175423c53b68e7fe603df551a1833c763bd5458dca31538f9874e3c9daa9112e"
-        },
-        {
-          "path": "va_check.py",
-          "sha256": "24014d2b38269f8316ce5ed3a81c77c9efd8c0bc2c1ea32b3d92f764f7a027e4"
-        },
-        {
-          "path": "va_model.py",
-          "sha256": "a24df91679c8cfb3826ba6f4ec6b468961fc44a06366cf891d6e6fafbc9e06ba"
-        },
-        {
-          "path": "va_ooxml.py",
-          "sha256": "cac944d6e59ba5213408d4b1c14c5dd71112b7556f35afd7f9a58de6ef12bf55"
-        },
-        {
-          "path": "vulnerability_assessment_report.py",
-          "sha256": "dc2f4b66cf98ce6fc07ab5ee09a8164d4f3099b81d58830bcce6590c2febd3b4"
-        }
-      ],
-      "descriptionI18n": {
-        "en": "Fill the standard Korean vulnerability assessment report DOCX and 16:9 PPTX templates from one JSON model, check issue readiness, and render PDFs.",
-        "ko": "표준 취약점 진단 결과 보고서 DOCX와 16:9 PPTX 템플릿을 하나의 JSON 모델로 채우고, 배포 준비 상태를 점검하며, PDF로 렌더링합니다."
       }
     },
     {
