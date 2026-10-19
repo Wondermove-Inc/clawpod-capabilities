@@ -97,7 +97,8 @@
     ],
     "adjacent": [
       "verified-research",
-      "hwp-desktop"
+      "hwp-desktop",
+      "vulnerability-assessment-report"
     ]
   },
   "clawpod-org-operations": {
@@ -296,7 +297,8 @@
       "memory-graph",
       "enterprise-newsletter",
       "soc-event-correlation",
-      "typesafe-ai"
+      "typesafe-ai",
+      "vulnerability-assessment-report"
     ]
   },
   "youtube-evidence-analysis": {
@@ -348,7 +350,8 @@
     "adjacent": [
       "claude-design",
       "clawpod-image-studio",
-      "open-design"
+      "open-design",
+      "vulnerability-assessment-report"
     ]
   },
   "hwp-desktop": {
@@ -418,6 +421,24 @@
     ],
     "adjacent": [
       "verified-research"
+    ]
+  },
+  "vulnerability-assessment-report": {
+    "positive": [
+      "Write the vulnerability assessment report from these findings",
+      "Fill the \ucde8\uc57d\uc810 \uc9c4\ub2e8 \uacb0\uacfc \ubcf4\uace0\uc11c template",
+      "Check this VA report before it goes to the customer",
+      "Make the 16:9 report deck from the same findings"
+    ],
+    "negative": [
+      "Scan this web app for vulnerabilities",
+      "Fact-check the CVE references in this article",
+      "Publish the findings summary as a room artifact page"
+    ],
+    "adjacent": [
+      "verified-research",
+      "artifact-design",
+      "clawpod-ocr"
     ]
   }
 }
