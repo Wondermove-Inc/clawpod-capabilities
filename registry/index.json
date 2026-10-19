@@ -641,7 +641,7 @@
     {
       "id": "memory-graph",
       "type": "skill",
-      "version": "0.11.7",
+      "version": "0.11.8",
       "description": "Use to build, reconcile, query, validate, or export a private evidence graph when connected history across decisions, people, projects, causes, effects, or events is needed; use Memory Search for simple source-fact lookup, not this graph.",
       "path": "skills/memory-graph",
       "compatibility": {
@@ -663,7 +663,7 @@
       },
       "linkedHarness": {
         "id": "memory-graph",
-        "version": "0.11.7"
+        "version": "0.11.8"
       }
     },
     {
@@ -1689,7 +1689,7 @@
     {
       "id": "memory-graph",
       "type": "harness",
-      "version": "0.11.7",
+      "version": "0.11.8",
       "description": "Deterministically export validated inert candidates or approved causal snapshots as fully offline interactive SVG node-link HTML.",
       "path": "harnesses/memory-graph",
       "compatibility": {
@@ -1702,7 +1702,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "a88b093bee24807e40724ae9bfead77420ad820d5736a06a5d226bb803aabf38"
+          "sha256": "c6b3aa15b98ba67279fb7d4661bc9cf73e51a426bf17beb7ccdfadd69c1d9488"
         },
         {
           "path": "agent_authoring_driver.py",
@@ -1710,11 +1710,11 @@
         },
         {
           "path": "harness.json",
-          "sha256": "dca01317fcd90d4afb54bc9c462152117d08ced338635de1fd04dee203a1560e"
+          "sha256": "f13a7c22da997a9eec24c1ef6cd7edb3d3afb7455c68b1855024d600622a91a7"
         },
         {
           "path": "memory_graph.py",
-          "sha256": "777eb511cfcdd8cd6a4d0a1a09f917d45f41d7c128c90e7a641de13023a0785c"
+          "sha256": "77b04d8c921dbfc08e1300203ac8f999a07a3994d0ef001b239b1b2ca8478716"
         },
         {
           "path": "ontology.py",
