@@ -25,6 +25,7 @@ RUNTIME_CONSTANTS = {
     "enterprise-newsletter": ("enterprise_newsletter.py", "VERSION"),
     "memory-graph": ("memory_graph.py", "CONTRACT_VERSION"),
     "resend-email": ("resend_email.py", "VERSION"),
+    "vulnerability-assessment-report": ("vulnerability_assessment_report.py", "VERSION"),
     "youtube-evidence-analysis": ("youtube_evidence_analysis.py", "VERSION"),
 }
 RUNTIME_LITERALS = {
@@ -51,6 +52,7 @@ SELF_REPORTS = {
     "cloudflare-quick-tunnel-preview": ("status", ["--state-root", "{state_root}"]),
     "enterprise-newsletter": ("status", []),
     "resend-email": ("status", []),
+    "vulnerability-assessment-report": ("system.version", []),
     "youtube-evidence-analysis": ("status", []),
 }
 
