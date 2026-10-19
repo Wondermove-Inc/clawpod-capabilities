@@ -981,7 +981,7 @@
     {
       "id": "vulnerability-assessment-report",
       "type": "skill",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Use to write a vulnerability assessment result report from the standard Korean template: fill the A4 DOCX report and 16:9 PPTX deck from one JSON model, check issue readiness and ID consistency, and render PDFs. Use Verified Research to verify claims and Artifact Design for room pages.",
       "path": "skills/vulnerability-assessment-report",
       "compatibility": {
@@ -994,7 +994,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b032e92dad3f6b65f289212f7b943d61096971b8f401da098edece510819f5d0"
+          "sha256": "5e05b36b88d1c4c2d404710bffbf3e2f47d1781cc14d1913f3643c073f4cfc10"
         },
         {
           "path": "references/canonical-template.md",
@@ -1002,7 +1002,7 @@
         },
         {
           "path": "references/report-model.md",
-          "sha256": "916688fd5ce304f33d40b02b9f96fbd13607f7bf2da7f137f243a14587aa5c8a"
+          "sha256": "28524c0cbf7b810afeee6e85e6b09659ef6129852c4a5695e39e672079b225f4"
         },
         {
           "path": "references/writing-guide.md",
@@ -1015,7 +1015,7 @@
       },
       "linkedHarness": {
         "id": "vulnerability-assessment-report",
-        "version": "0.1.1"
+        "version": "0.1.2"
       }
     },
     {
@@ -1993,7 +1993,7 @@
     {
       "id": "vulnerability-assessment-report",
       "type": "harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "description": "Fill the standard Korean vulnerability assessment report DOCX and 16:9 PPTX templates from one JSON model, check issue readiness, and render PDFs.",
       "path": "harnesses/vulnerability-assessment-report",
       "compatibility": {
@@ -2006,7 +2006,7 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "18c492f7ec3c2aa3b267773dcd560ad9569ea976a0872167050198eff4280bba"
+          "sha256": "4e2dc458ca4def04d197771ae9bc26cea9bb465156fbcb437269c8eeccba2edc"
         },
         {
           "path": "TEST.md",
@@ -2018,7 +2018,7 @@
         },
         {
           "path": "harness.json",
-          "sha256": "55a35452db6dc3396e6376fc71f10cd52d22e099cc1834e117c1a0b0954312b7"
+          "sha256": "664ece18f77d3094e859da393208aeafa7368aeb37bfd7da1ca7a78ae3044351"
         },
         {
           "path": "templates/va-report-template-16x9.pptx",
@@ -2030,7 +2030,7 @@
         },
         {
           "path": "va_build.py",
-          "sha256": "6c214f5430e0c7f5576c0fb5ff17915b3de5abc95b31250f18276c7aaba29597"
+          "sha256": "175423c53b68e7fe603df551a1833c763bd5458dca31538f9874e3c9daa9112e"
         },
         {
           "path": "va_check.py",
@@ -2038,7 +2038,7 @@
         },
         {
           "path": "va_model.py",
-          "sha256": "c794f6902998d98023d1f2c0bc590c8ed69d7d394056ff4a906a65faca2b299a"
+          "sha256": "a24df91679c8cfb3826ba6f4ec6b468961fc44a06366cf891d6e6fafbc9e06ba"
         },
         {
           "path": "va_ooxml.py",
@@ -2046,7 +2046,7 @@
         },
         {
           "path": "vulnerability_assessment_report.py",
-          "sha256": "63ac1bb4973139a99470d91566aede0f6705f4711f95ac72232233b7722c3bf8"
+          "sha256": "dc2f4b66cf98ce6fc07ab5ee09a8164d4f3099b81d58830bcce6590c2febd3b4"
         }
       ],
       "descriptionI18n": {
