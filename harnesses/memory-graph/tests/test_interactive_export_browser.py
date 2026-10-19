@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import socket
 import struct
 import subprocess
@@ -86,7 +87,8 @@ class BrowserInteractionTests(unittest.TestCase):
         chromium = shutil.which("chromium") or shutil.which("chromium-browser")
         if not chromium:
             self.skipTest("Chromium is unavailable")
-        with tempfile.TemporaryDirectory() as directory:
+        # Chromium helpers can still write the profile briefly after shutdown; cleanup must not race them.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as directory:
             root = Path(directory)
             source = {"path": "memory/topic.md", "line_start": 2, "line_end": 2}
             entities = [
@@ -107,7 +109,8 @@ class BrowserInteractionTests(unittest.TestCase):
             profile = root / "profile"
             cdp = None
             process = subprocess.Popen([chromium, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0",
-                                        f"--user-data-dir={profile}", output.as_uri()], stderr=subprocess.PIPE, text=True)
+                                        f"--user-data-dir={profile}", output.as_uri()], stderr=subprocess.PIPE, text=True,
+                                       start_new_session=True)
             try:
                 # Cold Chromium starts on shared CI runners can take well over 10 s.
                 deadline = time.time() + 30
@@ -135,10 +138,22 @@ class BrowserInteractionTests(unittest.TestCase):
                     if cdp.evaluate("document.querySelectorAll('g[role=button]').length===2"):
                         break
                     time.sleep(.1)
-                before = cdp.evaluate("(()=>{const c=document.querySelector('g[role=button] circle'),r=c.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,cx:+c.getAttribute('cx')}})()")
+                probe = "(()=>{const c=document.querySelector('g[role=button] circle'),r=c.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,cx:+c.getAttribute('cx')}})()"
+                # On a loaded runner the first layout can still be settling; press only on a stable node position.
+                before = cdp.evaluate(probe)
+                for _ in range(50):
+                    time.sleep(.1)
+                    current = cdp.evaluate(probe)
+                    if current == before:
+                        break
+                    before = current
                 cdp.call("Input.dispatchMouseEvent", {"type": "mousePressed", "x": before["x"], "y": before["y"], "button": "left", "buttons": 1, "clickCount": 1})
                 cdp.call("Input.dispatchMouseEvent", {"type": "mouseMoved", "x": before["x"] + 70, "y": before["y"] + 35, "button": "left", "buttons": 1})
-                during = cdp.evaluate("(()=>{const g=document.querySelector('g[role=button]');return {connected:g.isConnected,cx:+g.querySelector('circle').getAttribute('cx')}})()")
+                for _ in range(40):
+                    during = cdp.evaluate("(()=>{const g=document.querySelector('g[role=button]');return {connected:g.isConnected,cx:+g.querySelector('circle').getAttribute('cx')}})()")
+                    if abs(during["cx"] - before["cx"]) > 40:
+                        break
+                    time.sleep(.05)
                 cdp.call("Input.dispatchMouseEvent", {"type": "mouseReleased", "x": before["x"] + 70, "y": before["y"] + 35, "button": "left", "buttons": 0, "clickCount": 1})
                 self.assertTrue(during["connected"])
                 self.assertGreater(abs(during["cx"] - before["cx"]), 40)
@@ -150,13 +165,23 @@ class BrowserInteractionTests(unittest.TestCase):
             finally:
                 if cdp is not None:
                     cdp.close()
-                process.terminate()
+                # Stop Chromium and its helper processes (same session/process group) before the profile is removed.
+                for sig in (signal.SIGTERM, signal.SIGKILL):
+                    try:
+                        os.killpg(process.pid, sig)
+                    except ProcessLookupError:
+                        break
+                    try:
+                        process.wait(timeout=10)
+                        break
+                    except subprocess.TimeoutExpired:
+                        continue
                 try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait(timeout=10)
+                    os.killpg(process.pid, signal.SIGKILL)  # stray helpers that outlived the main process
+                except ProcessLookupError:
+                    pass
                 process.stderr.close()
+                shutil.rmtree(profile, ignore_errors=True)
 
 
 if __name__ == "__main__":
