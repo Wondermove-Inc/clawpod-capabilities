@@ -1,6 +1,10 @@
 # Live artifact (protocol v1)
 
-Create one self-contained HTML file. Use a static artifact for a fixed report; use live mode only when data changes independently of the HTML. This reference extends [artifact-design](../../SKILL.md). Reuse its [design fundamentals](../design-fundamentals.md) and [publishing contract](../publishing-contract.md). For live layouts or animated updates, read [live view design and motion](../live-motion.md).
+Create one self-contained HTML file. Use a static artifact for a fixed report; use live mode when data changes independently of the HTML or the user submits selections to the agent. This reference extends [artifact-design](../../SKILL.md). Reuse its [design fundamentals](../design-fundamentals.md) and [publishing contract](../publishing-contract.md). For live layouts or animated updates, read [live view design and motion](../live-motion.md).
+
+## User input and submission
+
+For surveys, selections, or editable results that the user submits to the agent, read [submissions](references/submissions.md). Keep edits local and call `clawpod.submit(result)` from a submit button. The host saves the result and notifies the agent to read it; no per-click JSON writes or separate response table are needed. Requires the submit-capable API, Portal and agent bridge rollout.
 
 ## Workflow
 
