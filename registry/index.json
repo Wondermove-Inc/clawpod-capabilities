@@ -5,8 +5,8 @@
     {
       "id": "artifact-design",
       "type": "skill",
-      "version": "0.3.2",
-      "description": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
+      "version": "0.4.0",
+      "description": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, live dashboards, and surveys. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
         "openclaw": ">=2026.4.0"
@@ -18,7 +18,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "846b4aa177d54b83e12c867114e5517afc536b49aee8242458d43d3995368e77"
+          "sha256": "74accd863d25092ad49b1a46578d04c66205dcf751df84f38043082164b8ff91"
         },
         {
           "path": "references/checklist.md",
@@ -34,7 +34,7 @@
         },
         {
           "path": "references/examples.md",
-          "sha256": "505903ea493337f70a89b0b45fedcb6c442d7b891c777ec3a73a8c9bc87eaf09"
+          "sha256": "d412c1461b1da6ba6e56ae534cadc056c31041eeb73ba6877232479f4d054be6"
         },
         {
           "path": "references/finding-and-revising.md",
@@ -46,11 +46,15 @@
         },
         {
           "path": "references/live-artifact/guide.md",
-          "sha256": "5bf769adfcf059f1921c01b81c0b34b6caa3164b95e609d1270e8f91460de0d7"
+          "sha256": "7d9031147ab960f3a871a98a979846d92a991cf1323aa0159d7583bc42bd97ba"
         },
         {
           "path": "references/live-artifact/references/contract.md",
           "sha256": "a2189b686531ff77a35b164c6c55efc224089bad404b4cf37e003e71dd6ef967"
+        },
+        {
+          "path": "references/live-artifact/references/submissions.md",
+          "sha256": "28bf7e511d3eb90d64cd62419eee93c553657247f5acdaeccc72287e6d50570a"
         },
         {
           "path": "references/live-artifact/references/write-data.md",
@@ -61,12 +65,16 @@
           "sha256": "c34b0842538a768bc5a94e5bfb08a8d1dcfd6a7a4c0c96b72af7e7c452335ea9"
         },
         {
+          "path": "references/live-artifact/samples/survey.html",
+          "sha256": "16569d5083a037ecbed5713c1d22a713cf76df9d0d79f9648f4a2aa904247c1d"
+        },
+        {
           "path": "references/live-artifact/samples/weather.html",
           "sha256": "ed9aba486ce3e202d996e16f359ef7b350d30e54832e418d7232995989b8af22"
         },
         {
           "path": "references/live-artifact/scripts/check-live-artifact.mjs",
-          "sha256": "092bdf89f8ff4906b3b963dec9c5aeb757ad16b36ba9f403a474f49dace01c5f"
+          "sha256": "ce73070678438180fb29cb33217e194a4acc19e66871e372c186d733f8000af8"
         },
         {
           "path": "references/live-motion.md",
@@ -82,8 +90,8 @@
         }
       ],
       "descriptionI18n": {
-        "en": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, and live dashboards. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
-        "ko": "보고서, 계획, 다이어그램, 비교표, 참고 페이지, 실시간 대시보드 등 다시 열어볼 ClawPod 대화방 아티팩트를 설계·게시·조회·수정합니다. 반응형 Markdown·HTML, 저장 후 artifact_refs 게시, 실시간 SDK 스냅샷, 내가 저장한 아티팩트 목록 조회, 아티팩트 내용·버전 확인과 수정에 사용합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
+        "en": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, live dashboards, and surveys. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
+        "ko": "보고서, 계획, 다이어그램, 비교표, 참고 페이지, 실시간 대시보드, 설문 등 다시 열어볼 ClawPod 대화방 아티팩트를 설계·게시·조회·수정합니다. 반응형 Markdown·HTML, 저장 후 artifact_refs 게시, 실시간 SDK 스냅샷, 내가 저장한 아티팩트 목록 조회, 아티팩트 내용·버전 확인과 수정에 사용합니다. 여러 아트보드 캔버스는 Claude Design, 래스터 이미지는 Image Studio, 영상은 Video Studio를 사용합니다."
       }
     },
     {

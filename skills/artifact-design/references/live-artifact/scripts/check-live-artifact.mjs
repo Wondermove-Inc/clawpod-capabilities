@@ -21,8 +21,10 @@ export function checkLiveArtifact(html) {
         return String.fromCodePoint(entity[2].toLowerCase() === 'x' ? parseInt(entity.slice(3), 16) : parseInt(entity.slice(2), 10));
       });
       const manifest = JSON.parse(decode);
-      if (manifest.v !== 1 || !Array.isArray(manifest.keys) || !manifest.keys.length || manifest.keys.length > 8 || manifest.keys.some(key => !['agent.data', 'org-package.checklist'].includes(key))) {
-        errors.push('Manifest requires v:1 and 1..8 known keys');
+      const submit = Array.isArray(manifest.capabilities) && manifest.capabilities.length === 1 && manifest.capabilities[0] === 'submit';
+      if (manifest.capabilities !== undefined && (!Array.isArray(manifest.capabilities) || manifest.capabilities.length > 1 || manifest.capabilities.some(value => value !== 'submit'))) errors.push('Unknown capability');
+      if (manifest.v !== 1 || !Array.isArray(manifest.keys) || (!manifest.keys.length && !submit) || manifest.keys.length > 8 || manifest.keys.some(key => !['agent.data', 'org-package.checklist'].includes(key))) {
+        errors.push('Manifest requires v:1 and known keys, or the submit capability');
       } else if (manifest.schemaVersions !== undefined) {
         const versions = manifest.schemaVersions;
         if (!versions || typeof versions !== 'object' || Array.isArray(versions) ||

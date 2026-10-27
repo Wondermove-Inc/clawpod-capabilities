@@ -102,7 +102,7 @@ Plain text only — no card, no panel, no version. And in the WebUI final text: 
 
 User: "필터 되는 대시보드로 만들어줘".
 
-For a fixed report, use CSS-only `<details>` sections. For a dashboard whose snapshots change, follow [live-artifact](live-artifact/guide.md): filter the received snapshot locally and preserve filter selection across updates. Live mode does not grant forms, approval actions, external network, or data-write APIs.
+For a fixed report, use CSS-only `<details>` sections. For a dashboard whose snapshots change, follow [live-artifact](live-artifact/guide.md): filter the received snapshot locally and preserve filter selection across updates. For a survey that sends completed choices to the agent, follow [user submissions](live-artifact/references/submissions.md). Live mode does not grant native form submission, approval actions, external network, or arbitrary data-write APIs.
 
 ## 6. Splitting an over-long deliverable
 
