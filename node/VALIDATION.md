@@ -1,4 +1,28 @@
-# ClawPod Node 0.3.3 validation scope
+# ClawPod Node 0.3.4 validation scope
+
+Bundled Agent runtime and installer source: `b6f10ed616d73b8ed38c7307dbf06102108cf8a7`
+(runtime 2026.4.11, Node.js 24.15.0), freshly built from the `perf/browser-computer-tools`
+branch. Skill/Harness version: `0.7.9`. Recorded from the published `release.json`; on
+2026-10-29 the three installers downloaded without authentication and matched their
+published SHA-256 values, byte sizes, and `prepare_release.py check`.
+
+- Shipped targets: Linux x64 (DEB), macOS Apple Silicon (PKG), Windows x64 (EXE). No macOS
+  Intel package; Intel Macs keep the 0.3.3 build (`installer-fallback.json`).
+- Browser/remote-computer TypeScript tests: 186 passed. Node tests: 61 passed (12 default
+  skips run separately). Packaged Linux browser UI tests: 7. Compiled Linux X11 tests: 3.
+- Linux: offline Debian 12 without preinstalled Node.js, 0.3.3 → 0.3.4 upgrade, settings
+  and authentication preserved, running app restarted, single and multiple connections,
+  user state retained after removal.
+- macOS Apple Silicon: Developer ID signature, Apple notarization, stapling, Gatekeeper;
+  signed runtime, app IPC, single and multiple connections; isolated-window screen
+  capture, Unicode paste/typing, click/drag, and key-press cancellation.
+- Bundled Agent dist and dependencies compared against this source build on all three
+  platforms (versions and lockfile hashes).
+
+Not tested in this release: fresh Mac install, login startup, upgrade and removal;
+production Gateway pairing; native Windows execution and publisher signing.
+
+# ClawPod Node 0.3.3 validation scope (previous release)
 
 Bundled Agent runtime source: `5ba295f82b724de46f436178e6a30b1917e35786`
 (runtime 2026.4.11, Node.js 24.15.0). Installer source:
