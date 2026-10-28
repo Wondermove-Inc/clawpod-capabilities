@@ -46,8 +46,8 @@ def load_manifest(path: Path = MANIFEST) -> dict:
         if not isinstance(data.get(key), str) or not data[key]:
             raise ValueError(f"Missing {key}")
     artifacts = data.get("artifacts")
-    if not isinstance(artifacts, list) or len(artifacts) != len(TARGETS):
-        raise ValueError("Expected four installer artifacts")
+    if not isinstance(artifacts, list) or not 1 <= len(artifacts) <= len(TARGETS):
+        raise ValueError("Expected one to four installer artifacts")
     found = set()
     for item in artifacts:
         if not isinstance(item, dict):

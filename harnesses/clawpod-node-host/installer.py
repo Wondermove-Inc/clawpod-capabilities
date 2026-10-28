@@ -21,6 +21,31 @@ def release_manifest() -> dict:
     value = json.loads(Path(__file__).with_name("installer-manifest.json").read_text(encoding="utf-8"))
     if not isinstance(value, dict) or value.get("schemaVersion") != 1:
         raise ValueError("unsupported installer manifest")
+    return check_release(value)
+
+
+def fallback_release(target: tuple[str, str]) -> tuple[dict, dict] | None:
+    """Earlier release that still ships a target the current release omits (e.g. Intel Mac in 0.3.4).
+
+    installer-fallback.json lists releases newest first; the first match wins.
+    """
+    path = Path(__file__).with_name("installer-fallback.json")
+    if not path.is_file():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or data.get("schemaVersion") != 1 or not isinstance(data.get("releases"), list):
+        raise ValueError("invalid installer fallback list")
+    for release in data["releases"]:
+        release = check_release(release)
+        for artifact in release["artifacts"]:
+            if (artifact["platform"], artifact["arch"]) == target:
+                return release, artifact
+    return None
+
+
+def check_release(value: dict) -> dict:
+    if not isinstance(value, dict):
+        raise ValueError("unsupported installer manifest")
     version = value.get("version")
     if not isinstance(version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", version):
         raise ValueError("invalid installer version")
@@ -47,7 +72,8 @@ def release_manifest() -> dict:
     ):
         raise ValueError("invalid validation metadata")
     artifacts = value.get("artifacts")
-    if not isinstance(artifacts, list) or len(artifacts) != len(TARGETS):
+    # A release may ship only some targets (0.3.4 has no Intel Mac package).
+    if not isinstance(artifacts, list) or not 1 <= len(artifacts) <= len(TARGETS):
         raise ValueError("invalid installer artifacts")
     seen = set()
     for artifact in artifacts:
@@ -205,7 +231,7 @@ def guidance(platform: str, filename: str) -> dict:
             "startup": "Start ClawPod Node when I sign in (This computer tab, then Save computer settings) registers startup for the current user and their logged-in desktop session.",
             "status": "Running reports the local process only. Check the Agent Control UI for authenticated, paired, connected status; inspect timestamped failures in the app.",
             "close": "Closing the setup browser tab leaves the node running. Reopening ClawPod Node reuses its setup server.",
-            "upgrade": "Install the newer matching package. Use Node 0.2.4 or later (0.3.3 current; 0.3.0 or later for several Agent connections) with an updated controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
+            "upgrade": "Install the newer matching package. Use Node 0.2.4 or later (0.3.4 current, Intel Mac 0.3.3; 0.3.0 or later for several Agent connections) with an updated controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
             "uninstall": removal[platform] + " User settings and device identity remain for reinstall; remove the separate .clawpod-node directory only when you intend to discard them.",
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",
@@ -235,8 +261,21 @@ def installer_info(args) -> tuple[dict, int]:
         manifest = release_manifest()
     except (OSError, ValueError, TypeError):
         return fail("INSTALLER_MANIFEST_INVALID", "The bundled installer manifest is missing or invalid. Reinstall this harness package.", 6)
-    artifact = next(item for item in manifest["artifacts"] if (item["platform"], item["arch"]) == target)
+    artifact = next((item for item in manifest["artifacts"] if (item["platform"], item["arch"]) == target), None)
+    current = manifest
+    if artifact is None:
+        try:
+            fallback = fallback_release(target)
+        except (OSError, ValueError, TypeError):
+            return fail("INSTALLER_MANIFEST_INVALID", "The bundled installer fallback list is invalid. Reinstall this harness package.", 6)
+        if fallback is None:
+            return fail("INSTALLER_TARGET_NOT_IN_RELEASE", f"ClawPod Node {manifest['version']} has no {target[0]} {target[1]} installer.")
+        manifest, artifact = fallback
     out["installer"] = {key: manifest[key] for key in ("version", "runtimeVersion", "nodeVersion", "releaseTag", "releaseUrl", "channel", "signed")}
+    if manifest is not current:
+        out["installer"]["latestRelease"] = current["version"]
+        out["installer"]["note"] = (f"ClawPod Node {current['version']} does not include a {target[0]} {target[1]} installer; "
+                                    f"{manifest['version']} is the newest release that does.")
     out["installer"].update({key: artifact[key] for key in ("platform", "arch", "filename", "url", "sha256", "bytes")})
     # Release-wide signing may be mixed; report the selected installer's status.
     out["installer"].update({key: artifact[key] for key in ("signed", "notarized", "stapled") if key in artifact})

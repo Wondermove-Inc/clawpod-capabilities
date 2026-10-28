@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Installers for targets that the current Node release does not ship. installer.info returns the newest entry for a target missing from installer-manifest.json.",
+  "releases": [
+    {
+      "version": "0.3.3",
+      "runtimeVersion": "2026.4.11",
+      "nodeVersion": "24.15.0",
+      "sourceCommit": "5ba295f82b724de46f436178e6a30b1917e35786",
+      "installerSourceCommit": "d4b469b1bc6ca8177ff7c0e9430c92536ebb3dd5",
+      "releaseTag": "node-v0.3.3",
+      "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.3",
+      "channel": "preview",
+      "signed": false,
+      "validation": {
+        "linuxOfflineUpgrade": "passed",
+        "nativeMacOSInstallLifecycle": "not-run",
+        "nativeWindows": "not-run",
+        "desktopLoginStartup": "not-run"
+      },
+      "artifacts": [
+        {
+          "platform": "macos",
+          "arch": "x64",
+          "filename": "ClawPod-Node-0.3.3-darwin-x64.pkg",
+          "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg",
+          "sha256": "449e7cc81cbd7afda4f65ff092fafe01251f2b281b99cf5026670033825ca79a",
+          "bytes": 236866705,
+          "signed": true,
+          "notarized": true,
+          "stapled": true
+        }
+      ]
+    }
+  ]
+}

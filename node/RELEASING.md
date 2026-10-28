@@ -40,7 +40,7 @@ extra files produce an error instead of being overwritten. Original installers
 remain untouched. Do not commit the binary files; `node/.gitignore` excludes them.
 Run whole-repository copy tests before staging large local artifacts.
 
-The staged set contains exactly four installers, four individual checksum files,
+The staged set contains every installer in `release.json` (one to four), one checksum file per installer,
 and sanitized `release.json`. Raw build reports are not distributed because they
 contain machine-local paths. Keep licenses and third-party notices inside the
 installers intact.
