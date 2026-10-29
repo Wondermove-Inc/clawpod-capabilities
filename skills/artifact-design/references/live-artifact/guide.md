@@ -6,6 +6,10 @@ Create one self-contained HTML file. Use a static artifact for a fixed report; u
 
 For surveys, selections, or editable results that the user submits to the agent, read [submissions](references/submissions.md). Keep edits local and call `clawpod.submit(result)` from a submit button. The host saves the result and notifies the agent to read it; no per-click JSON writes or separate response table are needed. Requires the submit-capable API, Portal and agent bridge rollout.
 
+## Shared editing
+
+To change an artifact that other agents also edit, or one you do not own, read [shared section editing](references/shared-editing.md). Edit one section at a time with a base version and an idempotency key.
+
 ## Workflow
 
 1. Choose the source. Use `agent.data` for an agent-produced JSON snapshot; use `org-package.checklist` for the checklist in its installation-owned room. Read [the contract](references/contract.md) for payloads and failure behavior.

@@ -39,16 +39,36 @@ export function checkLiveArtifact(html) {
     ['external URL', /(?:https?:\/\/|(?:src|href)\s*=\s*["']?\/\/)/i],
     ['innerHTML', /\binnerHTML\b/], ['WebSocket', /\bWebSocket\b/],
   ]) if (pattern.test(html)) errors.push(`Forbidden authoring pattern: ${name}`);
+  const ids = sectionIds(markup);
+  for (const id of new Set(ids.filter((value, index) => ids.indexOf(value) !== index))) errors.push(`duplicate data-section "${id}"`);
   return errors;
 }
 
+// Values of data-section attributes on elements (comments, script and style bodies excluded by caller).
+export function sectionIds(markup) {
+  return [...markup.matchAll(/<[a-z][^>"']*(?:"[^"]*"|'[^']*'|[^>"'])*>/gi)]
+    .map(([tag]) => /\sdata-section\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/i.exec(tag))
+    .filter(Boolean).map(match => match[1] ?? match[2] ?? match[3]);
+}
+
+// Shared artifacts need data-section units to be section-editable; absence is a warning, not an error.
+export function checkShared(html) {
+  const markup = html.replace(/<!--[\s\S]*?-->/g, '').replace(/<(script|style|textarea|title)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '');
+  return sectionIds(markup).length ? [] : ['no data-section found: add data-section="<id>" to each top-level editable element, or the artifact can only be saved whole (PUT .../content)'];
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const path = process.argv[2];
-  if (!path) { console.error('Usage: node check-live-artifact.mjs <file.html>'); process.exitCode = 2; }
+  const args = process.argv.slice(2);
+  const shared = args.includes('--shared');
+  const path = args.find(arg => !arg.startsWith('--'));
+  if (!path) { console.error('Usage: node check-live-artifact.mjs [--shared] <file.html>'); process.exitCode = 2; }
   else {
     try {
-      const errors = checkLiveArtifact(readFileSync(path, 'utf8'));
-      console.log(JSON.stringify({ file: path, passed: errors.length === 0, errors }, null, 2));
+      const html = readFileSync(path, 'utf8');
+      const errors = checkLiveArtifact(html);
+      const result = { file: path, passed: errors.length === 0, errors };
+      if (shared) result.warnings = checkShared(html);
+      console.log(JSON.stringify(result, null, 2));
       process.exitCode = errors.length ? 1 : 0;
     } catch (error) { console.error(error.message); process.exitCode = 2; }
   }
