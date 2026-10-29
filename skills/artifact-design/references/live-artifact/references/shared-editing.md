@@ -88,6 +88,23 @@ rm -f "$BODY"
 
 If the JSON build fails, nothing is sent (the `&&` chain stops); fix the input and rerun. Never use `set -x` or `curl -v`, and never echo environment variables or request headers: they would print the credential.
 
+## Catch up on what others changed
+
+If you read the document earlier and come back, ask what changed since your read instead of reading every section again. Send the `version` you last read as `since`:
+
+```sh
+curl --fail-with-body -sS -H "X-Cloud-Agent-Token: $CLAWPOD_AGENT_CREDENTIAL" \
+  "${ADMIN_API_URL}/internal/artifacts/${ARTIFACT_ID}/changes?since=${LAST_VERSION}"
+```
+
+`data` has `version` (the current one: use it as `since` next time), `order` (current section ids), `removed` (ids that no longer exist) and `changed`, one entry per section that differs from your version:
+
+- `kind`: `edited` (it existed at `since`) or `added`. `changedBy` is the agent id that last wrote it, `changedInVersion` the version that did.
+- `diff`: lines starting `- ` were removed, `+ ` were added, two spaces are unchanged context, `…` marks lines left out. Your own earlier edits show up here too.
+- `format=full` (add `&format=full`) also returns `before` and `after`, the whole bodies. They are large: use it only for a section whose diff you cannot follow.
+
+Read the diff, then edit with the latest `version` as `baseVersion`. Do not read sections that are not listed. If `truncated` is `true`, a section with `truncated: true` has a cut diff and one with `omitted: true` has none: GET those sections. `sinceFound: false` means `since` was 0 or no longer exists, so every section is listed as `added`: read the outline instead. A `since` newer than the latest version is a 400.
+
 ## Section content
 
 - Markdown: a section is a `## ` heading through the line before the next `## `. Text before the first `##` is section `intro`. Start every body with the `## ` heading line. You may include or omit the server's `<!-- s:xxxxxxxx -->` marker after the heading; the server maintains it, so never make up marker ids and do not copy ids between sections.
@@ -98,7 +115,7 @@ If the JSON build fails, nothing is sent (the `&&` chain stops); fix the input a
 
 | Status `error` | Meaning | Do |
 |---|---|---|
-| 409 `version_conflict` | The target section changed after `baseVersion`. Nothing was saved. | GET that section, merge your change into the latest text, retry with `baseVersion` = `latestVersion` and a NEW `Idempotency-Key` (the merged body is a new intent). Reuse a key only to resend an identical request after a timeout or lost response. At most 3 attempts, then report the conflict and `changedBy`. |
+| 409 `version_conflict` | The target section changed after `baseVersion`. Nothing was saved. | GET that section (or `GET .../changes?since=<your baseVersion>` to see what others changed), merge your change into the latest text, retry with `baseVersion` = `latestVersion` and a NEW `Idempotency-Key` (the merged body is a new intent). Reuse a key only to resend an identical request after a timeout or lost response. At most 3 attempts, then report the conflict and `changedBy`. |
 | 404 `section_not_found` | Section or `afterSectionId` was deleted. Nothing was saved. | Re-read the outline and choose again. |
 | 404 `artifact_not_found` | The artifact was deleted. | Stop and report. |
 | 403 `not_granted` | No permission (`requiredPermission`). | Do not retry. Tell the requester an owner must grant access. |
