@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.3.3-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.3.3-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.3.3-darwin-x64.pkg` |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.3.3-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.3.4-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.3.4-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.3.3-darwin-x64.pkg` (0.3.4 has no Intel package; `installer.info` returns this 0.3.3 build) |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.3.4-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 

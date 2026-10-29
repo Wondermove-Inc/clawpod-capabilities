@@ -25,7 +25,13 @@ def test_selects_real_manifest_artifact_without_legacy_preflight(tmp_path, platf
     run, out = run_info(tmp_path, "--platform", platform, "--arch", arch)
     assert run.returncode == 0 and out["ok"]
     manifest = json.loads((ROOT / "installer-manifest.json").read_text())
-    artifact = next(item for item in manifest["artifacts"] if item["platform"] == platform and item["arch"] == arch)
+    artifact = next((item for item in manifest["artifacts"] if item["platform"] == platform and item["arch"] == arch), None)
+    if artifact is None:  # not in the current release: served from the fallback list
+        latest = manifest["version"]
+        fallback = json.loads((ROOT / "installer-fallback.json").read_text())
+        manifest, artifact = next((r, a) for r in fallback["releases"] for a in r["artifacts"] if (a["platform"], a["arch"]) == (platform, arch))
+        assert out["installer"]["latestRelease"] == latest
+        assert manifest["version"] in out["installer"]["note"] and latest in out["installer"]["note"]
     assert all(out["installer"][key] == value for key, value in artifact.items())
     assert out["installer"]["filename"].endswith(suffix)
     assert out["installer"]["version"] == manifest["version"]
@@ -211,3 +217,15 @@ def test_invalid_artifact_signing_metadata(tmp_path, update):
     run, out = run_info(tmp_path, "--platform", "linux", "--arch", "x64", package=package)
     assert run.returncode == 6
     assert out["errors"][0]["code"] == "INSTALLER_MANIFEST_INVALID"
+
+
+def test_target_missing_from_release_and_fallback_is_reported(tmp_path):
+    package = tmp_path / "package"
+    shutil.copytree(ROOT, package, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    (package / "installer-fallback.json").unlink()
+    run, out = run_info(tmp_path, "--platform", "macos", "--arch", "x64", package=package)
+    manifest = json.loads((ROOT / "installer-manifest.json").read_text())
+    if any((a["platform"], a["arch"]) == ("macos", "x64") for a in manifest["artifacts"]):
+        assert run.returncode == 0
+    else:
+        assert run.returncode == 2 and out["errors"][0]["code"] == "INSTALLER_TARGET_NOT_IN_RELEASE"

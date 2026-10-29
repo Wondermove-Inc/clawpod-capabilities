@@ -28,7 +28,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Use installer `0.3.3` and Skill/Harness `0.7.8`. Node 0.2.4 or later provides the accessibility observation update; 0.3.0 or later supports several Agent connections. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Use installer `0.3.4` (Intel Mac `0.3.3`, the latest Intel build) and Skill/Harness `0.7.9`. Node 0.2.4 or later provides the accessibility observation update; 0.3.0 or later supports several Agent connections. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Several Agents on one computer
@@ -69,7 +69,7 @@ and returned frame; release the desktop before another session takes over.
 
 ### Switch monitors and keep coordinates aligned
 
-Use Node **0.2.4 or later** (0.3.3 current) and an updated controlling Agent. Updating the
+Use Node **0.2.4 or later** (0.3.4 current, Intel Mac 0.3.3) and an updated controlling Agent. Updating the
 Skill/Harness alone changes guidance and installer lookup, not either runtime.
 
 1. Keep the explicit `node` on every `remote_computer` call. Use `status` to

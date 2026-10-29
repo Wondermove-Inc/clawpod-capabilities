@@ -40,10 +40,14 @@ class NodeDistributionTests(unittest.TestCase):
                              capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stderr)
 
-    def test_four_targets_have_versioned_public_assets(self):
+    def test_every_target_has_a_versioned_public_asset(self):
         manifest = release.load_manifest()
-        self.assertEqual({(x["platform"], x["arch"]) for x in manifest["artifacts"]},
-                         set(release.TARGETS))
+        shipped = {(x["platform"], x["arch"]) for x in manifest["artifacts"]}
+        self.assertTrue(shipped <= set(release.TARGETS))
+        # A target the current release omits must still resolve through the Harness fallback list.
+        fallback = json.loads((ROOT / "harnesses/clawpod-node-host/installer-fallback.json").read_text(encoding="utf-8"))
+        covered = shipped | {(a["platform"], a["arch"]) for r in fallback["releases"] for a in r["artifacts"]}
+        self.assertEqual(covered, set(release.TARGETS))
         for item in manifest["artifacts"]:
             self.assertIn("/clawpod-capabilities/releases/download/node-v", item["url"])
             self.assertNotIn("/latest/", item["url"])
@@ -137,7 +141,8 @@ class NodeDistributionTests(unittest.TestCase):
         (self.source / "private-report.json").write_text('{"stage":"/private/build/path"}')
         release.stage(self.source, self.destination, self.manifest)
         release.verify_stage(self.destination, self.manifest)
-        self.assertEqual(len(list(self.destination.iterdir())), 9)
+        # Every shipped installer, its checksum file, and release.json.
+        self.assertEqual(len(list(self.destination.iterdir())), 2 * len(self.manifest["artifacts"]) + 1)
         self.assertFalse((self.destination / "private-report.json").exists())
         for item in self.manifest["artifacts"]:
             self.assertEqual((self.source / item["filename"]).read_bytes(),
