@@ -5,7 +5,7 @@ The SIEM differs per site (Splunk, Elastic, QRadar, Sentinel, Chronicle, OpenSea
 ## Find out once per session
 
 1. Product, endpoint, index/space/tenant, auth method.
-2. How to run a filtered, time-bounded search (SPL, KQL/ES|QL, AQL, Query DSL, UDM Search/YARA-L, …) that returns record ids.
+2. How to run a filtered, time-bounded search (SPL for Splunk, KQL/Kusto for Sentinel, KQL or ES|QL for Elastic, AQL for QRadar, Query DSL for OpenSearch, UDM Search for Chronicle, …) that returns record ids.
 3. How to fetch one record by id.
 4. How its field names map to the common fields below.
 
