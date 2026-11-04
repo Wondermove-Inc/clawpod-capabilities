@@ -849,7 +849,7 @@
     {
       "id": "soc-event-correlation",
       "type": "skill",
-      "version": "0.1.3",
+      "version": "0.2.0",
       "description": "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
       "path": "skills/soc-event-correlation",
       "compatibility": {
@@ -862,35 +862,19 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0575d3c85cddfaff027d909025a9b25e581e8ba268a7683d2565bbfa5d906ea8"
-        },
-        {
-          "path": "references/attack-frameworks.md",
-          "sha256": "b4380e72eff077758170c93cbef4f4f34d7bd45cb279144841882a684932f6ba"
-        },
-        {
-          "path": "references/correlation-methods.md",
-          "sha256": "cb69bc83bed68b0ed380c47cfdc4227d2344d684732c1eaf0560181466e0826b"
-        },
-        {
-          "path": "references/correlation-pipeline.md",
-          "sha256": "c86380928624a83bcc5a156381e27cb7f3607fbaa44da13a301f6ba402e69040"
+          "sha256": "b250d3a175900caf30fe8efde81c7b8fbb112ec3831439f4351291b99e624011"
         },
         {
           "path": "references/data-access.md",
-          "sha256": "279f31a98b5338b7cd98c5da1c39f039c78a36a1f9f9306510d642e4ca632122"
+          "sha256": "7f7a284db64f01e986430fc50125e65ce3bd18ebbe8b96283125f1f8e1cfc349"
         },
         {
-          "path": "references/output-schema.md",
-          "sha256": "d530fc6c2862e21f81f2c9924bd90300177edf6bdf41aae83717c7dc7466034c"
-        },
-        {
-          "path": "references/response-playbooks.md",
-          "sha256": "bc89727fd516c2f6d768b15363472cece8fb7b7f2ff4162338fd81a79b7d2002"
+          "path": "references/report.md",
+          "sha256": "64e6237ba4dabdfd50ddcf97e32eba7fd85cb64ce73f35a70debcb4c3d63269d"
         },
         {
           "path": "references/worked-example.md",
-          "sha256": "6a82a46b2b062448ba6675dc60e6f21c30a870149ce22ae822f043f5b3e0fcea"
+          "sha256": "c0e2dc50dea4337ae12f9c8405b42f3440967c01d6c518a57448bff8297b96e0"
         }
       ],
       "descriptionI18n": {

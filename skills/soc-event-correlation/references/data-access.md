@@ -1,73 +1,32 @@
-# Data Access — SIEM-agnostic
+# Data access (any SIEM)
 
-The correlation pipeline needs security events. The agent is given the site's
-**SIEM connection info**; the SIEM product varies by site. This file defines
-*what* to ask the SIEM for, not *which* SIEM — you adapt to whatever you are
-connected to.
+The SIEM differs per site (Splunk, Elastic, QRadar, Sentinel, Chronicle, OpenSearch, Wazuh, …). Use the connection info you were given and the product's own documentation.
 
-## Two query primitives (all correlation reduces to these)
+## Find out once per session
 
-### 1. Search by pivot
+1. Product, endpoint, index/space/tenant, auth method.
+2. How to run a filtered, time-bounded search (SPL, KQL/ES|QL, AQL, Query DSL, UDM Search/YARA-L, …) that returns record ids.
+3. How to fetch one record by id.
+4. How its field names map to the common fields below.
 
-> Given an **entity** (IP, host, user, hash, domain, URL) and a **time window**,
-> return matching events from **all connected sources**.
+If the environment provides an adapter or harness for the SIEM, use it.
 
-This is the engine of correlation: you start from an alert's entities, pull
-everything else that touched them nearby in time, then pivot on the new entities
-you find. The SIEM's own search does the cross-source join.
+## Two operations
 
-Each returned event must yield the normalized fields below (or `null`).
+- **Search by pivot:** entity + time window → matching events from all sources.
+- **Fetch by id:** id → the full record (to expand an alert and to re-check anything you cite).
 
-### 2. Fetch by locator
-
-> Given a stable alert/event **id**, return that full record.
-
-Used to expand a summarized alert into its full evidence, and to re-fetch anything
-you cite.
-
-## Normalized event contract (what every result must map to)
+## Common event fields
 
 ```
 time      UTC event time (not ingest time)
-source    device/product: firewall, IDS/IPS, EDR, proxy, DNS, email, identity/auth
+source    device/product: firewall, IDS/IPS, EDR, proxy, DNS, email, identity
 actor     initiator: user, process, source IP
 target    acted-on: host, destination IP, URL, file
 action    login, connection, block, exec, dns_query, email_delivery, ...
-entities  all pivotable ids: IPs, hostnames, usernames, hashes, domains, ports
+entities  pivotable ids: IPs, hostnames, usernames, hashes, domains, ports
 severity  device-reported
-locator   stable id to re-fetch this record  (never dropped)
+id        record id to re-fetch it (always keep)
 ```
 
-If the SIEM's field names differ (they will), map them to these. Keep the raw
-record reachable via `locator`.
-
-## Adapting to any SIEM (procedure)
-
-1. **Identify the product and interface** from the connection info and its
-   documentation: base endpoint, index/space/tenant, auth method, and the
-   read/search API.
-2. **Find the search primitive**: how this product runs a filtered, time-bounded,
-   read-only search (query DSL, SPL, KQL/ES|QL, UDM, WQL, …) and how it returns
-   records with ids.
-3. **Find the fetch primitive**: how to retrieve a single record by id.
-4. **Map fields** from the product's schema to the normalized contract above.
-5. **Confirm read-only + scope** before the first query (a preflight/list call is
-   ideal); note anything the account cannot do.
-
-Do this discovery once per session and reuse it. Prefer an approved
-adapter/harness/helper if the environment provides one; only query the SIEM
-directly when that is how the site expects the analyst agent to work.
-
-## Safety (non-negotiable)
-
-- **Read-only.** Search and fetch only. Never create/modify detection rules,
-  connectors, dashboards, or cases through this skill; case/comment writes and any
-  containment are separate actions in the capability that owns them.
-- **Always bounded.** Every search carries a time window and a result cap. Widen
-  deliberately, never unbounded.
-- **No arbitrary exploration.** Query only for entities/windows the investigation
-  needs; do not sweep the whole SIEM.
-- **Credentials stay in the connection.** Use the provided connection; never echo,
-  log, or write credentials into reports or files.
-- **No connection info → pause.** Request it; never guess an endpoint or fabricate
-  events.
+Unknown field → `null`, never a guess. Keep the original time zone explicit.
