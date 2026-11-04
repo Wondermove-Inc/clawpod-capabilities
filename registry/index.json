@@ -849,7 +849,7 @@
     {
       "id": "soc-event-correlation",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Correlate security alerts and logs across devices into one incident: build the attack story (MITRE ATT&CK, Kill Chain) and recommend containment, eradication, and recovery. Use for alert triage, deciding whether an alert is part of a larger attack, and multi-alert or multi-device correlation — not raw SIEM search or detection-rule authoring.",
       "path": "skills/soc-event-correlation",
       "compatibility": {
@@ -862,19 +862,15 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b250d3a175900caf30fe8efde81c7b8fbb112ec3831439f4351291b99e624011"
+          "sha256": "7c2f6e9e494a25856d55b859d6cba48c2c4bbf4df16d6f205348dd7d817cde00"
         },
         {
           "path": "references/data-access.md",
-          "sha256": "7f7a284db64f01e986430fc50125e65ce3bd18ebbe8b96283125f1f8e1cfc349"
-        },
-        {
-          "path": "references/report.md",
-          "sha256": "64e6237ba4dabdfd50ddcf97e32eba7fd85cb64ce73f35a70debcb4c3d63269d"
+          "sha256": "9d5df131750b1e682fe218d009a65b11ec8d91539d239a4a857fa909ee2ea1ef"
         },
         {
           "path": "references/worked-example.md",
-          "sha256": "c0e2dc50dea4337ae12f9c8405b42f3440967c01d6c518a57448bff8297b96e0"
+          "sha256": "65e23061588366f1da5c1935f35599f56d0963e7f98c2c8c3c6e5465b9d2b166"
         }
       ],
       "descriptionI18n": {
