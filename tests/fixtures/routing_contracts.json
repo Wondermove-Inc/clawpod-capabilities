@@ -37,7 +37,8 @@
       "clawpod-image-studio",
       "clawpod-video-studio",
       "artifact-design",
-      "open-design"
+      "open-design",
+      "frontend-slides"
     ]
   },
   "clawpod-capability-registry": {
@@ -351,7 +352,8 @@
       "claude-design",
       "clawpod-image-studio",
       "open-design",
-      "vulnerability-assessment-report"
+      "vulnerability-assessment-report",
+      "frontend-slides"
     ]
   },
   "hwp-desktop": {
@@ -404,7 +406,8 @@
     ],
     "adjacent": [
       "claude-design",
-      "artifact-design"
+      "artifact-design",
+      "frontend-slides"
     ]
   },
   "typesafe-ai": {
@@ -439,6 +442,24 @@
       "verified-research",
       "artifact-design",
       "clawpod-ocr"
+    ]
+  },
+  "frontend-slides": {
+    "positive": [
+      "Build an animated HTML slide deck from my notes",
+      "Convert this PPTX into web slides",
+      "Show me three style options for my talk deck",
+      "Export the HTML presentation to PDF"
+    ],
+    "negative": [
+      "Edit the deck on the claude.ai/design canvas",
+      "Publish a markdown report as a chat-room artifact",
+      "Generate a standalone product photo"
+    ],
+    "adjacent": [
+      "claude-design",
+      "open-design",
+      "artifact-design"
     ]
   }
 }
