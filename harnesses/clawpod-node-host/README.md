@@ -43,10 +43,11 @@ The package uses Python's standard library. `scripts/install.py --bin-dir <dir>`
 creates only the local **Harness command wrapper**, for callers wanting a
 `clawpod-node-host` executable. It does not generate a node installation script.
 
-Version 0.7.10 selects Node 0.3.5 installers (Linux x64, macOS arm64, Windows x64).
-Node 0.3.5 has no Intel Mac package, so `installer.info` for macOS x64 returns the
+Version 0.7.11 selects Node 0.3.6 installers (Linux x64, macOS arm64, Windows x64)
+and describes its sidebar setup page (Agent connections; This computer > Desktop access,
+General). Node 0.3.6 has no Intel Mac package, so `installer.info` for macOS x64 returns the
 0.3.3 Intel installer from `installer-fallback.json` with `latestRelease` and `note`
-fields. Version 0.7.9 selected Node 0.3.4 with the same fallback. Version 0.7.8 selected Node 0.3.3 installers and added guidance for its
+fields. Version 0.7.10 selected Node 0.3.5. Version 0.7.9 selected Node 0.3.4 with the same fallback. Version 0.7.8 selected Node 0.3.3 installers and added guidance for its
 Connections / This computer tabs and for connecting one computer to several Agents
 (Add connection; each Agent pairs separately; the desktop is shared without
 automatic input sequencing). Version 0.7.7 added Node 0.2.4 accessibility
@@ -57,7 +58,7 @@ All desktop components are included in ClawPod Node. macOS grants belong to
 ClawPod Node; Windows and Linux use their interactive desktop facilities.
 The existing automatic private/Tailscale IP `ws://` behavior, token/password
 handoff, command schemas, and exact device approval remain unchanged.
-Update both Skill and Harness to 0.7.10. Use Node 0.2.4 or later (0.3.5 current, Intel Mac 0.3.3)
+Update both Skill and Harness to 0.7.11. Use Node 0.2.4 or later (0.3.6 current, Intel Mac 0.3.3)
 and an updated controlling Agent for the corrected `remote_computer` behavior.
 
 Node GUI work uses `remote_computer` with an explicit `node`; CLI uses

@@ -25,10 +25,10 @@ Compare the real agent and computer device identities/tailnet and verify communi
 
 | Target computer | Platform | Architecture | Package |
 | --- | --- | --- | --- |
-| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.3.5-linux-x64.deb` |
-| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.3.5-darwin-arm64.pkg` |
-| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.3.3-darwin-x64.pkg` (0.3.5 has no Intel package; `installer.info` returns this 0.3.3 build) |
-| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.3.5-win32-x64.exe` |
+| Debian/Ubuntu Linux desktop, x64 | `linux` | `x64` | `ClawPod-Node-0.3.6-linux-x64.deb` |
+| Mac, Apple Silicon | `macos` | `arm64` | `ClawPod-Node-0.3.6-darwin-arm64.pkg` |
+| Mac, Intel | `macos` | `x64` | `ClawPod-Node-0.3.3-darwin-x64.pkg` (0.3.6 has no Intel package; `installer.info` returns this 0.3.3 build) |
+| Windows, x64 | `windows` | `x64` | `ClawPod-Node-0.3.6-win32-x64.exe` |
 
 For example, after establishing that the user's Mac has Apple Silicon:
 
@@ -84,7 +84,7 @@ When Tailscale is unavailable, return to its unfinished setup stage. Never appen
 
 Open the DEB in the Linux package installer, open the PKG on macOS, or run the EXE as the normal Windows user. The installation can run offline once downloaded. Connecting requires access to the Agent Gateway; browser automation separately requires a compatible installed browser.
 
-Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser, in Korean or English. Connection fields are on the **Connections** tab; login startup and Desktop access are on the **This computer** tab. If the computer is already connected to another Agent, select **Add connection** for this Agent instead of editing the existing one.
+Open **ClawPod Node** from the application menu, Finder, or Start menu. Its setup page opens in the default browser, in Korean or English. Connection fields are under **Agent connections** in the sidebar (select or add a connection, then **Connection settings**); **Desktop access** and **General** (login startup, language) are under **This computer**. If the computer is already connected to another Agent, select **Add connection** for this Agent instead of editing the existing one.
 
 Check **Desktop access** in this same app; do not install a separate remote-computer helper.
 

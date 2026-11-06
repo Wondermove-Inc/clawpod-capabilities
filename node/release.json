@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.5",
+  "version": "0.3.6",
   "runtimeVersion": "2026.4.11",
   "nodeVersion": "24.15.0",
   "sourceCommit": "b6f10ed616d73b8ed38c7307dbf06102108cf8a7",
-  "installerSourceCommit": "dd56a3917dfe151305fb13518326d0472d77e397",
-  "releaseTag": "node-v0.3.5",
-  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.5",
+  "installerSourceCommit": "8a552ed7508c36ddb2ca9411d2a48cae92ae44ee",
+  "releaseTag": "node-v0.3.6",
+  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.6",
   "channel": "preview",
   "signed": false,
   "validation": {
@@ -18,8 +18,9 @@
   "validationDetails": {
     "nodeTests": 61,
     "nodeDefaultSkippedTests": 13,
+    "initialTestFailure": "Existing stopAll test asserted a fixed order for parallel stops; unchanged rerun passed",
     "packagedBrowserTests": 8,
-    "runtimePreservedFrom": "0.3.4",
+    "runtimePreservedFrom": "0.3.5",
     "runtimeAndNativeByteComparison": "passed",
     "releaseUiSourceComparison": "passed",
     "linuxUpgradeConfigurationPreservation": "passed",
@@ -42,19 +43,19 @@
     {
       "platform": "linux",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.3.5-linux-x64.deb",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-linux-x64.deb",
-      "sha256": "ea20d1224bd803f509b7108040ad6aac8f9443e146239a160c6bd34247bf4342",
-      "bytes": 175001496,
+      "filename": "ClawPod-Node-0.3.6-linux-x64.deb",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-linux-x64.deb",
+      "sha256": "bdd391bd24253f42aadc97777b7e40cd1838002917f785500373fc75be02824e",
+      "bytes": 175006708,
       "signed": false
     },
     {
       "platform": "macos",
       "arch": "arm64",
-      "filename": "ClawPod-Node-0.3.5-darwin-arm64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-darwin-arm64.pkg",
-      "sha256": "fb1855e699abebf04f2d02f0013ea229fa32889c07b1fd780de5e579d5366e5e",
-      "bytes": 261329642,
+      "filename": "ClawPod-Node-0.3.6-darwin-arm64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-darwin-arm64.pkg",
+      "sha256": "c9516de8d22eb47d9556700d938f6f748cf21a59bb3233b51beded460e1bbde9",
+      "bytes": 261332424,
       "signed": true,
       "notarized": true,
       "stapled": true
@@ -62,10 +63,10 @@
     {
       "platform": "windows",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.3.5-win32-x64.exe",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-win32-x64.exe",
-      "sha256": "48cefb0f1d1d8e5611da4594c2b54cfc73fc2840c2955af89cf433122dc2aac8",
-      "bytes": 201943240,
+      "filename": "ClawPod-Node-0.3.6-win32-x64.exe",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-win32-x64.exe",
+      "sha256": "863c9faceeae1b9d637047b48994dc7815790426715119c471531517cc576320",
+      "bytes": 201938680,
       "signed": false
     }
   ]

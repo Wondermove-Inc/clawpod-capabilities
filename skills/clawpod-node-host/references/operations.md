@@ -5,11 +5,11 @@ Use these controls for the standalone ClawPod Node app.
 ## Local controls
 
 - Closing the setup browser tab leaves the node running. On macOS, Windows, and Linux, reopening the app opens the setup page in the default browser and reuses its server, including after a silent installer restart. It does not stop the running node.
-- The setup page has a **Connections** tab (connection list, Gateway settings, Start/Reconnect/Stop, Remove connection) and a **This computer** tab (login startup, Desktop access). It follows the browser language (Korean or English); a language chosen in the app persists.
+- The setup page has a sidebar. **Agent connections** lists connections (search, **+ Add connection**); a selected connection shows **Overview** and **Connection settings** with Start/Reconnect/Stop and **Remove connection**. Under **This computer**, **Desktop access** checks permissions and **General** holds login startup and the **한국어 | English** language toggle. The page follows the browser language until one is chosen; the choice persists.
 - **Reconnect** restarts the node using saved settings.
-- Saving connection settings restarts that connection if it is running. **Save computer settings** on **This computer** or changing the language does not restart any connection.
+- Saving connection settings restarts that connection if it is running. **Save computer settings** on **General** or changing the language does not restart any connection.
 - **Stop** persists across reopening the app and signing in again. Select **Start connection** to reconnect.
-- **Start ClawPod Node when I sign in** (on **This computer**, then **Save computer settings**) registers startup for the current user and their logged-in desktop; it resumes only connections left running. It is not a pre-login system/root service.
+- **Start ClawPod Node when I sign in** (under **This computer** › **General**, then **Save computer settings**) registers startup for the current user and their logged-in desktop; it resumes only connections left running. It is not a pre-login system/root service.
 - A blank authentication field preserves the saved secret only when the authentication mode is unchanged. Switching token/password modes requires a new value. Under **Clear saved authentication**, checking **Clear the saved authentication value and stop this connection** and saving stops that connection.
 
 Read timestamped local errors, check the saved endpoint/authentication mode, and compare with Gateway device status. Keep diagnostic evidence redacted. When the requesting user needs the active credential to reconnect, verify that the saved Gateway secret still matches the active credential, update the same pointer if it changed, and deliver it with `room_send.useSecrets` as described in [onboarding](onboarding.md). Tell the user to save the updated value in Node before reconnecting. Local **Running** alone does not prove connection. Use `node-connect` when available for failures to connect or pair after correct setup.
@@ -28,7 +28,7 @@ On a shared Mac, each configured account must run the unregister command before 
 
 Upgrades stop app processes before replacing files, preserve settings and identity, and attempt to resume previously active users. Removal unregisters startup and removes application files while retaining user settings for reinstall. Explain that preserving the state also preserves saved authentication and paired identity. Remove the separate app state directory only when the user's requested removal includes discarding those values; do not delete it as a routine repair or touch `~/.openclaw`.
 
-Use installer `0.3.5` (Intel Mac `0.3.3`, the latest Intel build) and Skill/Harness `0.7.10`. Node 0.2.4 or later provides the accessibility observation update; 0.3.0 or later supports several Agent connections. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
+Use installer `0.3.6` (Intel Mac `0.3.3`, the latest Intel build) and Skill/Harness `0.7.11`. Node 0.2.4 or later provides the accessibility observation update; 0.3.0 or later supports several Agent connections. An app upgrade uses a matching installer. Updating this capability alone does not upgrade an installed Node or the Gateway Agent.
 
 
 ## Several Agents on one computer
@@ -69,7 +69,7 @@ and returned frame; release the desktop before another session takes over.
 
 ### Switch monitors and keep coordinates aligned
 
-Use Node **0.2.4 or later** (0.3.5 current, Intel Mac 0.3.3) and an updated controlling Agent. Updating the
+Use Node **0.2.4 or later** (0.3.6 current, Intel Mac 0.3.3) and an updated controlling Agent. Updating the
 Skill/Harness alone changes guidance and installer lookup, not either runtime.
 
 1. Keep the explicit `node` on every `remote_computer` call. Use `status` to
