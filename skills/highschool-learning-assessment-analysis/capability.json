@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use when asked to analyze a Korean high-school mock exam score report (national academic assessment, mock exam, or CSAT) and produce the standard 14-slide 'Midnight Keynote' dark HTML deck plus PDF. It extracts scores into a JSON file, auto-derives the analysis (points lost, weakest areas, national-vs-school position, priorities, targets), renders, QA-checks, and delivers. For other deck styles use frontend-slides.",
+  "descriptionI18n": {
+    "ko": "고등학교 전국연합학력평가·모의고사(학평·모평·수능) 성적표를 분석해 표준 14장 'Midnight Keynote' 다크 HTML 덱과 PDF를 만듭니다. 점수를 JSON으로 추출하고 잃은 점수, 약한 영역, 전국·교내 위치, 우선순위, 목표를 자동으로 도출한 뒤 렌더링·QA·전달합니다. 다른 스타일의 덱은 frontend-slides를 사용합니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}
