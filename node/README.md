@@ -5,23 +5,26 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.3.5 preview
+## Download 0.3.6 preview
 
 | Computer | Installer |
 | --- | --- |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-linux-x64.deb) |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-darwin-arm64.pkg) |
-| macOS Intel | [Download PKG 0.3.3](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg) — 0.3.5 has no Intel package; 0.3.3 is the latest Intel build |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-win32-x64.exe) |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-linux-x64.deb) |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-darwin-arm64.pkg) |
+| macOS Intel | [Download PKG 0.3.3](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg) — 0.3.6 has no Intel package; 0.3.3 is the latest Intel build |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.6/ClawPod-Node-0.3.6-win32-x64.exe) |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.5)
-· [Release notes](RELEASE-NOTES-0.3.5.md)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.6)
+· [Release notes](RELEASE-NOTES-0.3.6.md)
 
 Final installer hashes and exact byte sizes are recorded in
 [release.json](release.json). See [validation scope](VALIDATION.md) for execution
 coverage and remaining limits.
 
-Version 0.3.5 redesigns the settings screens (dark sidebar and cards, connection search,
+Version 0.3.6 refines the setup UI: a 한국어 | English language toggle, the Gateway
+example `ws://192.168.0.100:18789`, and setup steps ordered as allow desktop access, then
+enter the Gateway address and token from your Agent. Version 0.3.5 redesigned the
+settings screens (dark sidebar and cards, connection search,
 separate connection overview/settings, desktop permissions, and general settings, plus a
 better first-connection and mobile layout). It keeps the 0.3.4 Agent runtime, Node.js,
 dependencies, and native features unchanged, as well as the existing connection,
@@ -71,9 +74,9 @@ are retained. Use `ws://` for a plain listener and `wss://` for an actual TLS en
 4. Download the matching ClawPod Node installer listed above.
 5. The agent provides the actual Gateway Tailscale address, complete WebSocket
    URL, and active Gateway token separately (or the password for password mode).
-6. Install the DEB/PKG/EXE and open **ClawPod Node**. On the **This computer**
-   tab, check **Desktop access** using the OS guidance below. On the **Connections**
-   tab, enter the supplied **Gateway WebSocket URL**, **Computer display name**, and
+6. Install the DEB/PKG/EXE and open **ClawPod Node**. Under **This computer** in the
+   sidebar, check **Desktop access** using the OS guidance below. Under **Agent connections**,
+   select the connection and in **Connection settings** enter the supplied **Gateway WebSocket URL**, **Computer display name**, and
    token/password in their respective fields (a connection name is optional). Select **Save settings**,
    then **Start connection**.
 7. The agent identifies and approves your exact pending device request at the
@@ -138,8 +141,8 @@ text-only observations. Do not rescale or add monitor offsets. Zoom attachment
 pixels are not input coordinates. Release desktop
 control before handing it to the user or another agent session.
 
-Use ClawPod Node **0.2.4 or later** (0.3.5 current; Intel Mac 0.3.3) and an updated controlling
-Agent. Skill/Harness **0.7.10** supplies the updated guidance; installing it alone
+Use ClawPod Node **0.2.4 or later** (0.3.6 current; Intel Mac 0.3.3) and an updated controlling
+Agent. Skill/Harness **0.7.11** supplies the updated guidance; installing it alone
 updates neither app.
 
 ## Connect one computer to several Agents
