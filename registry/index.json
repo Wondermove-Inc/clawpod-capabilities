@@ -963,6 +963,82 @@
       }
     },
     {
+      "id": "highschool-learning-assessment-analysis",
+      "type": "skill",
+      "version": "0.1.0",
+      "description": "Use when asked to analyze a Korean high-school mock exam score report (national academic assessment, mock exam, or CSAT) and produce the standard 14-slide 'Midnight Keynote' dark HTML deck plus PDF. It extracts scores into a JSON file, auto-derives the analysis (points lost, weakest areas, national-vs-school position, priorities, targets), renders, QA-checks, and delivers. For other deck styles use frontend-slides.",
+      "path": "skills/highschool-learning-assessment-analysis",
+      "compatibility": {
+        "openclaw": ">=2026.4.0"
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "095c725dc81987988fc825bff7cff1dc118c707cfd7ae7498bb4224fcd61ab8f"
+        },
+        {
+          "path": "assets/deck.js",
+          "sha256": "a778a3567c1903576ac7c8584dbf95972b0cf72fa3459014f4b70c71195e93f4"
+        },
+        {
+          "path": "assets/midnight-keynote.css",
+          "sha256": "481b616bcd93679764abd9020c9ed49cd937c4ad41561368544856b1b4335db2"
+        },
+        {
+          "path": "assets/viewport-base.css",
+          "sha256": "7424eb3fca809d85eedb3019a7b5bff571dc553c7b73b02120d068e12b2a6a03"
+        },
+        {
+          "path": "examples/sample-g1-oct.json",
+          "sha256": "201968b169876a779113945376e28be39e47ebb0c349032eedb48895df2d8b48"
+        },
+        {
+          "path": "examples/sample-g2-jun.json",
+          "sha256": "c961bca7f8165dd3d369050004339616e67ef3b34bb3df3289bc3b5d3e50552d"
+        },
+        {
+          "path": "references/analysis-rules.md",
+          "sha256": "2190b04263bf500a8ef5c23a2464d6fab16ad51469fbb7d6e51c721d9669d21c"
+        },
+        {
+          "path": "references/data-schema.md",
+          "sha256": "642bd12908b9e0fd79eb14f8c29741015d4765d522c59ff41049e2e8bce503f9"
+        },
+        {
+          "path": "scripts/build_deck.py",
+          "sha256": "5fee1f3d29daf811d6640da5e9ad4905bc9d517834cf47a68eb833aad22de27f"
+        },
+        {
+          "path": "scripts/make_deck.sh",
+          "sha256": "ba5ce936a374b37ac93e80f94d2e4b847f8ea83eb639dd55ee1f55737be429d8"
+        },
+        {
+          "path": "scripts/nojs_cdp.sh",
+          "sha256": "ae84efc322e8621567379e8ae4ea87a78bac164b87826a7c262167ff0fccaf56"
+        },
+        {
+          "path": "scripts/nojs_shot.mjs",
+          "sha256": "9ca615963204d7b43bbfd68515fa27071dffece249146a90e8ca8e7f31cabc76"
+        },
+        {
+          "path": "scripts/qa.py",
+          "sha256": "dd959ca78e6e108ce9908893f3890f2e6964099545f488bc114439a9e36ef652"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89a8f0b9c7385c20bb96872dfc1ec9f7e350f8e0fdd17262101e3d353328a765"
+        }
+      ],
+      "descriptionI18n": {
+        "en": "Use when asked to analyze a Korean high-school mock exam score report (national academic assessment, mock exam, or CSAT) and produce the standard 14-slide 'Midnight Keynote' dark HTML deck plus PDF. It extracts scores into a JSON file, auto-derives the analysis (points lost, weakest areas, national-vs-school position, priorities, targets), renders, QA-checks, and delivers. For other deck styles use frontend-slides.",
+        "ko": "고등학교 전국연합학력평가·모의고사(학평·모평·수능) 성적표를 분석해 표준 14장 'Midnight Keynote' 다크 HTML 덱과 PDF를 만듭니다. 점수를 JSON으로 추출하고 잃은 점수, 약한 영역, 전국·교내 위치, 우선순위, 목표를 자동으로 도출한 뒤 렌더링·QA·전달합니다. 다른 스타일의 덱은 frontend-slides를 사용합니다."
+      }
+    },
+    {
       "id": "hwp-desktop",
       "type": "skill",
       "version": "0.1.3",

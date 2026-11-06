@@ -459,7 +459,22 @@
     "adjacent": [
       "claude-design",
       "open-design",
-      "artifact-design"
+      "artifact-design",
+      "highschool-learning-assessment-analysis"
+    ]
+  },
+  "highschool-learning-assessment-analysis": {
+    "positive": [
+      "\uc774 \ud559\ud3c9 \uc131\uc801\ud45c \ubd84\uc11d\ud574\uc11c \ub371 \ub9cc\ub4e4\uc5b4\uc918",
+      "Analyze this \ubaa8\uc758\uace0\uc0ac score report into the standard dark deck",
+      "\uace02 6\uc6d4 \ud559\ud3c9 \uacb0\uacfc\ub85c \uc57d\uc810\uacfc \ub2e4\uc74c \ubaa9\ud45c\ub97c \uc815\ub9ac\ud574\uc918"
+    ],
+    "negative": [
+      "Build an animated pitch deck in a custom style",
+      "Write the vulnerability assessment report"
+    ],
+    "adjacent": [
+      "frontend-slides"
     ]
   }
 }
