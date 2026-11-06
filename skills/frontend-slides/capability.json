@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Create distinctive, animation-rich single-file HTML slide decks from scratch or by converting PowerPoint files, with visual style discovery from 12 presets and 34 bold templates, and PDF export. Use when the user wants to build a presentation, convert a PPT/PPTX to web slides, or create slides for a talk or pitch. Use open-design to share the deck as a team live-preview link, claude-design for claude.ai canvas decks, and artifact-design for in-room pages.",
+  "descriptionI18n": {
+    "ko": "애니메이션이 있는 단일 HTML 슬라이드 덱을 처음부터 만들거나 PowerPoint 파일을 변환해 만듭니다. 12개 프리셋과 34개 대담한 템플릿에서 미리보기로 스타일을 고르고 PDF로 내보냅니다. 발표·피치용 슬라이드 제작, PPT/PPTX의 웹 슬라이드 변환에 사용합니다. 팀 실시간 미리보기 링크 공유는 open-design, claude.ai 캔버스 덱은 claude-design, 대화방 페이지는 artifact-design을 사용합니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "externally-visible",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}
