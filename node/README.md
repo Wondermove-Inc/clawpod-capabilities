@@ -5,26 +5,27 @@ Download just the installer matching **that computer's** operating system and CP
 You do not need access to the Agent source repository, npm, or a separate Node.js
 installation. Installation is offline; connecting requires access to your Gateway.
 
-## Download 0.3.4 preview
+## Download 0.3.5 preview
 
 | Computer | Installer |
 | --- | --- |
-| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-linux-x64.deb) |
-| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-darwin-arm64.pkg) |
-| macOS Intel | [Download PKG 0.3.3](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg) — 0.3.4 has no Intel package; 0.3.3 is the latest Intel build |
-| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-win32-x64.exe) |
+| Linux x64, Debian/Ubuntu desktop | [Download DEB](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-linux-x64.deb) |
+| macOS Apple Silicon | [Download PKG](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-darwin-arm64.pkg) |
+| macOS Intel | [Download PKG 0.3.3](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.3/ClawPod-Node-0.3.3-darwin-x64.pkg) — 0.3.5 has no Intel package; 0.3.3 is the latest Intel build |
+| Windows x64 | [Download EXE](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-win32-x64.exe) |
 
-[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.4)
-· [Release notes](RELEASE-NOTES-0.3.4.md)
+[Release page and individual SHA-256 files](https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.5)
+· [Release notes](RELEASE-NOTES-0.3.5.md)
 
 Final installer hashes and exact byte sizes are recorded in
 [release.json](release.json). See [validation scope](VALIDATION.md) for execution
 coverage and remaining limits.
 
-Version 0.3.4 bundles a freshly built Agent runtime with remote-computer
-improvements (repeated screen transfer, repeated clicks at the same spot, key names,
-input error recovery) and better handling of browser tabs that are still loading.
-All 0.3.x connection, naming, language, and settings features are unchanged. This
+Version 0.3.5 redesigns the settings screens (dark sidebar and cards, connection search,
+separate connection overview/settings, desktop permissions, and general settings, plus a
+better first-connection and mobile layout). It keeps the 0.3.4 Agent runtime, Node.js,
+dependencies, and native features unchanged, as well as the existing connection,
+authentication, saving, run-control, and permission-request behavior. This
 release ships Linux x64, macOS Apple Silicon, and Windows x64 only; Intel Macs keep
 using 0.3.3.
 
@@ -137,8 +138,8 @@ text-only observations. Do not rescale or add monitor offsets. Zoom attachment
 pixels are not input coordinates. Release desktop
 control before handing it to the user or another agent session.
 
-Use ClawPod Node **0.2.4 or later** (0.3.4 current; Intel Mac 0.3.3) and an updated controlling
-Agent. Skill/Harness **0.7.9** supplies the updated guidance; installing it alone
+Use ClawPod Node **0.2.4 or later** (0.3.5 current; Intel Mac 0.3.3) and an updated controlling
+Agent. Skill/Harness **0.7.10** supplies the updated guidance; installing it alone
 updates neither app.
 
 ## Connect one computer to several Agents
