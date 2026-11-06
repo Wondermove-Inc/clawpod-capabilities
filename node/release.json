@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.4",
+  "version": "0.3.5",
   "runtimeVersion": "2026.4.11",
   "nodeVersion": "24.15.0",
   "sourceCommit": "b6f10ed616d73b8ed38c7307dbf06102108cf8a7",
-  "installerSourceCommit": "b6f10ed616d73b8ed38c7307dbf06102108cf8a7",
-  "releaseTag": "node-v0.3.4",
-  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.4",
+  "installerSourceCommit": "dd56a3917dfe151305fb13518326d0472d77e397",
+  "releaseTag": "node-v0.3.5",
+  "releaseUrl": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/tag/node-v0.3.5",
   "channel": "preview",
   "signed": false,
   "validation": {
@@ -15,23 +15,46 @@
     "nativeWindows": "not-run",
     "desktopLoginStartup": "not-run"
   },
+  "validationDetails": {
+    "nodeTests": 61,
+    "nodeDefaultSkippedTests": 13,
+    "packagedBrowserTests": 8,
+    "runtimePreservedFrom": "0.3.4",
+    "runtimeAndNativeByteComparison": "passed",
+    "releaseUiSourceComparison": "passed",
+    "linuxUpgradeConfigurationPreservation": "passed",
+    "linuxSingleAndMultipleConnections": "passed",
+    "linuxPackageExtraction": "passed",
+    "windowsPackageExtraction": "passed",
+    "macOSArm64StagedRuntime": "passed",
+    "macOSAppIpcReadiness": "passed",
+    "macOSSingleAndMultipleConnections": "passed",
+    "macOSNotarization": "passed",
+    "macOSPackageExtraction": "passed",
+    "limitations": [
+      "Native Windows installation/execution and publisher signing not performed",
+      "Native macOS install/upgrade/login startup/removal not tested",
+      "Production Gateway pairing not tested",
+      "No new desktop input action test; 0.3.4 native implementation preserved"
+    ]
+  },
   "artifacts": [
     {
       "platform": "linux",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.3.4-linux-x64.deb",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-linux-x64.deb",
-      "sha256": "dc1fcbc49d2847ac9bc5138d8c379bf8d66d3178256add3648b59bd87ce8e575",
-      "bytes": 174996596,
+      "filename": "ClawPod-Node-0.3.5-linux-x64.deb",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-linux-x64.deb",
+      "sha256": "ea20d1224bd803f509b7108040ad6aac8f9443e146239a160c6bd34247bf4342",
+      "bytes": 175001496,
       "signed": false
     },
     {
       "platform": "macos",
       "arch": "arm64",
-      "filename": "ClawPod-Node-0.3.4-darwin-arm64.pkg",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-darwin-arm64.pkg",
-      "sha256": "2e66b790f941882e51fb613a0d0e68e46fc57f037a5523bf48ab4307474dd4b7",
-      "bytes": 259637319,
+      "filename": "ClawPod-Node-0.3.5-darwin-arm64.pkg",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-darwin-arm64.pkg",
+      "sha256": "fb1855e699abebf04f2d02f0013ea229fa32889c07b1fd780de5e579d5366e5e",
+      "bytes": 261329642,
       "signed": true,
       "notarized": true,
       "stapled": true
@@ -39,36 +62,11 @@
     {
       "platform": "windows",
       "arch": "x64",
-      "filename": "ClawPod-Node-0.3.4-win32-x64.exe",
-      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.4/ClawPod-Node-0.3.4-win32-x64.exe",
-      "sha256": "dc20abcefd62b4f53994d2d7bce264b218110c1b760899290503894957876514",
-      "bytes": 201956609,
+      "filename": "ClawPod-Node-0.3.5-win32-x64.exe",
+      "url": "https://github.com/Wondermove-Inc/clawpod-capabilities/releases/download/node-v0.3.5/ClawPod-Node-0.3.5-win32-x64.exe",
+      "sha256": "48cefb0f1d1d8e5611da4594c2b54cfc73fc2840c2955af89cf433122dc2aac8",
+      "bytes": 201943240,
       "signed": false
     }
-  ],
-  "validationDetails": {
-    "nodeTests": 61,
-    "nodeDefaultSkippedTests": 12,
-    "packagedBrowserTests": 7,
-    "compiledLinuxX11Tests": 3,
-    "scopedBrowserAndRemoteComputerTests": 186,
-    "freshRuntimeAndDependencyProvenance": "passed",
-    "linuxUpgradeConfigurationPreservation": "passed",
-    "linuxSingleAndMultipleConnections": "passed",
-    "linuxPackageExtraction": "passed",
-    "windowsPackageExtraction": "passed",
-    "limitations": [
-      "Fresh Mac install/login/upgrade/removal not tested",
-      "Production Gateway pairing not tested in this release pass",
-      "Windows native execution and publisher signing not performed"
-    ],
-    "macOSArm64StagedRuntime": "passed",
-    "macOSAppIpcReadiness": "passed",
-    "macOSSingleAndMultipleConnections": "passed",
-    "macOSNotarization": "passed",
-    "macOSPackageExtraction": "passed",
-    "macOSArchitectureInventory": "passed",
-    "macOSPiTuiNativeLoader": "passed",
-    "macOSIsolatedDesktopActions": "passed"
-  }
+  ]
 }

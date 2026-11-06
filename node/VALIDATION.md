@@ -1,4 +1,28 @@
-# ClawPod Node 0.3.4 validation scope
+# ClawPod Node 0.3.5 validation scope
+
+Settings-screen UI/UX release. Installer source: `dd56a3917dfe151305fb13518326d0472d77e397`;
+bundled Agent runtime unchanged from 0.3.4 (`b6f10ed616d73b8ed38c7307dbf06102108cf8a7`,
+runtime 2026.4.11, Node.js 24.15.0). Skill/Harness version: `0.7.10`. Recorded from the
+published `release.json`; on 2026-11-06 the three installers downloaded without
+authentication and matched their published SHA-256 values, byte sizes, and
+`prepare_release.py check`.
+
+- Shipped targets: Linux x64 (DEB), macOS Apple Silicon (PKG), Windows x64 (EXE). No macOS
+  Intel package; Intel Macs keep the 0.3.3 build (`installer-fallback.json`).
+- Node tests: 61 passed (13 default skips run separately). Packaged browser UI tests: 8.
+- Runtime and native files byte-compared with 0.3.4 on all three platforms; new UI source
+  matches the release source.
+- Linux: offline Debian 12 without preinstalled Node.js, 0.3.4 → 0.3.5 upgrade, settings
+  and authentication preserved, running app restarted, single and multiple connections,
+  user state retained after removal.
+- macOS Apple Silicon: Developer ID signature, Apple notarization, stapling, Gatekeeper;
+  signed runtime, app IPC/permission state, single and multiple connections.
+
+Not tested in this release: native Windows installation/execution and publisher signing;
+native macOS install, upgrade, login startup and removal; production Gateway pairing; new
+desktop input actions (0.3.4 native implementation preserved).
+
+# ClawPod Node 0.3.4 validation scope (previous release)
 
 Bundled Agent runtime and installer source: `b6f10ed616d73b8ed38c7307dbf06102108cf8a7`
 (runtime 2026.4.11, Node.js 24.15.0), freshly built from the `perf/browser-computer-tools`

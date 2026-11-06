@@ -231,7 +231,7 @@ def guidance(platform: str, filename: str) -> dict:
             "startup": "Start ClawPod Node when I sign in (This computer tab, then Save computer settings) registers startup for the current user and their logged-in desktop session.",
             "status": "Running reports the local process only. Check the Agent Control UI for authenticated, paired, connected status; inspect timestamped failures in the app.",
             "close": "Closing the setup browser tab leaves the node running. Reopening ClawPod Node reuses its setup server.",
-            "upgrade": "Install the newer matching package. Use Node 0.2.4 or later (0.3.4 current, Intel Mac 0.3.3; 0.3.0 or later for several Agent connections) with an updated controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
+            "upgrade": "Install the newer matching package. Use Node 0.2.4 or later (0.3.5 current, Intel Mac 0.3.3; 0.3.0 or later for several Agent connections) with an updated controlling Agent for accessibility completeness and corrected observation guidance; updating Skill/Harness alone upgrades neither. Upgrades preserve settings and identity and attempt to resume previously active users.",
             "uninstall": removal[platform] + " User settings and device identity remain for reinstall; remove the separate .clawpod-node directory only when you intend to discard them.",
         },
         "stateDirectory": "%USERPROFILE%\\.clawpod-node" if platform == "windows" else "~/.clawpod-node",
