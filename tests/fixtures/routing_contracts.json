@@ -39,7 +39,7 @@
       "artifact-design",
       "open-design",
       "frontend-slides",
-      "pptx"
+      "powerpoint"
     ]
   },
   "clawpod-capability-registry": {
@@ -202,7 +202,7 @@
       "resend-email",
       "notion",
       "synology-smb-storage",
-      "xlsx"
+      "excel"
     ]
   },
   "memory-graph": {
@@ -372,7 +372,7 @@
     ],
     "adjacent": [
       "clawpod-ocr",
-      "docx"
+      "word"
     ]
   },
   "ops-troubleshooting": {
@@ -446,7 +446,7 @@
       "verified-research",
       "artifact-design",
       "clawpod-ocr",
-      "docx"
+      "word"
     ]
   },
   "frontend-slides": {
@@ -466,7 +466,7 @@
       "open-design",
       "artifact-design",
       "highschool-learning-assessment-analysis",
-      "pptx"
+      "powerpoint"
     ]
   },
   "highschool-learning-assessment-analysis": {
@@ -496,10 +496,10 @@
     ],
     "adjacent": [
       "clawpod-ocr",
-      "docx"
+      "word"
     ]
   },
-  "docx": {
+  "word": {
     "positive": [
       "Write this memo as a Word document",
       "Edit the tracked changes in this .docx",
@@ -516,7 +516,7 @@
       "hwp-desktop"
     ]
   },
-  "xlsx": {
+  "excel": {
     "positive": [
       "Build a spreadsheet model with formulas",
       "Clean up this messy CSV into an xlsx",
@@ -531,7 +531,7 @@
       "google-workspace"
     ]
   },
-  "pptx": {
+  "powerpoint": {
     "positive": [
       "Create a PowerPoint deck from these notes",
       "Extract the text from this .pptx",

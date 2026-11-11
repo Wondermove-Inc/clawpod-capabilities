@@ -503,11 +503,55 @@
       }
     },
     {
-      "id": "docx",
+      "id": "enterprise-newsletter",
+      "type": "skill",
+      "version": "0.1.8",
+      "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
+      "path": "skills/enterprise-newsletter",
+      "compatibility": {
+        "openclaw": ">=2026.4.0"
+      },
+      "safety": {
+        "risk": "write-safe",
+        "approvalRequired": false
+      },
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "1368185f40fb46bc28bd0f2709ec9f1174c874d5a5d1cbec2dd7f8f14eba6326"
+        },
+        {
+          "path": "assets/enterprise-dark-v1.html",
+          "sha256": "2917b53ec69ae600e17ebd33f37a251d2598e5511dea1ae8f7eff606ea8854e1"
+        },
+        {
+          "path": "examples/newsletter.json",
+          "sha256": "086ea1f9226f0a6917ff2785589a231af5a150c6f484e2113d5826311af1e176"
+        },
+        {
+          "path": "references/newsletter-contract.md",
+          "sha256": "aad2738b845f32951d78571d98244e6f2b0586900371c83a7d36d025c7908b36"
+        },
+        {
+          "path": "references/operations.md",
+          "sha256": "f1e95fd2fab727d39a21af2c9f40ea75a63330c6fdfe18ea1a54ac371aa8efca"
+        }
+      ],
+      "descriptionI18n": {
+        "en": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
+        "ko": "기업용 뉴스레터와 능력 카탈로그를 검증·렌더링·조회하고 배포 대상에 결합하며, 직접 발송하지 않습니다. Verified Research로 근거를 구성하고 승인된 발송은 Resend Email에 전달합니다. 개인용 뉴스 요약에는 사용하지 않습니다."
+      },
+      "linkedHarness": {
+        "id": "enterprise-newsletter",
+        "version": "0.1.7"
+      }
+    },
+    {
+      "id": "excel",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
-      "path": "skills/docx",
+      "description": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
+      "path": "skills/excel",
       "compatibility": {
         "openclaw": ">=2026.4.0"
       },
@@ -522,23 +566,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "412cba5cfa1dbda55769cb0f0fa3d6a6b0d61a1e31ef9d44fc9d880f395bcca6"
-        },
-        {
-          "path": "scripts/__init__.py",
-          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
-        },
-        {
-          "path": "scripts/accept_changes.py",
-          "sha256": "0c991d2bc7304a1248e9f3bf9b1498f0b6e76641fc457e7cbd73c99b4eef3a74"
-        },
-        {
-          "path": "scripts/comment.py",
-          "sha256": "37d116e5f56bb142b208c6c6a4bbcf960495abf470ddb7c6675ccfac864ba3d7"
-        },
-        {
-          "path": "scripts/merge_runs.py",
-          "sha256": "3ab367fd7fba4647943d0aa5e65203b15458551410f5ffc821d902616a4b9f40"
+          "sha256": "a3c9cb8158c65bf87ac6f1f0e90b175f246ef3fcaa08f47b0a94191d5b637387"
         },
         {
           "path": "scripts/office/helpers/__init__.py",
@@ -741,73 +769,13 @@
           "sha256": "ed50d0885eee4b9c387f546b059bcaed64086815880a5167336244f93e305123"
         },
         {
-          "path": "scripts/templates/comments.xml",
-          "sha256": "a08ba83ee8790ac9e3dc61921f4988f19edd7e06ac09d6f1897a877c1581818d"
-        },
-        {
-          "path": "scripts/templates/commentsExtended.xml",
-          "sha256": "544eeecfeceed4b468fff163cd9c366d33641c8b8ab691ce002576197846afe8"
-        },
-        {
-          "path": "scripts/templates/commentsExtensible.xml",
-          "sha256": "bad10b3283e6ad6e7ef6d1ca5169683721ed690ee331282c65df04017e080631"
-        },
-        {
-          "path": "scripts/templates/commentsIds.xml",
-          "sha256": "db20f9616e004ec42ef736e80c2384e45db0f8d1194d31dc8b37c7d6ecdd6420"
-        },
-        {
-          "path": "scripts/templates/people.xml",
-          "sha256": "056f63aa1197fd8c9dda980c9f1b9ff016fd5fa4a462df8aec5f384f39d23e37"
+          "path": "scripts/recalc.py",
+          "sha256": "66f6e726d5a53cfabea0b6471d6669deb95e54e96cb7913b687e4388da1bb3d9"
         }
       ],
       "descriptionI18n": {
-        "en": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
-        "ko": "Word 문서(.docx)와 Word 템플릿(.dotx)을 만들고 읽고 편집합니다. 목차·제목·쪽 번호·레터헤드가 있는 문서, 내용 추출·재구성, 이미지 삽입·교체, 찾아 바꾸기, 변경 내용 추적·메모, 보고서·메모·편지를 Word 파일로 만들 때 사용합니다. PDF, 스프레드시트, Google Docs에는 사용하지 않습니다."
-      }
-    },
-    {
-      "id": "enterprise-newsletter",
-      "type": "skill",
-      "version": "0.1.8",
-      "description": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
-      "path": "skills/enterprise-newsletter",
-      "compatibility": {
-        "openclaw": ">=2026.4.0"
-      },
-      "safety": {
-        "risk": "write-safe",
-        "approvalRequired": false
-      },
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "1368185f40fb46bc28bd0f2709ec9f1174c874d5a5d1cbec2dd7f8f14eba6326"
-        },
-        {
-          "path": "assets/enterprise-dark-v1.html",
-          "sha256": "2917b53ec69ae600e17ebd33f37a251d2598e5511dea1ae8f7eff606ea8854e1"
-        },
-        {
-          "path": "examples/newsletter.json",
-          "sha256": "086ea1f9226f0a6917ff2785589a231af5a150c6f484e2113d5826311af1e176"
-        },
-        {
-          "path": "references/newsletter-contract.md",
-          "sha256": "aad2738b845f32951d78571d98244e6f2b0586900371c83a7d36d025c7908b36"
-        },
-        {
-          "path": "references/operations.md",
-          "sha256": "f1e95fd2fab727d39a21af2c9f40ea75a63330c6fdfe18ea1a54ac371aa8efca"
-        }
-      ],
-      "descriptionI18n": {
-        "en": "Use to validate, render, inspect, or release-bind enterprise newsletters and capability catalogs without sending; compose evidence with Verified Research and hand approved delivery to Resend Email, not personal news digests.",
-        "ko": "기업용 뉴스레터와 능력 카탈로그를 검증·렌더링·조회하고 배포 대상에 결합하며, 직접 발송하지 않습니다. Verified Research로 근거를 구성하고 승인된 발송은 Resend Email에 전달합니다. 개인용 뉴스 요약에는 사용하지 않습니다."
-      },
-      "linkedHarness": {
-        "id": "enterprise-newsletter",
-        "version": "0.1.7"
+        "en": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
+        "ko": "스프레드시트 파일이 주 입력·출력일 때 사용합니다. .xlsx·.xlsm·.xltx·.csv·.tsv 파일을 열어 읽고 편집하거나 수식·서식·차트·데이터 정리를 하고, 새 스프레드시트를 만들거나 표 형식 간 변환을 합니다. 결과물이 Word 문서, HTML 보고서, 스크립트, Google Sheets API 연동이면 사용하지 않습니다."
       }
     },
     {
@@ -1567,11 +1535,11 @@
       }
     },
     {
-      "id": "pptx",
+      "id": "powerpoint",
       "type": "skill",
       "version": "0.1.0",
       "description": "Use this skill any time a .pptx or .potx file is involved, as input, output, or both: creating slide decks or presentations; reading or extracting text from a .pptx or .potx (even for use elsewhere); editing existing presentations; combining or splitting slides; or working with templates, layouts, speaker notes, or comments. Use frontend-slides for animated HTML decks and claude-design for claude.ai canvas decks.",
-      "path": "skills/pptx",
+      "path": "skills/powerpoint",
       "compatibility": {
         "openclaw": ">=2026.4.0"
       },
@@ -1586,7 +1554,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "0eca97b10c6d63b8aac104eaf679612a2ab66b08c3e521cbc9fcef231fadc68b"
+          "sha256": "ef961e8d03666a9b279e2d388b3f38ba3c5e251e75422053e1205b1c6cdc5baf"
         },
         {
           "path": "scripts/__init__.py",
@@ -2007,11 +1975,11 @@
       }
     },
     {
-      "id": "xlsx",
+      "id": "word",
       "type": "skill",
       "version": "0.1.0",
-      "description": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
-      "path": "skills/xlsx",
+      "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
+      "path": "skills/word",
       "compatibility": {
         "openclaw": ">=2026.4.0"
       },
@@ -2026,7 +1994,23 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "d435f1f6765ee3148bae0ed77fb0d16c06098af6e18bf6fd8d45d971aa490365"
+          "sha256": "2c8df80d6f8544bacea5ab0c086a1b0fa47809aa63eb95824a1e5b34a734e403"
+        },
+        {
+          "path": "scripts/__init__.py",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        },
+        {
+          "path": "scripts/accept_changes.py",
+          "sha256": "0c991d2bc7304a1248e9f3bf9b1498f0b6e76641fc457e7cbd73c99b4eef3a74"
+        },
+        {
+          "path": "scripts/comment.py",
+          "sha256": "37d116e5f56bb142b208c6c6a4bbcf960495abf470ddb7c6675ccfac864ba3d7"
+        },
+        {
+          "path": "scripts/merge_runs.py",
+          "sha256": "3ab367fd7fba4647943d0aa5e65203b15458551410f5ffc821d902616a4b9f40"
         },
         {
           "path": "scripts/office/helpers/__init__.py",
@@ -2229,13 +2213,29 @@
           "sha256": "ed50d0885eee4b9c387f546b059bcaed64086815880a5167336244f93e305123"
         },
         {
-          "path": "scripts/recalc.py",
-          "sha256": "66f6e726d5a53cfabea0b6471d6669deb95e54e96cb7913b687e4388da1bb3d9"
+          "path": "scripts/templates/comments.xml",
+          "sha256": "a08ba83ee8790ac9e3dc61921f4988f19edd7e06ac09d6f1897a877c1581818d"
+        },
+        {
+          "path": "scripts/templates/commentsExtended.xml",
+          "sha256": "544eeecfeceed4b468fff163cd9c366d33641c8b8ab691ce002576197846afe8"
+        },
+        {
+          "path": "scripts/templates/commentsExtensible.xml",
+          "sha256": "bad10b3283e6ad6e7ef6d1ca5169683721ed690ee331282c65df04017e080631"
+        },
+        {
+          "path": "scripts/templates/commentsIds.xml",
+          "sha256": "db20f9616e004ec42ef736e80c2384e45db0f8d1194d31dc8b37c7d6ecdd6420"
+        },
+        {
+          "path": "scripts/templates/people.xml",
+          "sha256": "056f63aa1197fd8c9dda980c9f1b9ff016fd5fa4a462df8aec5f384f39d23e37"
         }
       ],
       "descriptionI18n": {
-        "en": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
-        "ko": "스프레드시트 파일이 주 입력·출력일 때 사용합니다. .xlsx·.xlsm·.xltx·.csv·.tsv 파일을 열어 읽고 편집하거나 수식·서식·차트·데이터 정리를 하고, 새 스프레드시트를 만들거나 표 형식 간 변환을 합니다. 결과물이 Word 문서, HTML 보고서, 스크립트, Google Sheets API 연동이면 사용하지 않습니다."
+        "en": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
+        "ko": "Word 문서(.docx)와 Word 템플릿(.dotx)을 만들고 읽고 편집합니다. 목차·제목·쪽 번호·레터헤드가 있는 문서, 내용 추출·재구성, 이미지 삽입·교체, 찾아 바꾸기, 변경 내용 추적·메모, 보고서·메모·편지를 Word 파일로 만들 때 사용합니다. PDF, 스프레드시트, Google Docs에는 사용하지 않습니다."
       }
     },
     {

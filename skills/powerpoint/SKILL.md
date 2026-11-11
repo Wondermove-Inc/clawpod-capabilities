@@ -1,5 +1,5 @@
 ---
-name: pptx
+name: powerpoint
 description: "Use this skill any time a .pptx or .potx file is involved, as input, output, or both: creating slide decks or presentations; reading or extracting text from a .pptx or .potx (even for use elsewhere); editing existing presentations; combining or splitting slides; or working with templates, layouts, speaker notes, or comments. Use frontend-slides for animated HTML decks and claude-design for claude.ai canvas decks."
 ---
 
@@ -236,4 +236,4 @@ ls -1 "$PWD"/slide-*.jpg
 
 `pptxgenjs` (npm, preinstalled — install only if `require('pptxgenjs')` fails) · `markitdown[pptx]`, `Pillow`, `defusedxml`, `lxml` (pip — text dump, thumbnail, clean, validate) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`) · `pdftoppm` (Poppler)
 
-_Modified by Wondermove for ClawPod: the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: renamed from `pptx` to `powerpoint` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._
