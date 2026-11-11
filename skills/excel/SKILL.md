@@ -1,5 +1,5 @@
 ---
-name: xlsx
+name: excel
 description: "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration."
 ---
 
@@ -97,4 +97,4 @@ lone edited cell mid-row is the commonest silent error · guard denominators tha
 
 `openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`)
 
-_Modified by Wondermove for ClawPod: the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: renamed from `xlsx` to `excel` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._

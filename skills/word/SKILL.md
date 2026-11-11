@@ -1,5 +1,5 @@
 ---
-name: docx
+name: word
 description: "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation."
 ---
 
@@ -89,4 +89,4 @@ The script writes `comments.xml`, `commentsExtended.xml`, `commentsIds.xml`, `co
 
 `docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · LibreOffice (`soffice`) · `pdftoppm` (Poppler)
 
-_Modified by Wondermove for ClawPod: the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: renamed from `docx` to `word` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
