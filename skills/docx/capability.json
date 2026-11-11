@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
+  "descriptionI18n": {
+    "ko": "Word 문서(.docx)와 Word 템플릿(.dotx)을 만들고 읽고 편집합니다. 목차·제목·쪽 번호·레터헤드가 있는 문서, 내용 추출·재구성, 이미지 삽입·교체, 찾아 바꾸기, 변경 내용 추적·메모, 보고서·메모·편지를 Word 파일로 만들 때 사용합니다. PDF, 스프레드시트, Google Docs에는 사용하지 않습니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}

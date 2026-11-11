@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.",
+  "descriptionI18n": {
+    "ko": "PDF 파일 작업 전반에 사용합니다. 텍스트·표 추출, 여러 PDF 병합과 분할, 페이지 회전, 워터마크, 새 PDF 생성, 양식 채우기, 암호화·해제, 이미지 추출, 스캔 PDF OCR을 지원합니다. .pdf 파일을 언급하거나 PDF 생성을 요청하면 사용합니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}
