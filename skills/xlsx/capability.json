@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
+  "descriptionI18n": {
+    "ko": "스프레드시트 파일이 주 입력·출력일 때 사용합니다. .xlsx·.xlsm·.xltx·.csv·.tsv 파일을 열어 읽고 편집하거나 수식·서식·차트·데이터 정리를 하고, 새 스프레드시트를 만들거나 표 형식 간 변환을 합니다. 결과물이 Word 문서, HTML 보고서, 스크립트, Google Sheets API 연동이면 사용하지 않습니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}
