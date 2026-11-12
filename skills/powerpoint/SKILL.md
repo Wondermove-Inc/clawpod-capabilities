@@ -11,7 +11,19 @@ A `.pptx` is a ZIP archive of XML files. Choose your approach by task:
 |---|---|
 | **Create** a new deck | Write a `pptxgenjs` script — see gotchas below |
 | **Edit** an existing deck, or build from a template | unzip → edit `ppt/slides/slideN.xml` → zip |
-| **Read** content | `markitdown deck.pptx` (one block per slide under `<!-- Slide number: N -->` markers); visual grid: `python scripts/thumbnail.py deck.pptx` |
+| **Read** content | `markitdown deck.pptx` (one block per slide under `<!-- Slide number: N -->` markers); slide images: `deckcraft-cli render deck.pptx --all slides/` |
+
+## On ClawPod: use DeckCraft
+
+ClawPod agents have ArtCraft Office: the **DeckCraft** desktop app (Applications → Office) and `deckcraft-cli`. LibreOffice is not installed — `soffice` only prints the ArtCraft app list — so rendering and conversion use DeckCraft. It opens `.pptx` and `.deckcraft`, not legacy `.ppt`:
+
+- **Slide images for QA:** `deckcraft-cli render deck.pptx --all slides/` writes `slides/slide-01.png`… (or `--slide N out.png`, 0-based).
+- **PDF:** `deckcraft-cli convert deck.pptx deck.pdf`.
+- **Inspect:** `deckcraft-cli info deck.pptx` prints slides, layouts and theme as JSON.
+- **Edit without a window:** `deckcraft-cli run --in deck.pptx --cmd 'id={json}' … --save out.pptx`; `deckcraft-cli commands` lists commands and `deckcraft-cli describe ID` explains one.
+- **Visual work** the user should see: open the deck in DeckCraft on the desktop.
+
+Creating a deck with pptxgenjs (below) is unchanged; check it with DeckCraft.
 
 ## Scripts
 
@@ -19,11 +31,9 @@ Paths are relative to this skill's directory. Everything else is plain Python, `
 
 | Script | What it does |
 |---|---|
-| `scripts/thumbnail.py deck.pptx [prefix]` | Labeled grid of every slide, for picking template layouts. `.pptx` only. Pass `prefix` — it defaults to `thumbnails`, which overwrites the grids of any other deck done in the same directory |
 | `scripts/add_slide.py unpacked/ slide2.xml [--after slideN.xml]` | Duplicate a slide (or a `slideLayoutN.xml`) with all the package bookkeeping. Also takes a `.pptx` directly with `-o out.pptx` |
 | `scripts/clean.py unpacked/` | Delete slides, media, and rels no longer referenced. Run **after** `<p:sldIdLst>` is final |
 | `scripts/office/validate.py deck.pptx [--original src.pptx]` | Schema, relationship, content-type, chart and slide checks; each failure names its fix. Pass `--original` for any template-derived deck — it baselines the schema checks against the template, so the template's own XSD errors don't read as yours |
-| `scripts/office/soffice.py --headless --convert-to pdf deck.pptx` | LibreOffice wrapper — bare `soffice` hangs in this sandbox |
 
 ## Creating with pptxgenjs — gotchas
 
@@ -50,7 +60,7 @@ Paths are relative to this skill's directory. Everything else is plain Python, `
 
 ## Editing existing decks and templates
 
-Pick layouts first: `python scripts/thumbnail.py template.pptx template-thumbs` writes a labeled grid of every slide and prints the file(s) it created — `template-thumbs.jpg`, split into `template-thumbs-N.jpg` past 12 slides. **Always pass that second argument, named after the deck.** It defaults to `thumbnails`, so two decks thumbnailed in one directory silently overwrite each other's grids — the first deck's are simply gone (template analysis only — visual QA needs the full-resolution renders from [Converting to Images](#converting-to-images); it only accepts `.pptx`, so copy a `.potx` to a `.pptx` name first). Use it with `markitdown` to map each content section onto a template slide, and vary the layouts — don't put every section on the same title-and-bullets slide.
+Pick layouts first: `deckcraft-cli render template.pptx --all template-slides/` writes one image per slide into a folder named after the deck (copy a `.potx` to a `.pptx` name first). Use it with `markitdown` to map each content section onto a template slide, and vary the layouts — don't put every section on the same title-and-bullets slide.
 
 ```bash
 python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).extractall('unpacked')" deck.pptx
@@ -65,7 +75,7 @@ python scripts/office/validate.py out.pptx --original deck.pptx
 - **Do all structural work — add, delete, reorder — before editing any slide's content.** `add_slide.py` copies a slide file verbatim, so duplicating after you edit clones the edited content; and `clean.py` deletes any slide missing from `<p:sldIdLst>`, including one you just wrote.
 - **Never copy a slide file by hand** — `add_slide.py` does every registration a new slide needs and reports what it made (`Created ppt/slides/slide17.xml from slide2.xml`). It also works directly on a file: `add_slide.py deck.pptx slide2.xml -o out.pptx` — **pass `-o`, or it rewrites the input deck in place.** A duplicated slide still *references* its source's chart/SmartArt/embedded-object parts rather than cloning them, so editing one slide's chart changes the other's.
 - **If you use `python-pptx`**, three things it won't do: duplicate a slide (its only entry point is `add_slide(layout)`), preserve formatting through `text_frame.text = "..."` (that collapses the paragraph to a single unstyled run — assign `run.text` instead), or read the SVG/EMF most template art uses (`add_picture` raises `UnidentifiedImageError`).
-- Legacy `.ppt` must be converted first: `python scripts/office/soffice.py --headless --convert-to pptx file.ppt`. `.potx` templates unpack and pack identically — keep the `.potx` extension on the output.
+- Legacy `.ppt` cannot be opened here; ask the user to save it as `.pptx`. `.potx` templates unpack and pack identically — keep the `.potx` extension on the output.
 - To reuse a template icon or image, duplicate a slide or layout that already contains it.
 
 When filling in a template:
@@ -125,7 +135,7 @@ Choose colors that match your topic — don't default to generic blue. Use these
 
 ### Typography
 
-**Font names you write into the .pptx are rendered by the user's PowerPoint, not by this environment.** Your visual QA renders via LibreOffice, which substitutes fonts it doesn't have — and for some fonts the substitute has different widths, so your QA preview can show text overflow (or fit) that the real deck won't have. To keep your QA trustworthy:
+**Font names you write into the .pptx are rendered by the user's PowerPoint, not by this environment.** Your visual QA renders via DeckCraft, which substitutes fonts it doesn't have — and for some fonts the substitute has different widths, so your QA preview can show text overflow (or fit) that the real deck won't have. The lists below were measured with LibreOffice's metric-compatible fonts and are not verified for DeckCraft, so leave ~10% slack wherever fit matters. To keep your QA trustworthy:
 
 - **Safe fonts** (render true-to-width in QA *and* ship with Office): **Arial, Calibri, Cambria, Times New Roman, Courier New, Bookman Old Style, Century Schoolbook**. Use these for body text and anything where fit matters.
 - **Headers with personality at zero QA risk**: pair a safe-list serif header (Cambria, Bookman Old Style, Century Schoolbook) with a safe-list sans body (Calibri or Arial). You get visual contrast without giving up reliable overflow checks.
@@ -197,7 +207,7 @@ The structural checks — relationships, content types, charts — ignore `--ori
 report template-inherited problems either way, so read those on their own merits.
 
 pptxgenjs emits chart XML PowerPoint refuses to open, and every other tool
-accepts: python-pptx opens those decks, LibreOffice renders them, the XSD
+accepts: python-pptx opens those decks, other renderers draw them, the XSD
 passes them. Every failure names its fix. Fix it in the generator and rebuild.
 
 ### Visual QA
@@ -222,18 +232,16 @@ Convert the slides to images (see [Converting to Images](#converting-to-images))
 Convert presentations to individual slide images for visual inspection:
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.pptx
-rm -f slide-*.jpg
-pdftoppm -jpeg -r 150 output.pdf slide
-ls -1 "$PWD"/slide-*.jpg
+rm -rf slides && deckcraft-cli render output.pptx --all slides
+ls -1 "$PWD"/slides/slide-*.png
 ```
 
-**Pass the absolute paths printed above directly to the view tool.** The `rm` clears stale images from prior runs. `pdftoppm` zero-pads based on page count: `slide-1.jpg` for decks under 10 pages, `slide-01.jpg` for 10-99, `slide-001.jpg` for 100+.
+**Pass the absolute paths printed above directly to the view tool.** The `rm` clears stale images from prior runs. Images are named `slide-01.png`, `slide-02.png`, … in slide order.
 
-**After fixes, rerun all four commands above** — the PDF must be regenerated from the edited `.pptx` before `pdftoppm` can reflect your changes.
+**After fixes, rerun both commands** — render again from the edited `.pptx`.
 
 ## Dependencies
 
-`pptxgenjs` (npm, preinstalled — install only if `require('pptxgenjs')` fails) · `markitdown[pptx]`, `Pillow`, `defusedxml`, `lxml` (pip — text dump, thumbnail, clean, validate) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`) · `pdftoppm` (Poppler)
+`pptxgenjs` (npm, preinstalled — install only if `require('pptxgenjs')` fails) · `markitdown[pptx]`, `Pillow`, `defusedxml`, `lxml` (pip — text dump, clean, validate) · `deckcraft-cli` (ArtCraft DeckCraft)
 
-_Modified by Wondermove for ClawPod: renamed from `pptx` to `powerpoint` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: removed `scripts/thumbnail.py` and `scripts/office/soffice.py` and replaced their LibreOffice steps with `deckcraft-cli render`/`convert` (LibreOffice is not installed on ClawPod); added the "On ClawPod: use DeckCraft" section; renamed from `pptx` to `powerpoint` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._

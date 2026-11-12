@@ -14,12 +14,22 @@ description: "Use this skill any time a spreadsheet file is the primary input or
 
 > `openpyxl`, `pandas`, and `markitdown` are preinstalled — do not run `pip install` first; write the script and import directly. Only if an import fails (or the `markitdown` command is missing): `pip install` the missing package.
 
+## On ClawPod: use GridCraft
+
+ClawPod agents have ArtCraft Office: the **GridCraft** desktop app (Applications → Office) and `gridcraft-cli`. LibreOffice is not installed — `soffice` only prints the ArtCraft app list — so recalculation and conversion use GridCraft:
+
+- **Recalculate:** see the next section.
+- **Read:** `gridcraft-cli cat file.xlsx [--sheet S] [--range A1:D20] [--formulas]`; `info --json` lists sheets, used ranges, tables, charts and names; `eval '=SUM(A1:A9)' --in file.xlsx` tests one formula.
+- **Convert:** `gridcraft-cli convert in out` between xlsx, csv, tsv, json, html and pdf.
+- **Edit without a window:** `gridcraft-cli run --in in.xlsx --cmd 'id={json}' … --out out.xlsx`; `gridcraft-cli commands --search X` finds commands.
+- **Visual work** the user should see: open the workbook in GridCraft on the desktop.
+
 > Script paths below are relative to this skill's directory.
 
 ## Requirements for every output
 
 - **Professional font** (Arial, Times New Roman) throughout, unless the user says otherwise.
-- **Zero formula errors.** Never ship while `recalc.py` reports `errors_found`. If you think an error predates you, prove it: load the *original* with `data_only=True` and look at that cell. An error you introduced looks exactly like one you inherited.
+- **Zero formula errors.** Never ship while the error check after recalculating names any cell. If you think an error predates you, prove it: load the *original* with `data_only=True` and look at that cell. An error you introduced looks exactly like one you inherited.
 - **Use formulas, never hardcoded results.** Write `sheet['B10'] = '=SUM(B2:B9)'`, not the Python-computed total. The sheet must recalculate when its inputs change.
 - **Follow the user's spec literally.** Exact tab names, exact column headers, and the formula they spelled out. A redesign that computes something else fails, however elegant.
 - **Document every assumption and hardcoded number** where the reader will see it — a cell comment, or an adjacent cell at a table's end. Cite a real source when one exists (`Source: Company 10-K, FY2024, Page 45, Revenue Note, [SEC EDGAR URL]`); when the number came from the user, say so plainly.
@@ -33,16 +43,14 @@ formula cell reads back as `None` to anything reading cached values — `pandas`
 `load_workbook(data_only=True)`, and most previewers.
 
 ```bash
-python scripts/recalc.py output.xlsx [timeout_seconds]   # default 30
+gridcraft-cli convert output.xlsx output.xlsx     # recalculates and rewrites in place, formulas kept
+python3 -c "import sys,openpyxl; E={'#DIV/0!','#N/A','#NAME?','#REF!','#VALUE!','#NUM!','#NULL!'}; wb=openpyxl.load_workbook(sys.argv[1],data_only=True); e=[f'{ws.title}!{c.coordinate}={c.value}' for ws in wb for r in ws.iter_rows() for c in r if c.value in E]; print(len(e), e[:100])" output.xlsx
+gridcraft-cli check output.xlsx                   # exits 1 if a cached value or the XLSX round trip differs
 ```
 
-LibreOffice computes every formula, the file is **rewritten in place**, and you get JSON:
-`status` (`success` | `errors_found`), `total_formulas`, `total_errors`, and an
-`error_summary` naming up to 100 cells per error type (`locations_truncated` says how many it
-withheld — trust `total_errors`, not the length of the list). Fix what it names and run it
-again. **JSON with an `error` key instead of a `status` means nothing was recalculated**, and
-only that case exits non-zero — `errors_found` exits 0, so never treat a clean exit as a clean
-workbook.
+GridCraft computes every formula in milliseconds and writes each result as the cell's cached
+value. The one-liner prints how many cells hold an error value and names up to 100 of them.
+Fix what it names, recalculate, and run it again until it prints `0 []`.
 
 **A green recalc proves your formulas *evaluate*, not that they are *right*.** An off-by-one
 range or a reference to the wrong row yields a clean, error-free file with wrong numbers.
@@ -52,26 +60,23 @@ Write 2–3 formulas first and check they pull the values you expect, before bui
 then recalculate. Such a formula reads `='[1]Returns Analysis'!$B$2` — the `[1]` is an index
 into the workbook's external-reference list, naming a *separate file on disk*, not a sheet.
 That file is rarely present here, so the cell's cached value is the only thing holding its
-data. openpyxl strips that value on save; LibreOffice then has to resolve the reference for
-real, fails, writes `#NAME?`, and deletes every link. `recalc.py` refuses to run in that state
-— copy those cells' values out of the original before you save over them (`--force` overrides,
-and accepts the loss).
+data. openpyxl strips that value on save, and recalculating cannot bring it back — copy those
+cells' values out of the original before you save over them.
 
 ## Choosing formulas that survive verification
 
-LibreOffice implements fewer functions than Excel, and one it cannot evaluate becomes a
-literal `#NAME?` baked into the file you deliver.
+The user's Excel may be older than yours, and a function it cannot evaluate shows as `#NAME?`
+when they open the file.
 
 - **Prefer Excel-2007-era functions** — `SUMIFS`, `INDEX`, `MATCH`, `IFERROR`, `SUMPRODUCT` — which need no prefix.
 - **Six post-2007 functions work, but only with an `_xlfn.` prefix**, because openpyxl writes your formula into the XML verbatim and Excel stores post-2007 names prefixed (its UI hides the prefix): `_xlfn.TEXTJOIN`, `_xlfn.CONCAT`, `_xlfn.IFS`, `_xlfn.SWITCH`, `_xlfn.MAXIFS`, `_xlfn.MINIFS`. Written bare, each yields `#NAME?`.
-- **Never use `XLOOKUP`, `XMATCH`, `SORT`, `FILTER`, `UNIQUE`, or `SEQUENCE`.** The runtime's LibreOffice cannot evaluate them under *any* prefix. Newer builds do evaluate them, but they are spilling array functions and an openpyxl-written file has no spill metadata, so only the top-left cell of the range gets a value — and `recalc.py` reports `total_errors: 0` on the truncated result. Use `INDEX`/`MATCH` for lookups, and sort, filter, and de-duplicate in Python before writing the cells.
-- A formula LibreOffice could not parse is written back **lowercased** — a quick tell beside a `#NAME?`.
+- **Never use `XLOOKUP`, `XMATCH`, `SORT`, `FILTER`, `UNIQUE`, or `SEQUENCE`.** Excel before 2021 cannot evaluate them, and they are spilling array functions: an openpyxl-written file has no spill metadata, so only the top-left cell of the range gets a value — with no error to flag the truncated result. Use `INDEX`/`MATCH` for lookups, and sort, filter, and de-duplicate in Python before writing the cells.
 
 ## openpyxl gotchas
 
 - **Reading a model takes two loads.** `data_only=True` yields cached values with the formulas gone; the default yields formula strings with no values. One pass cannot give you both.
 - **`data_only=True` is destructive if you save.** That workbook has no formulas left, so saving replaces every one with a literal — permanently.
-- **`data_only=True` on a file openpyxl just wrote returns `None` everywhere** — run `recalc.py` first. (A formula whose result is `""` also reads back as `None`.)
+- **`data_only=True` on a file openpyxl just wrote returns `None` everywhere** — recalculate with GridCraft first. (A formula whose result is `""` also reads back as `None`.)
 - **Merged cells: write the top-left anchor only.** Every other cell in the range is a `MergedCell` whose `.value` is read-only.
 - **`.xlsm` loses its macros unless you pass `keep_vba=True`** to `load_workbook`.
 - **A sheet name containing a space must be quoted** in a cross-sheet reference: `='Assumptions Inputs'!$B$5`. Unquoted, it evaluates to `#VALUE!`.
@@ -95,6 +100,6 @@ lone edited cell mid-row is the commonest silent error · guard denominators tha
 
 ## Dependencies
 
-`openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`)
+`openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · `gridcraft-cli` (ArtCraft GridCraft)
 
-_Modified by Wondermove for ClawPod: renamed from `xlsx` to `excel` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: removed `scripts/recalc.py` and `scripts/office/soffice.py` and replaced LibreOffice recalculation with `gridcraft-cli` plus an error-cell check (LibreOffice is not installed on ClawPod); added the "On ClawPod: use GridCraft" section; renamed from `xlsx` to `excel` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._

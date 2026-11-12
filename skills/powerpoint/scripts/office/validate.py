@@ -143,7 +143,7 @@ def main():
             exts = ", ".join(k for k, v in sorted(OOXML_FAMILY.items()) if v == "xlsx")
             print(
                 f"No XSD schema validation is performed for xlsx-family files ({exts}). "
-                "For formula-error checking, use scripts/recalc.py instead."
+                "For formula-error checking, recalculate with gridcraft-cli (see the excel skill)."
             )
             sys.exit(0)
         case _:
