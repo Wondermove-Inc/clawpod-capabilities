@@ -566,7 +566,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "50c86d3530ff298603f310c6adca5478b41482c9d05f54782084631993632cb5"
+          "sha256": "3eec4a82ec03dab30ef103d0fc8bf17ff122e37b880e89f130de9bf6e14f519c"
         },
         {
           "path": "scripts/office/helpers/__init__.py",
