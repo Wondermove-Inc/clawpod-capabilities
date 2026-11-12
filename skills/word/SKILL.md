@@ -15,9 +15,9 @@ A `.docx` is a ZIP archive of XML files. Choose your approach by task:
 
 ## On ClawPod: use WordCraft
 
-ClawPod agents have ArtCraft Office installed: the **WordCraft** desktop app (Applications → Office) and `wordcraft-cli`. Use them instead of LibreOffice for the steps below — they open .docx/.doc/.odt/.rtf directly and convert in well under a second.
+ClawPod agents have ArtCraft Office: the **WordCraft** desktop app (Applications → Office) and `wordcraft-cli`. LibreOffice is not installed — `soffice` only prints the ArtCraft app list — so every render and conversion below uses WordCraft. It opens .docx/.doc/.odt/.rtf directly and converts in well under a second.
 
-- **Render to check your output:** `wordcraft-cli convert out.docx out.pdf`, or `wordcraft-cli render out.docx page-1.png --page 1` (add `--strict` to fail on a missing glyph or picture). This replaces `soffice.py` + `pdftoppm` in "Verify the output".
+- **Render to check your output:** `wordcraft-cli convert out.docx out.pdf`, or `wordcraft-cli render out.docx page-1.png --page 1` (add `--strict` to fail on a missing glyph or picture).
 - **Read:** `wordcraft-cli text file.docx`; `info` (pages, words, properties) and `inspect` (structure) print JSON.
 - **Convert:** `wordcraft-cli convert in out` between docx, doc (read only), pdf, odt, rtf, html, md and txt; `--update-fields` refreshes the table of contents and other fields.
 - **Edit without a window:** `wordcraft-cli run --file in.docx --cmd 'id={json}' … --save out.docx` (`--author NAME` for tracked changes and comments); `wordcraft-cli commands` lists every command.
@@ -48,7 +48,7 @@ Creating a new document with docx-js (below) is unchanged; check its output with
 After writing a `.docx`, render it and look at it:
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.docx
+wordcraft-cli convert output.docx output.pdf
 pdftoppm -jpeg -r 100 output.pdf page
 ls page-*.jpg   # then Read the images
 ```
@@ -57,7 +57,7 @@ ls page-*.jpg   # then Read the images
 
 ## Editing existing documents
 
-Legacy `.doc` files must be converted first: `python scripts/office/soffice.py --headless --convert-to docx file.doc`.
+Legacy `.doc` files must be converted first: `wordcraft-cli convert file.doc file.docx`.
 
 ```bash
 unzip -q doc.docx -d unpacked/
@@ -73,12 +73,9 @@ Word splits text across many `<w:r>` runs (revision ids, spell-check markers), s
 
 **Tracked changes:** when redlining, validate with `--author "<the name you redlined under>"` (needs `--original`) — it reports any text you changed without a `<w:ins>`/`<w:del>` around it, which is easy to do by accident and invisible in the accepted view. Wrap runs in `<w:ins>`/`<w:del>` with `w:id`, `w:author`, `w:date` attributes. Inside `<w:del>`, the text element is `<w:delText>`, not `<w:t>`. A deleted paragraph mark (`<w:pPr><w:rPr><w:del w:id=".." w:author=".." w:date=".."/></w:rPr></w:pPr>`) means "merge this paragraph into the next" — so deleting a paragraph outright is that plus a `<w:del>` around every run. The `<w:del/>` must come before the rPr's other children; their order is schema-enforced.
 
-To produce a clean copy with all tracked changes accepted: `python scripts/accept_changes.py in.docx out.docx`.
+To produce a clean copy with all tracked changes accepted: `wordcraft-cli run --file in.docx --cmd review.acceptAll --save out.docx`.
 
-Accepting a deleted paragraph mark should join that paragraph to the one below it, so a paragraph whose runs are *all* deleted vanishes. Word does this; `accept_changes.py` and `pandoc --track-changes=accept` don't always. Both fail the same way — they strip the deleted text but leave the emptied paragraph behind, which reads as a stray empty bullet when it was auto-numbered:
-
-- `pandoc --track-changes=accept` never joins the paragraphs.
-- `accept_changes.py` (LibreOffice) joins them correctly, except when the deleted paragraph is followed by an empty spacer paragraph.
+Accepting a deleted paragraph mark should join that paragraph to the one below it, so a paragraph whose runs are *all* deleted vanishes. Word does this; `pandoc --track-changes=accept` never joins the paragraphs — it strips the deleted text but leaves the emptied paragraph behind, which reads as a stray empty bullet when it was auto-numbered.
 
 An empty bullet in either view is an artifact of that view, not a defect in the document. Check paragraph deletions in the XML.
 
@@ -99,6 +96,6 @@ The script writes `comments.xml`, `commentsExtended.xml`, `commentsIds.xml`, `co
 
 ## Dependencies
 
-`docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · LibreOffice (`soffice`) · `pdftoppm` (Poppler)
+`docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · `wordcraft-cli` (ArtCraft WordCraft) · `pdftoppm` (Poppler)
 
-_Modified by Wondermove for ClawPod: added the "On ClawPod: use WordCraft" section; renamed from `docx` to `word` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: removed `scripts/accept_changes.py` and `scripts/office/soffice.py` and replaced their LibreOffice steps with `wordcraft-cli` (LibreOffice is not installed on ClawPod); added the "On ClawPod: use WordCraft" section; renamed from `docx` to `word` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._

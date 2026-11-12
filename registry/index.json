@@ -566,7 +566,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "707bf3cce021447132f543af85d4e706a3e4b4bb57d1ea56ebcc1ffc95952fdd"
+          "sha256": "50c86d3530ff298603f310c6adca5478b41482c9d05f54782084631993632cb5"
         },
         {
           "path": "scripts/office/helpers/__init__.py",
@@ -741,12 +741,8 @@
           "sha256": "16f6f8072249f431370723c2cd8974672e0d9c897e00e97dd918079df934871b"
         },
         {
-          "path": "scripts/office/soffice.py",
-          "sha256": "df2c8d7249c132a4512d744482e4b5ed0ecbe885f0bcfb1295e7e6a7ced0432c"
-        },
-        {
           "path": "scripts/office/validate.py",
-          "sha256": "346a4c89d92fff55e610f11efda48c30228815b29bdb10b987e48f7af70acf1e"
+          "sha256": "102b6b697424ead06b5ed0b5074cacfd90eeaaf1be83ce7734ecc9bb6aa011b6"
         },
         {
           "path": "scripts/office/validators/__init__.py",
@@ -767,10 +763,6 @@
         {
           "path": "scripts/office/validators/redlining.py",
           "sha256": "ed50d0885eee4b9c387f546b059bcaed64086815880a5167336244f93e305123"
-        },
-        {
-          "path": "scripts/recalc.py",
-          "sha256": "66f6e726d5a53cfabea0b6471d6669deb95e54e96cb7913b687e4388da1bb3d9"
         }
       ],
       "descriptionI18n": {
@@ -1554,7 +1546,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "991725cd5ce0690b68c49f3d7746cb124427e3913f82274bf0d864b4a9de7075"
+          "sha256": "c35e23a4bba0a48dd0ad67b75d2df86a55fd784607f7c3e195bc90a1e74eb484"
         },
         {
           "path": "scripts/__init__.py",
@@ -1741,12 +1733,8 @@
           "sha256": "16f6f8072249f431370723c2cd8974672e0d9c897e00e97dd918079df934871b"
         },
         {
-          "path": "scripts/office/soffice.py",
-          "sha256": "df2c8d7249c132a4512d744482e4b5ed0ecbe885f0bcfb1295e7e6a7ced0432c"
-        },
-        {
           "path": "scripts/office/validate.py",
-          "sha256": "346a4c89d92fff55e610f11efda48c30228815b29bdb10b987e48f7af70acf1e"
+          "sha256": "102b6b697424ead06b5ed0b5074cacfd90eeaaf1be83ce7734ecc9bb6aa011b6"
         },
         {
           "path": "scripts/office/validators/__init__.py",
@@ -1767,10 +1755,6 @@
         {
           "path": "scripts/office/validators/redlining.py",
           "sha256": "ed50d0885eee4b9c387f546b059bcaed64086815880a5167336244f93e305123"
-        },
-        {
-          "path": "scripts/thumbnail.py",
-          "sha256": "94ef83a84346aa2d63913de0d42bb2fe902ccdc17bfac6130096ca758381793c"
         }
       ],
       "descriptionI18n": {
@@ -1941,7 +1925,7 @@
     {
       "id": "vulnerability-assessment-report",
       "type": "skill",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Use to write a vulnerability assessment result report with the bundled standard Korean DOCX report and 16:9 PPTX templates and their usage guide. Use Verified Research to verify claims and Artifact Design for room pages.",
       "path": "skills/vulnerability-assessment-report",
       "compatibility": {
@@ -1954,11 +1938,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "094a559bb7f785fbd6b466c8250ed51189290b0baaaa70f796f980334d8644fd"
+          "sha256": "3d9d03c11af64003f2dd076486331a1281c38e258fbe466c9fe4c92cf2a61b59"
         },
         {
           "path": "templates/usage-guide.md",
-          "sha256": "38f832664feb2b266d1afcb8d9697a401a4b204cd8e1cb9a5e6559a62f41547c"
+          "sha256": "137ba9783e9eb6015bba8fc36c9cb3fb1338a24ce44d37d5faaf502e5ac12fe7"
         },
         {
           "path": "templates/va-report-template-16x9.pptx",
@@ -1994,15 +1978,11 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "3d1d46fe3663dd0ff93c4eecc9a392d77596acf4e00016bd04190055b901b2ef"
+          "sha256": "cc8b6135ce1c5d66a1089d8cde5716f78943549e26b3724785e8ba31f966b8b8"
         },
         {
           "path": "scripts/__init__.py",
           "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
-        },
-        {
-          "path": "scripts/accept_changes.py",
-          "sha256": "0c991d2bc7304a1248e9f3bf9b1498f0b6e76641fc457e7cbd73c99b4eef3a74"
         },
         {
           "path": "scripts/comment.py",
@@ -2185,12 +2165,8 @@
           "sha256": "16f6f8072249f431370723c2cd8974672e0d9c897e00e97dd918079df934871b"
         },
         {
-          "path": "scripts/office/soffice.py",
-          "sha256": "df2c8d7249c132a4512d744482e4b5ed0ecbe885f0bcfb1295e7e6a7ced0432c"
-        },
-        {
           "path": "scripts/office/validate.py",
-          "sha256": "346a4c89d92fff55e610f11efda48c30228815b29bdb10b987e48f7af70acf1e"
+          "sha256": "102b6b697424ead06b5ed0b5074cacfd90eeaaf1be83ce7734ecc9bb6aa011b6"
         },
         {
           "path": "scripts/office/validators/__init__.py",
