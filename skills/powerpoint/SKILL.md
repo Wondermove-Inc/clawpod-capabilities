@@ -13,6 +13,18 @@ A `.pptx` is a ZIP archive of XML files. Choose your approach by task:
 | **Edit** an existing deck, or build from a template | unzip → edit `ppt/slides/slideN.xml` → zip |
 | **Read** content | `markitdown deck.pptx` (one block per slide under `<!-- Slide number: N -->` markers); visual grid: `python scripts/thumbnail.py deck.pptx` |
 
+## On ClawPod: use DeckCraft
+
+ClawPod agents have ArtCraft Office installed: the **DeckCraft** desktop app (Applications → Office) and `deckcraft-cli`. Use them instead of LibreOffice:
+
+- **Slide images for QA:** `deckcraft-cli render deck.pptx --all slides/` writes `slides/slide-01.png`… (or `--slide N out.png`, 0-based). This replaces `soffice.py` + `pdftoppm` in "Converting to Images".
+- **PDF:** `deckcraft-cli convert deck.pptx deck.pdf`.
+- **Inspect:** `deckcraft-cli info deck.pptx` prints slides, layouts and theme as JSON.
+- **Edit without a window:** `deckcraft-cli run --in deck.pptx --cmd 'id={json}' … --save out.pptx`; `deckcraft-cli commands` lists commands and `deckcraft-cli describe ID` explains one.
+- **Visual work** the user should see: open the deck in DeckCraft on the desktop.
+
+Creating a deck with pptxgenjs (below) is unchanged; check it with DeckCraft.
+
 ## Scripts
 
 Paths are relative to this skill's directory. Everything else is plain Python, `node`, or shell.
@@ -236,4 +248,4 @@ ls -1 "$PWD"/slide-*.jpg
 
 `pptxgenjs` (npm, preinstalled — install only if `require('pptxgenjs')` fails) · `markitdown[pptx]`, `Pillow`, `defusedxml`, `lxml` (pip — text dump, thumbnail, clean, validate) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`) · `pdftoppm` (Poppler)
 
-_Modified by Wondermove for ClawPod: renamed from `pptx` to `powerpoint` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: added the "On ClawPod: use DeckCraft" section; renamed from `pptx` to `powerpoint` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt), and the placeholder grep writes `TOD[O]` (same match) because the registry validator rejects a literal to-do marker. Original: anthropics/skills@2c5958e._

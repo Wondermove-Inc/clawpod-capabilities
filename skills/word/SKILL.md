@@ -13,6 +13,18 @@ A `.docx` is a ZIP archive of XML files. Choose your approach by task:
 | **Edit** an existing document | `unzip` → edit `word/document.xml` → `zip` (docx-js cannot open existing files) |
 | **Read** content | `pandoc -t markdown file.docx` |
 
+## On ClawPod: use WordCraft
+
+ClawPod agents have ArtCraft Office installed: the **WordCraft** desktop app (Applications → Office) and `wordcraft-cli`. Use them instead of LibreOffice for the steps below — they open .docx/.doc/.odt/.rtf directly and convert in well under a second.
+
+- **Render to check your output:** `wordcraft-cli convert out.docx out.pdf`, or `wordcraft-cli render out.docx page-1.png --page 1` (add `--strict` to fail on a missing glyph or picture). This replaces `soffice.py` + `pdftoppm` in "Verify the output".
+- **Read:** `wordcraft-cli text file.docx`; `info` (pages, words, properties) and `inspect` (structure) print JSON.
+- **Convert:** `wordcraft-cli convert in out` between docx, doc (read only), pdf, odt, rtf, html, md and txt; `--update-fields` refreshes the table of contents and other fields.
+- **Edit without a window:** `wordcraft-cli run --file in.docx --cmd 'id={json}' … --save out.docx` (`--author NAME` for tracked changes and comments); `wordcraft-cli commands` lists every command.
+- **Visual work** the user should see, or a fix that is easier by hand: open the file in WordCraft on the desktop.
+
+Creating a new document with docx-js (below) is unchanged; check its output with WordCraft.
+
 > Script paths below are relative to this skill's directory.
 
 ## Creating with docx-js — gotchas
@@ -89,4 +101,4 @@ The script writes `comments.xml`, `commentsExtended.xml`, `commentsIds.xml`, `co
 
 `docx` (npm, preinstalled — install only if `require('docx')` fails) · `pandoc` · LibreOffice (`soffice`) · `pdftoppm` (Poppler)
 
-_Modified by Wondermove for ClawPod: renamed from `docx` to `word` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: added the "On ClawPod: use WordCraft" section; renamed from `docx` to `word` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._

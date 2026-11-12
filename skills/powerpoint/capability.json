@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/package-metadata.schema.json",
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use this skill any time a .pptx or .potx file is involved, as input, output, or both: creating slide decks or presentations; reading or extracting text from a .pptx or .potx (even for use elsewhere); editing existing presentations; combining or splitting slides; or working with templates, layouts, speaker notes, or comments. Use frontend-slides for animated HTML decks and claude-design for claude.ai canvas decks.",
   "descriptionI18n": {
     "ko": ".pptx·.potx 파일을 다루는 모든 작업에 사용합니다. 슬라이드 덱 생성, 프레젠테이션 내용 읽기·추출, 기존 프레젠테이션 편집, 슬라이드 합치기·나누기, 템플릿·레이아웃·발표자 노트·메모 작업을 지원합니다."

@@ -549,7 +549,7 @@
     {
       "id": "excel",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an .xlsx, .xlsm, .xltx, .csv, or .tsv file (formulas, formatting, charts, cleaning messy data); create a new spreadsheet; or convert between tabular formats. The deliverable must be a spreadsheet file. Do NOT use when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration.",
       "path": "skills/excel",
       "compatibility": {
@@ -566,7 +566,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "a3c9cb8158c65bf87ac6f1f0e90b175f246ef3fcaa08f47b0a94191d5b637387"
+          "sha256": "707bf3cce021447132f543af85d4e706a3e4b4bb57d1ea56ebcc1ffc95952fdd"
         },
         {
           "path": "scripts/office/helpers/__init__.py",
@@ -1537,7 +1537,7 @@
     {
       "id": "powerpoint",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use this skill any time a .pptx or .potx file is involved, as input, output, or both: creating slide decks or presentations; reading or extracting text from a .pptx or .potx (even for use elsewhere); editing existing presentations; combining or splitting slides; or working with templates, layouts, speaker notes, or comments. Use frontend-slides for animated HTML decks and claude-design for claude.ai canvas decks.",
       "path": "skills/powerpoint",
       "compatibility": {
@@ -1554,7 +1554,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "ef961e8d03666a9b279e2d388b3f38ba3c5e251e75422053e1205b1c6cdc5baf"
+          "sha256": "991725cd5ce0690b68c49f3d7746cb124427e3913f82274bf0d864b4a9de7075"
         },
         {
           "path": "scripts/__init__.py",
@@ -1977,7 +1977,7 @@
     {
       "id": "word",
       "type": "skill",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx) or Word templates (.dotx): professional documents with tables of contents, headings, page numbers, or letterheads; extracting or reorganizing content; inserting or replacing images; find-and-replace; tracked changes or comments; or a report, memo, or letter delivered as a Word file. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
       "path": "skills/word",
       "compatibility": {
@@ -1994,7 +1994,7 @@
         },
         {
           "path": "SKILL.md",
-          "sha256": "2c8df80d6f8544bacea5ab0c086a1b0fa47809aa63eb95824a1e5b34a734e403"
+          "sha256": "3d1d46fe3663dd0ff93c4eecc9a392d77596acf4e00016bd04190055b901b2ef"
         },
         {
           "path": "scripts/__init__.py",

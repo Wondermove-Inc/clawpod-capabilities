@@ -14,6 +14,22 @@ description: "Use this skill any time a spreadsheet file is the primary input or
 
 > `openpyxl`, `pandas`, and `markitdown` are preinstalled — do not run `pip install` first; write the script and import directly. Only if an import fails (or the `markitdown` command is missing): `pip install` the missing package.
 
+## On ClawPod: use GridCraft
+
+ClawPod agents have ArtCraft Office installed: the **GridCraft** desktop app (Applications → Office) and `gridcraft-cli`. Use them instead of LibreOffice:
+
+- **Recalculate:** `gridcraft-cli convert out.xlsx out.xlsx` rewrites the workbook in place with every formula's cached value, in milliseconds, keeping the formulas. Use it instead of `scripts/recalc.py` (the external-link warning below still applies). Then find error cells:
+  ```bash
+  python3 -c "import sys,openpyxl; E={'#DIV/0!','#N/A','#NAME?','#REF!','#VALUE!','#NUM!','#NULL!'}; wb=openpyxl.load_workbook(sys.argv[1],data_only=True); e=[f'{ws.title}!{c.coordinate}={c.value}' for ws in wb for r in ws.iter_rows() for c in r if c.value in E]; print(len(e), e[:100])" out.xlsx
+  ```
+  and `gridcraft-cli check out.xlsx` (exits 1 if a cached value or the XLSX round trip differs).
+- **Read:** `gridcraft-cli cat file.xlsx [--sheet S] [--range A1:D20] [--formulas]`; `info --json` lists sheets, used ranges, tables, charts and names; `eval '=SUM(A1:A9)' --in file.xlsx` tests one formula.
+- **Convert:** `gridcraft-cli convert in out` between xlsx, csv, tsv, json, html and pdf.
+- **Edit without a window:** `gridcraft-cli run --in in.xlsx --cmd 'id={json}' … --out out.xlsx`; `gridcraft-cli commands --search X` finds commands.
+- **Visual work** the user should see: open the workbook in GridCraft on the desktop.
+
+GridCraft evaluates newer functions such as `XLOOKUP`, but keep the rule against them below: the user's Excel may not.
+
 > Script paths below are relative to this skill's directory.
 
 ## Requirements for every output
@@ -97,4 +113,4 @@ lone edited cell mid-row is the commonest silent error · guard denominators tha
 
 `openpyxl`, `pandas`, `markitdown` (pip, preinstalled — install only if an import fails or the command is missing) · LibreOffice (`soffice`, auto-configured for sandboxed environments via `scripts/office/soffice.py`)
 
-_Modified by Wondermove for ClawPod: renamed from `xlsx` to `excel` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
+_Modified by Wondermove for ClawPod: added the "On ClawPod: use GridCraft" section; renamed from `xlsx` to `excel` so the catalog shows a familiar name; the frontmatter description was shortened to the registry's 500-character limit and the `license` frontmatter key was removed (the registry allows only name and description; terms remain in LICENSE.txt). Original: anthropics/skills@2c5958e._
