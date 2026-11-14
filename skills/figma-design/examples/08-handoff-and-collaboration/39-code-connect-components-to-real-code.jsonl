@@ -1,0 +1,11 @@
+// Code Connect: link components to the code that implements them
+// Shows: connecting a component set to its React and SwiftUI counterparts, a template that maps properties to props, what inspect shows afterwards, exporting the mappings file a repository can publish from
+// in: 02-components/03-button-variants-and-properties
+{"command": "node.find", "as": "button", "params": {"name": "Button", "type": "COMPONENT_SET"}}
+{"command": "component.properties", "params": {"id": {"$ref": "button", "field": "ids/0"}}}
+{"command": "codeConnect.set", "params": {"id": {"$ref": "button", "field": "ids/0"}, "language": "react", "importPath": "@northwind/ui", "name": "Button", "template": "<Button kind=\"{Kind}\" disabled={State === \"Disabled\"}>{Label}</Button>"}}
+{"command": "codeConnect.set", "params": {"id": {"$ref": "button", "field": "ids/0"}, "language": "swiftui", "importPath": "NorthwindUI", "name": "NWButton"}}
+{"command": "node.find", "as": "use", "params": {"name": "Button", "type": "INSTANCE"}}
+{"command": "inspect.code", "params": {"id": {"$ref": "use", "field": "ids/0"}, "language": "react"}}
+{"command": "inspect.componentCode", "params": {"id": {"$ref": "button", "field": "ids/0"}}}
+{"command": "codeConnect.export", "params": {}}

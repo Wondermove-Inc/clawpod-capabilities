@@ -1,0 +1,332 @@
+// Enterprise admin console: access management with a dense data table and a side panel
+// Shows: a 1584 px application frame made of library instances: header, side navigation, table toolbar, batch-action bar, table header, rows filled through cell properties and the nested status tag, pagination, and an edit panel with form states and a notification (the breadcrumb, page title and tabs are local layers on the same tokens); the same screen in Gray 100 by setting four modes; a compact copy by switching the Size property of the header and the rows; the table when it is empty, loading and not permitted
+// in: 11-enterprise/51-enterprise-component-library-on-carbon-tokens
+// The chrome, the tables and the form controls of these screens are instances of library components; page titles, tabs and the few parts no other screen shares are local layers on the same tokens. Find the mains once; node.find matches names as substrings, so each name here is unique in the file.
+{"command": "node.find", "as": "find_button", "params": {"root": 1, "name": "Button", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_text_input", "params": {"root": 1, "name": "Text input", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_inline_notification", "params": {"root": 1, "name": "Inline notification", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_table_header", "params": {"root": 1, "name": "Table header", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_table_row", "params": {"root": 1, "name": "Table row", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_side_nav", "params": {"root": 1, "name": "Side nav", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_table_toolbar", "params": {"root": 1, "name": "Table toolbar", "type": "COMPONENT_SET"}}
+{"command": "node.find", "as": "find_ui_shell_header", "params": {"root": 1, "name": "UI shell / Header", "type": "COMPONENT"}}
+{"command": "node.find", "as": "find_table_batch_actions", "params": {"root": 1, "name": "Table / Batch actions", "type": "COMPONENT"}}
+{"command": "node.find", "as": "find_table_pagination", "params": {"root": 1, "name": "Table / Pagination", "type": "COMPONENT"}}
+{"command": "page.add", "params": {"name": "Console"}}
+{"command": "node.create", "as": "screen", "params": {"type": "frame", "name": "Access · Users", "x": 0, "y": 0, "width": 1584, "height": 1000, "props": {"layout": "vertical", "fill": {"$var": "Background/background"}, "clip": true}}}
+{"command": "instance.create", "as": "inst", "params": {"component": {"$ref": "find_ui_shell_header", "field": "ids/0"}, "parent": {"$ref": "screen"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst"}], "props": {"sizingH": "fill", "name": "Header"}}}
+{"command": "node.create", "as": "body", "params": {"type": "frame", "name": "Body", "parent": {"$ref": "screen"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "instance.create", "as": "inst__2", "params": {"component": {"$ref": "find_side_nav", "field": "ids/0"}, "parent": {"$ref": "body"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__2"}], "properties": {"Active": "Access (IAM)"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__2"}], "props": {"sizingV": "fill", "name": "Side nav"}}}
+{"command": "node.create", "as": "main", "params": {"type": "frame", "name": "Main", "parent": {"$ref": "body"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "page_header", "params": {"type": "frame", "name": "Page header", "parent": {"$ref": "main"}, "props": {"layout": "vertical", "gap": 12, "sizingH": "fill", "padding": [24, 32, 0, 32], "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0], "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "breadcrumb", "params": {"type": "frame", "name": "Breadcrumb", "parent": {"$ref": "page_header"}, "props": {"layout": "horizontal", "gap": 8, "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Manage", "parent": {"$ref": "breadcrumb"}, "text": "Manage", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Link/link-primary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "/", "parent": {"$ref": "breadcrumb"}, "text": "/", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Access (IAM)", "parent": {"$ref": "breadcrumb"}, "text": "Access (IAM)", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Link/link-primary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "/", "parent": {"$ref": "breadcrumb"}, "text": "/", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Users", "parent": {"$ref": "breadcrumb"}, "text": "Users", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "as": "title_row", "params": {"type": "frame", "name": "Title row", "parent": {"$ref": "page_header"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "mainAlign": "spaceBetween", "crossAlign": "max", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "title", "params": {"type": "frame", "name": "Title", "parent": {"$ref": "title_row"}, "props": {"layout": "vertical", "gap": 4, "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Users", "parent": {"$ref": "title"}, "text": "Users", "props": {"textStyle": "Carbon/productive-heading-04", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "title"}, "text": "148 members in Northwind Production · 12 pending invitations", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "instance.create", "as": "inst__3", "params": {"component": {"$ref": "find_button", "field": "ids/0"}, "parent": {"$ref": "title_row"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__3"}], "properties": {"Kind": "Primary", "Size": "md", "Label": "Invite users"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__3"}], "props": {"name": "Invite users"}}}
+{"command": "node.create", "as": "tabs", "params": {"type": "frame", "name": "Tabs", "parent": {"$ref": "page_header"}, "props": {"layout": "horizontal", "gap": 0, "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "tab_users", "params": {"type": "frame", "name": "Tab / Users", "parent": {"$ref": "tabs"}, "height": 40, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "crossAlign": "center", "strokesIncluded": false, "stroke": {"$var": "Borders/border-interactive"}, "strokeWeight": 2, "strokeSides": [0, 0, 2, 0], "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Users", "parent": {"$ref": "tab_users"}, "text": "Users", "props": {"textStyle": "Carbon/heading-01", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "as": "tab_access_groups", "params": {"type": "frame", "name": "Tab / Access groups", "parent": {"$ref": "tabs"}, "height": 40, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "crossAlign": "center", "strokesIncluded": false, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0], "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Access groups", "parent": {"$ref": "tab_access_groups"}, "text": "Access groups", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "tab_trusted_profiles", "params": {"type": "frame", "name": "Tab / Trusted profiles", "parent": {"$ref": "tabs"}, "height": 40, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "crossAlign": "center", "strokesIncluded": false, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0], "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Trusted profiles", "parent": {"$ref": "tab_trusted_profiles"}, "text": "Trusted profiles", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "tab_roles", "params": {"type": "frame", "name": "Tab / Roles", "parent": {"$ref": "tabs"}, "height": 40, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "crossAlign": "center", "strokesIncluded": false, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0], "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Roles", "parent": {"$ref": "tab_roles"}, "text": "Roles", "props": {"textStyle": "Carbon/body-short-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "content", "params": {"type": "frame", "name": "Content", "parent": {"$ref": "main"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "table_area", "params": {"type": "frame", "name": "Table area", "parent": {"$ref": "content"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "padding": [24, 32, 24, 32], "fill": "none", "clip": false}}}
+{"command": "instance.create", "as": "inst__4", "params": {"component": {"$ref": "find_table_toolbar", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__4"}], "properties": {"Placeholder": "Filter by name, email or role"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__4"}], "props": {"sizingH": "fill", "name": "Toolbar"}}}
+{"command": "instance.create", "as": "inst__5", "params": {"component": {"$ref": "find_table_batch_actions", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__5"}], "properties": {"Count": "2 users selected"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__5"}], "props": {"sizingH": "fill", "name": "Batch actions"}}}
+{"command": "instance.create", "as": "inst__6", "params": {"component": {"$ref": "find_table_header", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__6"}], "properties": {"Size": "lg", "Selection": "Some"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__6"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__7", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__7"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Mara Lindqvist", "Cell 2": "mara@northfork.co", "Cell 3": "Administrator", "Cell 5": "2 hours ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__7"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag", "params": {"root": {"$ref": "inst__7"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__8", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__8"}], "properties": {"Size": "lg", "State": "Selected", "Cell 1": "Tomas Beck", "Cell 2": "tomas@northwind.io", "Cell 3": "Operator", "Cell 5": "Yesterday"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__8"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__2", "params": {"root": {"$ref": "inst__8"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__2", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__9", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__9"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Ilse Okafor", "Cell 2": "ilse@harrowfell.co", "Cell 3": "Editor", "Cell 5": "Never"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__9"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__3", "params": {"root": {"$ref": "inst__9"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__3", "field": "ids/0"}], "properties": {"Tone": "blue", "Label": "Invited"}}}
+{"command": "instance.create", "as": "inst__10", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__10"}], "properties": {"Size": "lg", "State": "Selected", "Cell 1": "Jisoo Han", "Cell 2": "jisoo@grove.app", "Cell 3": "Viewer", "Cell 5": "14 Oct 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__10"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__4", "params": {"root": {"$ref": "inst__10"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__4", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__11", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__11"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Sena Kim", "Cell 2": "sena@loomlabs.com", "Cell 3": "Operator", "Cell 5": "2 Sep 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__11"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__5", "params": {"root": {"$ref": "inst__11"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__5", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__12", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__12"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Anders Holm", "Cell 2": "anders@northwind.io", "Cell 3": "Billing manager", "Cell 5": "3 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__12"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__6", "params": {"root": {"$ref": "inst__12"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__6", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__13", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__13"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Priya Raman", "Cell 2": "priya@northfork.co", "Cell 3": "Editor", "Cell 5": "5 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__13"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__7", "params": {"root": {"$ref": "inst__13"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__7", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__14", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__14"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Diego Marín", "Cell 2": "diego@harrowfell.co", "Cell 3": "Viewer", "Cell 5": "Never"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__14"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__8", "params": {"root": {"$ref": "inst__14"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__8", "field": "ids/0"}], "properties": {"Tone": "blue", "Label": "Invited"}}}
+{"command": "instance.create", "as": "inst__15", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__15"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Wanjiru Kamau-Fitzgerald", "Cell 2": "wanjiru.kamau-fitzgerald@northwind.io", "Cell 3": "Administrator", "Cell 5": "1 hour ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__15"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__9", "params": {"root": {"$ref": "inst__15"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__9", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__16", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__16"}], "properties": {"Size": "lg", "State": "Enabled", "Cell 1": "Lucas Ferreira", "Cell 2": "lucas@grove.app", "Cell 3": "Viewer", "Cell 5": "6 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__16"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__10", "params": {"root": {"$ref": "inst__16"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__10", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__17", "params": {"component": {"$ref": "find_table_pagination", "field": "ids/0"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__17"}], "properties": {"Range": "Items per page: 10   ·   1 to 10 of 148 items", "Page": "Page 1 of 15"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__17"}], "props": {"sizingH": "fill", "name": "Pagination"}}}
+// The side panel edits one user without leaving the table: form fields in three states and a notification that explains what happens next.
+{"command": "node.create", "as": "side_panel_edit_access", "params": {"type": "frame", "name": "Side panel / Edit access", "parent": {"$ref": "content"}, "width": 400, "props": {"layout": "vertical", "gap": 20, "sizingV": "fill", "padding": [24, 24, 24, 24], "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 0, 1], "clip": false}}}
+{"command": "node.create", "as": "head", "params": {"type": "frame", "name": "Head", "parent": {"$ref": "side_panel_edit_access"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "mainAlign": "spaceBetween", "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Edit access", "parent": {"$ref": "head"}, "text": "Edit access", "props": {"textStyle": "Carbon/productive-heading-03", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "as": "ic_x", "params": {"type": "frame", "name": "icon/x", "parent": {"$ref": "head"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_x"}, "x": 0, "y": 0, "path": "M18 6 6 18 M6 6l12 12", "props": {"stroke": {"$var": "Icons/icon-primary"}, "strokeWeight": 1.75, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_x"}], "props": {"width": 20, "height": 20}}}
+{"command": "instance.create", "as": "inst__18", "params": {"component": {"$ref": "find_inline_notification", "field": "ids/0"}, "parent": {"$ref": "side_panel_edit_access"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__18"}], "properties": {"Kind": "Warning", "Title": "Role change needs approval", "Message": "Administrator access is reviewed by a second owner."}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__18"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__19", "params": {"component": {"$ref": "find_text_input", "field": "ids/0"}, "parent": {"$ref": "side_panel_edit_access"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__19"}], "properties": {"State": "Read-only", "Label": "User", "Value": "Tomas Beck", "Helper": "tomas@northwind.io"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__19"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__20", "params": {"component": {"$ref": "find_text_input", "field": "ids/0"}, "parent": {"$ref": "side_panel_edit_access"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__20"}], "properties": {"State": "Focus", "Label": "Role", "Value": "Administrator", "Helper": "Full access to resources and billing."}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__20"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__21", "params": {"component": {"$ref": "find_text_input", "field": "ids/0"}, "parent": {"$ref": "side_panel_edit_access"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__21"}], "properties": {"State": "Invalid", "Label": "Access expires", "Value": "31/02/2027", "Helper": "Enter a real date, like 28/02/2027."}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__21"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Spacer", "parent": {"$ref": "side_panel_edit_access"}, "props": {"sizingH": "fill", "sizingV": "fill", "fill": "none"}}}
+{"command": "node.create", "as": "footer", "params": {"type": "frame", "name": "Footer", "parent": {"$ref": "side_panel_edit_access"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "instance.create", "as": "inst__22", "params": {"component": {"$ref": "find_button", "field": "ids/0"}, "parent": {"$ref": "footer"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__22"}], "properties": {"Kind": "Secondary", "Size": "lg", "Label": "Cancel", "Icon": false}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__22"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__23", "params": {"component": {"$ref": "find_button", "field": "ids/0"}, "parent": {"$ref": "footer"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__23"}], "properties": {"Kind": "Primary", "Size": "lg", "Label": "Request change"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__23"}], "props": {"sizingH": "fill"}}}
+// Gray 100: a copy with every Carbon collection switched. Compact: a copy with the header and every row set to the xs size, which makes room for twenty rows where ten were.
+{"command": "edit.duplicate", "as": "dark", "params": {"ids": [{"$ref": "screen"}], "dx": 1684, "dy": 0}}
+{"command": "node.set", "params": {"ids": [{"$ref": "dark", "field": "ids/0"}], "props": {"name": "Access · Users · Gray 100"}}}
+{"command": "variable.setMode", "params": {"ids": {"$ref": "dark", "field": "ids"}, "collection": "Carbon / Theme", "mode": "Gray 100"}}
+{"command": "variable.setMode", "params": {"ids": {"$ref": "dark", "field": "ids"}, "collection": "Carbon / Button", "mode": "Gray 100"}}
+{"command": "variable.setMode", "params": {"ids": {"$ref": "dark", "field": "ids"}, "collection": "Carbon / Tag", "mode": "Gray 100"}}
+{"command": "variable.setMode", "params": {"ids": {"$ref": "dark", "field": "ids"}, "collection": "Carbon / Notification", "mode": "Gray 100"}}
+{"command": "edit.duplicate", "as": "compact", "params": {"ids": [{"$ref": "screen"}], "dx": 0, "dy": 1100}}
+{"command": "node.set", "params": {"ids": [{"$ref": "compact", "field": "ids/0"}], "props": {"name": "Access · Users · compact"}}}
+{"command": "node.find", "as": "compact_rows", "params": {"root": {"$ref": "compact", "field": "ids/0"}, "name": "Table row", "type": "INSTANCE", "limit": 50}}
+{"command": "instance.setProperties", "params": {"ids": {"$ref": "compact_rows", "field": "ids"}, "properties": {"Size": "xs"}}}
+{"command": "node.find", "as": "compact_rows__2", "params": {"root": {"$ref": "compact", "field": "ids/0"}, "name": "Table header", "type": "INSTANCE", "limit": 50}}
+{"command": "instance.setProperties", "params": {"ids": {"$ref": "compact_rows__2", "field": "ids"}, "properties": {"Size": "xs"}}}
+// Switching a variant resets the variant properties of the instances nested in it: the tags are back to the default tone. Their text stays. Set the tone again, in row order.
+{"command": "node.find", "as": "compact_tags", "params": {"root": {"$ref": "compact", "field": "ids/0"}, "name": "Status tag", "type": "INSTANCE", "limit": 50}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "compact_tags", "field": "ids/2"}], "properties": {"Tone": "blue"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "compact_tags", "field": "ids/4"}], "properties": {"Tone": "red"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "compact_tags", "field": "ids/7"}], "properties": {"Tone": "blue"}}}
+{"command": "node.find", "as": "compact_area", "params": {"root": {"$ref": "compact", "field": "ids/0"}, "name": "Table area", "type": "FRAME"}}
+{"command": "instance.create", "as": "inst__24", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__24"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Hannah Weiss", "Cell 2": "hannah@northwind.io", "Cell 3": "Editor", "Cell 5": "20 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__24"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__11", "params": {"root": {"$ref": "inst__24"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__11", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__25", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__25"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Kofi Mensah", "Cell 2": "kofi@loomlabs.com", "Cell 3": "Operator", "Cell 5": "Yesterday"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__25"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__12", "params": {"root": {"$ref": "inst__25"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__12", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__26", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__26"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Yuki Tanaka", "Cell 2": "yuki@grove.app", "Cell 3": "Viewer", "Cell 5": "Never"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__26"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__13", "params": {"root": {"$ref": "inst__26"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__13", "field": "ids/0"}], "properties": {"Tone": "blue", "Label": "Invited"}}}
+{"command": "instance.create", "as": "inst__27", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__27"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Olivia Brandt", "Cell 2": "olivia@northfork.co", "Cell 3": "Billing manager", "Cell 5": "4 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__27"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__14", "params": {"root": {"$ref": "inst__27"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__14", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__28", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__28"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Rahul Mehta", "Cell 2": "rahul@harrowfell.co", "Cell 3": "Editor", "Cell 5": "3 hours ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__28"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__15", "params": {"root": {"$ref": "inst__28"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__15", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__29", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__29"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Sofia Lindgren", "Cell 2": "sofia@northwind.io", "Cell 3": "Administrator", "Cell 5": "9 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__29"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__16", "params": {"root": {"$ref": "inst__29"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__16", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__30", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__30"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Emeka Obi", "Cell 2": "emeka@loomlabs.com", "Cell 3": "Viewer", "Cell 5": "30 Aug 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__30"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__17", "params": {"root": {"$ref": "inst__30"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__17", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__31", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__31"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Clara Dufour", "Cell 2": "clara@grove.app", "Cell 3": "Editor", "Cell 5": "2 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__31"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__18", "params": {"root": {"$ref": "inst__31"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__18", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__32", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__32"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Minh Tran", "Cell 2": "minh@northfork.co", "Cell 3": "Operator", "Cell 5": "1 hour ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__32"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__19", "params": {"root": {"$ref": "inst__32"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__19", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__33", "params": {"component": {"$ref": "find_table_row", "field": "ids/0"}, "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__33"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "Astrid Nygaard", "Cell 2": "astrid@harrowfell.co", "Cell 3": "Viewer", "Cell 5": "8 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__33"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__20", "params": {"root": {"$ref": "inst__33"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__20", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+// New rows land after the pagination. Moving the pagination into the same parent again puts it last.
+{"command": "node.find", "as": "compact_pager", "params": {"root": {"$ref": "compact", "field": "ids/0"}, "name": "Pagination", "type": "INSTANCE"}}
+{"command": "node.reparent", "params": {"ids": [{"$ref": "compact_pager", "field": "ids/0"}], "parent": {"$ref": "compact_area", "field": "ids/0"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "compact_pager", "field": "ids/0"}], "properties": {"Range": "Items per page: 20   ·   1 to 20 of 148 items", "Page": "Page 1 of 8"}}}
+// The table has three more states than the full one. Each is the same toolbar and header with a body that says what happened and what to do.
+{"command": "node.create", "as": "tstate", "params": {"type": "frame", "name": "Users table · empty", "x": 0, "y": 2200, "width": 1144, "props": {"layout": "vertical", "gap": 16, "padding": 32, "sizingV": "hug", "fill": {"$var": "Background/background"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "tstate"}, "text": "Empty: the filter matched nothing", "props": {"textStyle": "Carbon/label-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "table", "params": {"type": "frame", "name": "Table", "parent": {"$ref": "tstate"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "instance.create", "as": "inst__34", "params": {"component": {"$ref": "find_table_toolbar", "field": "ids/0"}, "parent": {"$ref": "table"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__34"}], "properties": {"State": "Filled", "Value": "auditor"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__34"}], "props": {"sizingH": "fill", "name": "Toolbar"}}}
+{"command": "instance.create", "as": "inst__35", "params": {"component": {"$ref": "find_table_header", "field": "ids/0"}, "parent": {"$ref": "table"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__35"}], "properties": {"Size": "lg"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__35"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "state", "params": {"type": "frame", "name": "State", "parent": {"$ref": "table"}, "height": 336, "props": {"layout": "vertical", "gap": 8, "sizingH": "fill", "mainAlign": "center", "crossAlign": "center", "fill": {"$var": "Layer/layer-01"}, "clip": false}}}
+{"command": "node.create", "as": "ic_search", "params": {"type": "frame", "name": "icon/search", "parent": {"$ref": "state"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_search"}, "x": 0, "y": 0, "path": "M21 21l-4.34-4.34 M3 11a8 8 0 1 0 16 0a8 8 0 1 0 -16 0z", "props": {"stroke": {"$var": "Icons/icon-secondary"}, "strokeWeight": 1.75, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_search"}], "props": {"width": 32, "height": 32}}}
+{"command": "node.create", "params": {"type": "text", "name": "No users match “auditor”", "parent": {"$ref": "state"}, "text": "No users match “auditor”", "props": {"textStyle": "Carbon/productive-heading-03", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "state"}, "width": 440, "text": "Check the spelling, or clear the filter to see all 148 members of Northwind Production.", "props": {"textStyle": "Carbon/body-long-01", "fill": {"$var": "Text/text-secondary"}, "textAutoResize": "height", "textAlign": "center", "wrapStyle": "balance"}}}
+{"command": "instance.create", "as": "inst__36", "params": {"component": {"$ref": "find_button", "field": "ids/0"}, "parent": {"$ref": "state"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__36"}], "properties": {"Kind": "Tertiary", "Size": "md", "Label": "Clear filter", "Icon": false}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__36"}], "props": {"name": "Clear filter"}}}
+{"command": "node.create", "as": "tstate__2", "params": {"type": "frame", "name": "Users table · loading", "x": 1244, "y": 2200, "width": 1144, "props": {"layout": "vertical", "gap": 16, "padding": 32, "sizingV": "hug", "fill": {"$var": "Background/background"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "tstate__2"}, "text": "Loading: skeleton rows keep the layout still", "props": {"textStyle": "Carbon/label-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "table__2", "params": {"type": "frame", "name": "Table", "parent": {"$ref": "tstate__2"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "instance.create", "as": "inst__37", "params": {"component": {"$ref": "find_table_toolbar", "field": "ids/0"}, "parent": {"$ref": "table__2"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__37"}], "properties": {"Placeholder": "Filter by name, email or role"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__37"}], "props": {"sizingH": "fill", "name": "Toolbar"}}}
+{"command": "instance.create", "as": "inst__38", "params": {"component": {"$ref": "find_table_header", "field": "ids/0"}, "parent": {"$ref": "table__2"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__38"}], "properties": {"Size": "lg"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__38"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "skeleton_row", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell"}, "width": 120, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__2", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__2"}, "width": 190, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__3", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__3"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__4", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__4"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__5", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__5"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "skeleton_row__2", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row__2"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell__6", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__2"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__6"}, "width": 150, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__7", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__2"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__7"}, "width": 150, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__8", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__2"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__8"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__9", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__2"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__9"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__10", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__2"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__10"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "skeleton_row__3", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row__3"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell__11", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__3"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__11"}, "width": 96, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__12", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__3"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__12"}, "width": 220, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__13", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__3"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__13"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__14", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__3"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__14"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__15", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__3"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__15"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "skeleton_row__4", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row__4"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell__16", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__4"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__16"}, "width": 120, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__17", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__4"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__17"}, "width": 190, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__18", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__4"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__18"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__19", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__4"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__19"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__20", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__4"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__20"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "skeleton_row__5", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row__5"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell__21", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__5"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__21"}, "width": 150, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__22", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__5"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__22"}, "width": 150, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__23", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__5"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__23"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__24", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__5"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__24"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__25", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__5"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__25"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "skeleton_row__6", "params": {"type": "frame", "name": "Skeleton row", "parent": {"$ref": "table__2"}, "height": 48, "props": {"layout": "grid", "gridColumns": 7, "columnTracks": [48, "2fr", "3fr", 160, 132, 132, 48], "gridRows": 1, "rowTracks": ["1fr"], "sizingH": "fill", "strokesIncluded": false, "fill": {"$var": "Layer/layer-01"}, "stroke": {"$var": "Borders/border-subtle-01"}, "strokeWeight": 1, "strokeSides": [0, 0, 1, 0]}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Box", "parent": {"$ref": "skeleton_row__6"}, "width": 16, "height": 16, "props": {"fill": {"$var": "Skeleton/skeleton-element"}, "gridAlignV": "center", "gridAlignH": "center"}}}
+{"command": "node.create", "as": "cell__26", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__6"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__26"}, "width": 96, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__27", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__6"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__27"}, "width": 220, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__28", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__6"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__28"}, "width": 88, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__29", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__6"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__29"}, "width": 56, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "node.create", "as": "cell__30", "params": {"type": "frame", "name": "Cell", "parent": {"$ref": "skeleton_row__6"}, "props": {"layout": "horizontal", "gap": 0, "padding": [0, 16, 0, 16], "gridAlignV": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Bar", "parent": {"$ref": "cell__30"}, "width": 80, "height": 12, "props": {"fill": {"$var": "Skeleton/skeleton-element"}}}}
+{"command": "instance.create", "as": "inst__39", "params": {"component": {"$ref": "find_table_pagination", "field": "ids/0"}, "parent": {"$ref": "table__2"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__39"}], "properties": {"Range": "Loading users…", "Page": "Page 1"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__39"}], "props": {"sizingH": "fill", "name": "Pagination"}}}
+{"command": "node.create", "as": "tstate__3", "params": {"type": "frame", "name": "Users table · no permission", "x": 2488, "y": 2200, "width": 1144, "props": {"layout": "vertical", "gap": 16, "padding": 32, "sizingV": "hug", "fill": {"$var": "Background/background"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "tstate__3"}, "text": "No permission: say which role is missing and who can grant it", "props": {"textStyle": "Carbon/label-01", "fill": {"$var": "Text/text-secondary"}}}}
+{"command": "node.create", "as": "table__3", "params": {"type": "frame", "name": "Table", "parent": {"$ref": "tstate__3"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "instance.create", "as": "inst__40", "params": {"component": {"$ref": "find_table_toolbar", "field": "ids/0"}, "parent": {"$ref": "table__3"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__40"}], "properties": {"Placeholder": "Filter by name, email or role"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__40"}], "props": {"sizingH": "fill", "name": "Toolbar"}}}
+{"command": "instance.create", "as": "inst__41", "params": {"component": {"$ref": "find_table_header", "field": "ids/0"}, "parent": {"$ref": "table__3"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__41"}], "properties": {"Size": "lg"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__41"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "state__2", "params": {"type": "frame", "name": "State", "parent": {"$ref": "table__3"}, "height": 336, "props": {"layout": "vertical", "gap": 8, "sizingH": "fill", "mainAlign": "center", "crossAlign": "center", "fill": {"$var": "Layer/layer-01"}, "clip": false}}}
+{"command": "node.create", "as": "ic_lock", "params": {"type": "frame", "name": "icon/lock", "parent": {"$ref": "state__2"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_lock"}, "x": 0, "y": 0, "path": "M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-7a2 2 0 0 1 2 -2z M7 11V7a5 5 0 0 1 10 0v4", "props": {"stroke": {"$var": "Icons/icon-secondary"}, "strokeWeight": 1.75, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_lock"}], "props": {"width": 32, "height": 32}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "state__2"}, "text": "You cannot view users in this account", "props": {"textStyle": "Carbon/productive-heading-03", "fill": {"$var": "Text/text-primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "state__2"}, "width": 440, "text": "This list needs the Viewer role on Access (IAM). Account owners can grant it: ask Mara Lindqvist or request access here.", "props": {"textStyle": "Carbon/body-long-01", "fill": {"$var": "Text/text-secondary"}, "textAutoResize": "height", "textAlign": "center", "wrapStyle": "balance"}}}
+{"command": "instance.create", "as": "inst__42", "params": {"component": {"$ref": "find_button", "field": "ids/0"}, "parent": {"$ref": "state__2"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__42"}], "properties": {"Kind": "Primary", "Size": "md", "Label": "Request access"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__42"}], "props": {"name": "Request access"}}}
+{"command": "proto.flow.add", "params": {"start": {"$ref": "screen"}, "name": "Manage access"}}

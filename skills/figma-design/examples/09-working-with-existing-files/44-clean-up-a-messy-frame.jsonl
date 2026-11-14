@@ -1,0 +1,21 @@
+// Clean up: align, distribute, tidy, suggest auto layout, name layers
+// Shows: absolutely positioned leftovers turned into structure: align and distribute, tidy up a grid, layout.suggest to wrap rows and columns in auto layout frames, rounding to whole pixels, batch names with numbering
+{"command": "node.create", "as": "messy_import", "params": {"type": "frame", "name": "Messy import", "x": 0, "y": 0, "width": 720, "height": 420, "props": {"fill": "#FFFFFF"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 35.28336328765404, "y": 60.796126055327136, "width": 188.95964133238462, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 256.8705606947315, "y": 62.26296547394497, "width": 186.5242308739185, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 461.23702384798776, "y": 66.07444347773628, "width": 188.07483211462406, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 35.21795729884053, "y": 238.92160703918833, "width": 189.76210806017957, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 261.056306122939, "y": 229.57435775658803, "width": 191.1125451243533, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Rectangle", "parent": {"$ref": "messy_import"}, "x": 463.71109563242345, "y": 232.4274918491334, "width": 192.94436245714638, "height": 140, "props": {"cornerRadius": 12, "fill": "#E2E8F0"}}}
+// Before: six cards nudged by hand. After: rounded to pixels, tidied to an even grid, wrapped in auto layout, named.
+{"command": "edit.duplicate", "as": "after", "params": {"ids": [{"$ref": "messy_import"}], "dx": 780, "dy": 0, "map": true}}
+{"command": "node.set", "params": {"ids": [{"$ref": "after", "field": "ids/0"}], "props": {"name": "Cleaned up"}}}
+{"command": "node.find", "as": "cards", "params": {"root": {"$ref": "after", "field": "ids/0"}, "type": "RECTANGLE"}}
+{"command": "arrange.roundToPixels", "params": {"ids": {"$ref": "cards", "field": "ids"}}}
+{"command": "transform.resize", "params": {"ids": {"$ref": "cards", "field": "ids"}, "width": 190, "height": 140}}
+{"command": "align.top", "params": {"ids": [{"$ref": "cards", "field": "ids/0"}, {"$ref": "cards", "field": "ids/1"}, {"$ref": "cards", "field": "ids/2"}]}}
+{"command": "distribute.horizontal", "params": {"ids": [{"$ref": "cards", "field": "ids/0"}, {"$ref": "cards", "field": "ids/1"}, {"$ref": "cards", "field": "ids/2"}]}}
+{"command": "arrange.tidy", "params": {"ids": {"$ref": "cards", "field": "ids"}, "spacing": 24}}
+{"command": "layout.suggest", "params": {"ids": [{"$ref": "after", "field": "ids/0"}]}}
+{"command": "object.batchRename", "params": {"ids": {"$ref": "cards", "field": "ids"}, "name": "Card $n"}}
+{"command": "node.get", "params": {"id": {"$ref": "after", "field": "ids/0"}, "outline": true}}

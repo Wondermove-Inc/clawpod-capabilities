@@ -1,0 +1,37 @@
+// Print: an A3 poster and a business card, exported with bleed and crop marks
+// Shows: page sizes in points (A3 = 842 x 1191, card = 90 x 55 mm), background art that runs past the trim edge, a safe margin for text, export settings that write a CMYK PDF with 3 mm bleed and crop marks
+// then: figcraft-cli export print.figcraft -o poster.pdf --node "Poster · A3" --bleed 3mm --crop-marks --cmyk
+{"command": "node.create", "as": "poster_a3", "params": {"type": "frame", "name": "Poster · A3", "x": 0, "y": 0, "width": 842, "height": 1191, "props": {"fill": "#F4EFE6"}}}
+// Art bleeds: it starts outside the frame so the trim never shows paper. Bleed of 3 mm is about 8.5 pt.
+{"command": "node.create", "params": {"type": "ellipse", "name": "Sun", "parent": {"$ref": "poster_a3"}, "x": 91, "y": 250, "width": 660, "height": 660, "props": {"fill": "#E2452C"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Ground", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 820, "width": 860, "height": 380, "props": {"fill": "#141414"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 690, "width": 860, "height": 10, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 720, "width": 860, "height": 12, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 750, "width": 860, "height": 14, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 780, "width": 860, "height": 16, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 810, "width": 860, "height": 18, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Stripe", "parent": {"$ref": "poster_a3"}, "x": -9, "y": 840, "width": 860, "height": 20, "props": {"fill": "#F4EFE6"}}}
+// Text stays inside a safe area, 36 pt from the trim.
+{"command": "node.create", "as": "safe_area", "params": {"type": "frame", "name": "Safe area", "parent": {"$ref": "poster_a3"}, "x": 36, "y": 36, "width": 770, "height": 1119, "props": {"layout": "vertical", "gap": 0, "mainAlign": "spaceBetween", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "top", "params": {"type": "frame", "name": "Top", "parent": {"$ref": "safe_area"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "mainAlign": "spaceBetween", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "NORTHWIND JAZZ CLUB", "parent": {"$ref": "top"}, "text": "NORTHWIND JAZZ CLUB", "props": {"fill": "#141414", "fontSize": 14, "fontStyle": "Bold", "letterSpacing": "14%"}}}
+{"command": "node.create", "params": {"type": "text", "name": "NO. 14", "parent": {"$ref": "top"}, "text": "NO. 14", "props": {"fill": "#141414", "fontSize": 14, "fontStyle": "Bold", "letterSpacing": "14%"}}}
+{"command": "node.create", "as": "bottom", "params": {"type": "frame", "name": "Bottom", "parent": {"$ref": "safe_area"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Autumn\nSessions", "parent": {"$ref": "bottom"}, "text": "Autumn\nSessions", "props": {"fill": "#F4EFE6", "fontSize": 124, "fontStyle": "Bold", "letterSpacing": "-4%", "lineHeight": "92%"}}}
+{"command": "node.create", "as": "details", "params": {"type": "frame", "name": "Details", "parent": {"$ref": "bottom"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "mainAlign": "spaceBetween", "crossAlign": "max", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "details"}, "text": "Fridays in November · Doors 19:30", "props": {"fill": "#F4EFE6", "fontSize": 18, "fontStyle": "Semi Bold"}}}
+{"command": "node.create", "params": {"type": "text", "name": "northwind.io/jazz", "parent": {"$ref": "details"}, "text": "northwind.io/jazz", "props": {"fill": "#E2452C", "fontSize": 18, "fontStyle": "Bold"}}}
+{"command": "export.add", "params": {"ids": [{"$ref": "poster_a3"}], "setting": {"format": "pdf", "bleed": "3mm", "cropMarks": true, "cmyk": true}}}
+{"command": "node.create", "as": "card_front", "params": {"type": "frame", "name": "Card · front", "x": 942, "y": 0, "width": 255, "height": 156, "props": {"fill": "#141414"}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Mark", "parent": {"$ref": "card_front"}, "x": 180, "y": -40, "width": 130, "height": 130, "props": {"fill": "#E2452C"}}}
+{"command": "node.create", "as": "safe_area__2", "params": {"type": "frame", "name": "Safe area", "parent": {"$ref": "card_front"}, "x": 14, "y": 14, "width": 227, "height": 128, "props": {"layout": "vertical", "gap": 0, "mainAlign": "spaceBetween", "fill": "none", "clip": false}}}
+{"command": "node.create", "params": {"type": "text", "name": "northwind", "parent": {"$ref": "safe_area__2"}, "text": "northwind", "props": {"fill": "#F4EFE6", "fontSize": 16, "fontStyle": "Bold", "letterSpacing": "-2%"}}}
+{"command": "node.create", "as": "who", "params": {"type": "frame", "name": "Who", "parent": {"$ref": "safe_area__2"}, "props": {"layout": "vertical", "gap": 2, "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Jisoo Han", "parent": {"$ref": "who"}, "text": "Jisoo Han", "props": {"fill": "#F4EFE6", "fontSize": 11, "fontStyle": "Semi Bold"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Design lead", "parent": {"$ref": "who"}, "text": "Design lead", "props": {"fill": "#A8A29E", "fontSize": 8}}}
+{"command": "node.create", "as": "card_back", "params": {"type": "frame", "name": "Card · back", "x": 942, "y": 216, "width": 255, "height": 156, "props": {"fill": "#F4EFE6"}}}
+{"command": "node.create", "as": "safe_area__3", "params": {"type": "frame", "name": "Safe area", "parent": {"$ref": "card_back"}, "x": 14, "y": 14, "width": 227, "height": 128, "props": {"layout": "vertical", "gap": 3, "mainAlign": "max", "fill": "none", "clip": false}}}
+{"command": "node.create", "params": {"type": "text", "name": "jisoo@northwind.io", "parent": {"$ref": "safe_area__3"}, "text": "jisoo@northwind.io", "props": {"fill": "#141414", "fontSize": 8.5, "fontStyle": "Semi Bold"}}}
+{"command": "node.create", "params": {"type": "text", "name": "+82 10 5550 0142", "parent": {"$ref": "safe_area__3"}, "text": "+82 10 5550 0142", "props": {"fill": "#141414", "fontSize": 8.5, "fontStyle": "Semi Bold"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Seongsu-dong, Seoul", "parent": {"$ref": "safe_area__3"}, "text": "Seongsu-dong, Seoul", "props": {"fill": "#141414", "fontSize": 8.5, "fontStyle": "Semi Bold"}}}
+{"command": "export.add", "params": {"ids": [{"$ref": "card_front"}, {"$ref": "card_back"}], "setting": {"format": "pdf", "bleed": "3mm", "cropMarks": true, "cmyk": true}}}

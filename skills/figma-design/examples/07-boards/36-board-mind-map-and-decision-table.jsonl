@@ -1,0 +1,15 @@
+// Board: a mind map and a decision table
+// Shows: a mind map that lays itself out, adding children to a branch, a table from a cells array, text labels as headings
+// A board is its own kind of file: stickies, shapes, connectors, sections.
+{"command": "file.newBoard", "params": {"name": "Launch plan"}}
+{"command": "node.create", "params": {"type": "text", "name": "Heading", "x": 0, "y": -380, "text": "Launch plan", "props": {"fontSize": 40, "fontStyle": "Bold"}}}
+{"command": "board.mindMap", "as": "map", "params": {"x": 0, "y": 40, "text": "Spring launch", "children": ["Product", "Marketing", "Support"]}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/0/id"}, "text": "Review links GA"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/0/id"}, "text": "Annual billing"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/1/id"}, "text": "Landing page"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/1/id"}, "text": "Customer story"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/1/id"}, "text": "Launch email"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/2/id"}, "text": "Help articles"}}
+{"command": "board.mindMapAdd", "params": {"id": {"$ref": "map", "field": "children/2/id"}, "text": "Macros"}}
+{"command": "node.create", "params": {"type": "text", "name": "Heading 2", "x": 0, "y": 460, "text": "Who decides", "props": {"fontSize": 28, "fontStyle": "Bold"}}}
+{"command": "board.table", "params": {"x": 0, "y": 520, "cells": [["Decision", "Owner", "Consulted", "Due"], ["Launch date", "Tomas", "Mara, Ilse", "3 Mar"], ["Pricing page copy", "Jisoo", "Legal", "7 Mar"], ["Support hours", "Ilse", "Tomas", "10 Mar"]]}}

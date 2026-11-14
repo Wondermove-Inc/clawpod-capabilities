@@ -1,0 +1,181 @@
+// A product file built on the published library
+// Shows: the other side of a release: a new file that adds the library, imports its components, fills a dense page with instances (table header and rows at the xs size, header labels set by property), styles its few own layers with library text styles and library variables instead of local copies, switches a copy to Gray 100 with the library collections, and asks for updates
+// then: run from the examples folder after script 54; the path below points at its output
+// Nothing in this file is drawn twice: components, text styles and variables all come from the library, linked and read-only.
+{"command": "library.add", "as": "lib", "params": {"path": "out/54-component-specification-accessibility-and-release.figcraft"}}
+{"command": "library.import", "as": "imp_ui_shell_header", "params": {"library": {"$ref": "lib"}, "component": "UI shell / Header"}}
+{"command": "library.import", "as": "imp_side_nav", "params": {"library": {"$ref": "lib"}, "component": "Side nav"}}
+{"command": "library.import", "as": "imp_table_toolbar", "params": {"library": {"$ref": "lib"}, "component": "Table toolbar"}}
+{"command": "library.import", "as": "imp_table_header", "params": {"library": {"$ref": "lib"}, "component": "Table header"}}
+{"command": "library.import", "as": "imp_table_row", "params": {"library": {"$ref": "lib"}, "component": "Table row"}}
+{"command": "library.import", "as": "imp_table_pagination", "params": {"library": {"$ref": "lib"}, "component": "Table / Pagination"}}
+{"command": "library.import", "as": "imp_button", "params": {"library": {"$ref": "lib"}, "component": "Button"}}
+{"command": "page.rename", "params": {"name": "Service IDs"}}
+{"command": "node.create", "as": "service_ids", "params": {"type": "frame", "name": "Service IDs", "x": 0, "y": 0, "width": 1584, "height": 1000, "props": {"layout": "vertical", "clip": true}}}
+{"command": "instance.create", "as": "inst", "params": {"component": {"$ref": "imp_ui_shell_header", "field": "component"}, "parent": {"$ref": "service_ids"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst"}], "props": {"sizingH": "fill", "name": "Header"}}}
+{"command": "node.create", "as": "body", "params": {"type": "frame", "name": "Body", "parent": {"$ref": "service_ids"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "instance.create", "as": "inst__2", "params": {"component": {"$ref": "imp_side_nav", "field": "component"}, "parent": {"$ref": "body"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__2"}], "properties": {"Active": "Service IDs"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__2"}], "props": {"sizingV": "fill", "name": "Side nav"}}}
+{"command": "node.create", "as": "main", "params": {"type": "frame", "name": "Main", "parent": {"$ref": "body"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "page_header", "params": {"type": "frame", "name": "Page header", "parent": {"$ref": "main"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "padding": [24, 32, 24, 32], "mainAlign": "spaceBetween", "crossAlign": "max", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "title", "params": {"type": "frame", "name": "Title", "parent": {"$ref": "page_header"}, "props": {"layout": "vertical", "gap": 4, "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "service_ids__2", "params": {"type": "text", "name": "Service IDs", "parent": {"$ref": "title"}, "text": "Service IDs"}}
+{"command": "node.create", "as": "text", "params": {"type": "text", "parent": {"$ref": "title"}, "text": "31 service IDs in Northwind Production · 4 not used for 90 days"}}
+{"command": "instance.create", "as": "inst__3", "params": {"component": {"$ref": "imp_button", "field": "component"}, "parent": {"$ref": "page_header"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__3"}], "properties": {"Kind": "Primary", "Size": "md", "Label": "Create service ID"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__3"}], "props": {"name": "Create service ID"}}}
+{"command": "node.create", "as": "table_area", "params": {"type": "frame", "name": "Table area", "parent": {"$ref": "main"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "padding": [24, 32, 24, 32], "fill": "none", "clip": false}}}
+{"command": "instance.create", "as": "inst__4", "params": {"component": {"$ref": "imp_table_toolbar", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__4"}], "properties": {"Placeholder": "Filter by service ID, owner or role"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__4"}], "props": {"sizingH": "fill", "name": "Toolbar"}}}
+// The same table as the Users page, for another list: the header labels are properties.
+{"command": "instance.create", "as": "inst__5", "params": {"component": {"$ref": "imp_table_header", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__5"}], "properties": {"Size": "xs", "Column 1": "Service ID", "Column 2": "Owner", "Column 5": "Last used"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__5"}], "props": {"sizingH": "fill"}}}
+{"command": "instance.create", "as": "inst__6", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__6"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-deploy", "Cell 2": "platform@northwind.io", "Cell 3": "Administrator", "Cell 5": "3 hours ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__6"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag", "params": {"root": {"$ref": "inst__6"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__7", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__7"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-backup", "Cell 2": "data@northwind.io", "Cell 3": "Administrator", "Cell 5": "2 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__7"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__2", "params": {"root": {"$ref": "inst__7"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__2", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__8", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__8"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-metrics", "Cell 2": "platform@northwind.io", "Cell 3": "Editor", "Cell 5": "2 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__8"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__3", "params": {"root": {"$ref": "inst__8"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__3", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__9", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__9"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-ci", "Cell 2": "platform@northwind.io", "Cell 3": "Viewer", "Cell 5": "3 weeks ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__9"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__4", "params": {"root": {"$ref": "inst__9"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__4", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__10", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__10"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-billing-export", "Cell 2": "billing@northwind.io", "Cell 3": "Operator", "Cell 5": "Yesterday"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__10"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__5", "params": {"root": {"$ref": "inst__10"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__5", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__11", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__11"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-log-shipper", "Cell 2": "platform@northwind.io", "Cell 3": "Administrator", "Cell 5": "14 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__11"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__6", "params": {"root": {"$ref": "inst__11"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__6", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__12", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__12"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-dns-sync", "Cell 2": "platform@northwind.io", "Cell 3": "Editor", "Cell 5": "6 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__12"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__7", "params": {"root": {"$ref": "inst__12"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__7", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__13", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__13"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-cert-renew", "Cell 2": "security@northwind.io", "Cell 3": "Administrator", "Cell 5": "1 hour ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__13"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__8", "params": {"root": {"$ref": "inst__13"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__8", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__14", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__14"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-image-scan", "Cell 2": "security@northwind.io", "Cell 3": "Operator", "Cell 5": "1 hour ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__14"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__9", "params": {"root": {"$ref": "inst__14"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__9", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__15", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__15"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-queue-worker", "Cell 2": "web@northwind.io", "Cell 3": "Administrator", "Cell 5": "2 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__15"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__10", "params": {"root": {"$ref": "inst__15"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__10", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__16", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__16"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-search-index", "Cell 2": "web@northwind.io", "Cell 3": "Editor", "Cell 5": "2 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__16"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__11", "params": {"root": {"$ref": "inst__16"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__11", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__17", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__17"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-report-mailer", "Cell 2": "data@northwind.io", "Cell 3": "Viewer", "Cell 5": "3 hours ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__17"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__12", "params": {"root": {"$ref": "inst__17"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__12", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__18", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__18"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-cdn-purge", "Cell 2": "web@northwind.io", "Cell 3": "Operator", "Cell 5": "Yesterday"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__18"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__13", "params": {"root": {"$ref": "inst__18"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__13", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__19", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__19"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-db-migrate", "Cell 2": "data@northwind.io", "Cell 3": "Administrator", "Cell 5": "12 Jul 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__19"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__14", "params": {"root": {"$ref": "inst__19"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__14", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__20", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__20"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-audit-export", "Cell 2": "security@northwind.io", "Cell 3": "Administrator", "Cell 5": "6 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__20"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__15", "params": {"root": {"$ref": "inst__20"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__15", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__21", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__21"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-cost-alerts", "Cell 2": "billing@northwind.io", "Cell 3": "Viewer", "Cell 5": "14 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__21"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__16", "params": {"root": {"$ref": "inst__21"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__16", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__22", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__22"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-status-page", "Cell 2": "web@northwind.io", "Cell 3": "Operator", "Cell 5": "2 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__22"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__17", "params": {"root": {"$ref": "inst__22"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__17", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__23", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__23"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-feature-flags", "Cell 2": "web@northwind.io", "Cell 3": "Administrator", "Cell 5": "2 days ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__23"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__18", "params": {"root": {"$ref": "inst__23"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__18", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__24", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__24"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-sso-sync", "Cell 2": "security@northwind.io", "Cell 3": "Editor", "Cell 5": "3 hours ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__24"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__19", "params": {"root": {"$ref": "inst__24"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__19", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__25", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__25"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-vault-agent", "Cell 2": "security@northwind.io", "Cell 3": "Viewer", "Cell 5": "3 weeks ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__25"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__20", "params": {"root": {"$ref": "inst__25"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__20", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__26", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__26"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-thumbnailer", "Cell 2": "web@northwind.io", "Cell 3": "Operator", "Cell 5": "30 Jun 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__26"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__21", "params": {"root": {"$ref": "inst__26"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__21", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__27", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__27"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-etl-nightly", "Cell 2": "data@northwind.io", "Cell 3": "Administrator", "Cell 5": "14 minutes ago"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__27"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__22", "params": {"root": {"$ref": "inst__27"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__22", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__28", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__28"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-webhook-relay", "Cell 2": "web@northwind.io", "Cell 3": "Editor", "Cell 5": "Yesterday"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__28"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__23", "params": {"root": {"$ref": "inst__28"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__23", "field": "ids/0"}], "properties": {"Tone": "green", "Label": "Active"}}}
+{"command": "instance.create", "as": "inst__29", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__29"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-legacy-import", "Cell 2": "data@northwind.io", "Cell 3": "Viewer", "Cell 5": "2 May 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__29"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__24", "params": {"root": {"$ref": "inst__29"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__24", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__30", "params": {"component": {"$ref": "imp_table_row", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__30"}], "properties": {"Size": "xs", "State": "Enabled", "Cell 1": "svc-sandbox-reset", "Cell 2": "platform@northwind.io", "Cell 3": "Operator", "Cell 5": "19 Mar 2026"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__30"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "row_tag__25", "params": {"root": {"$ref": "inst__30"}, "name": "Status tag", "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "row_tag__25", "field": "ids/0"}], "properties": {"Tone": "red", "Label": "Suspended"}}}
+{"command": "instance.create", "as": "inst__31", "params": {"component": {"$ref": "imp_table_pagination", "field": "component"}, "parent": {"$ref": "table_area"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "inst__31"}], "properties": {"Range": "Items per page: 25   ·   1 to 25 of 31 items", "Page": "Page 1 of 2"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "inst__31"}], "props": {"sizingH": "fill", "name": "Pagination"}}}
+// Own layers take library text styles and library variables. Each call copies the style or variable in as a linked, read-only copy and applies it.
+{"command": "library.applyStyle", "params": {"library": {"$ref": "lib"}, "style": "Carbon/productive-heading-04", "ids": [{"$ref": "service_ids__2"}]}}
+{"command": "library.applyStyle", "params": {"library": {"$ref": "lib"}, "style": "Carbon/body-short-01", "ids": [{"$ref": "text"}]}}
+{"command": "library.bindVariable", "params": {"library": {"$ref": "lib"}, "variable": "Background/background", "field": "fill", "ids": [{"$ref": "service_ids"}]}}
+{"command": "library.bindVariable", "params": {"library": {"$ref": "lib"}, "variable": "Layer/layer-01", "field": "fill", "ids": [{"$ref": "page_header"}]}}
+{"command": "library.bindVariable", "params": {"library": {"$ref": "lib"}, "variable": "Text/text-primary", "field": "fill", "ids": [{"$ref": "service_ids__2"}]}}
+{"command": "library.bindVariable", "params": {"library": {"$ref": "lib"}, "variable": "Text/text-secondary", "field": "fill", "ids": [{"$ref": "text"}]}}
+// Gray 100 for a copy: the modes belong to the library collections.
+{"command": "edit.duplicate", "as": "dark", "params": {"ids": [{"$ref": "service_ids"}], "dx": 1684, "dy": 0}}
+{"command": "node.set", "params": {"ids": [{"$ref": "dark", "field": "ids/0"}], "props": {"name": "Service IDs · Gray 100"}}}
+{"command": "library.setVariableMode", "params": {"library": {"$ref": "lib"}, "collection": "Carbon / Theme", "mode": "Gray 100", "ids": {"$ref": "dark", "field": "ids"}}}
+{"command": "library.setVariableMode", "params": {"library": {"$ref": "lib"}, "collection": "Carbon / Button", "mode": "Gray 100", "ids": {"$ref": "dark", "field": "ids"}}}
+{"command": "library.setVariableMode", "params": {"library": {"$ref": "lib"}, "collection": "Carbon / Tag", "mode": "Gray 100", "ids": {"$ref": "dark", "field": "ids"}}}
+{"command": "library.setVariableMode", "params": {"library": {"$ref": "lib"}, "collection": "Carbon / Notification", "mode": "Gray 100", "ids": {"$ref": "dark", "field": "ids"}}}
+// When the library publishes again, this lists what changed; library.acceptUpdates takes the changes.
+{"command": "library.updates", "params": {}}
+{"command": "library.list", "params": {}}

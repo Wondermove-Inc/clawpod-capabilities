@@ -1,0 +1,13 @@
+// Library, part 2: use the published library from a product file
+// Shows: adding a library by path, placing a library component, applying a library text style, binding a library variable, checking for updates
+// then: run from the examples folder after part 1; the path below points at its output
+{"command": "library.add", "as": "lib", "params": {"path": "out/41-publish-a-library.figcraft"}}
+{"command": "node.create", "as": "checkout", "params": {"type": "frame", "name": "Checkout", "x": 0, "y": 0, "width": 390, "props": {"layout": "vertical", "sizingV": "hug", "padding": 24, "gap": 20, "fill": "#FFFFFF"}}}
+{"command": "node.create", "as": "title", "params": {"type": "text", "name": "Title", "parent": {"$ref": "checkout"}, "text": "Ready to pay?", "props": {"fontSize": 28}}}
+{"command": "library.applyStyle", "params": {"library": {"$ref": "lib"}, "style": "Heading/1", "ids": [{"$ref": "title"}]}}
+{"command": "library.bindVariable", "params": {"library": {"$ref": "lib"}, "variable": "bg/canvas", "field": "fill", "ids": [{"$ref": "checkout"}]}}
+{"command": "library.place", "as": "placed", "params": {"library": {"$ref": "lib"}, "component": "Button", "x": 24, "y": 120}}
+{"command": "node.reparent", "params": {"ids": [{"$ref": "placed", "field": "id"}], "parent": {"$ref": "checkout"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "placed", "field": "id"}], "properties": {"Label": "Pay $48.00"}}}
+{"command": "library.updates", "params": {}}
+{"command": "library.list", "params": {}}

@@ -1,0 +1,88 @@
+// Slots and exposed nested instances
+// Shows: a card whose content area is a slot that instances fill with anything, a settings row that exposes its nested toggle, inserting components into a slot, reading the resulting properties
+// Foundations: semantic colour variables with Light and Dark modes, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1", "Dark": "#334155"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569", "Dark": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5", "Dark": "#818CF8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF", "Dark": "#1E1B4B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857", "Dark": "#34D399"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5", "Dark": "#022C22"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E", "Dark": "#FBBF24"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB", "Dark": "#451A03"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C", "Dark": "#F87171"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2", "Dark": "#450A0A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1", "Dark": "#818CF8"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Composition", "x": 0, "y": 0, "width": 1100, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Composition", "parent": {"$ref": "header"}, "text": "Composition", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "A slot lets an instance hold content the main never planned for. An exposed nested instance lets one property panel drive the parts inside.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "mains", "params": {"type": "frame", "name": "Mains", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 32, "crossAlign": "min", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "grid", "params": {"type": "frame", "name": "Toggle variants", "parent": {"$ref": "mains"}, "props": {"layout": "grid", "gridColumns": 1, "columnGap": 12, "rowGap": 12, "columnTracks": ["auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "tg", "params": {"type": "frame", "name": "On=False", "parent": {"$ref": "grid"}, "width": 44, "height": 26, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "min", "crossAlign": "center", "cornerRadius": 13, "fill": {"$var": "border/control"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "tg"}, "width": 20, "height": 20, "props": {"fill": "#FFFFFF"}}}
+{"command": "node.create", "as": "tg__2", "params": {"type": "frame", "name": "On=True", "parent": {"$ref": "grid"}, "width": 44, "height": 26, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "max", "crossAlign": "center", "cornerRadius": 13, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "tg__2"}, "width": 20, "height": 20, "props": {"fill": "#FFFFFF"}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "component.combineVariants", "as": "toggle_set", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "toggle_set"}], "props": {"name": "Toggle"}}}
+{"command": "node.create", "as": "settings_row", "params": {"type": "frame", "name": "Settings row", "parent": {"$ref": "mains"}, "width": 380, "props": {"layout": "horizontal", "gap": 16, "padding": [14, 16, 14, 16], "crossAlign": "center", "cornerRadius": 14, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1, "sizingV": "hug"}}}
+{"command": "node.create", "as": "text__2", "params": {"type": "frame", "name": "Text", "parent": {"$ref": "settings_row"}, "props": {"layout": "vertical", "gap": 2, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "title", "params": {"type": "text", "name": "Title", "parent": {"$ref": "text__2"}, "text": "Title", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "description", "params": {"type": "text", "name": "Description", "parent": {"$ref": "text__2"}, "text": "Description", "props": {"textStyle": "Body/S", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "instance.create", "as": "nested", "params": {"component": {"$ref": "toggle_set"}, "parent": {"$ref": "settings_row"}}}
+{"command": "component.create", "params": {"ids": [{"$ref": "settings_row"}]}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "title"}, "name": "Title", "type": "text"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "description"}, "name": "Description", "type": "text"}}
+// Expose the toggle: its On property now shows on every Settings row instance.
+{"command": "component.exposeInstance", "params": {"id": {"$ref": "nested"}}}
+{"command": "node.create", "as": "panel", "params": {"type": "frame", "name": "Panel", "parent": {"$ref": "mains"}, "width": 420, "props": {"layout": "vertical", "gap": 16, "padding": 20, "cornerRadius": 20, "fill": {"$var": "bg/surface"}, "effectStyle": "Elevation/2", "sizingV": "hug"}}}
+{"command": "node.create", "as": "panel_title", "params": {"type": "text", "name": "Panel title", "parent": {"$ref": "panel"}, "text": "Panel title", "props": {"textStyle": "Heading/3", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "content", "params": {"type": "frame", "name": "Content", "parent": {"$ref": "panel"}, "props": {"layout": "vertical", "gap": 8, "sizingH": "fill", "padding": 12, "cornerRadius": 12, "fill": {"$var": "bg/subtle"}, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Slot: drop anything here", "parent": {"$ref": "content"}, "text": "Slot: drop anything here", "props": {"textStyle": "Body/S", "fill": {"$var": "text/secondary"}}}}
+{"command": "component.create", "params": {"ids": [{"$ref": "panel"}]}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "panel_title"}, "name": "Title", "type": "text"}}
+{"command": "component.makeSlot", "params": {"id": {"$ref": "content"}, "name": "Content", "preferred": [{"$ref": "settings_row"}]}}
+// In use: one Panel instance, its slot filled with three Settings rows that each set their own nested toggle.
+{"command": "instance.create", "as": "panel_use", "params": {"component": {"$ref": "panel"}, "parent": {"$ref": "sheet"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "panel_use"}], "properties": {"Title": "Notifications"}}}
+{"command": "instance.slotInsert", "as": "slot_item", "params": {"id": {"$ref": "panel_use"}, "slot": "Content", "component": {"$ref": "settings_row"}, "replace": true}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "slot_item"}], "properties": {"Title": "Trail conditions", "Description": "Closures and weather for saved trails"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "slot_item"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "nested_toggle", "params": {"root": {"$ref": "slot_item"}, "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "nested_toggle", "field": "ids/0"}], "properties": {"On": "True"}}}
+{"command": "instance.slotInsert", "as": "slot_item__2", "params": {"id": {"$ref": "panel_use"}, "slot": "Content", "component": {"$ref": "settings_row"}, "replace": false}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "slot_item__2"}], "properties": {"Title": "Weekly summary", "Description": "Sunday evening, by email"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "slot_item__2"}], "props": {"sizingH": "fill"}}}
+{"command": "node.find", "as": "nested_toggle__2", "params": {"root": {"$ref": "slot_item__2"}, "type": "INSTANCE"}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "nested_toggle__2", "field": "ids/0"}], "properties": {"On": "True"}}}
+{"command": "instance.slotInsert", "as": "slot_item__3", "params": {"id": {"$ref": "panel_use"}, "slot": "Content", "component": {"$ref": "settings_row"}, "replace": false}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "slot_item__3"}], "properties": {"Title": "Product news", "Description": "A few times a year"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "slot_item__3"}], "props": {"sizingH": "fill"}}}
+{"command": "component.properties", "params": {"id": {"$ref": "panel_use"}}}

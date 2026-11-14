@@ -1,0 +1,85 @@
+// Images: fill modes, adjustments, masks and text over photos
+// Shows: placing an image file, fill and fit modes, adjustment presets, a gradient scrim that keeps text readable over a photo, circular and rounded crops by placing the image into a shape (target)
+// then: run from the examples folder so assets/sample-scene.jpg resolves
+// Foundations: semantic colour variables, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Images", "x": 0, "y": 0, "width": 1160, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Images", "parent": {"$ref": "header"}, "text": "Images", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "An image is a paint, not a layer type: it fills a shape, so cropping is just the shape's geometry.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "modes", "params": {"type": "frame", "name": "Modes", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "fill", "params": {"type": "frame", "name": "fill", "parent": {"$ref": "modes"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_fill", "params": {"type": "rectangle", "name": "Photo / fill", "parent": {"$ref": "fill"}, "height": 200, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_fill"}, "mode": "fill"}}
+{"command": "node.create", "params": {"type": "text", "name": "mode: fill", "parent": {"$ref": "fill"}, "text": "mode: fill", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "fit", "params": {"type": "frame", "name": "fit", "parent": {"$ref": "modes"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_fit", "params": {"type": "rectangle", "name": "Photo / fit", "parent": {"$ref": "fit"}, "height": 200, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_fit"}, "mode": "fit"}}
+{"command": "node.create", "params": {"type": "text", "name": "mode: fit", "parent": {"$ref": "fit"}, "text": "mode: fit", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "adjustments", "params": {"type": "frame", "name": "Adjustments", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "vivid", "params": {"type": "frame", "name": "vivid", "parent": {"$ref": "adjustments"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_vivid", "params": {"type": "rectangle", "name": "Photo / vivid", "parent": {"$ref": "vivid"}, "height": 150, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_vivid"}, "mode": "fill"}}
+{"command": "image.adjust", "params": {"ids": [{"$ref": "photo_vivid"}], "preset": "vivid"}}
+{"command": "node.create", "params": {"type": "text", "name": "vivid", "parent": {"$ref": "vivid"}, "text": "vivid", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "warm", "params": {"type": "frame", "name": "warm", "parent": {"$ref": "adjustments"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_warm", "params": {"type": "rectangle", "name": "Photo / warm", "parent": {"$ref": "warm"}, "height": 150, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_warm"}, "mode": "fill"}}
+{"command": "image.adjust", "params": {"ids": [{"$ref": "photo_warm"}], "preset": "warm"}}
+{"command": "node.create", "params": {"type": "text", "name": "warm", "parent": {"$ref": "warm"}, "text": "warm", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "cool", "params": {"type": "frame", "name": "cool", "parent": {"$ref": "adjustments"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_cool", "params": {"type": "rectangle", "name": "Photo / cool", "parent": {"$ref": "cool"}, "height": 150, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_cool"}, "mode": "fill"}}
+{"command": "image.adjust", "params": {"ids": [{"$ref": "photo_cool"}], "preset": "cool"}}
+{"command": "node.create", "params": {"type": "text", "name": "cool", "parent": {"$ref": "cool"}, "text": "cool", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "blackandwhite", "params": {"type": "frame", "name": "blackAndWhite", "parent": {"$ref": "adjustments"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "photo_blackandwhite", "params": {"type": "rectangle", "name": "Photo / blackAndWhite", "parent": {"$ref": "blackandwhite"}, "height": 150, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "photo_blackandwhite"}, "mode": "fill"}}
+{"command": "image.adjust", "params": {"ids": [{"$ref": "photo_blackandwhite"}], "preset": "blackAndWhite"}}
+{"command": "node.create", "params": {"type": "text", "name": "blackAndWhite", "parent": {"$ref": "blackandwhite"}, "text": "blackAndWhite", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "crops_and_overlays", "params": {"type": "frame", "name": "Crops and overlays", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "sizingH": "fill", "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "avatar_crop", "params": {"type": "ellipse", "name": "Avatar crop", "parent": {"$ref": "crops_and_overlays"}, "width": 120, "height": 120, "props": {"fill": {"$var": "bg/subtle"}, "stroke": {"$var": "bg/surface"}, "strokeWeight": 4, "effectStyle": "Elevation/2"}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "avatar_crop"}, "mode": "fill"}}
+{"command": "node.create", "as": "hero_with_scrim", "params": {"type": "frame", "name": "Hero with scrim", "parent": {"$ref": "crops_and_overlays"}, "height": 240, "props": {"sizingH": "fill", "cornerRadius": 20, "clip": true, "layout": "vertical", "mainAlign": "max", "padding": 28, "gap": 6, "fill": {"$var": "bg/subtle"}}}}
+{"command": "image.place", "params": {"path": "assets/sample-scene.jpg", "target": {"$ref": "hero_with_scrim"}, "mode": "fill"}}
+// A scrim is a second fill on top of the image: transparent to 70% black, bottom-weighted.
+{"command": "fill.add", "params": {"ids": [{"$ref": "hero_with_scrim"}], "paint": {"type": "linearGradient", "stops": ["#00000000", "#000000B3"], "from": [0.5, 0.2], "to": [0.5, 1]}}}
+{"command": "node.create", "params": {"type": "text", "name": "FIELD NOTES", "parent": {"$ref": "hero_with_scrim"}, "text": "FIELD NOTES", "props": {"textStyle": "Overline", "fill": "#FFFFFFCC"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "hero_with_scrim"}, "text": "A slow weekend on the ridge", "props": {"textStyle": "Heading/1", "fill": "#FFFFFF"}}}

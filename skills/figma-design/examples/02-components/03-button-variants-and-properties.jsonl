@@ -1,0 +1,260 @@
+// Button: variants, states and component properties
+// Shows: a component set built from Kind x State variants, focus ring, text / boolean / instance-swap properties, an icon component, instances that set properties
+// Foundations: semantic colour variables with Light and Dark modes, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1", "Dark": "#334155"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569", "Dark": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5", "Dark": "#818CF8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF", "Dark": "#1E1B4B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857", "Dark": "#34D399"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5", "Dark": "#022C22"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E", "Dark": "#FBBF24"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB", "Dark": "#451A03"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C", "Dark": "#F87171"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2", "Dark": "#450A0A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1", "Dark": "#818CF8"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Button", "x": 0, "y": 0, "width": 960, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Button", "parent": {"$ref": "header"}, "text": "Button", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "Four kinds, five states. Label, leading icon and its visibility are properties, so nobody detaches an instance.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+// Icons are components too, so a button can swap them.
+{"command": "node.create", "as": "icons", "params": {"type": "frame", "name": "Icons", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 12, "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "ic_arrow_right", "params": {"type": "frame", "name": "icon/arrow-right", "parent": {"$ref": "icons"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_arrow_right"}, "x": 0, "y": 0, "path": "M5 12h14 M12 5l7 7-7 7", "props": {"stroke": {"$var": "text/primary"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "as": "ic_plus", "params": {"type": "frame", "name": "icon/plus", "parent": {"$ref": "icons"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_plus"}, "x": 0, "y": 0, "path": "M5 12h14 M12 5v14", "props": {"stroke": {"$var": "text/primary"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "as": "ic_download", "params": {"type": "frame", "name": "icon/download", "parent": {"$ref": "icons"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_download"}, "x": 0, "y": 0, "path": "M12 15V3 M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5", "props": {"stroke": {"$var": "text/primary"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "as": "ic_check", "params": {"type": "frame", "name": "icon/check", "parent": {"$ref": "icons"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_check"}, "x": 0, "y": 0, "path": "M20 6 9 17l-5-5", "props": {"stroke": {"$var": "text/primary"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "ic_arrow_right"}, {"$ref": "ic_plus"}, {"$ref": "ic_download"}, {"$ref": "ic_check"}]}}
+{"command": "node.create", "as": "grid", "params": {"type": "frame", "name": "Button variants", "parent": {"$ref": "sheet"}, "props": {"layout": "grid", "gridColumns": 5, "columnGap": 16, "rowGap": 16, "columnTracks": ["auto", "auto", "auto", "auto", "auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "btn", "params": {"type": "frame", "name": "Kind=Primary, State=Default", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "brand/primary"}}}}
+{"command": "instance.create", "as": "lead", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph", "params": {"root": {"$ref": "lead"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph", "field": "ids/0"}], "props": {"stroke": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "label", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__2", "params": {"type": "frame", "name": "Kind=Primary, State=Hover", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "brand/primary-hover"}}}}
+{"command": "instance.create", "as": "lead__2", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__2"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__2"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__2", "params": {"root": {"$ref": "lead__2"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__2", "field": "ids/0"}], "props": {"stroke": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "label__2", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__2"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__3", "params": {"type": "frame", "name": "Kind=Primary, State=Pressed", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "brand/primary-hover"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__3"}], "props": {"effects": [{"type": "innerShadow", "color": "#0F172A40", "offset": [0, 2], "radius": 4}]}}}
+{"command": "instance.create", "as": "lead__3", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__3"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__3"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__3", "params": {"root": {"$ref": "lead__3"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__3", "field": "ids/0"}], "props": {"stroke": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "label__3", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__3"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__4", "params": {"type": "frame", "name": "Kind=Primary, State=Focus", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__4"}], "props": {"strokes": [{"type": "solid", "color": "#6366F1"}], "strokeWeight": 2, "strokeAlign": "outside"}}}
+{"command": "instance.create", "as": "lead__4", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__4"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__4"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__4", "params": {"root": {"$ref": "lead__4"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__4", "field": "ids/0"}], "props": {"stroke": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "label__4", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__4"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__5", "params": {"type": "frame", "name": "Kind=Primary, State=Disabled", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "brand/primary"}, "opacity": 0.4}}}
+{"command": "instance.create", "as": "lead__5", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__5"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__5"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__5", "params": {"root": {"$ref": "lead__5"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__5", "field": "ids/0"}], "props": {"stroke": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "label__5", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__5"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__6", "params": {"type": "frame", "name": "Kind=Secondary, State=Default", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/strong"}, "strokeWeight": 1}}}
+{"command": "instance.create", "as": "lead__6", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__6"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__6"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__6", "params": {"root": {"$ref": "lead__6"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__6", "field": "ids/0"}], "props": {"stroke": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "label__6", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__6"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "btn__7", "params": {"type": "frame", "name": "Kind=Secondary, State=Hover", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}, "stroke": {"$var": "border/strong"}, "strokeWeight": 1}}}
+{"command": "instance.create", "as": "lead__7", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__7"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__7"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__7", "params": {"root": {"$ref": "lead__7"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__7", "field": "ids/0"}], "props": {"stroke": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "label__7", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__7"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "btn__8", "params": {"type": "frame", "name": "Kind=Secondary, State=Pressed", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}, "stroke": {"$var": "border/strong"}, "strokeWeight": 1}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__8"}], "props": {"effects": [{"type": "innerShadow", "color": "#0F172A40", "offset": [0, 2], "radius": 4}]}}}
+{"command": "instance.create", "as": "lead__8", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__8"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__8"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__8", "params": {"root": {"$ref": "lead__8"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__8", "field": "ids/0"}], "props": {"stroke": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "label__8", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__8"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "btn__9", "params": {"type": "frame", "name": "Kind=Secondary, State=Focus", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/strong"}, "strokeWeight": 1}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__9"}], "props": {"strokes": [{"type": "solid", "color": "#6366F1"}], "strokeWeight": 2, "strokeAlign": "outside"}}}
+{"command": "instance.create", "as": "lead__9", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__9"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__9"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__9", "params": {"root": {"$ref": "lead__9"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__9", "field": "ids/0"}], "props": {"stroke": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "label__9", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__9"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "btn__10", "params": {"type": "frame", "name": "Kind=Secondary, State=Disabled", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/strong"}, "strokeWeight": 1, "opacity": 0.4}}}
+{"command": "instance.create", "as": "lead__10", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__10"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__10"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__10", "params": {"root": {"$ref": "lead__10"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__10", "field": "ids/0"}], "props": {"stroke": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "label__10", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__10"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "btn__11", "params": {"type": "frame", "name": "Kind=Ghost, State=Default", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": "none"}}}
+{"command": "instance.create", "as": "lead__11", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__11"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__11"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__11", "params": {"root": {"$ref": "lead__11"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__11", "field": "ids/0"}], "props": {"stroke": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "label__11", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__11"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "btn__12", "params": {"type": "frame", "name": "Kind=Ghost, State=Hover", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}}}}
+{"command": "instance.create", "as": "lead__12", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__12"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__12"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__12", "params": {"root": {"$ref": "lead__12"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__12", "field": "ids/0"}], "props": {"stroke": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "label__12", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__12"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "btn__13", "params": {"type": "frame", "name": "Kind=Ghost, State=Pressed", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__13"}], "props": {"effects": [{"type": "innerShadow", "color": "#0F172A40", "offset": [0, 2], "radius": 4}]}}}
+{"command": "instance.create", "as": "lead__13", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__13"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__13"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__13", "params": {"root": {"$ref": "lead__13"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__13", "field": "ids/0"}], "props": {"stroke": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "label__13", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__13"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "btn__14", "params": {"type": "frame", "name": "Kind=Ghost, State=Focus", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": "none"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__14"}], "props": {"strokes": [{"type": "solid", "color": "#6366F1"}], "strokeWeight": 2, "strokeAlign": "outside"}}}
+{"command": "instance.create", "as": "lead__14", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__14"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__14"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__14", "params": {"root": {"$ref": "lead__14"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__14", "field": "ids/0"}], "props": {"stroke": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "label__14", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__14"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "btn__15", "params": {"type": "frame", "name": "Kind=Ghost, State=Disabled", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": "none", "opacity": 0.4}}}
+{"command": "instance.create", "as": "lead__15", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__15"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__15"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__15", "params": {"root": {"$ref": "lead__15"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__15", "field": "ids/0"}], "props": {"stroke": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "label__15", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__15"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "btn__16", "params": {"type": "frame", "name": "Kind=Danger, State=Default", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "danger/fg"}}}}
+{"command": "instance.create", "as": "lead__16", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__16"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__16"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__16", "params": {"root": {"$ref": "lead__16"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__16", "field": "ids/0"}], "props": {"stroke": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "label__16", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__16"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "btn__17", "params": {"type": "frame", "name": "Kind=Danger, State=Hover", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "danger/fg"}}}}
+{"command": "instance.create", "as": "lead__17", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__17"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__17"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__17", "params": {"root": {"$ref": "lead__17"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__17", "field": "ids/0"}], "props": {"stroke": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "label__17", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__17"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "btn__18", "params": {"type": "frame", "name": "Kind=Danger, State=Pressed", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "danger/fg"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__18"}], "props": {"effects": [{"type": "innerShadow", "color": "#0F172A40", "offset": [0, 2], "radius": 4}]}}}
+{"command": "instance.create", "as": "lead__18", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__18"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__18"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__18", "params": {"root": {"$ref": "lead__18"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__18", "field": "ids/0"}], "props": {"stroke": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "label__18", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__18"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "btn__19", "params": {"type": "frame", "name": "Kind=Danger, State=Focus", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "danger/fg"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "btn__19"}], "props": {"strokes": [{"type": "solid", "color": "#6366F1"}], "strokeWeight": 2, "strokeAlign": "outside"}}}
+{"command": "instance.create", "as": "lead__19", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__19"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__19"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__19", "params": {"root": {"$ref": "lead__19"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__19", "field": "ids/0"}], "props": {"stroke": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "label__19", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__19"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "btn__20", "params": {"type": "frame", "name": "Kind=Danger, State=Disabled", "parent": {"$ref": "grid"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 18, 0, 18], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "danger/fg"}, "opacity": 0.4}}}
+{"command": "instance.create", "as": "lead__20", "params": {"component": {"$ref": "ic_arrow_right"}, "parent": {"$ref": "btn__20"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lead__20"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.find", "as": "glyph__20", "params": {"root": {"$ref": "lead__20"}, "type": "VECTOR"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "glyph__20", "field": "ids/0"}], "props": {"stroke": {"$var": "text/inverse"}}}}
+{"command": "node.create", "as": "label__20", "params": {"type": "text", "name": "Label", "parent": {"$ref": "btn__20"}, "text": "Button", "props": {"textStyle": "Label/L", "fill": {"$var": "text/inverse"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "btn"}, {"$ref": "btn__2"}, {"$ref": "btn__3"}, {"$ref": "btn__4"}, {"$ref": "btn__5"}, {"$ref": "btn__6"}, {"$ref": "btn__7"}, {"$ref": "btn__8"}, {"$ref": "btn__9"}, {"$ref": "btn__10"}, {"$ref": "btn__11"}, {"$ref": "btn__12"}, {"$ref": "btn__13"}, {"$ref": "btn__14"}, {"$ref": "btn__15"}, {"$ref": "btn__16"}, {"$ref": "btn__17"}, {"$ref": "btn__18"}, {"$ref": "btn__19"}, {"$ref": "btn__20"}]}}
+{"command": "component.combineVariants", "as": "button_set", "params": {"ids": [{"$ref": "btn"}, {"$ref": "btn__2"}, {"$ref": "btn__3"}, {"$ref": "btn__4"}, {"$ref": "btn__5"}, {"$ref": "btn__6"}, {"$ref": "btn__7"}, {"$ref": "btn__8"}, {"$ref": "btn__9"}, {"$ref": "btn__10"}, {"$ref": "btn__11"}, {"$ref": "btn__12"}, {"$ref": "btn__13"}, {"$ref": "btn__14"}, {"$ref": "btn__15"}, {"$ref": "btn__16"}, {"$ref": "btn__17"}, {"$ref": "btn__18"}, {"$ref": "btn__19"}, {"$ref": "btn__20"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "button_set"}], "props": {"name": "Button"}}}
+// Properties: bind the first variant's layers when adding, then bind the same layer in every other variant.
+{"command": "component.addProperty", "params": {"id": {"$ref": "label"}, "name": "Label", "type": "text"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "lead"}, "name": "Show icon", "type": "boolean", "default": false}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "lead"}, "name": "Icon", "type": "instanceSwap", "preferred": [{"$ref": "ic_arrow_right"}, {"$ref": "ic_plus"}, {"$ref": "ic_download"}, {"$ref": "ic_check"}]}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__2"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__2"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__2"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__3"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__3"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__3"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__4"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__4"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__4"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__5"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__5"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__5"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__6"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__6"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__6"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__7"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__7"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__7"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__8"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__8"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__8"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__9"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__9"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__9"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__10"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__10"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__10"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__11"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__11"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__11"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__12"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__12"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__12"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__13"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__13"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__13"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__14"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__14"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__14"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__15"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__15"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__15"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__16"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__16"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__16"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__17"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__17"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__17"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__18"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__18"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__18"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__19"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__19"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__19"}, "property": "Icon", "field": "mainComponent"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__20"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__20"}, "property": "Show icon", "field": "visible"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "lead__20"}, "property": "Icon", "field": "mainComponent"}}
+// Usage: instances only set properties.
+{"command": "node.create", "as": "in_use", "params": {"type": "frame", "name": "In use", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 12, "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "instance.create", "as": "use", "params": {"component": {"$ref": "button_set"}, "parent": {"$ref": "in_use"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "use"}], "properties": {"Label": "Create project", "Show icon": true, "Icon": {"$ref": "ic_plus"}}}}
+{"command": "instance.create", "as": "use__2", "params": {"component": {"$ref": "button_set"}, "parent": {"$ref": "in_use"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "use__2"}], "properties": {"Kind": "Secondary", "Label": "Export", "Show icon": true, "Icon": {"$ref": "ic_download"}}}}
+{"command": "instance.create", "as": "use__3", "params": {"component": {"$ref": "button_set"}, "parent": {"$ref": "in_use"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "use__3"}], "properties": {"Kind": "Ghost", "Label": "Cancel"}}}
+{"command": "instance.create", "as": "use__4", "params": {"component": {"$ref": "button_set"}, "parent": {"$ref": "in_use"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "use__4"}], "properties": {"Kind": "Danger", "Label": "Delete"}}}
+{"command": "component.properties", "params": {"id": {"$ref": "button_set"}}}

@@ -1,0 +1,133 @@
+// Form controls: input, checkbox, radio, toggle, select
+// Shows: an input with default, focus, error and disabled variants and its label, value and helper as text properties; checkbox, radio and toggle as on / off variants; a select at rest; labels as text properties on every control that has one; every control 44 px high to touch, the toggle inside a 44 px target; control outlines at 3 : 1 against the surface
+// Foundations: semantic colour variables with Light and Dark modes, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1", "Dark": "#334155"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569", "Dark": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5", "Dark": "#818CF8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF", "Dark": "#1E1B4B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857", "Dark": "#34D399"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5", "Dark": "#022C22"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E", "Dark": "#FBBF24"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB", "Dark": "#451A03"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C", "Dark": "#F87171"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2", "Dark": "#450A0A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1", "Dark": "#818CF8"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Form controls", "x": 0, "y": 0, "width": 960, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Form controls", "parent": {"$ref": "header"}, "text": "Form controls", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "Each control ships with every state a developer has to build. Error is never colour alone: it adds an icon and a message.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "grid", "params": {"type": "frame", "name": "Input variants", "parent": {"$ref": "sheet"}, "props": {"layout": "grid", "gridColumns": 2, "columnGap": 24, "rowGap": 24, "columnTracks": ["auto", "auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "state_default", "params": {"type": "frame", "name": "State=Default", "parent": {"$ref": "grid"}, "width": 280, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "label", "params": {"type": "text", "name": "Label", "parent": {"$ref": "state_default"}, "text": "Label", "props": {"textStyle": "Label/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "box", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "state_default"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 12, 0, 12], "sizingH": "fill", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "value", "params": {"type": "text", "name": "Value", "parent": {"$ref": "box"}, "text": "Placeholder", "props": {"textStyle": "Body/M", "fill": {"$var": "text/tertiary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "helper", "params": {"type": "text", "name": "Helper", "parent": {"$ref": "state_default"}, "text": "We only use it to sign you in.", "props": {"textStyle": "Body/S", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "state_focus", "params": {"type": "frame", "name": "State=Focus", "parent": {"$ref": "grid"}, "width": 280, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "label__2", "params": {"type": "text", "name": "Label", "parent": {"$ref": "state_focus"}, "text": "Label", "props": {"textStyle": "Label/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "box__2", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "state_focus"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 12, 0, 12], "sizingH": "fill", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "box__2"}], "props": {"strokes": [{"type": "solid", "color": "#6366F1"}], "strokeWeight": 2}}}
+{"command": "node.create", "as": "value__2", "params": {"type": "text", "name": "Value", "parent": {"$ref": "box__2"}, "text": "name@company.com", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "helper__2", "params": {"type": "text", "name": "Helper", "parent": {"$ref": "state_focus"}, "text": "We only use it to sign you in.", "props": {"textStyle": "Body/S", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "state_error", "params": {"type": "frame", "name": "State=Error", "parent": {"$ref": "grid"}, "width": 280, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "label__3", "params": {"type": "text", "name": "Label", "parent": {"$ref": "state_error"}, "text": "Label", "props": {"textStyle": "Label/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "box__3", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "state_error"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 12, 0, 12], "sizingH": "fill", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "danger/fg"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "value__3", "params": {"type": "text", "name": "Value", "parent": {"$ref": "box__3"}, "text": "name@company.com", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "ic_circle_x", "params": {"type": "frame", "name": "icon/circle-x", "parent": {"$ref": "box__3"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_circle_x"}, "x": 0, "y": 0, "path": "M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0z M15 9l-6 6 M9 9l6 6", "props": {"stroke": {"$var": "danger/fg"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_circle_x"}], "props": {"width": 18, "height": 18}}}
+{"command": "node.create", "as": "helper__3", "params": {"type": "text", "name": "Helper", "parent": {"$ref": "state_error"}, "text": "That address is already registered.", "props": {"textStyle": "Body/S", "fill": {"$var": "danger/fg"}}}}
+{"command": "node.create", "as": "state_disabled", "params": {"type": "frame", "name": "State=Disabled", "parent": {"$ref": "grid"}, "width": 280, "props": {"layout": "vertical", "gap": 6, "opacity": 0.5, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "label__4", "params": {"type": "text", "name": "Label", "parent": {"$ref": "state_disabled"}, "text": "Label", "props": {"textStyle": "Label/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "box__4", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "state_disabled"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 12, 0, 12], "sizingH": "fill", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "value__4", "params": {"type": "text", "name": "Value", "parent": {"$ref": "box__4"}, "text": "name@company.com", "props": {"textStyle": "Body/M", "fill": {"$var": "text/tertiary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "helper__4", "params": {"type": "text", "name": "Helper", "parent": {"$ref": "state_disabled"}, "text": "We only use it to sign you in.", "props": {"textStyle": "Body/S", "fill": {"$var": "text/secondary"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "state_default"}, {"$ref": "state_focus"}, {"$ref": "state_error"}, {"$ref": "state_disabled"}]}}
+{"command": "component.combineVariants", "as": "input_set", "params": {"ids": [{"$ref": "state_default"}, {"$ref": "state_focus"}, {"$ref": "state_error"}, {"$ref": "state_disabled"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "input_set"}], "props": {"name": "Input"}}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "label"}, "name": "Label", "type": "text"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__2"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__3"}, "property": "Label", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__4"}, "property": "Label", "field": "characters"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "value"}, "name": "Value", "type": "text"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "value__2"}, "property": "Value", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "value__3"}, "property": "Value", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "value__4"}, "property": "Value", "field": "characters"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "helper"}, "name": "Helper", "type": "text"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "helper__2"}, "property": "Helper", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "helper__3"}, "property": "Helper", "field": "characters"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "helper__4"}, "property": "Helper", "field": "characters"}}
+{"command": "node.create", "as": "selection_controls", "params": {"type": "frame", "name": "Selection controls", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 48, "crossAlign": "min", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "grid__2", "params": {"type": "frame", "name": "Checkbox variants", "parent": {"$ref": "selection_controls"}, "props": {"layout": "grid", "gridColumns": 1, "columnGap": 4, "rowGap": 4, "columnTracks": ["auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "checked_false", "params": {"type": "frame", "name": "Checked=False", "parent": {"$ref": "grid__2"}, "height": 44, "props": {"layout": "horizontal", "gap": 10, "crossAlign": "center", "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "checked_false"}, "width": 20, "height": 20, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 6, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1.5}}}
+{"command": "node.create", "as": "label__5", "params": {"type": "text", "name": "Label", "parent": {"$ref": "checked_false"}, "text": "Remember this device", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "checked_true", "params": {"type": "frame", "name": "Checked=True", "parent": {"$ref": "grid__2"}, "height": 44, "props": {"layout": "horizontal", "gap": 10, "crossAlign": "center", "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "as": "cb__2", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "checked_true"}, "width": 20, "height": 20, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 6, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "ic_check", "params": {"type": "frame", "name": "icon/check", "parent": {"$ref": "cb__2"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_check"}, "x": 0, "y": 0, "path": "M20 6 9 17l-5-5", "props": {"stroke": {"$var": "text/on-brand"}, "strokeWeight": 3, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_check"}], "props": {"width": 14, "height": 14}}}
+{"command": "node.create", "as": "label__6", "params": {"type": "text", "name": "Label", "parent": {"$ref": "checked_true"}, "text": "Remember this device", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "checked_false"}, {"$ref": "checked_true"}]}}
+{"command": "component.combineVariants", "as": "checkbox_set", "params": {"ids": [{"$ref": "checked_false"}, {"$ref": "checked_true"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "checkbox_set"}], "props": {"name": "Checkbox"}}}
+{"command": "node.create", "as": "grid__3", "params": {"type": "frame", "name": "Radio variants", "parent": {"$ref": "selection_controls"}, "props": {"layout": "grid", "gridColumns": 1, "columnGap": 4, "rowGap": 4, "columnTracks": ["auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "selected_false", "params": {"type": "frame", "name": "Selected=False", "parent": {"$ref": "grid__3"}, "height": 44, "props": {"layout": "horizontal", "gap": 10, "crossAlign": "center", "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Dot", "parent": {"$ref": "selected_false"}, "width": 20, "height": 20, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1.5, "strokeAlign": "inside"}}}
+{"command": "node.create", "as": "label__7", "params": {"type": "text", "name": "Label", "parent": {"$ref": "selected_false"}, "text": "Monthly billing", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "selected_true", "params": {"type": "frame", "name": "Selected=True", "parent": {"$ref": "grid__3"}, "height": 44, "props": {"layout": "horizontal", "gap": 10, "crossAlign": "center", "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Dot", "parent": {"$ref": "selected_true"}, "width": 20, "height": 20, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "brand/primary"}, "strokeWeight": 6, "strokeAlign": "inside"}}}
+{"command": "node.create", "as": "label__8", "params": {"type": "text", "name": "Label", "parent": {"$ref": "selected_true"}, "text": "Monthly billing", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "selected_false"}, {"$ref": "selected_true"}]}}
+{"command": "component.combineVariants", "as": "radio_set", "params": {"ids": [{"$ref": "selected_false"}, {"$ref": "selected_true"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "radio_set"}], "props": {"name": "Radio"}}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "label__5"}, "name": "Label", "type": "text"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__6"}, "property": "Label", "field": "characters"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "label__7"}, "name": "Label", "type": "text"}}
+{"command": "component.bindProperty", "params": {"layer": {"$ref": "label__8"}, "property": "Label", "field": "characters"}}
+{"command": "node.create", "as": "grid__4", "params": {"type": "frame", "name": "Toggle variants", "parent": {"$ref": "selection_controls"}, "props": {"layout": "grid", "gridColumns": 1, "columnGap": 12, "rowGap": 12, "columnTracks": ["auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "tg", "params": {"type": "frame", "name": "On=False", "parent": {"$ref": "grid__4"}, "width": 44, "height": 44, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "fill": "none"}}}
+{"command": "node.create", "as": "track", "params": {"type": "frame", "name": "Track", "parent": {"$ref": "tg"}, "width": 44, "height": 26, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "min", "crossAlign": "center", "cornerRadius": 13, "fill": {"$var": "border/control"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "track"}, "width": 20, "height": 20, "props": {"fill": "#FFFFFF", "effects": [{"type": "dropShadow", "color": "#0F172A33", "offset": [0, 1], "radius": 3}]}}}
+{"command": "node.create", "as": "tg__2", "params": {"type": "frame", "name": "On=True", "parent": {"$ref": "grid__4"}, "width": 44, "height": 44, "props": {"layout": "horizontal", "mainAlign": "center", "crossAlign": "center", "fill": "none"}}}
+{"command": "node.create", "as": "track__2", "params": {"type": "frame", "name": "Track", "parent": {"$ref": "tg__2"}, "width": 44, "height": 26, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "max", "crossAlign": "center", "cornerRadius": 13, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "track__2"}, "width": 20, "height": 20, "props": {"fill": "#FFFFFF", "effects": [{"type": "dropShadow", "color": "#0F172A33", "offset": [0, 1], "radius": 3}]}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "component.combineVariants", "as": "toggle_set", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "toggle_set"}], "props": {"name": "Toggle"}}}
+{"command": "node.create", "as": "select", "params": {"type": "frame", "name": "Select", "parent": {"$ref": "selection_controls"}, "width": 240, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "label__9", "params": {"type": "text", "name": "Label", "parent": {"$ref": "select"}, "text": "Country", "props": {"textStyle": "Label/M", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "box__5", "params": {"type": "frame", "name": "Box", "parent": {"$ref": "select"}, "height": 44, "props": {"layout": "horizontal", "gap": 8, "padding": [0, 12, 0, 12], "sizingH": "fill", "crossAlign": "center", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/control"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "value__5", "params": {"type": "text", "name": "Value", "parent": {"$ref": "box__5"}, "text": "South Korea", "props": {"textStyle": "Body/M", "fill": {"$var": "text/primary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "ic_chevron_down", "params": {"type": "frame", "name": "icon/chevron-down", "parent": {"$ref": "box__5"}, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "vector", "parent": {"$ref": "ic_chevron_down"}, "x": 0, "y": 0, "path": "M6 9l6 6 6-6", "props": {"stroke": {"$var": "text/secondary"}, "strokeWeight": 2, "strokeCap": "round", "strokeJoin": "round", "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "ic_chevron_down"}], "props": {"width": 18, "height": 18}}}
+{"command": "component.create", "params": {"ids": [{"$ref": "select"}]}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "label__9"}, "name": "Label", "type": "text"}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "value__5"}, "name": "Value", "type": "text"}}

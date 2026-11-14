@@ -1,0 +1,135 @@
+// Colour tokens with Light and Dark modes
+// Shows: variable collections, modes, aliases (component token -> semantic token), number tokens bound to padding and radius, a mode set on a frame, tokens exported as CSS
+// Foundations: semantic colour variables with Light and Dark modes, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1", "Dark": "#334155"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569", "Dark": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5", "Dark": "#818CF8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF", "Dark": "#1E1B4B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857", "Dark": "#34D399"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5", "Dark": "#022C22"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E", "Dark": "#FBBF24"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB", "Dark": "#451A03"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C", "Dark": "#F87171"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2", "Dark": "#450A0A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1", "Dark": "#818CF8"}}}
+{"command": "variable.createCollection", "params": {"name": "Scale"}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/1", "type": "number", "value": 4}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/2", "type": "number", "value": 8}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/3", "type": "number", "value": 12}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/4", "type": "number", "value": 16}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/5", "type": "number", "value": 20}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/6", "type": "number", "value": 24}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/8", "type": "number", "value": 32}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/10", "type": "number", "value": 40}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/12", "type": "number", "value": 48}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "space/16", "type": "number", "value": 64}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "radius/sm", "type": "number", "value": 6}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "radius/md", "type": "number", "value": 10}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "radius/lg", "type": "number", "value": 16}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "radius/xl", "type": "number", "value": 24}}
+{"command": "variable.create", "params": {"collection": "Scale", "name": "radius/full", "type": "number", "value": 999}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+// Component tokens alias semantic tokens, so one edit re-themes every button.
+{"command": "variable.createCollection", "params": {"name": "Components"}}
+{"command": "variable.create", "params": {"collection": "Components", "name": "button/bg", "type": "color", "value": {"alias": "brand/primary"}}}
+{"command": "variable.create", "params": {"collection": "Components", "name": "button/label", "type": "color", "value": {"alias": "text/on-brand"}}}
+{"command": "node.create", "as": "board", "params": {"type": "frame", "name": "Tokens · Light", "x": 0, "y": 0, "width": 560, "props": {"layout": "vertical", "gap": 28, "padding": 40, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Theme", "parent": {"$ref": "board"}, "text": "Theme", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "background", "params": {"type": "frame", "name": "Background", "parent": {"$ref": "board"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "BACKGROUND", "parent": {"$ref": "background"}, "text": "BACKGROUND", "props": {"textStyle": "Overline", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "swatches", "params": {"type": "frame", "name": "Swatches", "parent": {"$ref": "background"}, "props": {"layout": "horizontal", "gap": 12, "sizingH": "fill", "wrap": true, "crossGap": 12, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "bg_canvas", "params": {"type": "frame", "name": "bg/canvas", "parent": {"$ref": "swatches"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "bg_canvas"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "bg/canvas"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "canvas", "parent": {"$ref": "bg_canvas"}, "text": "canvas", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "bg_surface", "params": {"type": "frame", "name": "bg/surface", "parent": {"$ref": "swatches"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "bg_surface"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "surface", "parent": {"$ref": "bg_surface"}, "text": "surface", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "bg_subtle", "params": {"type": "frame", "name": "bg/subtle", "parent": {"$ref": "swatches"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "bg_subtle"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "bg/subtle"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "subtle", "parent": {"$ref": "bg_subtle"}, "text": "subtle", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "bg_inverse", "params": {"type": "frame", "name": "bg/inverse", "parent": {"$ref": "swatches"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "bg_inverse"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "bg/inverse"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "inverse", "parent": {"$ref": "bg_inverse"}, "text": "inverse", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "text", "params": {"type": "frame", "name": "Text", "parent": {"$ref": "board"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "TEXT", "parent": {"$ref": "text"}, "text": "TEXT", "props": {"textStyle": "Overline", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "swatches__2", "params": {"type": "frame", "name": "Swatches", "parent": {"$ref": "text"}, "props": {"layout": "horizontal", "gap": 12, "sizingH": "fill", "wrap": true, "crossGap": 12, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "text_primary", "params": {"type": "frame", "name": "text/primary", "parent": {"$ref": "swatches__2"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "text_primary"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "text/primary"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "primary", "parent": {"$ref": "text_primary"}, "text": "primary", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "text_secondary", "params": {"type": "frame", "name": "text/secondary", "parent": {"$ref": "swatches__2"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "text_secondary"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "text/secondary"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "secondary", "parent": {"$ref": "text_secondary"}, "text": "secondary", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "text_tertiary", "params": {"type": "frame", "name": "text/tertiary", "parent": {"$ref": "swatches__2"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "text_tertiary"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "text/tertiary"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "tertiary", "parent": {"$ref": "text_tertiary"}, "text": "tertiary", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "brand", "params": {"type": "frame", "name": "Brand", "parent": {"$ref": "board"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "BRAND", "parent": {"$ref": "brand"}, "text": "BRAND", "props": {"textStyle": "Overline", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "swatches__3", "params": {"type": "frame", "name": "Swatches", "parent": {"$ref": "brand"}, "props": {"layout": "horizontal", "gap": 12, "sizingH": "fill", "wrap": true, "crossGap": 12, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "brand_primary", "params": {"type": "frame", "name": "brand/primary", "parent": {"$ref": "swatches__3"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "brand_primary"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "brand/primary"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "primary", "parent": {"$ref": "brand_primary"}, "text": "primary", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "brand_primary_hover", "params": {"type": "frame", "name": "brand/primary-hover", "parent": {"$ref": "swatches__3"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "brand_primary_hover"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "brand/primary-hover"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "primary-hover", "parent": {"$ref": "brand_primary_hover"}, "text": "primary-hover", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "brand_subtle", "params": {"type": "frame", "name": "brand/subtle", "parent": {"$ref": "swatches__3"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "brand_subtle"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "brand/subtle"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "subtle", "parent": {"$ref": "brand_subtle"}, "text": "subtle", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "brand_on_subtle", "params": {"type": "frame", "name": "brand/on-subtle", "parent": {"$ref": "swatches__3"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "brand_on_subtle"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "brand/on-subtle"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "on-subtle", "parent": {"$ref": "brand_on_subtle"}, "text": "on-subtle", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "status", "params": {"type": "frame", "name": "Status", "parent": {"$ref": "board"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "STATUS", "parent": {"$ref": "status"}, "text": "STATUS", "props": {"textStyle": "Overline", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "swatches__4", "params": {"type": "frame", "name": "Swatches", "parent": {"$ref": "status"}, "props": {"layout": "horizontal", "gap": 12, "sizingH": "fill", "wrap": true, "crossGap": 12, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "success_fg", "params": {"type": "frame", "name": "success/fg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "success_fg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "success/fg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "success/fg", "parent": {"$ref": "success_fg"}, "text": "success/fg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "success_bg", "params": {"type": "frame", "name": "success/bg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "success_bg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "success/bg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "success/bg", "parent": {"$ref": "success_bg"}, "text": "success/bg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "warning_fg", "params": {"type": "frame", "name": "warning/fg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "warning_fg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "warning/fg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "warning/fg", "parent": {"$ref": "warning_fg"}, "text": "warning/fg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "warning_bg", "params": {"type": "frame", "name": "warning/bg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "warning_bg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "warning/bg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "warning/bg", "parent": {"$ref": "warning_bg"}, "text": "warning/bg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "danger_fg", "params": {"type": "frame", "name": "danger/fg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "danger_fg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "danger/fg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "danger/fg", "parent": {"$ref": "danger_fg"}, "text": "danger/fg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "danger_bg", "params": {"type": "frame", "name": "danger/bg", "parent": {"$ref": "swatches__4"}, "width": 108, "props": {"layout": "vertical", "gap": 6, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Swatch", "parent": {"$ref": "danger_bg"}, "height": 56, "props": {"sizingH": "fill", "cornerRadius": 10, "fill": {"$var": "danger/bg"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "danger/bg", "parent": {"$ref": "danger_bg"}, "text": "danger/bg", "props": {"textStyle": "Caption", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "button", "params": {"type": "frame", "name": "Button", "parent": {"$ref": "board"}, "props": {"layout": "horizontal", "gap": 8, "padding": [12, 20, 12, 20], "cornerRadius": 10, "fill": {"$var": "button/bg"}, "sizingH": "hug", "crossAlign": "center", "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Bound to button/bg", "parent": {"$ref": "button"}, "text": "Bound to button/bg", "props": {"textStyle": "Label/L", "fill": {"$var": "button/label"}}}}
+{"command": "variable.bind", "params": {"ids": [{"$ref": "button"}], "field": "cornerRadius", "variable": "radius/md"}}
+{"command": "variable.bind", "params": {"ids": [{"$ref": "button"}], "field": "paddingHorizontal", "variable": "space/5"}}
+// The same layers in Dark: duplicate the frame and set the mode on the copy. Everything bound inside follows.
+{"command": "edit.duplicate", "as": "dark", "params": {"ids": [{"$ref": "board"}], "dx": 620, "dy": 0}}
+{"command": "node.set", "params": {"ids": [{"$ref": "dark", "field": "ids/0"}], "props": {"name": "Tokens · Dark"}}}
+{"command": "variable.setMode", "params": {"ids": {"$ref": "dark", "field": "ids"}, "collection": "Theme", "mode": "Dark"}}
+{"command": "variable.export", "params": {"format": "css"}}
