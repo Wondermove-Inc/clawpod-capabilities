@@ -1,0 +1,6 @@
+// Library, part 1: publish components, styles and variables
+// Shows: publishing a design-system file as a library version; run it with --out so the consumer in part 2 can add it
+// in: 02-components/03-button-variants-and-properties
+// then: keep the output as out/41-publish-a-library.figcraft
+{"command": "library.publish", "params": {"description": "Button set, text and effect styles, Theme variables"}}
+{"command": "library.list", "params": {"assets": true}}

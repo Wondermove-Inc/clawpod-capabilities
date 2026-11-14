@@ -1,0 +1,19 @@
+// Review workflow: comments, named versions and a branch merged back
+// Shows: pinned comments with replies and resolution, a named version before a risky change, a branch for an exploration, reviewing what changed, merging it into main
+// in: 03-screens/10-mobile-app-flow-with-components
+{"command": "node.find", "params": {"name": "Welcome", "type": "FRAME"}}
+{"command": "comment.add", "as": "c1", "params": {"x": 60, "y": 560, "text": "Can the headline say what the app does in five words?", "author": "Mara", "anchor": true}}
+{"command": "comment.reply", "params": {"id": {"$ref": "c1"}, "text": "Trying \"Keep every plant alive\".", "author": "Jisoo"}}
+{"command": "comment.resolve", "params": {"id": {"$ref": "c1"}}}
+{"command": "comment.add", "params": {"x": 200, "y": 760, "text": "Secondary action needs more contrast in Dark.", "author": "Tomas", "anchor": true}}
+{"command": "comment.list", "params": {"filter": "open"}}
+// Name a version before changing direction, so there is something to return to.
+{"command": "file.saveVersion", "params": {"name": "Before colour exploration", "description": "Green brand, approved 14 Oct"}}
+// Explore on a branch: main stays shippable. Commands after branch.create run on the branch.
+{"command": "branch.create", "as": "branch", "params": {"name": "explore-warm-palette"}}
+{"command": "variable.set", "params": {"variable": "brand/primary", "mode": "Light", "value": "#C2410C"}}
+{"command": "variable.set", "params": {"variable": "brand/subtle", "mode": "Light", "value": "#FFF7ED"}}
+{"command": "variable.set", "params": {"variable": "brand/on-subtle", "mode": "Light", "value": "#9A3412"}}
+{"command": "branch.review", "params": {"id": {"$ref": "branch"}}}
+{"command": "branch.merge", "params": {"id": {"$ref": "branch"}}}
+{"command": "version.list", "params": {}}

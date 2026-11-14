@@ -1,0 +1,21 @@
+// Board: a flowchart with decisions and labelled connectors
+// Shows: process, decision and terminal shapes, elbow connectors that follow their shapes, yes / no labels, adding a connected shape in one call
+// A board is its own kind of file: stickies, shapes, connectors, sections.
+{"command": "file.newBoard", "params": {"name": "Refund flow"}}
+{"command": "board.shape", "as": "node", "params": {"shape": "roundedRectangle", "x": 0, "y": 0, "width": 220, "height": 110, "text": "Refund requested", "color": "green"}}
+{"command": "board.shape", "as": "node__2", "params": {"shape": "diamond", "x": 0, "y": 200, "width": 220, "height": 160, "text": "In 30 days?", "color": "yellow"}}
+{"command": "board.shape", "as": "node__3", "params": {"shape": "rectangle", "x": 380, "y": 225, "width": 220, "height": 110, "text": "Refund automatically", "color": "blue"}}
+{"command": "board.shape", "as": "node__4", "params": {"shape": "rectangle", "x": 0, "y": 460, "width": 220, "height": 110, "text": "Send to support review", "color": "blue"}}
+{"command": "board.shape", "as": "node__5", "params": {"shape": "diamond", "x": 0, "y": 670, "width": 220, "height": 160, "text": "Approved?", "color": "yellow"}}
+{"command": "board.shape", "as": "node__6", "params": {"shape": "rectangle", "x": -380, "y": 695, "width": 220, "height": 110, "text": "Explain and offer credit", "color": "pink"}}
+{"command": "board.shape", "as": "node__7", "params": {"shape": "roundedRectangle", "x": 380, "y": 695, "width": 220, "height": 110, "text": "Refund and email sent", "color": "green"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node"}, "to": {"$ref": "node__2"}, "style": "elbow"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__2"}, "to": {"$ref": "node__3"}, "style": "elbow", "label": "Yes"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__2"}, "to": {"$ref": "node__4"}, "style": "elbow", "label": "No"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__4"}, "to": {"$ref": "node__5"}, "style": "elbow"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__5"}, "to": {"$ref": "node__7"}, "style": "elbow", "label": "Yes"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__5"}, "to": {"$ref": "node__6"}, "style": "elbow", "label": "No"}}
+{"command": "board.connector", "params": {"from": {"$ref": "node__3"}, "to": {"$ref": "node__7"}, "style": "elbow"}}
+// addConnected places the next shape and draws the connector in one step.
+{"command": "board.addConnected", "as": "next", "params": {"id": {"$ref": "node__7"}, "side": "right"}}
+{"command": "text.set", "params": {"id": {"$ref": "next", "field": "text"}, "text": "Close ticket"}}

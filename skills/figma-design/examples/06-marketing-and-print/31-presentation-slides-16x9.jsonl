@@ -1,0 +1,142 @@
+// Presentation slides at 1920 x 1080
+// Shows: a deck as frames in reading order, one idea per slide, type no smaller than 28 px on a 1920 px slide, content that fills the slide, a footer component with a page number property on its own page, a chart with axis values, exporting the frames to one PDF
+// then: figcraft-cli export deck.figcraft -o deck.pdf
+// Foundations: semantic colour variables, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Title", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 120, "lineHeight": "104%", "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Heading", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 72, "lineHeight": "110%", "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Figure", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 300, "lineHeight": "100%", "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Body", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 44, "lineHeight": "136%", "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Label", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 44, "lineHeight": "120%", "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Slide/Small", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 28, "lineHeight": "140%", "letterSpacing": "0%"}}}
+// The footer main lives on its own page, so it is not exported as a slide.
+{"command": "page.add", "params": {"name": "Components"}}
+{"command": "node.create", "as": "footer", "params": {"type": "frame", "name": "Footer", "x": 0, "y": 0, "width": 1680, "props": {"layout": "horizontal", "gap": 0, "mainAlign": "spaceBetween", "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Northwind · Q3 review", "parent": {"$ref": "footer"}, "text": "Northwind · Q3 review", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "page", "params": {"type": "text", "name": "Page", "parent": {"$ref": "footer"}, "text": "1", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "component.create", "params": {"ids": [{"$ref": "footer"}]}}
+{"command": "component.addProperty", "params": {"id": {"$ref": "page"}, "name": "Page", "type": "text"}}
+{"command": "page.select", "params": {"index": 0}}
+{"command": "page.rename", "params": {"name": "Slides"}}
+{"command": "node.create", "as": "slide", "params": {"type": "frame", "name": "1 Title", "x": 0, "y": 0, "width": 1920, "height": 1080, "props": {"layout": "vertical", "padding": [120, 120, 64, 120], "gap": 32, "fill": "#0F172A"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Q3 REVIEW · OCTOBER 2026", "parent": {"$ref": "slide"}, "text": "Q3 REVIEW · OCTOBER 2026", "props": {"textStyle": "Slide/Small", "fill": "#94A3B8", "letterSpacing": "10%"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Spacer", "parent": {"$ref": "slide"}, "props": {"sizingH": "fill", "sizingV": "fill", "fill": "none"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "slide"}, "text": "Fewer reviews, faster decisions", "props": {"textStyle": "Slide/Title", "fill": "#FFFFFF", "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "slide"}, "text": "What changed after shared review links shipped", "props": {"textStyle": "Slide/Body", "fill": "#CBD5E1"}}}
+{"command": "node.create", "as": "slide__2", "params": {"type": "frame", "name": "2 Agenda", "x": 2020, "y": 0, "width": 1920, "height": 1080, "props": {"layout": "vertical", "padding": [120, 120, 64, 120], "gap": 32, "fill": {"$var": "bg/surface"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Three things", "parent": {"$ref": "slide__2"}, "text": "Three things", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "items", "params": {"type": "frame", "name": "Items", "parent": {"$ref": "slide__2"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "item_1", "params": {"type": "frame", "name": "Item 1", "parent": {"$ref": "items"}, "props": {"layout": "horizontal", "gap": 48, "sizingH": "fill", "sizingV": "fill", "crossAlign": "center", "stroke": {"$var": "border/subtle"}, "strokeWeight": 2, "strokeSides": [2, 0, 0, 0], "fill": "none", "clip": false}}}
+{"command": "node.create", "params": {"type": "text", "name": "01", "parent": {"$ref": "item_1"}, "width": 160, "text": "01", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "text__3", "params": {"type": "frame", "name": "Text", "parent": {"$ref": "item_1"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "What we shipped", "parent": {"$ref": "text__3"}, "text": "What we shipped", "props": {"textStyle": "Slide/Label", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "text__3"}, "text": "Shared links, due dates, approvals", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "item_2", "params": {"type": "frame", "name": "Item 2", "parent": {"$ref": "items"}, "props": {"layout": "horizontal", "gap": 48, "sizingH": "fill", "sizingV": "fill", "crossAlign": "center", "stroke": {"$var": "border/subtle"}, "strokeWeight": 2, "strokeSides": [2, 0, 0, 0], "fill": "none", "clip": false}}}
+{"command": "node.create", "params": {"type": "text", "name": "02", "parent": {"$ref": "item_2"}, "width": 160, "text": "02", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "text__5", "params": {"type": "frame", "name": "Text", "parent": {"$ref": "item_2"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "What moved", "parent": {"$ref": "text__5"}, "text": "What moved", "props": {"textStyle": "Slide/Label", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "text__5"}, "text": "Time to decision, down 41%", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "item_3", "params": {"type": "frame", "name": "Item 3", "parent": {"$ref": "items"}, "props": {"layout": "horizontal", "gap": 48, "sizingH": "fill", "sizingV": "fill", "crossAlign": "center", "stroke": {"$var": "border/subtle"}, "strokeWeight": 2, "strokeSides": [2, 0, 0, 0], "fill": "none", "clip": false}}}
+{"command": "node.create", "params": {"type": "text", "name": "03", "parent": {"$ref": "item_3"}, "width": 160, "text": "03", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "as": "text__7", "params": {"type": "frame", "name": "Text", "parent": {"$ref": "item_3"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "What is next", "parent": {"$ref": "text__7"}, "text": "What is next", "props": {"textStyle": "Slide/Label", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "text__7"}, "text": "Annual billing by default", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}}}}
+{"command": "instance.create", "as": "foot", "params": {"component": {"$ref": "footer"}, "parent": {"$ref": "slide__2"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "foot"}], "properties": {"Page": "2"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "foot"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "slide__3", "params": {"type": "frame", "name": "3 Figure", "x": 4040, "y": 0, "width": 1920, "height": 1080, "props": {"layout": "vertical", "padding": [120, 120, 64, 120], "gap": 32, "fill": {"$var": "bg/surface"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "TIME TO DECISION", "parent": {"$ref": "slide__3"}, "text": "TIME TO DECISION", "props": {"textStyle": "Slide/Small", "fill": {"$var": "brand/primary"}, "letterSpacing": "10%"}}}
+{"command": "node.create", "params": {"type": "text", "name": "−41%", "parent": {"$ref": "slide__3"}, "text": "−41%", "props": {"textStyle": "Slide/Figure", "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "slide__3"}, "width": 1200, "text": "From 5.4 days to 3.2 days, measured across 312 reviews.", "props": {"textStyle": "Slide/Body", "fill": {"$var": "text/secondary"}, "textAutoResize": "height", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "supporting_figures", "params": {"type": "frame", "name": "Supporting figures", "parent": {"$ref": "slide__3"}, "props": {"layout": "horizontal", "gap": 32, "sizingH": "fill", "sizingV": "fill", "crossAlign": "max", "fill": "none", "clip": false}}}
+{"command": "node.create", "as": "stat_reviews_measured", "params": {"type": "frame", "name": "Stat / reviews measured", "parent": {"$ref": "supporting_figures"}, "props": {"layout": "vertical", "gap": 4, "padding": 32, "sizingH": "fill", "cornerRadius": 24, "fill": {"$var": "bg/canvas"}, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "312", "parent": {"$ref": "stat_reviews_measured"}, "text": "312", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "reviews measured", "parent": {"$ref": "stat_reviews_measured"}, "text": "reviews measured", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}, "sizingH": "fill"}}}
+{"command": "node.create", "as": "stat_comments_to_a_decision_from_4_8", "params": {"type": "frame", "name": "Stat / comments to a decision, from 4.8", "parent": {"$ref": "supporting_figures"}, "props": {"layout": "vertical", "gap": 4, "padding": 32, "sizingH": "fill", "cornerRadius": 24, "fill": {"$var": "bg/canvas"}, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "2.1", "parent": {"$ref": "stat_comments_to_a_decision_from_4_8"}, "text": "2.1", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "stat_comments_to_a_decision_from_4_8"}, "text": "comments to a decision, from 4.8", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "stat_closed_inside_the_due_date", "params": {"type": "frame", "name": "Stat / closed inside the due date", "parent": {"$ref": "supporting_figures"}, "props": {"layout": "vertical", "gap": 4, "padding": 32, "sizingH": "fill", "cornerRadius": 24, "fill": {"$var": "bg/canvas"}, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "96%", "parent": {"$ref": "stat_closed_inside_the_due_date"}, "text": "96%", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "stat_closed_inside_the_due_date"}, "text": "closed inside the due date", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "instance.create", "as": "foot__2", "params": {"component": {"$ref": "footer"}, "parent": {"$ref": "slide__3"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "foot__2"}], "properties": {"Page": "3"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "foot__2"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "slide__4", "params": {"type": "frame", "name": "4 Chart", "x": 6060, "y": 0, "width": 1920, "height": 1080, "props": {"layout": "vertical", "padding": [120, 120, 64, 120], "gap": 32, "fill": {"$var": "bg/surface"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Decisions per week", "parent": {"$ref": "slide__4"}, "text": "Decisions per week", "props": {"textStyle": "Slide/Heading", "fill": {"$var": "text/primary"}}}}
+{"command": "node.create", "as": "chart", "params": {"type": "frame", "name": "Chart", "parent": {"$ref": "slide__4"}, "props": {"layout": "vertical", "gap": 0, "sizingH": "fill", "sizingV": "fill", "padding": [40, 48, 32, 48], "cornerRadius": 32, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "line_chart", "params": {"type": "frame", "name": "Line chart", "parent": {"$ref": "chart"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "legend", "params": {"type": "frame", "name": "Legend", "parent": {"$ref": "line_chart"}, "props": {"layout": "horizontal", "gap": 20, "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "as": "this_period", "params": {"type": "frame", "name": "This period", "parent": {"$ref": "legend"}, "props": {"layout": "horizontal", "gap": 8, "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Key", "parent": {"$ref": "this_period"}, "width": 16, "height": 3, "props": {"cornerRadius": 2, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "This period", "parent": {"$ref": "this_period"}, "text": "This period", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "last_period", "params": {"type": "frame", "name": "Last period", "parent": {"$ref": "legend"}, "props": {"layout": "horizontal", "gap": 8, "crossAlign": "center", "fill": "none", "clip": false, "sizingV": "hug", "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "rectangle", "name": "Key", "parent": {"$ref": "last_period"}, "width": 16, "height": 3, "props": {"cornerRadius": 2, "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Last period", "parent": {"$ref": "last_period"}, "text": "Last period", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "body", "params": {"type": "frame", "name": "Body", "parent": {"$ref": "line_chart"}, "props": {"layout": "horizontal", "gap": 12, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "y_axis", "params": {"type": "frame", "name": "Y axis", "parent": {"$ref": "body"}, "height": 539, "props": {"layout": "vertical", "gap": 0, "mainAlign": "spaceBetween", "crossAlign": "max", "fill": "none", "clip": false, "sizingH": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "80", "parent": {"$ref": "y_axis"}, "text": "80", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "60", "parent": {"$ref": "y_axis"}, "text": "60", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "40", "parent": {"$ref": "y_axis"}, "text": "40", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "20", "parent": {"$ref": "y_axis"}, "text": "20", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "0", "parent": {"$ref": "y_axis"}, "text": "0", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "as": "plot_area", "params": {"type": "frame", "name": "Plot area", "parent": {"$ref": "body"}, "props": {"layout": "vertical", "gap": 10, "padding": [19.5, 0, 0, 0], "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "plot", "params": {"type": "frame", "name": "Plot", "parent": {"$ref": "plot_area"}, "width": 1500, "height": 500, "props": {"fill": "none", "clip": true}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Grid line", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0 0.0 L1500 0.0", "props": {"stroke": {"$var": "border/subtle"}, "strokeWeight": 1, "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Grid line", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0 125.0 L1500 125.0", "props": {"stroke": {"$var": "border/subtle"}, "strokeWeight": 1, "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Grid line", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0 250.0 L1500 250.0", "props": {"stroke": {"$var": "border/subtle"}, "strokeWeight": 1, "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Grid line", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0 375.0 L1500 375.0", "props": {"stroke": {"$var": "border/subtle"}, "strokeWeight": 1, "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Baseline", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0 500 L1500 500", "props": {"stroke": {"$var": "border/strong"}, "strokeWeight": 1, "fill": "none", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Area", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0.0 387.5 L166.7 362.5 L333.3 368.8 L500.0 331.2 L666.7 281.2 L833.3 293.8 L1000.0 243.8 L1166.7 200.0 L1333.3 175.0 L1500.0 118.8 L1500 500 L0 500 Z", "props": {"fill": {"$var": "brand/primary"}, "opacity": 0.12, "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Last period", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0.0 393.8 L166.7 387.5 L333.3 375.0 L500.0 368.8 L666.7 362.5 L833.3 350.0 L1000.0 343.8 L1166.7 337.5 L1333.3 325.0 L1500.0 318.8", "props": {"stroke": {"$var": "text/tertiary"}, "strokeWeight": 2, "dashes": [6, 6], "fill": "none", "strokeJoin": "round", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Series", "parent": {"$ref": "plot"}, "x": 0, "y": 0, "path": "M0.0 387.5 L166.7 362.5 L333.3 368.8 L500.0 331.2 L666.7 281.2 L833.3 293.8 L1000.0 243.8 L1166.7 200.0 L1333.3 175.0 L1500.0 118.8", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 3, "fill": "none", "strokeJoin": "round", "strokeCap": "round", "constraints": {"horizontal": "scale", "vertical": "scale"}}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "plot"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "x_axis", "params": {"type": "frame", "name": "X axis", "parent": {"$ref": "plot_area"}, "props": {"layout": "horizontal", "gap": 0, "sizingH": "fill", "mainAlign": "spaceBetween", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Jul", "parent": {"$ref": "x_axis"}, "text": "Jul", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Aug", "parent": {"$ref": "x_axis"}, "text": "Aug", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Sep", "parent": {"$ref": "x_axis"}, "text": "Sep", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Oct", "parent": {"$ref": "x_axis"}, "text": "Oct", "props": {"textStyle": "Slide/Small", "fill": {"$var": "text/tertiary"}}}}
+{"command": "instance.create", "as": "foot__3", "params": {"component": {"$ref": "footer"}, "parent": {"$ref": "slide__4"}}}
+{"command": "instance.setProperties", "params": {"ids": [{"$ref": "foot__3"}], "properties": {"Page": "4"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "foot__3"}], "props": {"sizingH": "fill"}}}
+{"command": "node.create", "as": "slide__5", "params": {"type": "frame", "name": "5 Closing", "x": 8080, "y": 0, "width": 1920, "height": 1080, "props": {"layout": "vertical", "padding": [120, 120, 64, 120], "gap": 32, "fill": "#0F172A"}}}
+{"command": "node.create", "params": {"type": "frame", "name": "Spacer", "parent": {"$ref": "slide__5"}, "props": {"sizingH": "fill", "sizingV": "fill", "fill": "none"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "slide__5"}, "text": "Next: annual billing by default", "props": {"textStyle": "Slide/Title", "fill": "#FFFFFF", "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "slide__5"}, "text": "Decision needed today · owner: Tomas", "props": {"textStyle": "Slide/Body", "fill": "#CBD5E1"}}}
+{"command": "proto.flow.add", "params": {"start": {"$ref": "slide"}, "name": "Present"}}

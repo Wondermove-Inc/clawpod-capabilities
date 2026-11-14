@@ -1,0 +1,53 @@
+// Vector illustration: layered gradients, glow, mask and grain
+// Shows: depth from overlapping gradient shapes, a blurred glow behind the sun, clouds from unioned ellipses, an alpha mask that crops the scene to a shape, a noise effect for grain
+{"command": "node.create", "as": "poster", "params": {"type": "frame", "name": "Poster", "x": 0, "y": 0, "width": 800, "height": 1000, "props": {"fills": [{"type": "linearGradient", "stops": ["#1E1B4B", "#7C3AED", "#FB923C"]}], "clip": true, "cornerRadius": 32}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Glow", "parent": {"$ref": "poster"}, "x": 250, "y": 330, "width": 300, "height": 300, "props": {"fill": "#FDBA74", "effects": [{"type": "layerBlur", "radius": 90}]}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Sun", "parent": {"$ref": "poster"}, "x": 320, "y": 400, "width": 160, "height": 160, "props": {"fills": [{"type": "radialGradient", "stops": ["#FFF7ED", "#FDBA74"]}]}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 174, "y": 222, "width": 3, "height": 3, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 94, "y": 294, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 616, "y": 49, "width": 3, "height": 3, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 58, "y": 64, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 91, "y": 143, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 80, "y": 309, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 665, "y": 318, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 70, "y": 133, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 316, "y": 234, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 604, "y": 177, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 125, "y": 317, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 401, "y": 69, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 597, "y": 50, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 528, "y": 292, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 496, "y": 319, "width": 3, "height": 3, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 326, "y": 147, "width": 3, "height": 3, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 103, "y": 314, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 371, "y": 249, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 140, "y": 282, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 370, "y": 97, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.7}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 60, "y": 59, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 368, "y": 199, "width": 3, "height": 3, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 613, "y": 253, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.5}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 296, "y": 262, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 82, "y": 178, "width": 2, "height": 2, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Star", "parent": {"$ref": "poster"}, "x": 311, "y": 217, "width": 4, "height": 4, "props": {"fill": "#FFFFFF", "opacity": 0.9}}}
+{"command": "node.create", "as": "puff", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "poster"}, "x": 90, "y": 250, "width": 120, "height": 72.0, "props": {"fill": "#FFFFFF"}}}
+{"command": "node.create", "as": "puff__2", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "poster"}, "x": 150, "y": 228, "width": 150, "height": 90.0, "props": {"fill": "#FFFFFF"}}}
+{"command": "node.create", "as": "puff__3", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "poster"}, "x": 230, "y": 252, "width": 110, "height": 66.0, "props": {"fill": "#FFFFFF"}}}
+{"command": "bool.union", "as": "cloud", "params": {"ids": [{"$ref": "puff"}, {"$ref": "puff__2"}, {"$ref": "puff__3"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "cloud"}], "props": {"opacity": 0.18}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Ridge 1", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M0 620 L140 500 L260 590 L420 450 L560 580 L700 480 L800 560 L800 1000 L0 1000 Z", "props": {"fills": [{"type": "linearGradient", "stops": ["#6D28D9", "#4C1D95"]}]}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Ridge 2", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M0 760 L180 610 L330 720 L520 590 L680 730 L800 660 L800 1000 L0 1000 Z", "props": {"fills": [{"type": "linearGradient", "stops": ["#4C1D95", "#2E1065"]}]}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Ridge 3", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M0 880 C 200 780, 380 900, 520 820 S 720 760, 800 840 L800 1000 L0 1000 Z", "props": {"fills": [{"type": "linearGradient", "stops": ["#1E1B4B", "#0F0A2E"]}]}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Pine", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M120 900 L134 810 L148 900 Z", "props": {"fill": "#0B0720"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Pine", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M150 900 L164 780 L178 900 Z", "props": {"fill": "#0B0720"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Pine", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M185 900 L199 820 L213 900 Z", "props": {"fill": "#0B0720"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Pine", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M610 900 L624 800 L638 900 Z", "props": {"fill": "#0B0720"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Pine", "parent": {"$ref": "poster"}, "x": 0, "y": 0, "path": "M645 900 L659 770 L673 900 Z", "props": {"fill": "#0B0720"}}}
+{"command": "effect.add", "params": {"ids": [{"$ref": "poster"}], "effect": {"type": "noise", "opacity": 0.12}}}
+// Mask: the bottom layer of the selection becomes the mask, so move the circle below the artwork first. Here it crops a copy of the scene into a badge.
+{"command": "edit.duplicate", "as": "copy", "params": {"ids": [{"$ref": "poster"}], "dx": 880, "dy": 0}}
+{"command": "node.create", "as": "badge", "params": {"type": "frame", "name": "Badge", "x": 880, "y": 0, "width": 800, "height": 1000, "props": {"fill": "#F8FAFC"}}}
+{"command": "node.reparent", "params": {"ids": {"$ref": "copy", "field": "ids"}, "parent": {"$ref": "badge"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "copy", "field": "ids/0"}], "props": {"x": 0, "y": 0}}}
+{"command": "node.create", "as": "mask", "params": {"type": "ellipse", "name": "Mask", "parent": {"$ref": "badge"}, "x": 100, "y": 200, "width": 600, "height": 600, "props": {"fill": "#000000"}}}
+{"command": "node.reorder", "params": {"id": {"$ref": "mask"}, "index": 0}}
+{"command": "object.mask", "params": {"ids": [{"$ref": "mask"}, {"$ref": "copy", "field": "ids/0"}]}}

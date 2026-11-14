@@ -1,0 +1,50 @@
+// Logo marks from boolean operations, with lockups and export settings
+// Shows: union / subtract / intersect / exclude on simple shapes, flattening the result to one vector, outlining a stroke, a clear-space lockup on light and dark, export settings for SVG and PNG at 1x and 2x
+{"command": "node.create", "as": "construction", "params": {"type": "frame", "name": "Construction", "x": 0, "y": 0, "width": 1120, "props": {"layout": "horizontal", "sizingV": "hug", "padding": 48, "gap": 40, "fill": "#F8FAFC", "crossAlign": "center"}}}
+{"command": "node.create", "as": "subtract_crescent", "params": {"type": "frame", "name": "Subtract: crescent", "parent": {"$ref": "construction"}, "props": {"layout": "vertical", "gap": 16, "crossAlign": "center", "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "artboard", "params": {"type": "frame", "name": "Artboard", "parent": {"$ref": "subtract_crescent"}, "width": 200, "height": 200, "props": {"fill": "#FFFFFF", "cornerRadius": 24, "stroke": "#E2E8F0", "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "Subtract: crescent", "parent": {"$ref": "subtract_crescent"}, "text": "Subtract: crescent", "props": {"fill": "#475569", "fontSize": 13}}}
+{"command": "node.create", "as": "disc", "params": {"type": "ellipse", "name": "Disc", "parent": {"$ref": "artboard"}, "x": 40, "y": 40, "width": 120, "height": 120, "props": {"fill": "#4F46E5"}}}
+{"command": "node.create", "as": "cut", "params": {"type": "ellipse", "name": "Cut", "parent": {"$ref": "artboard"}, "x": 76, "y": 28, "width": 104, "height": 104, "props": {"fill": "#4F46E5"}}}
+{"command": "bool.subtract", "params": {"ids": [{"$ref": "disc"}, {"$ref": "cut"}]}}
+{"command": "node.create", "as": "union_cloud", "params": {"type": "frame", "name": "Union: cloud", "parent": {"$ref": "construction"}, "props": {"layout": "vertical", "gap": 16, "crossAlign": "center", "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "artboard__2", "params": {"type": "frame", "name": "Artboard", "parent": {"$ref": "union_cloud"}, "width": 200, "height": 200, "props": {"fill": "#FFFFFF", "cornerRadius": 24, "stroke": "#E2E8F0", "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "Union: cloud", "parent": {"$ref": "union_cloud"}, "text": "Union: cloud", "props": {"fill": "#475569", "fontSize": 13}}}
+{"command": "node.create", "as": "puff", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "artboard__2"}, "x": 36, "y": 80, "width": 64, "height": 64, "props": {"fill": "#4F46E5"}}}
+{"command": "node.create", "as": "puff__2", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "artboard__2"}, "x": 70, "y": 56, "width": 76, "height": 76, "props": {"fill": "#4F46E5"}}}
+{"command": "node.create", "as": "puff__3", "params": {"type": "ellipse", "name": "Puff", "parent": {"$ref": "artboard__2"}, "x": 112, "y": 84, "width": 60, "height": 60, "props": {"fill": "#4F46E5"}}}
+{"command": "node.create", "as": "base", "params": {"type": "rectangle", "name": "Base", "parent": {"$ref": "artboard__2"}, "x": 68, "y": 108, "width": 74, "height": 36, "props": {"fill": "#4F46E5"}}}
+{"command": "bool.union", "params": {"ids": [{"$ref": "puff"}, {"$ref": "puff__2"}, {"$ref": "puff__3"}, {"$ref": "base"}]}}
+{"command": "node.create", "as": "intersect_leaf", "params": {"type": "frame", "name": "Intersect: leaf", "parent": {"$ref": "construction"}, "props": {"layout": "vertical", "gap": 16, "crossAlign": "center", "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "artboard__3", "params": {"type": "frame", "name": "Artboard", "parent": {"$ref": "intersect_leaf"}, "width": 200, "height": 200, "props": {"fill": "#FFFFFF", "cornerRadius": 24, "stroke": "#E2E8F0", "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "Intersect: leaf", "parent": {"$ref": "intersect_leaf"}, "text": "Intersect: leaf", "props": {"fill": "#475569", "fontSize": 13}}}
+{"command": "node.create", "as": "left", "params": {"type": "ellipse", "name": "Left", "parent": {"$ref": "artboard__3"}, "x": 30, "y": 50, "width": 120, "height": 120, "props": {"fill": "#10B981"}}}
+{"command": "node.create", "as": "right", "params": {"type": "ellipse", "name": "Right", "parent": {"$ref": "artboard__3"}, "x": 70, "y": 30, "width": 120, "height": 120, "props": {"fill": "#10B981"}}}
+{"command": "bool.intersect", "params": {"ids": [{"$ref": "left"}, {"$ref": "right"}]}}
+{"command": "node.create", "as": "exclude_rings", "params": {"type": "frame", "name": "Exclude: rings", "parent": {"$ref": "construction"}, "props": {"layout": "vertical", "gap": 16, "crossAlign": "center", "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "artboard__4", "params": {"type": "frame", "name": "Artboard", "parent": {"$ref": "exclude_rings"}, "width": 200, "height": 200, "props": {"fill": "#FFFFFF", "cornerRadius": 24, "stroke": "#E2E8F0", "strokeWeight": 1}}}
+{"command": "node.create", "params": {"type": "text", "name": "Exclude: rings", "parent": {"$ref": "exclude_rings"}, "text": "Exclude: rings", "props": {"fill": "#475569", "fontSize": 13}}}
+{"command": "node.create", "as": "ring_a", "params": {"type": "ellipse", "name": "Ring A", "parent": {"$ref": "artboard__4"}, "x": 36, "y": 56, "width": 88, "height": 88, "props": {"fill": "#FBBF24"}}}
+{"command": "node.create", "as": "ring_b", "params": {"type": "ellipse", "name": "Ring B", "parent": {"$ref": "artboard__4"}, "x": 76, "y": 56, "width": 88, "height": 88, "props": {"fill": "#FBBF24"}}}
+{"command": "bool.exclude", "params": {"ids": [{"$ref": "ring_a"}, {"$ref": "ring_b"}]}}
+// The mark: a rounded square minus a quarter disc, flattened to one editable vector.
+{"command": "node.create", "as": "lockup", "params": {"type": "frame", "name": "Lockup · light", "x": 0, "y": 380, "width": 540, "height": 260, "props": {"layout": "horizontal", "gap": 20, "mainAlign": "center", "crossAlign": "center", "fill": "#FFFFFF", "cornerRadius": 24}}}
+{"command": "node.create", "as": "mark", "params": {"type": "frame", "name": "Mark", "parent": {"$ref": "lockup"}, "width": 72, "height": 72, "props": {"fill": "none"}}}
+{"command": "node.create", "as": "square", "params": {"type": "rectangle", "name": "Square", "parent": {"$ref": "mark"}, "x": 0, "y": 0, "width": 72, "height": 72, "props": {"cornerRadius": 18, "fill": "#4F46E5"}}}
+{"command": "node.create", "as": "quarter", "params": {"type": "ellipse", "name": "Quarter", "parent": {"$ref": "mark"}, "x": 30, "y": 30, "width": 64, "height": 64, "props": {"fill": "#4F46E5"}}}
+{"command": "bool.subtract", "as": "mark__2", "params": {"ids": [{"$ref": "square"}, {"$ref": "quarter"}]}}
+{"command": "vector.flatten", "params": {"ids": [{"$ref": "mark__2"}]}}
+{"command": "node.create", "params": {"type": "text", "name": "northwind", "parent": {"$ref": "lockup"}, "text": "northwind", "props": {"fill": "#0F172A", "fontSize": 44, "fontStyle": "Bold", "letterSpacing": "-3%"}}}
+{"command": "node.create", "as": "lockup__2", "params": {"type": "frame", "name": "Lockup · dark", "x": 580, "y": 380, "width": 540, "height": 260, "props": {"layout": "horizontal", "gap": 20, "mainAlign": "center", "crossAlign": "center", "fill": "#0F172A", "cornerRadius": 24}}}
+{"command": "node.create", "as": "mark__3", "params": {"type": "frame", "name": "Mark", "parent": {"$ref": "lockup__2"}, "width": 72, "height": 72, "props": {"fill": "none"}}}
+{"command": "node.create", "as": "square__2", "params": {"type": "rectangle", "name": "Square", "parent": {"$ref": "mark__3"}, "x": 0, "y": 0, "width": 72, "height": 72, "props": {"cornerRadius": 18, "fill": "#818CF8"}}}
+{"command": "node.create", "as": "quarter__2", "params": {"type": "ellipse", "name": "Quarter", "parent": {"$ref": "mark__3"}, "x": 30, "y": 30, "width": 64, "height": 64, "props": {"fill": "#818CF8"}}}
+{"command": "bool.subtract", "as": "mark__4", "params": {"ids": [{"$ref": "square__2"}, {"$ref": "quarter__2"}]}}
+{"command": "vector.flatten", "params": {"ids": [{"$ref": "mark__4"}]}}
+{"command": "node.create", "params": {"type": "text", "name": "northwind", "parent": {"$ref": "lockup__2"}, "text": "northwind", "props": {"fill": "#FFFFFF", "fontSize": 44, "fontStyle": "Bold", "letterSpacing": "-3%"}}}
+// Outline a stroke when a partner needs a mark with no live strokes.
+{"command": "node.create", "as": "monoline_wave", "params": {"type": "vector", "name": "Monoline wave", "x": 0, "y": 700, "path": "M0 30 C 30 0, 60 60, 90 30 S 150 0, 180 30", "props": {"stroke": "#4F46E5", "strokeWeight": 10, "fill": "none", "strokeCap": "round"}}}
+{"command": "vector.outlineStroke", "params": {"ids": [{"$ref": "monoline_wave"}]}}
+{"command": "export.add", "params": {"ids": [{"$ref": "lockup"}, {"$ref": "lockup__2"}], "setting": {"format": "svg"}}}
+{"command": "export.add", "params": {"ids": [{"$ref": "lockup"}, {"$ref": "lockup__2"}], "setting": {"format": "png", "size": "1x"}}}
+{"command": "export.add", "params": {"ids": [{"$ref": "lockup"}, {"$ref": "lockup__2"}], "setting": {"format": "png", "size": "2x", "suffix": "@2x"}}}

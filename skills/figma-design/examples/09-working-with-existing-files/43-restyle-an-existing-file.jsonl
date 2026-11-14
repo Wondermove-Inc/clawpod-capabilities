@@ -1,0 +1,22 @@
+// Edit a file you did not make: audit, retheme, rewrite copy
+// Shows: reading a file's structure before touching it, listing every colour in use, replacing one colour everywhere, find and replace across text, batch renaming layers, adding variables and binding existing layers to them
+// in: files/ridgeline-onboarding.figcraft
+// Look first: pages, frames, the colours and fonts actually used.
+{"command": "page.list", "params": {}}
+{"command": "node.find", "as": "frames", "params": {"type": "FRAME", "limit": 4}}
+{"command": "node.get", "params": {"id": {"$ref": "frames", "field": "ids/0"}, "outline": true}}
+{"command": "select.all", "params": {}}
+{"command": "selection.colors", "as": "colors", "params": {}}
+{"command": "text.missingFonts", "params": {}}
+// In a real task this is two runs: read the audit above, then write the edits. Here the audit lists the brand green #0E7C66 as colour 8 (19 layers), so the edits below target colors/8.
+// Change: rewrite copy, rename layers, then put the brand colour under a variable so the next retheme is one edit.
+{"command": "edit.findReplace", "params": {"find": "Ridgeline", "replace": "Northfork", "select": false}}
+{"command": "object.batchRename", "params": {"find": "^(\\d) ", "regex": true, "replace": "Onboarding / $1 · "}}
+{"command": "variable.createCollection", "params": {"name": "Brand"}}
+{"command": "variable.create", "as": "brand_var", "params": {"collection": "Brand", "name": "primary", "type": "color", "value": "#4F46E5"}}
+{"command": "selection.setPaint", "params": {"targets": {"$ref": "colors", "field": "colors/8/targets"}, "paint": {"type": "solid", "color": "#4F46E5"}}}
+{"command": "selection.bindColorVariable", "params": {"targets": {"$ref": "colors", "field": "colors/8/targets"}, "variable": {"$ref": "brand_var"}}}
+// Look at the render after the edits, as with your own work: one paragraph ends on a single word. Find it by its text and fix the wrapping.
+{"command": "node.find", "as": "lone", "params": {"text": "change this any", "type": "TEXT"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "lone", "field": "ids/0"}], "props": {"wrapStyle": "pretty"}}}
+{"command": "file.saveVersion", "params": {"name": "Rebrand to Northfork"}}

@@ -39,7 +39,8 @@
       "artifact-design",
       "open-design",
       "frontend-slides",
-      "powerpoint"
+      "powerpoint",
+      "figma-design"
     ]
   },
   "clawpod-capability-registry": {
@@ -84,7 +85,8 @@
     "adjacent": [
       "claude-design",
       "clawpod-video-studio",
-      "artifact-design"
+      "artifact-design",
+      "figma-design"
     ]
   },
   "clawpod-ocr": {
@@ -356,7 +358,8 @@
       "clawpod-image-studio",
       "open-design",
       "vulnerability-assessment-report",
-      "frontend-slides"
+      "frontend-slides",
+      "figma-design"
     ]
   },
   "hwp-desktop": {
@@ -411,7 +414,8 @@
     "adjacent": [
       "claude-design",
       "artifact-design",
-      "frontend-slides"
+      "frontend-slides",
+      "figma-design"
     ]
   },
   "typesafe-ai": {
@@ -466,7 +470,8 @@
       "open-design",
       "artifact-design",
       "highschool-learning-assessment-analysis",
-      "powerpoint"
+      "powerpoint",
+      "figma-design"
     ]
   },
   "highschool-learning-assessment-analysis": {
@@ -545,6 +550,28 @@
     "adjacent": [
       "frontend-slides",
       "claude-design"
+    ]
+  },
+  "figma-design": {
+    "positive": [
+      "Design the app screens in Figma",
+      "Build a design system with variables and components",
+      "Open this .fig file and restyle it",
+      "Make a clickable prototype of the checkout flow",
+      "Draw an icon set and export it as SVG",
+      "Hand this design over to developers with specs"
+    ],
+    "negative": [
+      "Build an animated HTML slide deck",
+      "Generate a photo-realistic product image",
+      "Edit the deck on the claude.ai/design canvas"
+    ],
+    "adjacent": [
+      "claude-design",
+      "frontend-slides",
+      "open-design",
+      "clawpod-image-studio",
+      "artifact-design"
     ]
   }
 }

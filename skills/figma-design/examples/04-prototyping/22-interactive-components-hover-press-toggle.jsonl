@@ -1,0 +1,74 @@
+// Interactive components: hover, press and toggle inside the component
+// Shows: interactions placed on variants so every instance behaves without wiring each screen: hover and press with changeTo, a toggle that flips on click, smart animate between variants
+// Foundations: semantic colour variables with Light and Dark modes, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#F8FAFC", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F1F5F9", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E2E8F0", "Dark": "#1E293B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#CBD5E1", "Dark": "#334155"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#0F172A", "Dark": "#F8FAFC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#475569", "Dark": "#CBD5E1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#64748B", "Dark": "#94A3B8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#020617"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF", "Dark": "#0F172A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#4F46E5", "Dark": "#818CF8"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#EEF2FF", "Dark": "#1E1B4B"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#4338CA", "Dark": "#A5B4FC"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857", "Dark": "#34D399"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5", "Dark": "#022C22"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E", "Dark": "#FBBF24"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB", "Dark": "#451A03"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C", "Dark": "#F87171"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2", "Dark": "#450A0A"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#6366F1", "Dark": "#818CF8"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Interactive components", "x": 0, "y": 0, "width": 760, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Interactive components", "parent": {"$ref": "header"}, "text": "Interactive components", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "Wire the states once, on the main. Every instance on every screen then responds.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "grid", "params": {"type": "frame", "name": "Button variants", "parent": {"$ref": "sheet"}, "props": {"layout": "grid", "gridColumns": 3, "columnGap": 24, "rowGap": 24, "columnTracks": ["auto", "auto", "auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "btn", "params": {"type": "frame", "name": "State=Default", "parent": {"$ref": "grid"}, "height": 48, "props": {"layout": "horizontal", "padding": [0, 20, 0, 20], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 12, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "text", "name": "Save changes", "parent": {"$ref": "btn"}, "text": "Save changes", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__2", "params": {"type": "frame", "name": "State=Hover", "parent": {"$ref": "grid"}, "height": 48, "props": {"layout": "horizontal", "padding": [0, 20, 0, 20], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 12, "fill": {"$var": "brand/primary-hover"}, "effectStyle": "Elevation/2"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Save changes", "parent": {"$ref": "btn__2"}, "text": "Save changes", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "node.create", "as": "btn__3", "params": {"type": "frame", "name": "State=Pressed", "parent": {"$ref": "grid"}, "height": 48, "props": {"layout": "horizontal", "padding": [0, 20, 0, 20], "sizingH": "hug", "mainAlign": "center", "crossAlign": "center", "cornerRadius": 12, "fill": {"$var": "brand/primary-hover"}, "opacity": 0.9}}}
+{"command": "node.create", "params": {"type": "text", "name": "Save changes", "parent": {"$ref": "btn__3"}, "text": "Save changes", "props": {"textStyle": "Label/L", "fill": {"$var": "text/on-brand"}}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "btn"}, {"$ref": "btn__2"}, {"$ref": "btn__3"}]}}
+{"command": "component.combineVariants", "as": "button_set", "params": {"ids": [{"$ref": "btn"}, {"$ref": "btn__2"}, {"$ref": "btn__3"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "button_set"}], "props": {"name": "Button"}}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "btn"}, "trigger": {"type": "mouseEnter"}, "action": {"type": "changeTo", "dest": {"$ref": "btn__2"}}, "transition": {"type": "smartAnimate"}, "durationMs": 120}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "btn__2"}, "trigger": {"type": "mouseLeave"}, "action": {"type": "changeTo", "dest": {"$ref": "btn"}}, "transition": {"type": "smartAnimate"}, "durationMs": 120}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "btn__2"}, "trigger": {"type": "mouseDown"}, "action": {"type": "changeTo", "dest": {"$ref": "btn__3"}}}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "btn__3"}, "trigger": {"type": "mouseUp"}, "action": {"type": "changeTo", "dest": {"$ref": "btn__2"}}}}
+{"command": "node.create", "as": "grid__2", "params": {"type": "frame", "name": "Toggle variants", "parent": {"$ref": "sheet"}, "props": {"layout": "grid", "gridColumns": 2, "columnGap": 24, "rowGap": 24, "columnTracks": ["auto", "auto"], "fill": "none", "sizingH": "hug", "sizingV": "hug"}}}
+{"command": "node.create", "as": "tg", "params": {"type": "frame", "name": "On=False", "parent": {"$ref": "grid__2"}, "width": 52, "height": 32, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "min", "crossAlign": "center", "cornerRadius": 16, "fill": {"$var": "border/control"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "tg"}, "width": 26, "height": 26, "props": {"fill": "#FFFFFF", "effects": [{"type": "dropShadow", "color": "#0F172A33", "offset": [0, 1], "radius": 3}]}}}
+{"command": "node.create", "as": "tg__2", "params": {"type": "frame", "name": "On=True", "parent": {"$ref": "grid__2"}, "width": 52, "height": 32, "props": {"layout": "horizontal", "padding": 3, "mainAlign": "max", "crossAlign": "center", "cornerRadius": 16, "fill": {"$var": "brand/primary"}}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Knob", "parent": {"$ref": "tg__2"}, "width": 26, "height": 26, "props": {"fill": "#FFFFFF", "effects": [{"type": "dropShadow", "color": "#0F172A33", "offset": [0, 1], "radius": 3}]}}}
+{"command": "component.createMultiple", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "component.combineVariants", "as": "toggle_set", "params": {"ids": [{"$ref": "tg"}, {"$ref": "tg__2"}]}}
+{"command": "node.set", "params": {"ids": [{"$ref": "toggle_set"}], "props": {"name": "Toggle"}}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "tg"}, "trigger": {"type": "onClick"}, "action": {"type": "changeTo", "dest": {"$ref": "tg__2"}}, "transition": {"type": "smartAnimate"}, "durationMs": 180, "easing": "easeOut"}}
+{"command": "proto.interaction.add", "params": {"id": {"$ref": "tg__2"}, "trigger": {"type": "onClick"}, "action": {"type": "changeTo", "dest": {"$ref": "tg"}}, "transition": {"type": "smartAnimate"}, "durationMs": 180, "easing": "easeOut"}}
+{"command": "node.create", "as": "try_it_in_the_player", "params": {"type": "frame", "name": "Try it in the player", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "padding": 24, "crossAlign": "center", "sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/canvas"}, "sizingV": "hug"}}}
+{"command": "instance.create", "params": {"component": {"$ref": "button_set"}, "parent": {"$ref": "try_it_in_the_player"}}}
+{"command": "instance.create", "params": {"component": {"$ref": "toggle_set"}, "parent": {"$ref": "try_it_in_the_player"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "try_it_in_the_player"}, "text": "Instances inherit the interactions.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "proto.flow.add", "params": {"start": {"$ref": "sheet"}, "name": "Component states"}}

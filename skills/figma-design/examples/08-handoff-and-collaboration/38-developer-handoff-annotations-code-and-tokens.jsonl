@@ -1,0 +1,25 @@
+// Developer handoff: annotations, status, measurements, code and tokens
+// Shows: annotation categories, notes that pin property values, ready-for-dev status, a kept measurement, a dev resource link, export settings, generated CSS / React / Tailwind / SwiftUI, the inspect table, tokens exported as CSS and JSON
+// in: 03-screens/10-mobile-app-flow-with-components
+{"command": "node.find", "as": "home", "params": {"name": "Home screen", "type": "FRAME"}}
+{"command": "node.find", "as": "summary", "params": {"root": {"$ref": "home", "field": "ids/0"}, "name": "Summary"}}
+{"command": "node.find", "as": "row", "params": {"root": {"$ref": "home", "field": "ids/0"}, "type": "INSTANCE", "name": "Task row"}}
+// Annotations: a category per kind of note, then notes that pin the values a developer needs.
+{"command": "annotation.categories", "params": {}}
+{"command": "annotation.addCategory", "params": {"name": "Behaviour"}}
+{"command": "annotation.add", "params": {"id": {"$ref": "summary", "field": "ids/0"}, "label": "Progress animates from 0 on first load, 400 ms ease-out. Tapping the card opens the next due plant.", "category": "Behaviour", "properties": ["cornerRadius", "padding", "gap", "fill"]}}
+{"command": "annotation.add", "params": {"id": {"$ref": "row", "field": "ids/0"}, "label": "Whole row is one button. Label: \"<title>, <subtitle>\". Minimum height 64 pt.", "category": "Accessibility", "properties": ["height", "padding"]}}
+{"command": "devMode.addMeasurement", "params": {"from": {"$ref": "summary", "field": "ids/0"}, "to": {"$ref": "row", "field": "ids/0"}}}
+{"command": "devResource.add", "params": {"id": {"$ref": "home", "field": "ids/0"}, "url": "https://github.com/example/grove-app/issues/128", "name": "Build ticket"}}
+{"command": "node.set", "params": {"ids": [{"$ref": "home", "field": "ids/0"}], "props": {"devStatus": "readyForDev"}}}
+{"command": "export.add", "params": {"ids": [{"$ref": "home", "field": "ids/0"}], "setting": {"format": "png", "size": "2x", "suffix": "@2x"}}}
+// What a developer reads: values with their token names, then code in the stack they use.
+{"command": "inspect.properties", "params": {"id": {"$ref": "summary", "field": "ids/0"}}}
+{"command": "inspect.code", "params": {"id": {"$ref": "summary", "field": "ids/0"}, "language": "css"}}
+{"command": "inspect.code", "params": {"id": {"$ref": "summary", "field": "ids/0"}, "language": "react"}}
+{"command": "inspect.code", "params": {"id": {"$ref": "summary", "field": "ids/0"}, "language": "tailwind"}}
+{"command": "inspect.code", "params": {"id": {"$ref": "summary", "field": "ids/0"}, "language": "swiftui"}}
+{"command": "inspect.assets", "params": {"ids": [{"$ref": "home", "field": "ids/0"}]}}
+{"command": "inspect.readyForDev", "params": {}}
+{"command": "variable.export", "params": {"format": "css"}}
+{"command": "variable.export", "params": {"format": "json"}}

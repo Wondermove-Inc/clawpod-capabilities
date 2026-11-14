@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/package-metadata.schema.json",
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "description": "Use when the user wants a UI design, mockup, wireframe, prototype, design system, icons, vector artwork, a social or print layout or a whiteboard as an editable Figma-style file, or mentions Figma, FigJam, FigCraft or .fig. For HTML decks use frontend-slides; for generated images, clawpod-image-studio.",
+  "descriptionI18n": {
+    "ko": "사용자가 UI 디자인, 목업, 와이어프레임, 프로토타입, 디자인 시스템, 아이콘, 벡터 아트워크, 소셜·인쇄물 레이아웃, 화이트보드를 편집 가능한 Figma 방식 파일로 원하거나 Figma, FigJam, FigCraft, .fig를 언급할 때 사용합니다. HTML 덱은 frontend-slides, 생성 이미지는 clawpod-image-studio를 사용합니다."
+  },
+  "compatibility": {
+    "openclaw": ">=2026.4.0"
+  },
+  "safety": {
+    "risk": "write-safe",
+    "approvalRequired": false
+  },
+  "descriptionSource": "skill-frontmatter"
+}

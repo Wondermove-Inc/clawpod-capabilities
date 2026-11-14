@@ -1,0 +1,103 @@
+// Patterns, brushes, dashes and stroke width profiles
+// Shows: a pattern fill tiled from a source layer, brush presets on paths, tapered and pinched width profiles, dashed and dotted strokes, arrow caps; decorative backgrounds without images
+// Foundations: semantic colour variables, then text and effect styles. Interface layers bind to these, never to raw hex; literal colours are for artwork and for data series beyond the brand.
+{"command": "variable.createCollection", "params": {"name": "Theme", "modes": ["Light"]}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/canvas", "type": "color", "values": {"Light": "#FAFAF9"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/surface", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/subtle", "type": "color", "values": {"Light": "#F5F5F4"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "bg/inverse", "type": "color", "values": {"Light": "#1C1917"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/subtle", "type": "color", "values": {"Light": "#E7E5E4"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/strong", "type": "color", "values": {"Light": "#D6D3D1"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "border/control", "type": "color", "values": {"Light": "#78716C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/primary", "type": "color", "values": {"Light": "#1C1917"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/secondary", "type": "color", "values": {"Light": "#57534E"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/tertiary", "type": "color", "values": {"Light": "#78716C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/on-brand", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "text/inverse", "type": "color", "values": {"Light": "#FFFFFF"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary", "type": "color", "values": {"Light": "#E11D48"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/primary-hover", "type": "color", "values": {"Light": "#BE123C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/subtle", "type": "color", "values": {"Light": "#FFF1F2"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "brand/on-subtle", "type": "color", "values": {"Light": "#BE123C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/fg", "type": "color", "values": {"Light": "#047857"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "success/bg", "type": "color", "values": {"Light": "#ECFDF5"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/fg", "type": "color", "values": {"Light": "#92400E"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "warning/bg", "type": "color", "values": {"Light": "#FFFBEB"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/fg", "type": "color", "values": {"Light": "#B91C1C"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "danger/bg", "type": "color", "values": {"Light": "#FEF2F2"}}}
+{"command": "variable.create", "params": {"collection": "Theme", "name": "focus/ring", "type": "color", "values": {"Light": "#F43F5E"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Display", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 48, "lineHeight": 56, "letterSpacing": "-2%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/1", "value": {"fontFamily": "Inter", "fontStyle": "Bold", "fontSize": 32, "lineHeight": 40, "letterSpacing": "-1.5%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/2", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 24, "lineHeight": 32, "letterSpacing": "-1%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Heading/3", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 18, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/L", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 17, "lineHeight": 26, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/M", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 15, "lineHeight": 22, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Body/S", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 13, "lineHeight": 18, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/L", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 15, "lineHeight": 20, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Label/M", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 13, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Caption", "value": {"fontFamily": "Inter", "fontStyle": "Regular", "fontSize": 12, "lineHeight": 16, "letterSpacing": "0%"}}}
+{"command": "style.create", "params": {"type": "text", "name": "Overline", "value": {"fontFamily": "Inter", "fontStyle": "Semi Bold", "fontSize": 12, "lineHeight": 16, "letterSpacing": "8%"}}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/1", "value": [{"type": "dropShadow", "color": "#0F172A0F", "offset": [0, 1], "radius": 2}, {"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 8}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/2", "value": [{"type": "dropShadow", "color": "#0F172A14", "offset": [0, 2], "radius": 4}, {"type": "dropShadow", "color": "#0F172A1F", "offset": [0, 12], "radius": 24}]}}
+{"command": "style.create", "params": {"type": "effect", "name": "Elevation/3", "value": [{"type": "dropShadow", "color": "#0F172A1A", "offset": [0, 8], "radius": 16}, {"type": "dropShadow", "color": "#0F172A29", "offset": [0, 24], "radius": 48}]}}
+{"command": "node.create", "as": "sheet", "params": {"type": "frame", "name": "Strokes and patterns", "x": 0, "y": 0, "width": 1100, "props": {"layout": "vertical", "gap": 32, "padding": 48, "sizingV": "hug", "cornerRadius": 24, "fill": {"$var": "bg/surface"}, "stroke": {"$var": "border/subtle"}, "strokeWeight": 1}}}
+{"command": "node.create", "as": "header", "params": {"type": "frame", "name": "Header", "parent": {"$ref": "sheet"}, "props": {"layout": "vertical", "gap": 6, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "params": {"type": "text", "name": "Strokes and patterns", "parent": {"$ref": "header"}, "text": "Strokes and patterns", "props": {"textStyle": "Heading/2", "fill": {"$var": "text/primary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "params": {"type": "text", "parent": {"$ref": "header"}, "text": "Texture from vectors: it scales to any size and exports as SVG.", "props": {"textStyle": "Body/M", "fill": {"$var": "text/secondary"}, "sizingH": "fill", "wrapStyle": "pretty"}}}
+{"command": "node.create", "as": "patterns", "params": {"type": "frame", "name": "Patterns", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "pattern_source", "params": {"type": "frame", "name": "Pattern source", "x": 0, "y": -60, "width": 24, "height": 24, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "ellipse", "name": "Dot", "parent": {"$ref": "pattern_source"}, "x": 9, "y": 9, "width": 6, "height": 6, "props": {"fill": "#FB7185"}}}
+{"command": "node.create", "as": "pattern_source_2", "params": {"type": "frame", "name": "Pattern source 2", "x": 48, "y": -62, "width": 28, "height": 28, "props": {"fill": "none"}}}
+{"command": "node.create", "params": {"type": "vector", "name": "Cross", "parent": {"$ref": "pattern_source_2"}, "x": 0, "y": 0, "path": "M14 6 V22 M6 14 H22", "props": {"stroke": "#A8A29E", "strokeWeight": 2, "strokeCap": "round", "fill": "none"}}}
+{"command": "node.create", "as": "dots_grid", "params": {"type": "frame", "name": "Dots · grid", "parent": {"$ref": "patterns"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "dots_grid__2", "params": {"type": "rectangle", "name": "Dots · grid", "parent": {"$ref": "dots_grid"}, "height": 160, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/canvas"}}}}
+{"command": "fill.pattern", "params": {"source": {"$ref": "pattern_source"}, "ids": [{"$ref": "dots_grid__2"}], "tile": "grid"}}
+{"command": "node.create", "params": {"type": "text", "name": "Dots · grid", "parent": {"$ref": "dots_grid"}, "text": "Dots · grid", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "dots_hex", "params": {"type": "frame", "name": "Dots · hex", "parent": {"$ref": "patterns"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "dots_hex__2", "params": {"type": "rectangle", "name": "Dots · hex", "parent": {"$ref": "dots_hex"}, "height": 160, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/canvas"}}}}
+{"command": "fill.pattern", "params": {"source": {"$ref": "pattern_source"}, "ids": [{"$ref": "dots_hex__2"}], "tile": "horizontalHex"}}
+{"command": "node.create", "params": {"type": "text", "name": "Dots · hex", "parent": {"$ref": "dots_hex"}, "text": "Dots · hex", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "crosses", "params": {"type": "frame", "name": "Crosses", "parent": {"$ref": "patterns"}, "props": {"layout": "vertical", "gap": 10, "sizingH": "fill", "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "crosses__2", "params": {"type": "rectangle", "name": "Crosses", "parent": {"$ref": "crosses"}, "height": 160, "props": {"sizingH": "fill", "cornerRadius": 16, "fill": {"$var": "bg/canvas"}}}}
+{"command": "fill.pattern", "params": {"source": {"$ref": "pattern_source_2"}, "ids": [{"$ref": "crosses__2"}], "tile": "grid"}}
+{"command": "node.create", "params": {"type": "text", "name": "Crosses", "parent": {"$ref": "crosses"}, "text": "Crosses", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "brushes_and_profiles", "params": {"type": "frame", "name": "Brushes and profiles", "parent": {"$ref": "sheet"}, "props": {"layout": "horizontal", "gap": 24, "sizingH": "fill", "wrap": true, "crossGap": 24, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "profile_taper", "params": {"type": "frame", "name": "profile: taper", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "profile_taper"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "stroke.widthProfile", "params": {"ids": [{"$ref": "path"}], "preset": "taper"}}
+{"command": "node.create", "params": {"type": "text", "name": "profile: taper", "parent": {"$ref": "profile_taper"}, "text": "profile: taper", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "profile_pinch", "params": {"type": "frame", "name": "profile: pinch", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__2", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "profile_pinch"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__2", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__2"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "stroke.widthProfile", "params": {"ids": [{"$ref": "path__2"}], "preset": "pinch"}}
+{"command": "node.create", "params": {"type": "text", "name": "profile: pinch", "parent": {"$ref": "profile_pinch"}, "text": "profile: pinch", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "brush_ink", "params": {"type": "frame", "name": "brush: ink", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__3", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "brush_ink"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__3", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__3"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "stroke.brush", "params": {"ids": [{"$ref": "path__3"}], "preset": "ink"}}
+{"command": "node.create", "params": {"type": "text", "name": "brush: ink", "parent": {"$ref": "brush_ink"}, "text": "brush: ink", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "brush_dots", "params": {"type": "frame", "name": "brush: dots", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__4", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "brush_dots"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__4", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__4"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "stroke.brush", "params": {"ids": [{"$ref": "path__4"}], "preset": "dots"}}
+{"command": "node.create", "params": {"type": "text", "name": "brush: dots", "parent": {"$ref": "brush_dots"}, "text": "brush: dots", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "dashes_2_14_round", "params": {"type": "frame", "name": "dashes 2 / 14, round", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__5", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "dashes_2_14_round"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__5", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__5"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "path__5"}], "props": {"dashes": [2, 14], "strokeWeight": 6}}}
+{"command": "node.create", "params": {"type": "text", "name": "dashes 2 / 14, round", "parent": {"$ref": "dashes_2_14_round"}, "text": "dashes 2 / 14, round", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "dashes_16_10", "params": {"type": "frame", "name": "dashes 16 / 10", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__6", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "dashes_16_10"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__6", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__6"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "path__6"}], "props": {"dashes": [16, 10], "strokeWeight": 4, "strokeCap": "none"}}}
+{"command": "node.create", "params": {"type": "text", "name": "dashes 16 / 10", "parent": {"$ref": "dashes_16_10"}, "text": "dashes 16 / 10", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "arrow_cap", "params": {"type": "frame", "name": "arrow cap", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__7", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "arrow_cap"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__7", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__7"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "node.set", "params": {"ids": [{"$ref": "path__7"}], "props": {"strokeWeight": 3, "endCap": "triangleArrow"}}}
+{"command": "node.create", "params": {"type": "text", "name": "arrow cap", "parent": {"$ref": "arrow_cap"}, "text": "arrow cap", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}
+{"command": "node.create", "as": "brush_confetti", "params": {"type": "frame", "name": "brush: confetti", "parent": {"$ref": "brushes_and_profiles"}, "width": 236, "props": {"layout": "vertical", "gap": 10, "fill": "none", "clip": false, "sizingV": "hug"}}}
+{"command": "node.create", "as": "sample__8", "params": {"type": "frame", "name": "Sample", "parent": {"$ref": "brush_confetti"}, "height": 80, "props": {"sizingH": "fill", "cornerRadius": 12, "fill": {"$var": "bg/canvas"}}}}
+{"command": "node.create", "as": "path__8", "params": {"type": "vector", "name": "Path", "parent": {"$ref": "sample__8"}, "x": 0, "y": 10, "path": "M18 30 C 48 6, 78 54, 108 30 S 168 6, 198 30", "props": {"stroke": {"$var": "brand/primary"}, "strokeWeight": 8, "fill": "none", "strokeCap": "round"}}}
+{"command": "stroke.brush", "params": {"ids": [{"$ref": "path__8"}], "preset": "confetti"}}
+{"command": "node.create", "params": {"type": "text", "name": "brush: confetti", "parent": {"$ref": "brush_confetti"}, "text": "brush: confetti", "props": {"textStyle": "Label/M", "fill": {"$var": "text/secondary"}}}}

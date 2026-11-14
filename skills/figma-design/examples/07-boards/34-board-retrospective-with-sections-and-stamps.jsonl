@@ -1,0 +1,25 @@
+// Board: a retrospective with sections, stickies and stamps
+// Shows: three sections as columns, stickies placed inside their section (parent) so they move with it, colour per column, authors, stamps as votes, the built-in board templates
+// A board is its own kind of file: stickies, shapes, connectors, sections.
+{"command": "file.newBoard", "params": {"name": "Sprint 14 retro"}}
+{"command": "node.create", "as": "went_well", "params": {"type": "section", "name": "Went well", "x": 0, "y": 0, "width": 700, "height": 620}}
+{"command": "node.create", "params": {"type": "text", "name": "Column / Went well", "x": 40, "y": 24, "text": "Went well", "props": {"fontSize": 24, "fontStyle": "Bold"}}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "went_well"}, "x": 40, "y": 80, "text": "Review links halved our meeting time", "color": "green", "author": "Mara"}}
+{"command": "board.stamp", "params": {"x": 250, "y": 100, "stamp": "plusOne"}}
+{"command": "board.stamp", "params": {"x": 280, "y": 100, "stamp": "heart"}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "went_well"}, "x": 360, "y": 80, "text": "Design tokens landed in code", "color": "green", "author": "Tomas"}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "went_well"}, "x": 40, "y": 350, "text": "Zero rollbacks", "color": "green", "author": "Ilse"}}
+{"command": "node.create", "as": "to_improve", "params": {"type": "section", "name": "To improve", "x": 760, "y": 0, "width": 700, "height": 620}}
+{"command": "node.create", "params": {"type": "text", "name": "Column / To improve", "x": 800, "y": 24, "text": "To improve", "props": {"fontSize": 24, "fontStyle": "Bold"}}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "to_improve"}, "x": 40, "y": 80, "text": "Specs arrive after the build starts", "color": "pink", "author": "Jisoo"}}
+{"command": "board.stamp", "params": {"x": 1010, "y": 100, "stamp": "plusOne"}}
+{"command": "board.stamp", "params": {"x": 1040, "y": 100, "stamp": "heart"}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "to_improve"}, "x": 360, "y": 80, "text": "Friday threads stay open", "color": "pink", "author": "Mara"}}
+{"command": "node.create", "as": "next_sprint", "params": {"type": "section", "name": "Next sprint", "x": 1520, "y": 0, "width": 700, "height": 620}}
+{"command": "node.create", "params": {"type": "text", "name": "Column / Next sprint", "x": 1560, "y": 24, "text": "Next sprint", "props": {"fontSize": 24, "fontStyle": "Bold"}}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "next_sprint"}, "x": 40, "y": 80, "text": "Freeze specs two days before kickoff starts", "color": "blue", "author": "Tomas"}}
+{"command": "board.stamp", "params": {"x": 1770, "y": 100, "stamp": "plusOne"}}
+{"command": "board.stamp", "params": {"x": 1800, "y": 100, "stamp": "heart"}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "next_sprint"}, "x": 360, "y": 80, "text": "Owners close in 48 hours", "color": "blue", "author": "Ilse"}}
+{"command": "board.sticky", "params": {"parent": {"$ref": "next_sprint"}, "x": 40, "y": 350, "text": "Pilot annual billing copy", "color": "blue", "author": "Jisoo"}}
+{"command": "board.templates", "params": {}}

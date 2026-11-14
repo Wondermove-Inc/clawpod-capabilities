@@ -1,0 +1,207 @@
+// Token set: Radix Colors, 15 scales x 12 steps, Light and Dark
+// Shows: a primitive palette with a mode per theme, then a small semantic layer that aliases it. Steps: 1-2 app backgrounds, 3-5 component backgrounds, 6-8 borders, 9-10 solid fills, 11-12 text. Values from radix-ui/colors (MIT)
+// Primitives: every step exists in both modes, so a semantic token can alias one step and be right in Light and Dark.
+{"command": "variable.createCollection", "params": {"name": "Radix", "modes": ["Light", "Dark"]}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/1", "type": "color", "values": {"Light": "#FCFCFC", "Dark": "#111111"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/2", "type": "color", "values": {"Light": "#F9F9F9", "Dark": "#191919"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/3", "type": "color", "values": {"Light": "#F0F0F0", "Dark": "#222222"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/4", "type": "color", "values": {"Light": "#E8E8E8", "Dark": "#2A2A2A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/5", "type": "color", "values": {"Light": "#E0E0E0", "Dark": "#313131"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/6", "type": "color", "values": {"Light": "#D9D9D9", "Dark": "#3A3A3A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/7", "type": "color", "values": {"Light": "#CECECE", "Dark": "#484848"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/8", "type": "color", "values": {"Light": "#BBBBBB", "Dark": "#606060"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/9", "type": "color", "values": {"Light": "#8D8D8D", "Dark": "#6E6E6E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/10", "type": "color", "values": {"Light": "#838383", "Dark": "#7B7B7B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/11", "type": "color", "values": {"Light": "#646464", "Dark": "#B4B4B4"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "gray/12", "type": "color", "values": {"Light": "#202020", "Dark": "#EEEEEE"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/1", "type": "color", "values": {"Light": "#FCFCFD", "Dark": "#111113"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/2", "type": "color", "values": {"Light": "#F9F9FB", "Dark": "#18191B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/3", "type": "color", "values": {"Light": "#F0F0F3", "Dark": "#212225"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/4", "type": "color", "values": {"Light": "#E8E8EC", "Dark": "#272A2D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/5", "type": "color", "values": {"Light": "#E0E1E6", "Dark": "#2E3135"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/6", "type": "color", "values": {"Light": "#D9D9E0", "Dark": "#363A3F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/7", "type": "color", "values": {"Light": "#CDCED6", "Dark": "#43484E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/8", "type": "color", "values": {"Light": "#B9BBC6", "Dark": "#5A6169"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/9", "type": "color", "values": {"Light": "#8B8D98", "Dark": "#696E77"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/10", "type": "color", "values": {"Light": "#80838D", "Dark": "#777B84"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/11", "type": "color", "values": {"Light": "#60646C", "Dark": "#B0B4BA"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "slate/12", "type": "color", "values": {"Light": "#1C2024", "Dark": "#EDEEF0"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/1", "type": "color", "values": {"Light": "#FDFDFC", "Dark": "#111110"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/2", "type": "color", "values": {"Light": "#F9F9F8", "Dark": "#191918"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/3", "type": "color", "values": {"Light": "#F1F0EF", "Dark": "#222221"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/4", "type": "color", "values": {"Light": "#E9E8E6", "Dark": "#2A2A28"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/5", "type": "color", "values": {"Light": "#E2E1DE", "Dark": "#31312E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/6", "type": "color", "values": {"Light": "#DAD9D6", "Dark": "#3B3A37"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/7", "type": "color", "values": {"Light": "#CFCECA", "Dark": "#494844"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/8", "type": "color", "values": {"Light": "#BCBBB5", "Dark": "#62605B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/9", "type": "color", "values": {"Light": "#8D8D86", "Dark": "#6F6D66"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/10", "type": "color", "values": {"Light": "#82827C", "Dark": "#7C7B74"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/11", "type": "color", "values": {"Light": "#63635E", "Dark": "#B5B3AD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "sand/12", "type": "color", "values": {"Light": "#21201C", "Dark": "#EEEEEC"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/1", "type": "color", "values": {"Light": "#FFFCFC", "Dark": "#191111"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/2", "type": "color", "values": {"Light": "#FFF7F7", "Dark": "#201314"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/3", "type": "color", "values": {"Light": "#FEEBEC", "Dark": "#3B1219"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/4", "type": "color", "values": {"Light": "#FFDBDC", "Dark": "#500F1C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/5", "type": "color", "values": {"Light": "#FFCDCE", "Dark": "#611623"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/6", "type": "color", "values": {"Light": "#FDBDBE", "Dark": "#72232D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/7", "type": "color", "values": {"Light": "#F4A9AA", "Dark": "#8C333A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/8", "type": "color", "values": {"Light": "#EB8E90", "Dark": "#B54548"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/9", "type": "color", "values": {"Light": "#E5484D", "Dark": "#E5484D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/10", "type": "color", "values": {"Light": "#DC3E42", "Dark": "#EC5D5E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/11", "type": "color", "values": {"Light": "#CE2C31", "Dark": "#FF9592"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "red/12", "type": "color", "values": {"Light": "#641723", "Dark": "#FFD1D9"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/1", "type": "color", "values": {"Light": "#FFFCFD", "Dark": "#191114"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/2", "type": "color", "values": {"Light": "#FEF7F9", "Dark": "#201318"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/3", "type": "color", "values": {"Light": "#FFE9F0", "Dark": "#381525"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/4", "type": "color", "values": {"Light": "#FEDCE7", "Dark": "#4D122F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/5", "type": "color", "values": {"Light": "#FACEDD", "Dark": "#5C1839"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/6", "type": "color", "values": {"Light": "#F3BED1", "Dark": "#6D2545"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/7", "type": "color", "values": {"Light": "#EAACC3", "Dark": "#873356"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/8", "type": "color", "values": {"Light": "#E093B2", "Dark": "#B0436E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/9", "type": "color", "values": {"Light": "#E93D82", "Dark": "#E93D82"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/10", "type": "color", "values": {"Light": "#DF3478", "Dark": "#EE518A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/11", "type": "color", "values": {"Light": "#CB1D63", "Dark": "#FF92AD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "crimson/12", "type": "color", "values": {"Light": "#621639", "Dark": "#FDD3E8"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/1", "type": "color", "values": {"Light": "#FFFCFE", "Dark": "#191117"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/2", "type": "color", "values": {"Light": "#FEF7FB", "Dark": "#21121D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/3", "type": "color", "values": {"Light": "#FEE9F5", "Dark": "#37172F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/4", "type": "color", "values": {"Light": "#FBDCEF", "Dark": "#4B143D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/5", "type": "color", "values": {"Light": "#F6CEE7", "Dark": "#591C47"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/6", "type": "color", "values": {"Light": "#EFBFDD", "Dark": "#692955"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/7", "type": "color", "values": {"Light": "#E7ACD0", "Dark": "#833869"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/8", "type": "color", "values": {"Light": "#DD93C2", "Dark": "#A84885"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/9", "type": "color", "values": {"Light": "#D6409F", "Dark": "#D6409F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/10", "type": "color", "values": {"Light": "#CF3897", "Dark": "#DE51A8"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/11", "type": "color", "values": {"Light": "#C2298A", "Dark": "#FF8DCC"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "pink/12", "type": "color", "values": {"Light": "#651249", "Dark": "#FDD1EA"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/1", "type": "color", "values": {"Light": "#FEFCFE", "Dark": "#18111B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/2", "type": "color", "values": {"Light": "#FBF7FE", "Dark": "#1E1523"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/3", "type": "color", "values": {"Light": "#F7EDFE", "Dark": "#301C3B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/4", "type": "color", "values": {"Light": "#F2E2FC", "Dark": "#3D224E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/5", "type": "color", "values": {"Light": "#EAD5F9", "Dark": "#48295C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/6", "type": "color", "values": {"Light": "#E0C4F4", "Dark": "#54346B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/7", "type": "color", "values": {"Light": "#D1AFEC", "Dark": "#664282"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/8", "type": "color", "values": {"Light": "#BE93E4", "Dark": "#8457AA"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/9", "type": "color", "values": {"Light": "#8E4EC6", "Dark": "#8E4EC6"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/10", "type": "color", "values": {"Light": "#8347B9", "Dark": "#9A5CD0"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/11", "type": "color", "values": {"Light": "#8145B5", "Dark": "#D19DFF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "purple/12", "type": "color", "values": {"Light": "#402060", "Dark": "#ECD9FA"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/1", "type": "color", "values": {"Light": "#FDFCFE", "Dark": "#14121F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/2", "type": "color", "values": {"Light": "#FAF8FF", "Dark": "#1B1525"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/3", "type": "color", "values": {"Light": "#F4F0FE", "Dark": "#291F43"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/4", "type": "color", "values": {"Light": "#EBE4FF", "Dark": "#33255B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/5", "type": "color", "values": {"Light": "#E1D9FF", "Dark": "#3C2E69"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/6", "type": "color", "values": {"Light": "#D4CAFE", "Dark": "#473876"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/7", "type": "color", "values": {"Light": "#C2B5F5", "Dark": "#56468B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/8", "type": "color", "values": {"Light": "#AA99EC", "Dark": "#6958AD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/9", "type": "color", "values": {"Light": "#6E56CF", "Dark": "#6E56CF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/10", "type": "color", "values": {"Light": "#654DC4", "Dark": "#7D66D9"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/11", "type": "color", "values": {"Light": "#6550B9", "Dark": "#BAA7FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "violet/12", "type": "color", "values": {"Light": "#2F265F", "Dark": "#E2DDFE"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/1", "type": "color", "values": {"Light": "#FDFDFE", "Dark": "#11131F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/2", "type": "color", "values": {"Light": "#F7F9FF", "Dark": "#141726"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/3", "type": "color", "values": {"Light": "#EDF2FE", "Dark": "#182449"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/4", "type": "color", "values": {"Light": "#E1E9FF", "Dark": "#1D2E62"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/5", "type": "color", "values": {"Light": "#D2DEFF", "Dark": "#253974"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/6", "type": "color", "values": {"Light": "#C1D0FF", "Dark": "#304384"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/7", "type": "color", "values": {"Light": "#ABBDF9", "Dark": "#3A4F97"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/8", "type": "color", "values": {"Light": "#8DA4EF", "Dark": "#435DB1"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/9", "type": "color", "values": {"Light": "#3E63DD", "Dark": "#3E63DD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/10", "type": "color", "values": {"Light": "#3358D4", "Dark": "#5472E4"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/11", "type": "color", "values": {"Light": "#3A5BC7", "Dark": "#9EB1FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "indigo/12", "type": "color", "values": {"Light": "#1F2D5C", "Dark": "#D6E1FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/1", "type": "color", "values": {"Light": "#FBFDFF", "Dark": "#0D1520"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/2", "type": "color", "values": {"Light": "#F4FAFF", "Dark": "#111927"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/3", "type": "color", "values": {"Light": "#E6F4FE", "Dark": "#0D2847"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/4", "type": "color", "values": {"Light": "#D5EFFF", "Dark": "#003362"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/5", "type": "color", "values": {"Light": "#C2E5FF", "Dark": "#004074"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/6", "type": "color", "values": {"Light": "#ACD8FC", "Dark": "#104D87"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/7", "type": "color", "values": {"Light": "#8EC8F6", "Dark": "#205D9E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/8", "type": "color", "values": {"Light": "#5EB1EF", "Dark": "#2870BD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/9", "type": "color", "values": {"Light": "#0090FF", "Dark": "#0090FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/10", "type": "color", "values": {"Light": "#0588F0", "Dark": "#3B9EFF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/11", "type": "color", "values": {"Light": "#0D74CE", "Dark": "#70B8FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "blue/12", "type": "color", "values": {"Light": "#113264", "Dark": "#C2E6FF"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/1", "type": "color", "values": {"Light": "#FAFDFE", "Dark": "#0B161A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/2", "type": "color", "values": {"Light": "#F2FAFB", "Dark": "#101B20"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/3", "type": "color", "values": {"Light": "#DEF7F9", "Dark": "#082C36"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/4", "type": "color", "values": {"Light": "#CAF1F6", "Dark": "#003848"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/5", "type": "color", "values": {"Light": "#B5E9F0", "Dark": "#004558"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/6", "type": "color", "values": {"Light": "#9DDDE7", "Dark": "#045468"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/7", "type": "color", "values": {"Light": "#7DCEDC", "Dark": "#12677E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/8", "type": "color", "values": {"Light": "#3DB9CF", "Dark": "#11809C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/9", "type": "color", "values": {"Light": "#00A2C7", "Dark": "#00A2C7"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/10", "type": "color", "values": {"Light": "#0797B9", "Dark": "#23AFD0"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/11", "type": "color", "values": {"Light": "#107D98", "Dark": "#4CCCE6"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "cyan/12", "type": "color", "values": {"Light": "#0D3C48", "Dark": "#B6ECF7"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/1", "type": "color", "values": {"Light": "#FAFEFD", "Dark": "#0D1514"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/2", "type": "color", "values": {"Light": "#F3FBF9", "Dark": "#111C1B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/3", "type": "color", "values": {"Light": "#E0F8F3", "Dark": "#0D2D2A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/4", "type": "color", "values": {"Light": "#CCF3EA", "Dark": "#023B37"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/5", "type": "color", "values": {"Light": "#B8EAE0", "Dark": "#084843"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/6", "type": "color", "values": {"Light": "#A1DED2", "Dark": "#145750"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/7", "type": "color", "values": {"Light": "#83CDC1", "Dark": "#1C6961"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/8", "type": "color", "values": {"Light": "#53B9AB", "Dark": "#207E73"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/9", "type": "color", "values": {"Light": "#12A594", "Dark": "#12A594"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/10", "type": "color", "values": {"Light": "#0D9B8A", "Dark": "#0EB39E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/11", "type": "color", "values": {"Light": "#008573", "Dark": "#0BD8B6"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "teal/12", "type": "color", "values": {"Light": "#0D3D38", "Dark": "#ADF0DD"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/1", "type": "color", "values": {"Light": "#FBFEFC", "Dark": "#0E1512"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/2", "type": "color", "values": {"Light": "#F4FBF6", "Dark": "#121B17"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/3", "type": "color", "values": {"Light": "#E6F6EB", "Dark": "#132D21"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/4", "type": "color", "values": {"Light": "#D6F1DF", "Dark": "#113B29"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/5", "type": "color", "values": {"Light": "#C4E8D1", "Dark": "#174933"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/6", "type": "color", "values": {"Light": "#ADDDC0", "Dark": "#20573E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/7", "type": "color", "values": {"Light": "#8ECEAA", "Dark": "#28684A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/8", "type": "color", "values": {"Light": "#5BB98B", "Dark": "#2F7C57"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/9", "type": "color", "values": {"Light": "#30A46C", "Dark": "#30A46C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/10", "type": "color", "values": {"Light": "#2B9A66", "Dark": "#33B074"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/11", "type": "color", "values": {"Light": "#218358", "Dark": "#3DD68C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "green/12", "type": "color", "values": {"Light": "#193B2D", "Dark": "#B1F1CB"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/1", "type": "color", "values": {"Light": "#FEFCFB", "Dark": "#17120E"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/2", "type": "color", "values": {"Light": "#FFF7ED", "Dark": "#1E160F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/3", "type": "color", "values": {"Light": "#FFEFD6", "Dark": "#331E0B"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/4", "type": "color", "values": {"Light": "#FFDFB5", "Dark": "#462100"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/5", "type": "color", "values": {"Light": "#FFD19A", "Dark": "#562800"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/6", "type": "color", "values": {"Light": "#FFC182", "Dark": "#66350C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/7", "type": "color", "values": {"Light": "#F5AE73", "Dark": "#7E451D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/8", "type": "color", "values": {"Light": "#EC9455", "Dark": "#A35829"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/9", "type": "color", "values": {"Light": "#F76B15", "Dark": "#F76B15"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/10", "type": "color", "values": {"Light": "#EF5F00", "Dark": "#FF801F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/11", "type": "color", "values": {"Light": "#CC4E00", "Dark": "#FFA057"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "orange/12", "type": "color", "values": {"Light": "#582D1D", "Dark": "#FFE0C2"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/1", "type": "color", "values": {"Light": "#FEFDFB", "Dark": "#16120C"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/2", "type": "color", "values": {"Light": "#FEFBE9", "Dark": "#1D180F"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/3", "type": "color", "values": {"Light": "#FFF7C2", "Dark": "#302008"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/4", "type": "color", "values": {"Light": "#FFEE9C", "Dark": "#3F2700"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/5", "type": "color", "values": {"Light": "#FBE577", "Dark": "#4D3000"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/6", "type": "color", "values": {"Light": "#F3D673", "Dark": "#5C3D05"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/7", "type": "color", "values": {"Light": "#E9C162", "Dark": "#714F19"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/8", "type": "color", "values": {"Light": "#E2A336", "Dark": "#8F6424"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/9", "type": "color", "values": {"Light": "#FFC53D", "Dark": "#FFC53D"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/10", "type": "color", "values": {"Light": "#FFBA18", "Dark": "#FFD60A"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/11", "type": "color", "values": {"Light": "#AB6400", "Dark": "#FFCA16"}}}
+{"command": "variable.create", "params": {"collection": "Radix", "name": "amber/12", "type": "color", "values": {"Light": "#4F3422", "Dark": "#FFE7B3"}}}
+// Semantics: what the UI binds to. Swap indigo for another scale here and the whole product follows.
+{"command": "variable.createCollection", "params": {"name": "Semantic"}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "bg/app", "type": "color", "value": {"alias": "slate/1"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "bg/subtle", "type": "color", "value": {"alias": "slate/2"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "bg/component", "type": "color", "value": {"alias": "slate/3"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "bg/component-hover", "type": "color", "value": {"alias": "slate/4"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "border/subtle", "type": "color", "value": {"alias": "slate/6"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "border/default", "type": "color", "value": {"alias": "slate/7"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "border/strong", "type": "color", "value": {"alias": "slate/8"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "text/secondary", "type": "color", "value": {"alias": "slate/11"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "text/primary", "type": "color", "value": {"alias": "slate/12"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "accent/bg", "type": "color", "value": {"alias": "indigo/3"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "accent/border", "type": "color", "value": {"alias": "indigo/7"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "accent/solid", "type": "color", "value": {"alias": "indigo/9"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "accent/solid-hover", "type": "color", "value": {"alias": "indigo/10"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "accent/text", "type": "color", "value": {"alias": "indigo/11"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "success/solid", "type": "color", "value": {"alias": "green/9"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "success/text", "type": "color", "value": {"alias": "green/11"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "warning/solid", "type": "color", "value": {"alias": "amber/9"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "warning/text", "type": "color", "value": {"alias": "amber/11"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "danger/solid", "type": "color", "value": {"alias": "red/9"}}}
+{"command": "variable.create", "params": {"collection": "Semantic", "name": "danger/text", "type": "color", "value": {"alias": "red/11"}}}
+{"command": "variable.list", "params": {}}
