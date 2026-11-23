@@ -6,7 +6,7 @@ Read this when designing a live dashboard or adding feedback for changing data. 
 
 - Identify the next decision: current step, blocked item, changed metric, or result. Give that one thing the strongest hierarchy. Put details below it in rows or disclosures; do not turn every field into a card.
 - Reuse the host's palette and type roles where available. A compact title, tabular numbers, quiet dividers, and consistent spacing usually serve a status view better than a hero or decorative gradients. Respect an explicitly requested visual identity.
-- Render usable content at 320 px as well as the normal panel width. Avoid giant progress numerals, clipped status labels, and controls that compete with the data.
+- Render usable content at 320 px, the width the panel opens at, and when the reader widens or expands it. Avoid giant progress numerals, clipped status labels, and controls that compete with the data.
 - Put language and system/light/dark choices together when both exist. An icon-only settings trigger needs a translated accessible name and tooltip, a visible focus ring, and an adequate touch target. Escape closes its disclosure and returns focus.
 - Localize titles, labels, loading/empty/stale/error states, and accessible names. Keep locale and theme selections through data refreshes. System is a useful theme default; explicit choices override the OS. Do not rely on storage in the sandbox.
 - Live titles, version selection, and disabled-version fallback belong to the Portal. Avoid duplicating the host's live badge or rainbow treatment inside the HTML.

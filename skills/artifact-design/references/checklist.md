@@ -11,7 +11,7 @@ Run this before saving the artifact. Every item is checkable from the content or
 ## Design plan
 
 - [ ] Subject, audience, and the page's single job are pinned.
-- [ ] Palette named as 4–6 hex values; 2+ typographic roles with fallback stacks; a one-sentence layout concept for a ~480 px column.
+- [ ] Palette named as 4–6 hex values; 2+ typographic roles with fallback stacks; a one-sentence layout concept for a column that opens at 320 px.
 - [ ] Nothing in the plan is the generic default (cream + serif + terracotta; near-black + acid green; purple-blue gradient hero; Inter/Space Grotesk by reflex; emoji markers; everything centered; rounded cards with accent rails) unless the user asked for it.
 - [ ] Any existing project design system was applied before this Skill's own choices.
 
@@ -21,7 +21,7 @@ Run this before saving the artifact. Every item is checkable from the content or
 - [ ] Fonts from system stacks, `data:`, or `cdn.jsdelivr.net` only — no Google Fonts link. Images from `https:` or `data:` only.
 - [ ] Every color is a token on bare `:root`; the `prefers-color-scheme: dark` block only redefines tokens. **Scan for any color literal that exists only inside `@media`** — it will not apply in the other theme.
 - [ ] `body` sets `background: var(--ground)` explicitly; `<meta name="color-scheme" content="light dark">` is present.
-- [ ] Single column that works at 320 px and breathes to 670 px; the first screen (70 vh) opens with eyebrow, title, lede — not a tall hero.
+- [ ] Single column that works at 320 px and stays capped and centered when the panel grows to the whole room; the first screen opens with eyebrow, title, lede — not a tall hero.
 - [ ] Wide content (tables, code, SVG) sits inside an `overflow-x: auto` container; nothing forces the page to scroll sideways.
 - [ ] `<style>` is at the **end of `<body>`**; `<head>` holds only meta, title, and optional `<link>` fonts, so the 240-character preview is prose.
 - [ ] Spacing comes from flex/grid `gap`; no selector pair silently cancels another; headings `text-wrap: balance`; digits in columns use `tabular-nums`.
@@ -32,7 +32,7 @@ Run this before saving the artifact. Every item is checkable from the content or
 ## Markdown build
 
 - [ ] One H1 equal to `title`, then a one-sentence lede (these become the preview).
-- [ ] No raw HTML for layout or color; no `data:` images; mermaid blocks fit a ~480 px column.
+- [ ] No raw HTML for layout or color; no `data:` images; mermaid blocks fit the 320 px opening width.
 - [ ] Ticket-like tokens that are not portal tasks are in backticks (avoid `task-123` auto-links).
 
 ## Payload

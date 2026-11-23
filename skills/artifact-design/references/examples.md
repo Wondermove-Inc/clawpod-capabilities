@@ -9,7 +9,7 @@ User: "정리해서 보고서로 줘" after a pricing analysis.
 Design plan (written before code):
 
 - **Subject / job**: three pricing tiers, two proposed changes; the page exists so a product lead can decide by 12 September.
-- **Treatment**: utilitarian. A decision memo, not a landing page. Single column, ~480 px.
+- **Treatment**: utilitarian. A decision memo, not a landing page. Single column that reads at 320 px.
 - **Color**: ground `#F7F6F2`, surface `#FFFFFF`, ink `#1D1F24`, muted `#5C6070`, accent `#1F5F8B` (a cool ink-blue that reads as "finance" without going corporate); dark set redefined under `prefers-color-scheme`.
 - **Type**: display "Iowan Old Style" → Georgia; body "Avenir Next" → Segoe UI → Pretendard; mono for SKU codes. System stacks only.
 - **Layout**: eyebrow + title + one-sentence decision ask, two change cards, one comparison table in a scroll container, a closing "decision needed" card. `<style>` at the end of `<body>`.

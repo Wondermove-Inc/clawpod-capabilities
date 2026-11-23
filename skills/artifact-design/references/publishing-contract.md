@@ -1,6 +1,6 @@
 # ClawPod artifact publishing contract
 
-Verified against the admin-api and admin-portal source (`chat-artifact.service.ts`, `routes/internal.ts`, migrations 223/227/233, `generic-artifact-panel.tsx`). Nothing here is inferred from message text.
+Verified against the admin-api and admin-portal source (`chat-artifact.service.ts`, `routes/internal.ts`, migrations 223/227/233, `components/v2/chat/chat-turn.tsx`, `components/v2/chat/artifacts-panel.tsx`). Nothing here is inferred from message text.
 
 ## The one rule
 
@@ -127,7 +127,7 @@ agent → POST /internal/messages { artifact_refs }
       → refs resolved to a manifest (404 on miss)
       → NATS chat.{roomId}.messages
       → subscriber stores the manifest on the message
-      → portal: GenericArtifactCard (title + 240-char preview) → click → GenericArtifactPanel
+      → portal: artifact card in the chat turn (title + first line of the 240-char preview) → click → artifacts panel
 ```
 
 If the message arrived but no card shows, the artifact was not in the structured field.

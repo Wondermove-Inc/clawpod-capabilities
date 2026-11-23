@@ -85,7 +85,7 @@ class ArtifactDesignSkillTests(unittest.TestCase):
         self.assertIn("Never send `artifacts` and `artifact_refs` in the same message", self.skill)
 
     def test_html_guidance_matches_the_sandboxed_iframe_renderer(self) -> None:
-        for fact in ('sandbox=""', "No JavaScript runs", "prefers-color-scheme", "70 vh", "cdn.jsdelivr.net", "Google Fonts is blocked", "end of `<body>`"):
+        for fact in ('sandbox=""', "No JavaScript runs", "prefers-color-scheme", "60dvh", "cdn.jsdelivr.net", "Google Fonts is blocked", "end of `<body>`"):
             self.assertIn(fact, self.skeleton, fact)
         self.assertNotIn("<script>", self.skeleton.split("## Skeleton")[1].split("```")[1])
         self.assertNotIn("fonts.googleapis.com", self.everything)
