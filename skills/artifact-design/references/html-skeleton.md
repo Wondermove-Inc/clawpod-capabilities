@@ -1,6 +1,6 @@
 # Static HTML artifact skeleton
 
-The panel renders `html` artifacts as `<iframe sandbox="" srcDoc={content}>` (verified in `generic-artifact-panel.tsx`). That single line dictates the skeleton:
+The panel renders `html` artifacts as `<iframe sandbox="" srcDoc={content}>` (verified in `components/chat/artifact-document.tsx`). That single line dictates the skeleton:
 
 For live HTML, start from [live-artifact](live-artifact/guide.md) instead.
 
@@ -8,8 +8,8 @@ For live HTML, start from [live-artifact](live-artifact/guide.md) instead.
 - **No same-origin.** No `localStorage`, cookies, or fetch.
 - **The portal's CSP is inherited.** Fonts: system stacks, `data:` URIs, or `https://cdn.jsdelivr.net` only (Google Fonts is blocked). Images: `https:` and `data:`. Nothing else external.
 - **Only the OS theme reaches the frame.** Use `prefers-color-scheme`; the portal's own dark-mode class never propagates.
-- **The frame is 70 vh tall and 320–670 px wide.** Single column; content scrolls inside the frame.
-- **The card preview is `content` with tags stripped, first 240 chars.** Put `<style>` at the **end of `<body>`**, keep `<head>` to `meta` + `title`, and open `<body>` with the eyebrow, title, and lede so the preview reads as a sentence.
+- **The frame opens 320 px wide and can grow to the whole room.** It fills the panel and is at least `60dvh` tall; content scrolls inside it. Single column, capped near 768 px and centered.
+- **The message card shows the first line of the preview, which is `content` with tags stripped, first 240 chars.** Put `<style>` at the **end of `<body>`**, keep `<head>` to `meta` + `title`, and open `<body>` with the eyebrow, title, and lede so the preview reads as a sentence.
 
 ## Skeleton
 
@@ -91,7 +91,7 @@ For live HTML, start from [live-artifact](live-artifact/guide.md) instead.
     font: 15px/1.6 var(--font-body);
     -webkit-font-smoothing: antialiased;
   }
-  main { padding: 1.25rem 1.25rem 2.5rem; display: grid; gap: 1.5rem; }
+  main { max-width: 48rem; margin: 0 auto; padding: 1.25rem 1.25rem 2.5rem; display: grid; gap: 1.5rem; }
   h1, h2 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
   h1 { font-size: clamp(1.5rem, 5vw, 1.9rem); font-weight: 600; }
   h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem; }
@@ -133,7 +133,7 @@ Place `<link>` tags in `<head>` (they carry no text, so they do not affect the p
 
 ## Charts and diagrams without scripts
 
-Author charts as inline SVG with tokens for color (`fill="var(--accent)"` works inside inline SVG). Give them the same care as type: a faint grid, tabular numbers on axes, an area fill, an emphasized endpoint. Semantic colors (`--good`, `--warn`, `--crit`) carry state; the accent carries emphasis; do not use the accent for both. Wrap any SVG wider than ~440 px in `.scroll` or give it `width: 100%; height: auto` with a `viewBox`.
+Author charts as inline SVG with tokens for color (`fill="var(--accent)"` works inside inline SVG). Give them the same care as type: a faint grid, tabular numbers on axes, an area fill, an emphasized endpoint. Semantic colors (`--good`, `--warn`, `--crit`) carry state; the accent carries emphasis; do not use the accent for both. Wrap any SVG wider than ~280 px in `.scroll` or give it `width: 100%; height: auto` with a `viewBox`.
 
 If the diagram is a flowchart, sequence, state, ER, or Gantt, consider a `markdown` artifact with a ```` ```mermaid ```` block instead — it renders natively and follows the portal theme.
 

@@ -5,7 +5,7 @@
     {
       "id": "artifact-design",
       "type": "skill",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "description": "Design, publish, find, and revise reusable ClawPod room artifacts: reports, plans, diagrams, comparisons, reference pages, live dashboards, and surveys. Use for responsive Markdown or HTML, save-then-artifact_refs publication, live SDK snapshots, listing the artifacts you saved, and reading or editing an artifact's versions. Use Claude Design for multi-artboard canvases, Image Studio for raster images, and Video Studio for video.",
       "path": "skills/artifact-design",
       "compatibility": {
@@ -18,23 +18,23 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "74accd863d25092ad49b1a46578d04c66205dcf751df84f38043082164b8ff91"
+          "sha256": "2e5bcd2ebd6884f51f22d8670859c75caaeef5d2b7e87a85dee5b8ce26dbb3f7"
         },
         {
           "path": "references/checklist.md",
-          "sha256": "cae7c503737836489e9dfe743dac7c509d187c7f6db9fdc8d45cf10a93f3024c"
+          "sha256": "c064c5424d399bdb39d4476f5a62b40101d4d96b5898ff72eb8f0a05ae45706e"
         },
         {
           "path": "references/choosing-the-type.md",
-          "sha256": "c1e8a1fed89c8c04f08a21300a7f60e4a50c1a21bc0d576a316027f133823dfa"
+          "sha256": "a62273e184b13634b863799c8316679199555905ab2e06ba6ee0ffff466b7780"
         },
         {
           "path": "references/design-fundamentals.md",
-          "sha256": "5ef0332253ff2453809127856700e710fc6eddbcb35a73765f2a5248fe2b49a2"
+          "sha256": "5bd0bcc8a2086445ceda20fc9692a9eb58f3f324431faa717267d194a0d6a1e2"
         },
         {
           "path": "references/examples.md",
-          "sha256": "d412c1461b1da6ba6e56ae534cadc056c31041eeb73ba6877232479f4d054be6"
+          "sha256": "33d38c5ac7ff5ba36cb805c10eb63143248590438884cfb369c6680a7a086310"
         },
         {
           "path": "references/finding-and-revising.md",
@@ -42,7 +42,7 @@
         },
         {
           "path": "references/html-skeleton.md",
-          "sha256": "f32395af3279f71faf2eac959643980933060d6d02f3d8dffe5cfa8e37a6e47f"
+          "sha256": "8caec207f5ebce053a25907ef1960e3fdd8dff78bf79b32b3a2fb52f9a2d7305"
         },
         {
           "path": "references/live-artifact/guide.md",
@@ -90,15 +90,15 @@
         },
         {
           "path": "references/live-motion.md",
-          "sha256": "faefe4511948cd3386087f54e65b8451f4c52b50fe8e810de12b0c29e450944c"
+          "sha256": "ce83dbe8f9a37b4b7e4edcdd60bd4e125847d85cb7ba18cc664d563b5c0e62d8"
         },
         {
           "path": "references/markdown-craft.md",
-          "sha256": "e79610d61e6a563e9689935630082f971c3bb04bd5a9c68b1bd36dd06022ccbc"
+          "sha256": "d3160e08ef86de96eb81839fa4d889419cff19a69b4d6ff4421768a8a1bf03ba"
         },
         {
           "path": "references/publishing-contract.md",
-          "sha256": "509935f770d0b3501293996c69ac8c61411ae31f24c94063ada94de823a96ea4"
+          "sha256": "3561e8e7cd878ab099be663c38dc26559d5558e802c82fa33cae4158485e0ce1"
         }
       ],
       "descriptionI18n": {
